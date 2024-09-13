@@ -1,0 +1,41 @@
+---
+sidebar_position: 2
+---
+
+# Connecting
+
+How to connect to Fishjam Cloud
+
+## Getting URL and token
+
+In order to connect, you need to retrieve URL (multimedia server address) and token (token that will authenticate you in your Room)
+
+### Using sandbox app
+
+Once you get your account on [Fishjam Cloud](https://fishjam.io), you will have access to Sandbox App.
+This app comes with preconfigured test service called Room Manager. This is basically service that will
+create Room, add your app as Room's Participant and return token required to use that Room.
+
+To use that simply call `fetch`:
+```ts
+const response = await fetch(
+  `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/*ROOM_NAME*/users/*USER_NAME*`,
+);
+
+const {url, token} = await response.json();
+```
+
+## Connecting
+
+In order to connect, you just need to call `connect` method with data from previous step:
+
+```ts
+import { connect } from '@fishjam-cloud/react-native-client';
+
+
+await connect(url, token);
+```
+
+## Disconnecting
+
+In order to close connection, you have to call `leaveRoom` method.
