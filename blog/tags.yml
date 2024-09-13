@@ -1,19 +1,10 @@
-facebook:
-  label: Facebook
-  permalink: /facebook
-  description: Facebook tag description
+fishjam-cloud:
+  label: Fishjam Cloud
+  permalink: /fishjam-cloud
+  description: Fishjam Cloud
 
-hello:
-  label: Hello
-  permalink: /hello
-  description: Hello tag description
+sdk:
+  label: SDK
+  permalink: /sdk
+  description: News about SDK
 
-docusaurus:
-  label: Docusaurus
-  permalink: /docusaurus
-  description: Docusaurus tag description
-
-hola:
-  label: Hola
-  permalink: /hola
-  description: Hola tag description
