@@ -8,10 +8,10 @@ const config: Config = {
   favicon: "img/favicon.ico",
 
   // Set the production url of your site here
-  url: "https://docs.fishjam.io",
+  url: "https://fishjam-cloud.github.io/",
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: "/",
+  baseUrl: "/documentation/",
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
@@ -37,7 +37,7 @@ const config: Config = {
           sidebarPath: "./sidebars.ts",
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl: "https://github.com/fishjam-cloud/docs/",
+          editUrl: "https://github.com/fishjam-cloud/documentation/",
         },
         blog: {
           showReadingTime: true,
@@ -47,7 +47,7 @@ const config: Config = {
           },
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl: "https://github.com/fishjam-cloud/docs/",
+          editUrl: "https://github.com/fishjam-cloud/documentation/",
           // Useful options to enforce blogging best practices
           onInlineTags: "warn",
           onInlineAuthors: "warn",
