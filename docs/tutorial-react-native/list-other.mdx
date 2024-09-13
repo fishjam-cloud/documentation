@@ -1,0 +1,32 @@
+---
+sidebar_position: 4
+---
+
+# List other participants
+
+In order see other streaming participants, you can use `useParticipants`. It will return all 
+other participants, together with track that they are streaming. 
+
+### Example code that show all videos
+
+
+```ts
+import { useParticipants, VideoRendererView } from '@fishjam-cloud/react-native-client';
+
+function Component() {
+  const { participants } = useParticipants();
+  const videoTracks = participants.flatMap((participant) =>
+    participant.tracks.filter(
+      (track) => track.type === 'Video' && track.isActive,
+    ),
+  );
+
+  return (
+    <View>
+      {videoTracks.map((track) => (
+        <VideoRendererView key={track.id} trackId={track.id} videoLayout="FIT" />
+      ))}
+    </View>
+  );
+}
+```
