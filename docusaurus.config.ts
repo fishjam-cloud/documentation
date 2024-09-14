@@ -4,8 +4,8 @@ import type * as Preset from "@docusaurus/preset-classic";
 
 const config: Config = {
   title: "Fishjam Cloud Docs",
-  tagline: "Fishjam Cloud",
-  favicon: "img/favicon.ico",
+  tagline: "Easiest way to add video streaming to your React Native app",
+  favicon: "img/favicon.svg",
 
   // Set the production url of your site here
   url: "https://fishjam-cloud.github.io/",
@@ -15,8 +15,8 @@ const config: Config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: "fishjam-cloud", // Usually your GitHub org/user name.
-  projectName: "docusaurus", // Usually your repo name.
+  organizationName: "fishjam-cloud",
+  projectName: "documentation",
 
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
@@ -34,9 +34,9 @@ const config: Config = {
       "classic",
       {
         docs: {
-          sidebarPath: "./sidebars.ts",
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
+          sidebarPath: "./sidebars/guide.ts",
+          path: "guide",
+          routeBasePath: "guide",
           editUrl: "https://github.com/fishjam-cloud/documentation/",
         },
         blog: {
@@ -45,10 +45,7 @@ const config: Config = {
             type: ["rss", "atom"],
             xslt: true,
           },
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
           editUrl: "https://github.com/fishjam-cloud/documentation/",
-          // Useful options to enforce blogging best practices
           onInlineTags: "warn",
           onInlineAuthors: "warn",
           onUntruncatedBlogPosts: "warn",
@@ -60,8 +57,28 @@ const config: Config = {
     ],
   ],
 
+  plugins: [
+    // [
+    //   "@docusaurus/plugin-content-docs",
+    //   {
+    //     id: "react",
+    //     path: "react-docs",
+    //     routeBasePath: "react",
+    //     sidebarPath: "./sidebars/react.ts",
+    //   },
+    // ],
+    // [
+    //   "@docusaurus/plugin-content-docs",
+    //   {
+    //     id: "react-native",
+    //     path: "react-native-docs",
+    //     routeBasePath: "react-native",
+    //     sidebarPath: "./sidebars/react-native.ts",
+    //   },
+    // ],
+  ],
+
   themeConfig: {
-    // Replace with your project's social card
     image: "img/social-card.png",
     colorMode: {
       defaultMode: "light",
@@ -75,12 +92,28 @@ const config: Config = {
       },
       items: [
         {
-          type: "docSidebar",
-          sidebarId: "tutorialSidebar",
+          to: "/guide",
+          label: "Guide",
           position: "left",
-          label: "Tutorial",
+          sidebarId: "guideSidebar",
         },
-        { to: "/blog", label: "Blog", position: "left" },
+        // {
+        //   to: "/react-native",
+        //   label: "React Native",
+        //   position: "left",
+        //   sidebarId: "reactNativeSidebar",
+        // },
+        // {
+        //   to: "/react",
+        //   label: "React",
+        //   position: "left",
+        //   sidebarId: "reactSidebar",
+        // },
+        {
+          href: "https://fishjam.io/app/",
+          label: "Fishjam Dashboard",
+          position: "right",
+        },
         {
           href: "https://github.com/fishjam-cloud",
           label: "GitHub",

@@ -1,0 +1,43 @@
+---
+sidebar_position: 3
+---
+
+# Streaming media
+
+### Initialize access to your devices
+
+Fishjam provides an API to browse and manage media devices you can use.  
+To ask the browser for permission to list the available devices, call the `initializeDevices` function.
+
+```ts
+import { useInitializeDevices } from "@fishjam-cloud/react-client";
+
+const { initializeDevices } = useInitializeDevices();
+
+useEffect(() => {
+  initializeDevices();
+}, [initializeDevices]);
+```
+
+:::info
+The code above will make the browser ask the user for camera and microphone permissions.  
+:::
+
+### Device API
+
+To manage users' camera and microphone devices, use the respective `useCamera` and `useMicrophone` hooks.  
+Both of them has the same API. To keep things simple, let's just use the camera hook.
+
+:::warning TO BE CONTINUED UPON CONSULTATIONS
+
+```tsx
+import { useCamera } from "@fishjam-cloud/react-client";
+
+const camera = useCamera();
+
+// camera.devices
+// or
+// const { cameras } = useCamera();
+```
+
+:::

@@ -1,0 +1,42 @@
+---
+sidebar_position: 4
+---
+
+# Display other participants' media
+
+To access data and media of other participants, use the `useParticipants` hook.  
+It returns two properties, `participants` and `localParticipant`.  
+They contain all tracks of other participants and all tracks of the local user, respectively.
+
+### Example of playing all available media
+
+```tsx
+import { useParticipants } from "@fishjam-cloud/react-client";
+
+function Component() {
+  const { localParticipant, participants } = useParticipants();
+
+  const allParticipants = [localParticipant, ...participants];
+
+  return (
+      <ul>
+        {allParticipants.map((p) => {
+          const videoTracks = [...p.videoTracks, ...p.screenshareVideoTracks];
+          const audioTracks = [...p.audioTracks, ...p.screenshareAudioTracks];
+
+          return (
+              <li key={p.id}>
+                {videoTracks.map(({ stream, trackId }) => (
+                  <VideoRenderer key={trackId} stream={stream} />
+                ))}
+
+                {audioTracks.map(({ stream, trackId }) => (
+                  <AudioPlayer key={trackId} stream={stream} />
+                ))}
+              </li>
+            ))
+        }}
+      </ul>
+  );
+}
+```
