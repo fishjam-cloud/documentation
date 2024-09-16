@@ -8,12 +8,11 @@ How to stream your camera
 
 :::tip Enable devices before connecting
 
-You can enable your camera and microphone before calling connect method. 
+You can enable your camera and microphone before calling connect method.
 This way, you can show user camera preview. Once connect method is called,
 enabled camera and microphone will start streaming to Room.
 
 :::
-
 
 ## Enable your camera
 
@@ -39,20 +38,20 @@ function Component() {
 To list all cameras available on device, you can use `cameraList` property from `useCamera` hook.
 This way, you can either automatically choose camera (front/back) or allow user to select camera type.
 
-To change camera, simply call `switchCamera` method. 
+To change camera, simply call `switchCamera` method.
 
 ```ts
-  const { cameraList, switchCamera, currentCamera } = useCamera();
+const { cameraList, switchCamera, currentCamera } = useCamera();
 
-  const flipCamera = useCallback(() => {
-    const camera =
-      cameraList.find(
-        (camera) => camera.facingDirection !== currentCamera?.facingDirection,
-      ) || null;
-    if (camera) {
-      switchCamera(camera.id);
-    }
-  }, [camerasList, currentCamera?.facingDirection, switchCamera]);
+const flipCamera = useCallback(() => {
+  const camera =
+    cameraList.find(
+      (camera) => camera.facingDirection !== currentCamera?.facingDirection,
+    ) || null;
+  if (camera) {
+    switchCamera(camera.id);
+  }
+}, [camerasList, currentCamera?.facingDirection, switchCamera]);
 ```
 
 ### Disabling/enabling camera
@@ -66,7 +65,6 @@ const { isCameraOn, toggleCamera } = useCamera();
 ## Enable microphone
 
 Microphone works similar to camera. In order to enable it, you have to call `toggleMicrophone` method.
-
 
 ```ts
 const { isMicrophoneOn, toggleMicrophone } = useMicrophone();
