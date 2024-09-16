@@ -17,7 +17,10 @@ function HomepageHeader() {
         </Heading>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.buttons}>
-          <Link className="button button--secondary button--lg" to="/docs/tutorial-react-native/installation">
+          <Link
+            className="button button--secondary button--lg"
+            to="/docs/tutorial-react-native/installation"
+          >
             Setup Mobile App - 5min ⏱️
           </Link>
         </div>
@@ -29,7 +32,10 @@ function HomepageHeader() {
 export default function Home(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
   return (
-    <Layout title={`Introduction`} description="Description will go into a meta tag in <head />">
+    <Layout
+      title={`Introduction`}
+      description="Description will go into a meta tag in <head />"
+    >
       <HomepageHeader />
       <main>
         <HomepageFeatures />
