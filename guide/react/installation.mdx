@@ -1,0 +1,54 @@
+---
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Installation
+
+### 1. Install the package
+
+Install `@fishjam-cloud/react-client` package:
+
+<Tabs groupId="package-managers">
+
+  <TabItem value="npm" label="NPM">
+
+    ```
+    npm install @fishjam-cloud/react-client
+    ```
+
+  </TabItem>
+
+  <TabItem value="yarn" label="YARN">
+
+    ```
+    yarn add @fishjam-cloud/react-client
+    ```
+
+  </TabItem>
+</Tabs>
+
+### 2. Setup Fishjam context
+
+Wrap your app in our `FishjamProvider` component.
+
+```tsx
+import { FishjamProvider } from "@fishjam-cloud/react-client";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <FishjamProvider>
+      <App />
+    </FishjamProvider>
+  </React.StrictMode>,
+);
+```
+
+:::tip
+
+It's possible to have many independent Fishjam contexts in one app.  
+Just render many `FishjamProvider` components and make sure they don't overlap.
+
+:::

@@ -1,0 +1,40 @@
+---
+sidebar_position: 2
+---
+
+# Connecting
+
+## Prerequisites
+
+In order to connect, you need a `PARTICIPANT_TOKEN` and the `FISHJAM_URL`.
+
+## Connecting
+
+Use the `useConnect` hook to get the `connect` function.
+
+```ts
+import { connect } from "@fishjam-cloud/react-native-client";
+
+function Component() {
+  const connect = useConnect();
+
+  const joinRoom = async () => {
+    await connect({
+      token: PARTICIPANT_TOKEN,
+      url: FISHJAM_URL,
+    });
+  };
+}
+```
+
+## Disconnecting
+
+In order to close connection, use the `useDisconnect` hook.
+
+```ts
+import { useDisconnect } from "@fishjam-cloud/react-client";
+
+const disconnect = useDisconnect();
+
+await disconnect();
+```
