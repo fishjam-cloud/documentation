@@ -55,3 +55,8 @@ For production, make sure to set up your own backend using our Server SDK's and 
 :::warning LINKS UNDER CONSTRUCTION
 Follow the links to see how to setup our SDK in **Python** or **NodeJS**.
 :::
+
+:::tip
+The Room Manager source code is available as an [example app in the js-server-sdk repository](https://github.com/fishjam-cloud/js-server-sdk/tree/main/examples/room-manager).
+It can be used as a reference for building your backend.
+:::
