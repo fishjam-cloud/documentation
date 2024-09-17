@@ -11,6 +11,7 @@ They contain all tracks of other participants and all tracks of the local user, 
 ### Example of playing all available media
 
 ```tsx
+import React from "react";
 import { useParticipants } from "@fishjam-cloud/react-client";
 
 function Component() {
@@ -20,21 +21,23 @@ function Component() {
 
   return (
       <ul>
-        {allParticipants.map((p) => {
+        {allParticipants.flatMap((p) => {
           const videoTracks = [...p.videoTracks, ...p.screenshareVideoTracks];
           const audioTracks = [...p.audioTracks, ...p.screenshareAudioTracks];
 
-          return (
-              <li key={p.id}>
-                {videoTracks.map(({ stream, trackId }) => (
-                  <VideoRenderer key={trackId} stream={stream} />
-                ))}
+          const videoTrackElements = videoTracks.map(({ stream, trackId }) => (
+            <li key={trackId}>
+              <VideoRenderer stream={stream} />
+            </li>
+          ));
 
-                {audioTracks.map(({ stream, trackId }) => (
-                  <AudioPlayer key={trackId} stream={stream} />
-                ))}
-              </li>
-            ))
+          const audioTrackElements = videoTracks.map(({ stream, trackId }) => (
+            <li key={trackId}>
+              <AudioPlayer stream={stream} />
+            </li>
+          ));
+
+          return [...videoTrackElements, ...audioTrackElements];
         }}
       </ul>
   );

@@ -15,14 +15,16 @@ Use the `useConnect` hook to get the `connect` function.
 ```ts
 import { connect } from "@fishjam-cloud/react-native-client";
 
-const connect = useConnect();
+function Component() {
+  const connect = useConnect();
 
-const joinRoom = async () => {
-  await connect({
-    token: PARTICIPANT_TOKEN,
-    url: FISHJAM_URL,
-  });
-};
+  const joinRoom = async () => {
+    await connect({
+      token: PARTICIPANT_TOKEN,
+      url: FISHJAM_URL,
+    });
+  };
+}
 ```
 
 ## Disconnecting
