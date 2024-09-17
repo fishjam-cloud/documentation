@@ -28,14 +28,21 @@ const { url, token } = await response.json();
 
 ## Connecting
 
-In order to connect, you just need to call `connect` method with data from previous step:
+In order to connect, you just need to call `joinRoom` method with data from previous step:
 
 ```ts
-import { connect } from "@fishjam-cloud/react-native-client";
+import { joinRoom } from "@fishjam-cloud/react-native-client";
 
-await connect(url, token);
+await joinRoom(url, token);
 ```
 
 ## Disconnecting
 
 In order to close connection, you have to call `leaveRoom` method.
+
+
+```ts
+import { leaveRoom } from "@fishjam-cloud/react-native-client";
+
+await leaveRoom();
+```
