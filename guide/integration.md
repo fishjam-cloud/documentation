@@ -30,15 +30,15 @@ https://fishjam.io/api/v1/connect/***/room-manager?roomName=foo&userName=bar
 
 ```json
 {
-  "token": "*YOUR PARTICIPANT TOKEN*",
+  "participantToken": "*YOUR PARTICIPANT TOKEN*",
   "url": "wss://cloud.fishjam.work/api/v1/connect/***",
   "room": {
     "id": "fa02-4462-893d-eb3a4add40bb-6a656c6c79666973684031302e302e312e3338",
-    "name": "11"
+    "name": "foo"
   },
-  "username": "11",
-  "peer": {
-    "id": "30b9642c-332f-493b-814a-536a4f4c63b2"
+  "participant": {
+    "id": "30b9642c-332f-493b-814a-536a4f4c63b2",
+    "name": "bar"
   }
 }
 ```
