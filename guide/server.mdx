@@ -80,7 +80,7 @@ They are required to proceed. Now, we are ready to dive into the code.
 
   </TabItem>
 
-  <TabItem value="pip" label="cURL">
+  <TabItem value="curl" label="cURL">
 
     ```sh
     AUTH_HEADER="Authorization: Bearer $FISHJAM_MANAGEMENT_TOKEN"
@@ -124,7 +124,7 @@ Create a room to get the `roomId` and be able to start adding participants.
 
   </TabItem>
 
-  <TabItem value="pip" label="cURL">
+  <TabItem value="curl" label="cURL">
 
     ```bash
     curl -X POST "$FISHJAM_URL/room" -H $AUTH_HEADER
@@ -165,7 +165,7 @@ At any time you can terminate user's access by deleting the participant.
 
   </TabItem>
 
-  <TabItem value="pip" label="cURL">
+  <TabItem value="curl" label="cURL">
 
     ```bash
     curl -X POST "$FISHJAM_URL/room/$ROOM_ID/peer" -H $AUTH_HEADER
@@ -178,19 +178,20 @@ At any time you can terminate user's access by deleting the participant.
 
 ### Listening to events
 
-:::info COMING SOON
+Fishjam instance is a stateful server that is emitting messages upon certain events.  
+You can listen for those messages and react as you prefer.  
+There are two options to obtain these.
 
 #### Webhooks
 
-Well, heh, just pass in your webhook.
-
-#### SDK Notifier
+Simply pass the your webhook url as a `webhookUrl` parameter when creating a room.
 
 <Tabs groupId="languange">
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    console.log('coming soon');
+    const webhookUrl = "https://example.com";
+    await fishjamClient.createRoom({ webhookUrl });
     ```
 
   </TabItem>
@@ -198,10 +199,57 @@ Well, heh, just pass in your webhook.
   <TabItem value="python" label="Python">
 
     ```python
-    print('coming soon')
+    webhook_url = "https://example.com"
+    fishjam_client.add_room(webhook_url=webhook_url)
+    ```
+
+  </TabItem>
+
+  <TabItem value="curl" label="cURL">
+
+    ```bash
+    PAYLOAD='{"webhookUrl": "https://example.com/" }'
+    curl -X POST -H "Content-Type: application/json" -H $AUTH_HEADER --data $PAYLOAD  "$FISHJAM_URL/room"
     ```
 
   </TabItem>
 
 </Tabs>
-:::
+
+#### SDK Notifier
+
+Our SDK's come equipped with a Notifier allowing you to subscribe for messages.
+It sets up a websocket connection with a Fishjam instance and provides a simple interface allowing you to handle messages.
+
+<Tabs groupId="languange">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    import { FishjamWSNotifier } from '@fishjam-cloud/js-server-sdk';
+
+    const onClose = console.log;
+    const onError = console.error;
+    const onConnectionFailed = console.error;
+
+    const fishjamNotifier = new FishjamWSNotifier({ fishjamUrl, managementToken }, onError, onClose, onConnectionFailed);
+
+    fishjamNotifier.on('roomCreated', console.log);
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    from jellyfish import Notifier
+
+    notifier = Notifier(server_address=fishjam_url, server_api_token=management_token)
+
+    @notifier.on_server_notification
+    def handle_notification(server_notification):
+        print(f'Received a notification: {server_notification}')
+    ```
+
+  </TabItem>
+
+</Tabs>
