@@ -1,0 +1,172 @@
+---
+sidebar_position: 2
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Server Integration
+
+## Install the SDK
+
+Install the SDK for the language of your choice. We provide libraries for Node, Python and Elixir(?).  
+It's also possible to use the bare REST API, in this case you can skip this step.
+
+<Tabs groupId="sdk">
+  <TabItem value="npm" label="NPM">
+  
+    ```
+    npm install @fishjam-cloud/js-server-sdk
+    ```
+
+  </TabItem>
+
+  <TabItem value="yarn" label="YARN">
+
+    ```
+    yarn add @fishjam-cloud/js-server-sdk
+    ```
+
+  </TabItem>
+
+  <TabItem value="pip" label="PIP">
+
+    ```
+    pip install fishjam-server-sdk
+    ```
+
+  </TabItem>
+
+  <TabItem value="poetry" label="POETRY">
+
+    ```
+    poetry add fishjam-server-sdk
+    ```
+
+  </TabItem>
+</Tabs>
+
+## Setup your client
+
+Let's setup everything you need to start communicating with the Fishjam instance.  
+First of all, enter your app in our **developer panel** and copy your **Fishjam URL** and the **Management Token**.  
+They are required to proceed. Now, we are ready to dive into the code.
+
+<Tabs groupId="languange">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamUrl = process.env.FISHJAM_URL;
+    const managementToken = process.env.FISHJAM_MANAGEMENT_TOKEN;
+
+    const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    import os
+    from fishjam import RoomApi
+
+    fishjam_url = os.environ["FISHJAM_URL"]
+    management_token = os.environ["FISHJAM_MANAGEMENT_TOKEN"]
+
+    fishjam_client = RoomApi(server_address="localhost:5002", server_api_token="development")
+    ```
+
+  </TabItem>
+
+  <TabItem value="pip" label="cURL">
+
+    ```sh
+    AUTH_HEADER="Authorization: Bearer $FISHJAM_MANAGEMENT_TOKEN"
+
+    curl -i "$FISHJAM_URL/room" -H $AUTH_HEADER
+    ```
+
+  </TabItem>
+</Tabs>
+
+### Managing rooms
+
+<Tabs groupId="languange">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    const createdRoom = await fishjamClient.createRoom();
+
+    const theSameRoom = await fishjamClient.getRoom(createdRoom.id);
+
+    await fishjamClient.deleteRoom(theSameRoom.id)
+
+    // puff, it's gone!
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    created_room = room_api.create_room()
+
+    the_same_room = room_api.get_room(created_room.id)
+
+    room_api.delete_room(the_same_room.id)
+
+    # puff, it's gone!
+    ```
+
+  </TabItem>
+
+  <TabItem value="pip" label="cURL">
+
+    ```bash
+    curl -X POST "$FISHJAM_URL/room" -H $AUTH_HEADER
+
+    curl "$FISHJAM_URL/room/$ROOM_ID" -H $AUTH_HEADER
+
+    curl -X DELETE "$FISHJAM_URL/room/$ROOM_ID" -H $AUTH_HEADER
+
+    # puff, it's gone!
+    ```
+
+  </TabItem>
+</Tabs>
+
+### Managing participants
+
+<Tabs groupId="languange">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    const { participant } = await fishjamClient.createParticipant(roomId);
+
+    await fishjamClient.deleteParticipant(roomId, participant.id);
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    response = room_api.add_peer(room_id)
+
+    room_api.delete_peer(room_id, response.peer.id)
+    ```
+
+  </TabItem>
+
+  <TabItem value="pip" label="cURL">
+
+    ```bash
+    curl -X POST "$FISHJAM_URL/room/$ROOM_ID/peer" -H $AUTH_HEADER
+
+    curl -X DELETE "$FISHJAM_URL/room/$ROOM_ID/peer/$PEER_ID" -H $AUTH_HEADER
+    ```
+
+  </TabItem>
+</Tabs>
