@@ -23,7 +23,7 @@ Simply take the Fishjam instance url of your `sandbox` app, eg. `https://fishjam
 ##### Example url
 
 ```
-https://fishjam.io/api/v1/connect/***/room-manager?roomName=foo&userName=bar
+https://fishjam.io/api/v1/connect/*YOUR_APP_UUID*/room-manager?roomName=foo&userName=bar
 ```
 
 ##### Response
@@ -31,7 +31,7 @@ https://fishjam.io/api/v1/connect/***/room-manager?roomName=foo&userName=bar
 ```json
 {
   "participantToken": "*YOUR PARTICIPANT TOKEN*",
-  "url": "wss://cloud.fishjam.work/api/v1/connect/***",
+  "url": "wss://cloud.fishjam.work/api/v1/connect/*YOUR_APP_UUID*",
   "room": {
     "id": "fa02-4462-893d-eb3a4add40bb-6a656c6c79666973684031302e302e312e3338",
     "name": "foo"
