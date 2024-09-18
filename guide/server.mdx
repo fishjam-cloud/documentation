@@ -93,6 +93,8 @@ They are required to proceed. Now, we are ready to dive into the code.
 
 ### Managing rooms
 
+Create room to get the roomId and be able to start adding participants.
+
 <Tabs groupId="languange">
   <TabItem value="ts" label="Typescript">
   
@@ -139,11 +141,14 @@ They are required to proceed. Now, we are ready to dive into the code.
 
 ### Managing participants
 
+Create a participant to obtain the participant token for your user to join the room.
+At any time you can terminate his access by deleting the participant.
+
 <Tabs groupId="languange">
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    const { participant } = await fishjamClient.createParticipant(roomId);
+    const { participant, participantToken } = await fishjamClient.createParticipant(roomId);
 
     await fishjamClient.deleteParticipant(roomId, participant.id);
     ```
