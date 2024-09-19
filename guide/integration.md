@@ -14,7 +14,7 @@ Let's get familiar with how to integrate with Fishjam Cloud services.
 
 To get you prototyping as fast as possible, the sandbox project comes with a HTTP server called **Room Manager**.  
 It allows you to start working on the Client App without having to setup an actual backend.  
-However, for production purposes, we recommend bringing your on backend and using our Server SDK's.
+However, for production purposes, we recommend bringing your on backend and using our Server SDKs.
 
 #### How do I use it?
 
@@ -47,7 +47,7 @@ https://fishjam.io/api/v1/connect/*YOUR_APP_UUID*/room-manager?roomName=foo&user
 Room Manager doesn't implement any participant authentication.
 Anyone using the same room name and user name will receive **the same Participant Token!**
 
-For production, make sure to set up your own backend using our Server SDK's and authenticate the client on your own!
+For production, make sure to set up your own backend using our Server SDKs and authenticate the client on your own!
 :::
 
 ### How do I integrate my backend then?
