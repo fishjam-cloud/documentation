@@ -9,6 +9,8 @@ jobs:
         uses: actions/checkout@v3
       - name: Install node dependencies
         run: yarn
+      - name: Spellcheck
+        run: yarn spellcheck:report
       - name: Check formatting
         run: yarn format:check
       - name: Check types

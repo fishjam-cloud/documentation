@@ -18,7 +18,7 @@ However, for production purposes, we recommend bringing your on backend and usin
 
 #### How do I use it?
 
-Simply take the Fishjam instance url of your `sandbox` app, eg. `https://fishjam.io/api/v1/connect/***`, append a `/room-manager` path and use `roomName` and `participantName` query params to build an url for the GET request.
+Simply take the Fishjam instance url of your `sandbox` app, e.g. `https://fishjam.io/api/v1/connect/***`, append a `/room-manager` path and use `roomName` and `participantName` query params to build an url for the GET request.
 
 ##### Example url
 
