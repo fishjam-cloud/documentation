@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 # Terms
@@ -19,11 +19,11 @@ User that is connected to room. Each participant has associated some metadata an
 Single video or audio streamed by paritcipant. It could be camera view, shared screen or microphone audio. Each
 participant could stream few tracks.
 
-### Server token
+### Management Token
 
 Secret token that should be stored on your backend. It allows to create rooms and add participants.
 
-### Participant token
+### Participant Token
 
 Token that your backend should pass to end client as authentication method for user to access room.
 
