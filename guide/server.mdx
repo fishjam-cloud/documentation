@@ -5,7 +5,7 @@ sidebar_position: 2
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
-# Server Integration
+# Setup your server
 
 ## Install the SDK
 
@@ -52,7 +52,7 @@ Let's setup everything you need to start communicating with a Fishjam instance.
 First of all, view your app in the [**Fishjam Cloud developer panel**](https://fishjam.io/app) and copy your **Fishjam URL** and the **Management Token**.  
 They are required to proceed. Now, we are ready to dive into the code.
 
-<Tabs groupId="languange">
+<Tabs groupId="language">
   <TabItem value="ts" label="Typescript">
   
     ```ts
@@ -95,7 +95,7 @@ They are required to proceed. Now, we are ready to dive into the code.
 
 Create a room to get the `roomId` and be able to start adding participants.
 
-<Tabs groupId="languange">
+<Tabs groupId="language">
   <TabItem value="ts" label="Typescript">
   
     ```ts
@@ -144,7 +144,7 @@ Create a room to get the `roomId` and be able to start adding participants.
 Create a participant to obtain the participant token allowing your user to join the room.
 At any time you can terminate user's access by deleting the participant.
 
-<Tabs groupId="languange">
+<Tabs groupId="language">
   <TabItem value="ts" label="Typescript">
   
     ```ts
@@ -186,7 +186,7 @@ There are two options to obtain these.
 
 Simply pass the your webhook url as a `webhookUrl` parameter when creating a room.
 
-<Tabs groupId="languange">
+<Tabs groupId="language">
   <TabItem value="ts" label="Typescript">
   
     ```ts
@@ -208,7 +208,7 @@ Simply pass the your webhook url as a `webhookUrl` parameter when creating a roo
   <TabItem value="curl" label="cURL">
 
     ```bash
-    PAYLOAD='{"webhookUrl": "https://example.com/" }'
+    PAYLOAD='{"webhookUrl": "https://example.com" }'
     curl -X POST -H "Content-Type: application/json" -H $AUTH_HEADER --data $PAYLOAD  "$FISHJAM_URL/room"
     ```
 
@@ -221,7 +221,7 @@ Simply pass the your webhook url as a `webhookUrl` parameter when creating a roo
 Our SDK's come equipped with a Notifier allowing you to subscribe for messages.
 It sets up a websocket connection with a Fishjam instance and provides a simple interface allowing you to handle messages.
 
-<Tabs groupId="languange">
+<Tabs groupId="language">
   <TabItem value="ts" label="Typescript">
   
     ```ts
@@ -247,7 +247,11 @@ It sets up a websocket connection with a Fishjam instance and provides a simple 
 
     @notifier.on_server_notification
     def handle_notification(server_notification):
-        print(f'Received a notification: {server_notification}')
+        match notification:
+            case ServerMessageRoomCreated():
+                print(notification)
+            case _:
+                ...
     ```
 
   </TabItem>
