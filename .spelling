@@ -17,7 +17,6 @@ metadata
  - blog/2024-09-13-first-documenation-iteration.md
 Fishjam
 SDK
- - guide/integration.md
 backend
 SDKs
 url
@@ -25,9 +24,6 @@ params
 NodeJS
 e.g.
 js-server-sdk
- - README.md
 Docusaurus
- - guide/react-native/connecting.mdx
 pre-configured
- - guide/react-native/installation.mdx
 TabItem
