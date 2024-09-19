@@ -1,8 +1,8 @@
 ---
-sidebar_position: 2
+sidebar_position: 1
 ---
 
-# Integrating with Fishjam Cloud
+# Integration
 
 Let's get familiar with how to integrate with Fishjam Cloud services.
 
@@ -18,7 +18,8 @@ However, for production purposes, we recommend bringing your on backend and usin
 
 #### How do I use it?
 
-Simply take the Fishjam instance url of your `sandbox` app, e.g. `https://fishjam.io/api/v1/connect/***`, append a `/room-manager` path and use `roomName` and `participantName` query params to build an url for the GET request.
+Simply take the Fishjam instance url of your `sandbox` app, e.g. `https://fishjam.io/api/v1/connect/***`, append a
+`/room-manager` path and use `roomName` and `participantName` query params to build an url for the GET request.
 
 ##### Example url
 
@@ -43,20 +44,15 @@ https://fishjam.io/api/v1/connect/*YOUR_APP_UUID*/room-manager?roomName=foo&user
 }
 ```
 
-:::danger ROOM MANAGER IS NOT SAFE FOR PRODUCTION
-Room Manager doesn't implement any participant authentication.
-Anyone using the same room name and user name will receive **the same Participant Token!**
+:::danger ROOM MANAGER IS NOT SAFE FOR PRODUCTION Room Manager doesn't implement any participant authentication. Anyone
+using the same room name and user name will receive **the same Participant Token!**
 
-For production, make sure to set up your own backend using our Server SDKs and authenticate the client on your own!
-:::
+For production, make sure to set up your own backend using our Server SDKs and authenticate the client on your own! :::
 
 ### How do I integrate my backend then?
 
-:::warning LINKS UNDER CONSTRUCTION
-Follow the links to see how to setup our SDK in **Python** or **NodeJS**.
-:::
+:::warning LINKS UNDER CONSTRUCTION Follow the links to see how to setup our SDK in **Python** or **NodeJS**. :::
 
-:::tip
-The Room Manager source code is available as an [example app in the js-server-sdk repository](https://github.com/fishjam-cloud/js-server-sdk/tree/main/examples/room-manager).
-It can be used as a reference for building your backend.
-:::
+:::tip The Room Manager source code is available as an
+[example app in the js-server-sdk repository](https://github.com/fishjam-cloud/js-server-sdk/tree/main/examples/room-manager).
+It can be used as a reference for building your backend. :::
