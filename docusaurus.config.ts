@@ -57,26 +57,7 @@ const config: Config = {
     ],
   ],
 
-  plugins: [
-    // [
-    //   "@docusaurus/plugin-content-docs",
-    //   {
-    //     id: "react",
-    //     path: "react-docs",
-    //     routeBasePath: "react",
-    //     sidebarPath: "./sidebars/react.ts",
-    //   },
-    // ],
-    // [
-    //   "@docusaurus/plugin-content-docs",
-    //   {
-    //     id: "react-native",
-    //     path: "react-native-docs",
-    //     routeBasePath: "react-native",
-    //     sidebarPath: "./sidebars/react-native.ts",
-    //   },
-    // ],
-  ],
+  plugins: [],
 
   themeConfig: {
     image: "img/social-card.png",
@@ -97,18 +78,7 @@ const config: Config = {
           position: "left",
           sidebarId: "guideSidebar",
         },
-        // {
-        //   to: "/react-native",
-        //   label: "React Native",
-        //   position: "left",
-        //   sidebarId: "reactNativeSidebar",
-        // },
-        // {
-        //   to: "/react",
-        //   label: "React",
-        //   position: "left",
-        //   sidebarId: "reactSidebar",
-        // },
+
         {
           href: "https://fishjam.io/app/",
           label: "Fishjam Dashboard",
@@ -160,6 +130,7 @@ const config: Config = {
     prism: {
       theme: prismThemes.gruvboxMaterialLight,
       darkTheme: prismThemes.gruvboxMaterialDark,
+      additionalLanguages: ["bash"],
     },
   } satisfies Preset.ThemeConfig,
 };
