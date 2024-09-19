@@ -5,7 +5,6 @@ sidebar_position: 2
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
-
 # Connecting
 
 How to connect to Fishjam Cloud
@@ -14,12 +13,9 @@ How to connect to Fishjam Cloud
 
 In order to connect, you need to retrieve URL (multimedia server address) and token (token that will authenticate you in your Room)
 
-
-
 <Tabs groupId="app-type">
 
   <TabItem value="sanbox" label="Sandbox App">
-
 
 Once you get your account on [Fishjam Cloud](https://fishjam.io), you will have access to Sandbox App.
 This app comes with pre-configured test service called Room Manager. This is basically service that will
@@ -35,19 +31,14 @@ const response = await fetch(
 const { fishjamUrl, participantToken } = await response.json();
 ```
 
-
-
   </TabItem>
   <TabItem value="production" label="Production App">
 
 For production app, you need to implement your own backend service that will provide user with `participantToken`.
 To do that, folllow our [server setup instructions](/guide/server).
-    
+
   </TabItem>
 </Tabs>
-
-
-
 
 ## Connecting
 

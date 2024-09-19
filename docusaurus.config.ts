@@ -37,7 +37,9 @@ const config: Config = {
           path: "guide",
           routeBasePath: "guide",
           editUrl: "https://github.com/fishjam-cloud/documentation/",
-          remarkPlugins: [[require("@docusaurus/remark-plugin-npm2yarn"), { sync: true }]],
+          remarkPlugins: [
+            [require("@docusaurus/remark-plugin-npm2yarn"), { sync: true }],
+          ],
         },
         blog: {
           showReadingTime: true,
