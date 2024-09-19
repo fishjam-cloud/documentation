@@ -1,0 +1,259 @@
+---
+sidebar_position: 2
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Setup your server
+
+## Install the SDK
+
+Install the SDK for the language of your choice. We provide libraries for Node and Python.  
+It's also possible to use the bare REST API, in this case you can skip this step.
+
+<Tabs groupId="sdk">
+  <TabItem value="npm" label="NPM">
+  
+    ```
+    npm install @fishjam-cloud/js-server-sdk
+    ```
+
+  </TabItem>
+
+  <TabItem value="yarn" label="YARN">
+
+    ```
+    yarn add @fishjam-cloud/js-server-sdk
+    ```
+
+  </TabItem>
+
+  <TabItem value="pip" label="PIP">
+
+    ```
+    pip install fishjam-server-sdk
+    ```
+
+  </TabItem>
+
+  <TabItem value="poetry" label="POETRY">
+
+    ```
+    poetry add fishjam-server-sdk
+    ```
+
+  </TabItem>
+</Tabs>
+
+## Setup your client
+
+Let's setup everything you need to start communicating with a Fishjam instance.  
+First of all, view your app in the [**Fishjam Cloud developer panel**](https://fishjam.io/app) and copy your **Fishjam URL** and the **Management Token**.  
+They are required to proceed. Now, we are ready to dive into the code.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamUrl = process.env.FISHJAM_URL;
+    const managementToken = process.env.FISHJAM_MANAGEMENT_TOKEN;
+
+    const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    import os
+    from fishjam import RoomApi
+
+    fishjam_url = os.environ["FISHJAM_URL"]
+    management_token = os.environ["FISHJAM_MANAGEMENT_TOKEN"]
+
+    fishjam_client = RoomApi(server_address="localhost:5002", server_api_token="development")
+    ```
+
+  </TabItem>
+
+  <TabItem value="curl" label="cURL">
+
+    ```sh
+    AUTH_HEADER="Authorization: Bearer $FISHJAM_MANAGEMENT_TOKEN"
+
+    curl -i "$FISHJAM_URL/room" -H $AUTH_HEADER
+    ```
+
+  </TabItem>
+</Tabs>
+
+### Managing rooms
+
+Create a room to get the `roomId` and be able to start adding participants.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    const createdRoom = await fishjamClient.createRoom();
+
+    const theSameRoom = await fishjamClient.getRoom(createdRoom.id);
+
+    await fishjamClient.deleteRoom(theSameRoom.id)
+
+    // puff, it's gone!
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    created_room = room_api.create_room()
+
+    the_same_room = room_api.get_room(created_room.id)
+
+    room_api.delete_room(the_same_room.id)
+
+    # puff, it's gone!
+    ```
+
+  </TabItem>
+
+  <TabItem value="curl" label="cURL">
+
+    ```bash
+    curl -X POST "$FISHJAM_URL/room" -H $AUTH_HEADER
+
+    curl "$FISHJAM_URL/room/$ROOM_ID" -H $AUTH_HEADER
+
+    curl -X DELETE "$FISHJAM_URL/room/$ROOM_ID" -H $AUTH_HEADER
+
+    # puff, it's gone!
+    ```
+
+  </TabItem>
+</Tabs>
+
+### Managing participants
+
+Create a participant to obtain the participant token allowing your user to join the room.
+At any time you can terminate user's access by deleting the participant.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    const { participant, participantToken } = await fishjamClient.createParticipant(roomId);
+
+    await fishjamClient.deleteParticipant(roomId, participant.id);
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    response = room_api.add_peer(room_id)
+
+    room_api.delete_peer(room_id, response.peer.id)
+    ```
+
+  </TabItem>
+
+  <TabItem value="curl" label="cURL">
+
+    ```bash
+    curl -X POST "$FISHJAM_URL/room/$ROOM_ID/peer" -H $AUTH_HEADER
+
+    curl -X DELETE "$FISHJAM_URL/room/$ROOM_ID/peer/$PEER_ID" -H $AUTH_HEADER
+    ```
+
+  </TabItem>
+</Tabs>
+
+## Listening to events
+
+Fishjam instance is a stateful server that is emitting messages upon certain events.  
+You can listen for those messages and react as you prefer.  
+There are two options to obtain these.
+
+### Webhooks
+
+Simply pass the your webhook url as a `webhookUrl` parameter when creating a room.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    const webhookUrl = "https://example.com";
+    await fishjamClient.createRoom({ webhookUrl });
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    webhook_url = "https://example.com"
+    fishjam_client.add_room(webhook_url=webhook_url)
+    ```
+
+  </TabItem>
+
+  <TabItem value="curl" label="cURL">
+
+    ```bash
+    PAYLOAD='{"webhookUrl": "https://example.com" }'
+    curl -X POST -H "Content-Type: application/json" -H $AUTH_HEADER --data $PAYLOAD  "$FISHJAM_URL/room"
+    ```
+
+  </TabItem>
+
+</Tabs>
+
+### SDK Notifier
+
+Our SDKs come equipped with a Notifier allowing you to subscribe for messages.
+It sets up a websocket connection with a Fishjam instance and provides a simple interface allowing you to handle messages.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    import { FishjamWSNotifier } from '@fishjam-cloud/js-server-sdk';
+
+    const onClose = console.log;
+    const onError = console.error;
+    const onConnectionFailed = console.error;
+
+    const fishjamNotifier = new FishjamWSNotifier({ fishjamUrl, managementToken }, onError, onClose, onConnectionFailed);
+
+    fishjamNotifier.on('roomCreated', console.log);
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    from jellyfish import Notifier
+
+    notifier = Notifier(server_address=fishjam_url, server_api_token=management_token)
+
+    @notifier.on_server_notification
+    def handle_notification(notification):
+        match notification:
+            case ServerMessageRoomCreated():
+                print(notification)
+            case _:
+                ...
+    ```
+
+  </TabItem>
+
+</Tabs>
