@@ -246,7 +246,7 @@ It sets up a websocket connection with a Fishjam instance and provides a simple 
     notifier = Notifier(server_address=fishjam_url, server_api_token=management_token)
 
     @notifier.on_server_notification
-    def handle_notification(server_notification):
+    def handle_notification(notification):
         match notification:
             case ServerMessageRoomCreated():
                 print(notification)
