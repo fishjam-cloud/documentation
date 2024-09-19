@@ -34,8 +34,8 @@ service.
 
 #### Deployment
 
-Documentation is deployed automatically with each PR. See [Deploy Docosaurus](.github/workflows/docs.yaml) action
+Documentation is deployed automatically with each PR. See [Deploy Docusaurus](.github/workflows/docs.yaml) action
 
-### Docosaurus
+### Docusaurus
 
 Documentation is built using [Docusaurus](https://docusaurus.io/), a modern static website generator..

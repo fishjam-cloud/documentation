@@ -25,7 +25,7 @@ Secret token that should be stored on your backend. It allows to create rooms an
 
 ### Participant token
 
-Token that your backend shoudl pass to end client as authentication method for user to access room.
+Token that your backend should pass to end client as authentication method for user to access room.
 
 ### Fishjam URL
 
