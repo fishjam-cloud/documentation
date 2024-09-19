@@ -16,7 +16,7 @@ User that is connected to room. Each participant has associated some metadata an
 
 ### Track
 
-Single video or audio streamed by paritcipant. It could be camera view, shared screen or microphone audio. Each
+Single video or audio streamed by participant. It could be camera view, shared screen or microphone audio. Each
 participant could stream few tracks.
 
 ### Management Token
