@@ -176,13 +176,13 @@ At any time you can terminate user's access by deleting the participant.
   </TabItem>
 </Tabs>
 
-### Listening to events
+## Listening to events
 
 Fishjam instance is a stateful server that is emitting messages upon certain events.  
 You can listen for those messages and react as you prefer.  
 There are two options to obtain these.
 
-#### Webhooks
+### Webhooks
 
 Simply pass the your webhook url as a `webhookUrl` parameter when creating a room.
 
@@ -216,7 +216,7 @@ Simply pass the your webhook url as a `webhookUrl` parameter when creating a roo
 
 </Tabs>
 
-#### SDK Notifier
+### SDK Notifier
 
 Our SDK's come equipped with a Notifier allowing you to subscribe for messages.
 It sets up a websocket connection with a Fishjam instance and provides a simple interface allowing you to handle messages.
