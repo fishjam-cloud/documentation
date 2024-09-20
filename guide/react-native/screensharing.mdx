@@ -148,3 +148,45 @@ Configuring screen sharing on iOS is a little complicated.
 
   </TabItem>
 </Tabs>
+
+## Usage
+
+You can use `useScreenShare` hook to enable screen sharing.
+
+First, you have to make sure that permissions are granted. To do that, you can call `handleScreencastPermission` method:
+
+```tsx
+import { useScreencast } from "@fishjam-cloud/react-native-client";
+
+function Component() {
+  const { handleScreencastPermission } = useScreencast();
+
+  useEffect(() => {
+    function checkPermissions() {
+      const result = await handleScreencastPermission();
+      if (result === "granted") {
+        // permissions are granted
+      }
+    }
+    checkPermissions();
+  }, []);
+
+  return <View />;
+}
+```
+
+Then, you can enable/disable screen sharing with `toggleScreencast` method. And check current state with `isScreencastOn` property.
+
+```tsx
+import { useScreencast } from "@fishjam-cloud/react-native-client";
+
+function ScreenShareButton() {
+  const { toggleScreencast, isScreencastOn } = useScreencast();
+
+  return (
+    <Button onPress={toggleScreencast}>
+      {isScreencastOn ? "Disable" : "Enable"} screen share
+    </Button>
+  );
+}
+```
