@@ -1,8 +1,8 @@
 {
-  "label": "Quick Setup - React",
+  "label": "React Integration",
   "position": 4,
   "link": {
     "type": "generated-index",
-    "description": "How to integrate Fishjam Cloud into your React mobile app."
+    "description": "How to integrate Fishjam Cloud into your React web app."
   }
 }
