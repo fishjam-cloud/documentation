@@ -13,7 +13,7 @@ Our SDK also allow to stream content of mobile device screen.
 
 ### Android
 
-On Android devices, screen share feture is available right after SDK is installed in app. No further actions are required.
+On Android devices, screen share feature is available right after SDK is installed in app. No further actions are required.
 
 ### iOS
 
@@ -72,7 +72,7 @@ Configuring screen sharing on iOS is a little complicated.
 1. A new folder with app extension should appear on the left with contents like this:
    ![New Folder](./assets/ios-new-folder.png)
 
-   Replace `SampleHandler.swift` with FishjamBroadcastHandler.swift` and this code:
+   Replace `SampleHandler.swift` with `FishjamBroadcastHandler.swift` and this code:
 
    ```swift
    import FishjamCloudClient
@@ -153,17 +153,17 @@ Configuring screen sharing on iOS is a little complicated.
 
 You can use `useScreenShare` hook to enable screen sharing.
 
-First, you have to make sure that permissions are granted. To do that, you can call `handleScreencastPermission` method:
+First, you have to make sure that permissions are granted. To do that, you can call `handleScreenSharePermission` method:
 
 ```tsx
-import { useScreencast } from "@fishjam-cloud/react-native-client";
+import { useScreenShare } from "@fishjam-cloud/react-native-client";
 
 function Component() {
-  const { handleScreencastPermission } = useScreencast();
+  const { handleScreenSharePermission } = useScreenShare();
 
   useEffect(() => {
     function checkPermissions() {
-      const result = await handleScreencastPermission();
+      const result = await handleScreenSharePermission();
       if (result === "granted") {
         // permissions are granted
       }
@@ -175,17 +175,17 @@ function Component() {
 }
 ```
 
-Then, you can enable/disable screen sharing with `toggleScreencast` method. And check current state with `isScreencastOn` property.
+Then, you can enable/disable screen sharing with `toggleScreenShare` method. And check current state with `isScreenShareOn` property.
 
 ```tsx
-import { useScreencast } from "@fishjam-cloud/react-native-client";
+import { useScreenShare } from "@fishjam-cloud/react-native-client";
 
 function ScreenShareButton() {
-  const { toggleScreencast, isScreencastOn } = useScreencast();
+  const { toggleScreenShare, isScreenShareOn } = useScreenShare();
 
   return (
-    <Button onPress={toggleScreencast}>
-      {isScreencastOn ? "Disable" : "Enable"} screen share
+    <Button onPress={toggleScreenShare}>
+      {isScreenShareOn ? "Disable" : "Enable"} screen share
     </Button>
   );
 }
