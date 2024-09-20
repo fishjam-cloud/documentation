@@ -1,0 +1,56 @@
+---
+sidebar_position: 6
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Streaming from background
+
+On Android, it is possible to continue streaming when app is in background. Unfortunatelly this functionality is not available on iOS (due to Apple limitations)
+
+Below is configuraiton required to make it work:
+
+<Tabs groupId="app-type">
+
+  <TabItem value="expo" label="Expo">
+
+You need to modify `app.json` file and add our plugin:
+
+```json
+{
+  "expo": {
+    ...
+    "plugins": {
+      ...
+      [
+        "@fishjam-cloud/react-native-client",
+        {
+          "android": {
+            "enableForegroundService": true
+          }
+        }
+      ],
+      ...
+    }
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+You need to modify `AndroidManifest.xml` file and add below service:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  ...
+  <application ...>
+    ...
+    <service android:name="io.fishjam.reactnative.FishjamForegroundService" android:foregroundServiceType="camera|microphone|mediaProjection"/>
+  </application>
+</manifest>
+```
+
+  </TabItem>
+</Tabs>
