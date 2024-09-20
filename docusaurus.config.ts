@@ -127,11 +127,11 @@ const config: Config = {
           items: [
             {
               label: "React Native",
-              to: "/guide/category/quick-setup---react-native",
+              to: "/guide/category/react-native-integration",
             },
             {
               label: "React",
-              to: "/guide/category/quick-setup---react",
+              to: "/guide/category/react-integration",
             },
             {
               label: "Backend",
