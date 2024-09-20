@@ -133,6 +133,10 @@ const config: Config = {
               label: "React",
               to: "/guide/category/quick-setup---react",
             },
+            {
+              label: "Backend",
+              to: "/guide/server",
+            },
           ],
         },
 
@@ -145,7 +149,7 @@ const config: Config = {
             },
             {
               label: "GitHub",
-              href: "https://github.com/",
+              href: "https://github.com/fishjam-cloud",
             },
             {
               label: "Software Mansion",
