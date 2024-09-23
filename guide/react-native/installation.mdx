@@ -7,55 +7,123 @@ import TabItem from "@theme/TabItem";
 
 # Installation
 
-If you don't have an existing project, you can create a new Expo app using a template:
+## Create new App
 
-<Tabs groupId="package-managers">
-  <TabItem value="npm" label="NPM">
-  
-    ```
-    npx create-expo-app@latest my-video-app
-    ```
+<details>
+  <summary>Follow these steps to create a new mobile app</summary>
 
-  </TabItem>
-  <TabItem value="yarn" label="YARN">
+If you don't have an existing project, you can create a new Expo app using a template
 
-    ```
-    yarn create expo-app my-video-app
-    ```
+```bash
+npx create-expo-app@latest my-video-app
+```
 
-  </TabItem>
-</Tabs>
+As the next step, you have to generate native files with `expo prepare` command:
 
-## Installation
+```bash
+npx expo prebuild
+```
 
-### Step 1: Install the package
+You can also follow more detailed [expo instructions](https://docs.expo.dev/get-started/introduction/).
+
+</details>
+
+## Step 1: Install the package
 
 Install `@fishjam-cloud/react-native-client` package:
 
-<Tabs groupId="package-managers">
+```bash npm2yarn
+npm install @fishjam-cloud/react-native-client
+```
 
-  <TabItem value="npm" label="NPM">
+## Step 2: Configure App permissions
 
-    ```
-    npm install @fishjam-cloud/react-native-client
-    ```
+Your app must have permissions configured to use the microphone and camera.
+
+### Android
+
+For android you need to ask for certain permissions:
+
+- `android.permission.CAMERA`
+- `android.permission.RECORD_AUDIO`
+- `android.permission.MODIFY_AUDIO_SETTINGS`
+
+<Tabs groupId="app-type">
+
+  <TabItem value="expo" label="Expo">
+
+You need to modify `app.json` file and add all permissions:
+
+```json
+{
+  "expo": {
+    ...
+    "android": {
+      ...
+      "permissions": {
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      }
+    }
+  }
+}
+```
 
   </TabItem>
-  <TabItem value="yarn" label="YARN">
+  <TabItem value="rn" label="Bare workflow">
 
-    ```
-    yarn add @fishjam-cloud/react-native-client
-    ```
+You need to modify AndroidManifest.xml file, and these lines:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  ...
+  <uses-permission android:name="android.permission.CAMERA"/>
+  <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTING"/>
+  ...
+</manifest>
+```
 
   </TabItem>
 </Tabs>
 
-### Step 2: Configure screen sharing
+### iOS
 
-If you plan to use Screen Sharing feature, there are few extra steps required to configure it.
+<Tabs groupId="app-type">
 
-:::warning missing docs
+  <TabItem value="expo" label="Expo">
 
-This part of docs will be updated
+You don't have to make any changes to run app on iOS.
+To update default content of permission alert, you can add these settings to `app.json`:
 
-:::
+```json
+{
+  "expo": {
+    ...
+   "ios": {
+      ...
+      "infoPlist": {
+        "NSCameraUsageDescription": "Your message.",
+        "NSMicrophoneUsageDescription": "Your message"
+      }
+    },
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+You need to make sure that `info.plist` contain these entries:
+
+```xml
+    <key>NSCameraUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your camera.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your microphone</string>
+
+```
+
+  </TabItem>
+</Tabs>
