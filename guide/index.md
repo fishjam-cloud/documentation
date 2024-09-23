@@ -56,8 +56,8 @@ function StartStreamingButton({ roomName, userName }) {
 
 ### Show other participants
 
-Fetching other participants of your room, can be done with `us` hook. And to display their video stream, you can use
-`VideoRendererView` component. Example code could look like this:
+Fetching other participants of your room, can be done with `useParticipants` hook. And to display their video stream,
+you can use `VideoRendererView` component. Example code could look like this:
 
 ```ts
 import { useParticipants, VideoRendererView } from '@fishjam-cloud/react-native-client';
