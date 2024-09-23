@@ -1,0 +1,192 @@
+---
+sidebar_position: 5
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Screen sharing
+
+Our SDK also allow to stream content of mobile device screen.
+
+## Installation
+
+### Android
+
+To enable screen sharing on android, you need enable foreground services. Here is [instruction on how to enable it](./background).
+
+### iOS
+
+To enable screen share feature on iOS, you need to follow below steps
+
+<Tabs groupId="app-type">
+
+  <TabItem value="expo" label="Expo">
+
+You need to modify `app.json` file and add our plugin:
+
+```json
+{
+  "expo": {
+    ...
+    "plugins": {
+      ...
+      [
+        "@fishjam-cloud/react-native-client",
+        {
+          "ios": {
+            "enableScreensharing": true
+          }
+        }
+      ],
+      ...
+    }
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+Configuring screen sharing on iOS is a little complicated.
+
+1. Add camera and microphone permissions to your main `Info.plist`.
+
+   ```xml
+   <key>NSCameraUsageDescription</key>
+   <string>Allow $(PRODUCT_NAME) to use the camera</string>
+   <key>NSMicrophoneUsageDescription</key>
+   <string>Allow $(PRODUCT_NAME) to use the microphone</string>
+   ```
+
+1. Open your `<your-project>.xcworkspace` in Xcode
+
+1. Create new Broadcast Upload Extension. Select `File → New → Target... → Broadcast Upload Extension → Next`. Choose the name for the new target, select Swift language and deselect "Include UI Extension".
+   ![New Target](./assets/ios-new-target.png)
+
+1. Configure app group. Go to "Signing & Capabilities" tab, click "+ Capability" button in upper left corner and select "App Groups".
+
+   ![New Group](./assets/ios-new-group.png)
+   Then in the "App Groups" add a new group or select existing. Usually group name has format `group.<your-bundle-identifier>`. Verify that both app and extension targets have app group and dev team set correctly.
+
+1. A new folder with app extension should appear on the left with contents like this:
+   ![New Folder](./assets/ios-new-folder.png)
+
+   Replace `SampleHandler.swift` with `FishjamBroadcastHandler.swift` and this code:
+
+   ```swift
+   import FishjamCloudClient
+   import Foundation
+   import ReplayKit
+   import WebRTC
+   import os.log
+
+   let appGroup = "group.{{BUNDLE_IDENTIFIER}}"
+
+   let logger = OSLog(subsystem: "{{BUNDLE_IDENTIFIER}}.FishjamBroadcastHandler", category: "Broadcaster")
+
+   class FishjamBroadcastSampleHandler: RPBroadcastSampleHandler {
+       let broadcastSource = BroadcastSampleSource(appGroup: appGroup)
+       var started: Bool = false
+
+       override func broadcastStarted(withSetupInfo _: [String: NSObject]?) {
+           started = broadcastSource.connect()
+
+           guard started else {
+               os_log("failed to connect with ipc server", log: logger, type: .debug)
+
+               super.finishBroadcastWithError(NSError(domain: "", code: 0, userInfo: nil))
+
+               return
+           }
+
+           broadcastSource.started()
+       }
+
+       override func broadcastPaused() {
+           broadcastSource.paused()
+       }
+
+       override func broadcastResumed() {
+           broadcastSource.resumed()
+       }
+
+       override func broadcastFinished() {
+           broadcastSource.finished()
+       }
+
+       override func processSampleBuffer(_ sampleBuffer: CMSampleBuffer, with sampleBufferType: RPSampleBufferType) {
+           guard started else {
+               return
+           }
+
+           broadcastSource.processFrame(sampleBuffer: sampleBuffer, ofType: sampleBufferType)
+       }
+   }
+   ```
+
+   Replace `{{BUNDLE_IDENTIFIER}}` with your bundle identifier.
+
+1. In project's Podfile add the following code:
+
+   ```rb
+   target 'FishjamScreenBroadcastExtension' do
+     pod 'FishjamCloudClient/Broadcast'
+   end
+   ```
+
+1. Add the following constants in your `Info.plist`:
+
+   ```xml
+   <key>AppGroupName</key>
+   <string>group.{{BUNDLE_IDENTIFIER}}</string>
+   <key>ScreencastExtensionBundleId</key>
+   <string>{{BUNDLE_IDENTIFIER}}.FishjamScreenBroadcastExtension</string>
+   ```
+
+1. Run `pod install`, rebuild your app and enjoy!
+
+  </TabItem>
+</Tabs>
+
+## Usage
+
+You can use `useScreenShare` hook to enable screen sharing.
+
+First, you have to make sure that permissions are granted. To do that, you can call `handleScreenSharePermission` method:
+
+```tsx
+import { useScreenShare } from "@fishjam-cloud/react-native-client";
+
+function Component() {
+  const { handleScreenSharePermission } = useScreenShare();
+
+  useEffect(() => {
+    function checkPermissions() {
+      const result = await handleScreenSharePermission();
+      if (result === "granted") {
+        // permissions are granted
+      }
+    }
+    checkPermissions();
+  }, []);
+
+  return <View />;
+}
+```
+
+Then, you can enable/disable screen sharing with `toggleScreenShare` method. And check current state with `isScreenShareOn` property.
+
+```tsx
+import { useScreenShare } from "@fishjam-cloud/react-native-client";
+
+function ScreenShareButton() {
+  const { toggleScreenShare, isScreenShareOn } = useScreenShare();
+
+  return (
+    <Button onPress={toggleScreenShare}>
+      {isScreenShareOn ? "Disable" : "Enable"} screen share
+    </Button>
+  );
+}
+```
