@@ -100,11 +100,15 @@ const config: Config = {
           items: [
             {
               label: "React Native",
-              to: "/guide/category/quick-setup---react-native",
+              to: "/guide/category/react-native-integration",
             },
             {
               label: "React",
-              to: "/guide/category/quick-setup---react",
+              to: "/guide/category/react-integration",
+            },
+            {
+              label: "Backend",
+              to: "/guide/server",
             },
           ],
         },
@@ -118,7 +122,7 @@ const config: Config = {
             },
             {
               label: "GitHub",
-              href: "https://github.com/",
+              href: "https://github.com/fishjam-cloud",
             },
             {
               label: "Software Mansion",

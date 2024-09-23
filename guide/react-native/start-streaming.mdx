@@ -16,17 +16,17 @@ enabled camera and microphone will start streaming to Room.
 
 ## Enable your camera
 
-First, you have to enable your camera by calling `startCamera` method.
+First, you have to enable your camera by calling `prepareCamera` method.
 You can open show camera preview with `VideoPreviewView` component
 
 ```ts
 import { useCamera, VideoPreviewView } from '@fishjam-cloud/react-native-client';
 
 function Component() {
-  const { startCamera } = useCamera();
+  const { prepareCamera } = useCamera();
 
   useEffect(() => {
-    startCamera({ enableCamera: true });
+    prepareCamera({ enableCamera: true });
   }, [])
 
   return <VideoPreviewView />
