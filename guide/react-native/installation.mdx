@@ -90,4 +90,40 @@ You need to modify AndroidManifest.xml file, and these lines:
 
 ### iOS
 
-On iOS you need `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` in `Info.plist`, otherwise the app will crash.
+<Tabs groupId="app-type">
+
+  <TabItem value="expo" label="Expo">
+
+You don't have to make any changes to run app on iOS.
+To update default content of permission alert, you can add these settings to `app.json`:
+
+```json
+{
+  "expo": {
+    ...
+   "ios": {
+      ...
+      "infoPlist": {
+        "NSCameraUsageDescription": "Your message.",
+        "NSMicrophoneUsageDescription": "Your message"
+      }
+    },
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+You need to make sure that `info.plist` contain these entries:
+
+```xml
+    <key>NSCameraUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your camera.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your microphone</string>
+
+```
+
+  </TabItem>
+</Tabs>
