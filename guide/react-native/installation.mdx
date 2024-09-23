@@ -10,7 +10,7 @@ import TabItem from "@theme/TabItem";
 ## Create new App
 
 <details>
-  <summary>Follow these steps to create new mobile app</summary>
+  <summary>Follow these steps to create a new mobile app</summary>
 
 If you don't have an existing project, you can create a new Expo app using a template
 
@@ -18,7 +18,7 @@ If you don't have an existing project, you can create a new Expo app using a tem
 npx create-expo-app@latest my-video-app
 ```
 
-As next step, you have to generate native files with `expo prepare` command:
+As the next step, you have to generate native files with `expo prepare` command:
 
 ```bash
 npx expo prebuild
@@ -38,7 +38,7 @@ npm install @fishjam-cloud/react-native-client
 
 ## Step 2: Configure App permissions
 
-Your app will need to have configured permissions to use microphone and camera in order to work.
+Your app must have permissions configured to use the microphone and camera.
 
 ### Android
 
@@ -90,4 +90,4 @@ You need to modify AndroidManifest.xml file, and these lines:
 
 ### iOS
 
-No action is required for iOS
+On iOS you need `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` in `Info.plist`, otherwise the app will crash.
