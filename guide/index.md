@@ -4,6 +4,8 @@ sidebar_position: 1
 
 # Quick Setup
 
+Integrate Fishjam Cloud into your React Native application.
+
 ### Install package
 
 ```bash npm2yarn
@@ -78,3 +80,7 @@ function Component() {
   );
 }
 ```
+
+### More
+
+Checkout our [full documentation](/guide/category/react-native-integration) for more details.
