@@ -129,3 +129,15 @@ You need to make sure that `info.plist` contain these entries:
 
   </TabItem>
 </Tabs>
+
+## Step 3: Request app permissions
+
+```tsx
+import { useCameraPermissions } from "expo-camera";
+
+const [permission, requestPermission] = useCameraPermissions();
+
+useEffect(() => {
+  requestPermission();
+}, []);
+```

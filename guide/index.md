@@ -38,7 +38,7 @@ Use your room manager URL to fetch peer token to get a new room:
 
 ```ts
 const response = await fetch(
-  `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/*roomName*/users/*username*`,
+  `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/*roomName*/users/*username*`
 );
 
 const { url, peerToken } = await response.json();
@@ -48,20 +48,31 @@ const { url, peerToken } = await response.json();
 
 :::danger
 
-If you want to use a device camera, you must first request permission. Keep in mind that this won't work on iOS Simulator.
+If you want to use the camera, you must first request permission.
 Check [this `guide`](./react-native/installation#step-2-configure-app-permissions) for more information.
 
+:::
+
+:::warning
+
+Keep in mind that this won't work on iOS Simulator.
 :::
 
 To start streaming, you have to prepare your camera and join the room:
 
 ```tsx
-function StartStreamingButton({ roomName, userName }) {
+function StartStreamingButton({
+  roomName,
+  userName,
+}: {
+  roomName: string;
+  userName: string;
+}) {
   const { prepareCamera } = useCamera();
 
   const startStreaming = useCallback(async () => {
     const response = await fetch(
-      `https://cloud.fishjam.work/api/v1/connect/*YOUR_ID*/room-manager/${roomName}/users/${userName}`,
+      `https://cloud.fishjam.work/api/v1/connect/*YOUR_ID*/room-manager/${roomName}/users/${userName}`
     );
     const { url, peerToken } = await response.json();
 
@@ -70,7 +81,7 @@ function StartStreamingButton({ roomName, userName }) {
     await joinRoom(url, peerToken);
   }, []);
 
-  return <Button title={"Start Streaming"} onPress={startStreaming} />;
+  return <Button title="Start Streaming" onPress={startStreaming} />;
 }
 ```
 
@@ -88,7 +99,7 @@ function TracksView() {
   const { peers } = usePeers();
 
   const videoTracks = peers.flatMap((peer) =>
-    peer.tracks.filter((track) => track.type === "Video" && track.isActive),
+    peer.tracks.filter((track) => track.type === "Video" && track.isActive)
   );
 
   return (
@@ -148,7 +159,7 @@ function TracksView() {
   const { peers } = usePeers();
 
   const videoTracks = peers.flatMap((peer) =>
-    peer.tracks.filter((track) => track.type === "Video" && track.isActive),
+    peer.tracks.filter((track) => track.type === "Video" && track.isActive)
   );
 
   return (
@@ -165,12 +176,18 @@ function TracksView() {
   );
 }
 
-function StartStreamingButton({ roomName, userName }) {
+function StartStreamingButton({
+  roomName,
+  userName,
+}: {
+  roomName: string;
+  userName: string;
+}) {
   const { prepareCamera } = useCamera();
 
   const startStreaming = useCallback(async () => {
     const response = await fetch(
-      `https://cloud.fishjam.work/api/v1/connect/*YOUR_ID*/room-manager/${roomName}/users/${userName}`,
+      `https://cloud.fishjam.work/api/v1/connect/*YOUR_ID*/room-manager/${roomName}/users/${userName}`
     );
     const { url, peerToken } = await response.json();
 
@@ -179,7 +196,7 @@ function StartStreamingButton({ roomName, userName }) {
     await joinRoom(url, peerToken);
   }, []);
 
-  return <Button title={"Start Streaming"} onPress={startStreaming} />;
+  return <Button title="Start Streaming" onPress={startStreaming} />;
 }
 
 export default function HomeScreen() {
