@@ -22,10 +22,19 @@ npm install @fishjam-cloud/react-native-client
 npx expo prebuild --clean
 ```
 
-### Fetch peer token
+### Get Room Manager URL
 
-Login to [Fishjam Cloud Dashboard](https://fishjam.io/app) and get your Room Manager URL. Next, use it to fetch
-peer token for new room:
+Login to [Fishjam Cloud Dashboard](https://fishjam.io/app) and get your Room Manager URL.
+
+## TLDR:
+
+Checkout [complete example below:](#full-example)
+
+## Step by step instructions:
+
+### 1. Fetch peer token
+
+Use your room manager URL to fetch peer token to get a new room:
 
 ```ts
 const response = await fetch(
@@ -35,7 +44,7 @@ const response = await fetch(
 const { url, peerToken } = await response.json();
 ```
 
-### Join Room and start streaming
+### 2. Join Room and start streaming
 
 :::danger
 
@@ -65,7 +74,7 @@ function StartStreamingButton({ roomName, userName }) {
 }
 ```
 
-### Show other peers
+### 3. Show other peers
 
 :::note
 In order to get peers, you must first join a room. See steps above.
