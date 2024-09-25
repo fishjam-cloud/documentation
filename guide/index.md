@@ -47,21 +47,19 @@ Check [this `guide`](./react-native/installation#step-2-configure-app-permission
 To start streaming, you have to prepare your camera and join the room:
 
 ```tsx
-import { joinRoom, useCamera } from "@fishjam-cloud/react-native-client";
-
 function StartStreamingButton({ roomName, userName }) {
   const { prepareCamera } = useCamera();
 
   const startStreaming = useCallback(async () => {
     const response = await fetch(
-      `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/*roomName*/users/*username*`,
+      `https://cloud.fishjam.work/api/v1/connect/*YOUR_ID*/room-manager/${roomName}/users/${userName}`,
     );
     const { url, peerToken } = await response.json();
 
     await prepareCamera({ cameraEnabled: true });
 
     await joinRoom(url, peerToken);
-  });
+  }, []);
 
   return <Button title={"Start Streaming"} onPress={startStreaming} />;
 }
@@ -77,12 +75,7 @@ Fetching other peers in your room can be done with `usePeers` hook. To display t
 you can use `VideoRendererView` component. Example code could look like this:
 
 ```tsx
-import {
-  usePeers,
-  VideoRendererView,
-} from "@fishjam-cloud/react-native-client";
-
-function Component() {
+function TracksView() {
   const { peers } = usePeers();
 
   const videoTracks = peers.flatMap((peer) =>
@@ -90,7 +83,7 @@ function Component() {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={styles.tracksContainer}>
       {videoTracks.map((track) => (
         <VideoRendererView
           style={styles.videoElement}
@@ -104,7 +97,106 @@ function Component() {
 }
 
 const styles = StyleSheet.create({
+  tracksContainer: {
+    flex: 1,
+    alignItems: "center",
+  },
+  videoElement: {
+    width: "85%",
+    aspectRatio: 1,
+    backgroundColor: "gray",
+    marginVertical: 16,
+  },
+});
+```
+
+### Full example
+
+Here is how it all could work together:
+
+:::info
+We are using expo-camera camera to request camera permissions. You can install and build it using following command:
+
+```bash
+npx expo install expo-camera && npx expo prebuild
+```
+
+:::
+
+```tsx
+import { useCallback, useEffect } from "react";
+import { Button, StyleSheet, View } from "react-native";
+import {
+  joinRoom,
+  useCamera,
+  usePeers,
+  VideoRendererView,
+} from "@fishjam-cloud/react-native-client";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useCameraPermissions } from "expo-camera";
+
+function TracksView() {
+  const { peers } = usePeers();
+
+  const videoTracks = peers.flatMap((peer) =>
+    peer.tracks.filter((track) => track.type === "Video" && track.isActive),
+  );
+
+  return (
+    <View style={styles.tracksContainer}>
+      {videoTracks.map((track) => (
+        <VideoRendererView
+          style={styles.videoElement}
+          key={track.id}
+          trackId={track.id}
+          videoLayout="FIT"
+        />
+      ))}
+    </View>
+  );
+}
+
+function StartStreamingButton({ roomName, userName }) {
+  const { prepareCamera } = useCamera();
+
+  const startStreaming = useCallback(async () => {
+    const response = await fetch(
+      `https://cloud.fishjam.work/api/v1/connect/*YOUR_ID*/room-manager/${roomName}/users/${userName}`,
+    );
+    const { url, token: peerToken } = await response.json();
+
+    await prepareCamera({ cameraEnabled: true });
+
+    await joinRoom(url, peerToken);
+  }, []);
+
+  return <Button title={"Start Streaming"} onPress={startStreaming} />;
+}
+
+export default function HomeScreen() {
+  const [permission, requestPermission] = useCameraPermissions();
+
+  useEffect(() => {
+    requestPermission();
+  }, []);
+
+  if (!permission) {
+    return <View />;
+  }
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <StartStreamingButton roomName={"*roomName*"} userName={"*username*"} />
+      <TracksView />
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  tracksContainer: {
     flex: 1,
     alignItems: "center",
   },
