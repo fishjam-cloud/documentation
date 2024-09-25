@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
 Here is how it all could work together:
 
 :::info
-We are using expo-camera camera to request camera permissions. You can install and build it using following command:
+We are using expo-camera to request camera permissions. You can install and build it using the following command:
 
 ```bash
 npx expo install expo-camera && npx expo prebuild
@@ -172,7 +172,7 @@ function StartStreamingButton({ roomName, userName }) {
     const response = await fetch(
       `https://cloud.fishjam.work/api/v1/connect/*YOUR_ID*/room-manager/${roomName}/users/${userName}`,
     );
-    const { url, token: peerToken } = await response.json();
+    const { url, peerToken } = await response.json();
 
     await prepareCamera({ cameraEnabled: true });
 
