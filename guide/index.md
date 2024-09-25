@@ -6,81 +6,113 @@ sidebar_position: 1
 
 Integrate Fishjam Cloud into your React Native application.
 
+:::info
+This guide assumes you're using Expo Bare Workflow
+:::
+
 ### Install package
 
 ```bash npm2yarn
 npm install @fishjam-cloud/react-native-client
 ```
 
-### Fetch participant token
+### Build native dependencies
 
-Login to [Fishjam Cloud Dashboard](https://fishjam.io/app) and get your Room Manager url. Next, use it to fetch
-participant token for new room:
+```bash
+npx expo prebuild --clean
+```
+
+### Fetch peer token
+
+Login to [Fishjam Cloud Dashboard](https://fishjam.io/app) and get your Room Manager URL. Next, use it to fetch
+peer token for new room:
 
 ```ts
 const response = await fetch(
-  `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?room=ROOM_NAME&user=USER_NAME`,
+  `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/*roomName*/users/*username*`
 );
 
-const { fishjamUrl, participantToken } = await response.json();
+const { url, peerToken } = await response.json();
 ```
 
 ### Join Room and start streaming
 
-To start streaming, you have to prepare your camera and join room:
+:::danger
 
-```ts
+If you want to use a device camera, you must first request permission. Keep in mind that this won't work on iOS Simulator.
+Check [this `guide`](./react-native/installation#step-2-configure-app-permissions) for more information.
+
+:::
+
+To start streaming, you have to prepare your camera and join the room:
+
+```tsx
 import { joinRoom, useCamera } from "@fishjam-cloud/react-native-client";
 
-
 function StartStreamingButton({ roomName, userName }) {
-
   const { prepareCamera } = useCamera();
-
 
   const startStreaming = useCallback(async () => {
     const response = await fetch(
-      `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?room=${roomName}&user=${userName}`
+      `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/*roomName*/users/*username*`
     );
-    const { fishjamUrl, participantToken } = await response.json();
+    const { url, peerToken } = await response.json();
 
-    await prepareCamera({ enableCamera: true });
+    await prepareCamera({ cameraEnabled: true });
 
-    await joinRoom(fishjamUrl, participantToken);
-
+    await joinRoom(url, peerToken);
   });
 
-  return <Button onPress={startStreaming}>Start Streaming</Button>
+  return <Button title={"Start Streaming"} onPress={startStreaming} />;
 }
 ```
 
-### Show other participants
+### Show other peers
 
-Fetching other participants of your room, can be done with `useParticipants` hook. And to display their video stream,
+Fetching other peers in your room can be done with `usePeers` hook. To display their video stream,
 you can use `VideoRendererView` component. Example code could look like this:
 
-```ts
-import { useParticipants, VideoRendererView } from '@fishjam-cloud/react-native-client';
+```tsx
+import {
+  usePeers,
+  VideoRendererView,
+} from "@fishjam-cloud/react-native-client";
 
 function Component() {
-  const { participants } = useParticipants();
+  const { peers } = usePeers();
 
-  const videoTracks = participants.flatMap((participant) =>
-    participant.tracks.filter(
-      (track) => track.type === 'Video' && track.isActive,
-    ),
+  const videoTracks = peers.flatMap((peer) =>
+    peer.tracks.filter((track) => track.type === "Video" && track.isActive)
   );
 
   return (
-    <View>
+    <View style={styles.container}>
       {videoTracks.map((track) => (
-        <VideoRendererView key={track.id} trackId={track.id} videoLayout="FIT" />
+        <VideoRendererView
+          style={styles.videoElement}
+          key={track.id}
+          trackId={track.id}
+          videoLayout="FIT"
+        />
       ))}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+  },
+  videoElement: {
+    width: "85%",
+    aspectRatio: 1,
+    backgroundColor: "gray",
+    marginVertical: 16,
+  },
+});
 ```
 
 ### More
 
-Checkout our [full documentation](/guide/category/react-native-integration) for more details.
+Check out our [full documentation](/guide/category/react-native-integration) for more details.
