@@ -20,7 +20,7 @@ If you don't have an existing project, you can create a new Expo app using a tem
 npx create-expo-app@latest my-video-app
 ```
 
-As the next step, you have to generate native files with `expo prepare` command:
+As the next step, you have to generate native files with `expo prebuild` command:
 
 ```bash
 npx expo prebuild
@@ -62,11 +62,11 @@ You need to modify `app.json` file and add all permissions:
     ...
     "android": {
       ...
-      "permissions": {
+      "permissions": [
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS"
-      }
+      ]
     }
   }
 }
@@ -129,3 +129,15 @@ You need to make sure that `info.plist` contain these entries:
 
   </TabItem>
 </Tabs>
+
+## Step 3: Request app permissions
+
+```tsx
+import { useCameraPermissions } from "expo-camera";
+
+const [permission, requestPermission] = useCameraPermissions();
+
+useEffect(() => {
+  requestPermission();
+}, []);
+```
