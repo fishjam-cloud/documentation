@@ -12,9 +12,9 @@ Let's get familiar with how to integrate our application with Fishjam Cloud.
 
 ### Room manager
 
-To get you prototyping as fast as possible, the sandbox project comes with a HTTP server called **Room Manager**.  
+To get you prototyping as fast as possible, the sandbox project comes with an HTTP server called **Room Manager**.  
 It allows you to start working on the Client App without having to setup an actual backend.  
-However, for production purposes, we recommend bringing your on backend and using our Server SDKs.
+However, for production purposes, we recommend bringing your own backend and using our Server SDKs.
 
 #### How do I use it?
 
@@ -49,15 +49,7 @@ https://fishjam.io/api/v1/connect/<YOUR_APP_UUID>/room-manager?roomName=foo&user
 Room Manager doesn't implement any participant authentication. Anyone
 using the same room name and user name will receive **the same Participant Token!**
 
-For production, make sure to **set up your own backend** using our Server SDKs and authenticate the client on your own!
-
-:::
-
-### How do I integrate my backend then?
-
-:::warning[LINKS UNDER CONSTRUCTION]
-
-Follow the links to see how to setup our SDK in **Python** or **NodeJS**.
+For production, make sure to [**set up your own backend**](../server.mdx) using our Server SDKs and authenticate the client on your own!
 
 :::
 
