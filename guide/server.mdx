@@ -93,7 +93,7 @@ They are required to proceed. Now, we are ready to dive into the code.
 
 ### Managing rooms
 
-Create a room to get the `roomId` and be able to start adding participants.
+Create a room to get the `roomId` and be able to start adding peers.
 
 <Tabs groupId="language">
   <TabItem value="ts" label="Typescript">
@@ -139,18 +139,18 @@ Create a room to get the `roomId` and be able to start adding participants.
   </TabItem>
 </Tabs>
 
-### Managing participants
+### Managing peers
 
-Create a participant to obtain the participant token allowing your user to join the room.
-At any time you can terminate user's access by deleting the participant.
+Create a peer to obtain the peer token allowing your user to join the room.
+At any time you can terminate user's access by deleting the peer.
 
 <Tabs groupId="language">
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    const { participant, participantToken } = await fishjamClient.createParticipant(roomId);
+    const { peer, peerToken } = await fishjamClient.createPeer(roomId);
 
-    await fishjamClient.deleteParticipant(roomId, participant.id);
+    await fishjamClient.deletePeer(roomId, peer.id);
     ```
 
   </TabItem>

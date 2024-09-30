@@ -28,13 +28,13 @@ const response = await fetch(
   `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager?room=*ROOM_NAME&user=*USER_NAME*`,
 );
 
-const { fishjamUrl, participantToken } = await response.json();
+const { fishjamUrl, peerToken } = await response.json();
 ```
 
   </TabItem>
   <TabItem value="production" label="Production App">
 
-For production app, you need to implement your own backend service that will provide user with `participantToken`.
+For production app, you need to implement your own backend service that will provide user with `peerToken`.
 To do that, follow our [server setup instructions](/guide/server).
 
   </TabItem>
@@ -47,7 +47,7 @@ In order to connect, you just need to call `joinRoom` method with data from prev
 ```ts
 import { joinRoom } from "@fishjam-cloud/react-native-client";
 
-await joinRoom(fishjamUrl, participantToken);
+await joinRoom(fishjamUrl, peerToken);
 ```
 
 ## Disconnecting
