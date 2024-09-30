@@ -7,6 +7,8 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
+      - name: Use corepack
+        run: corepack enable
       - name: Install node dependencies
         run: yarn
       - name: Spellcheck
