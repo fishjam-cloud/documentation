@@ -45,7 +45,7 @@ https://fishjam.io/api/v1/connect/<YOUR_APP_UUID>/room-manager?roomName=foo&user
 }
 ```
 
-:::danger[ROOM MANAGER IS NOT SAFE FOR PRODUCTION]
+:::danger[Room Manager is not safe for production]
 
 Room Manager doesn't implement any peer authentication. Anyone using the same room name and user name will receive **the
 same Peer Token!**
@@ -56,7 +56,7 @@ For production, make sure to **set up your own backend** using our Server SDKs a
 
 ### How do I integrate my backend then?
 
-:::warning[LINKS UNDER CONSTRUCTION]
+:::warning[Links under construction]
 
 Follow the links to see how to setup our SDK in **Python** or **NodeJS**.
 

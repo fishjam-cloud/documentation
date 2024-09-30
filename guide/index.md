@@ -6,7 +6,11 @@ sidebar_position: 1
 
 Integrate Fishjam Cloud into your React Native application.
 
-:::info This guide assumes you're using Expo Bare Workflow :::
+:::info
+
+This guide assumes you're using Expo Bare Workflow
+
+:::
 
 ### Install package
 
@@ -44,16 +48,18 @@ const { url, peerToken } = await response.json();
 
 ### 2. Join Room and start streaming
 
-:::danger
+:::warning
 
 If you want to use the camera, you must first request permission. Check
-[this `guide`](./react-native/installation#step-2-configure-app-permissions) for more information.
+[permission guide](./react-native/installation#step-2-configure-app-permissions) for more information.
 
 :::
 
 :::warning
 
-Keep in mind that this won't work on iOS Simulator. :::
+Keep in mind that this won't work on iOS Simulator, as Simulator can't access camera.
+
+:::
 
 To start streaming, you have to prepare your camera and join the room:
 
@@ -78,7 +84,11 @@ function StartStreamingButton({ roomName, userName }: { roomName: string; userNa
 
 ### 3. Show other peers
 
-:::note In order to get peers, you must first join a room. See steps above. :::
+:::note
+
+In order to get peers, you must first join a room. See steps above.
+
+:::
 
 Fetching other peers in your room can be done with `usePeers` hook. To display their video stream, you can use
 `VideoRendererView` component. Example code could look like this:
@@ -116,7 +126,10 @@ const styles = StyleSheet.create({
 
 Here is how it all could work together:
 
-:::info We are using expo-camera to request camera permissions. You can install and build it using the following
+:::info
+
+We are using expo-camera to request camera permissions. You can install and build it using the following
+
 command:
 
 ```bash
