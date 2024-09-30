@@ -49,7 +49,7 @@ https://fishjam.io/api/v1/connect/<YOUR_APP_UUID>/room-manager?roomName=foo&user
 Room Manager doesn't implement any participant authentication. Anyone
 using the same room name and user name will receive **the same Participant Token!**
 
-For production, make sure to [**set up your own backend**](../server.mdx) using our Server SDKs and authenticate the client on your own!
+For production environment, make sure to [set up your own backend](../server.mdx) using our Server SDKs and authenticate the client on your own.
 
 :::
 
