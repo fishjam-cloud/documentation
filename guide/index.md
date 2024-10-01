@@ -57,7 +57,7 @@ If you want to use the camera, you must first request permission. Check
 
 :::warning
 
-Keep in mind that this won't work on iOS Simulator, as Simulator can't access camera.
+Keep in mind that this won't work on iOS Simulator, as Simulator can't access the camera.
 
 :::
 
@@ -69,7 +69,7 @@ function StartStreamingButton({ roomName, userName }: { roomName: string; userNa
 
   const startStreaming = useCallback(async () => {
     const response = await fetch(
-      `https://cloud.fishjam.work/api/v1/connect/*YOUR_ID*/room-manager/${roomName}/users/${userName}`
+      `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?roomName=*roomName*&peerName=*username*`
     );
     const { url, peerToken } = await response.json();
 
@@ -164,7 +164,7 @@ function StartStreamingButton({ roomName, userName }: { roomName: string; userNa
 
   const startStreaming = useCallback(async () => {
     const response = await fetch(
-      `https://cloud.fishjam.work/api/v1/connect/*YOUR_ID*/room-manager?roomName=${roomName}&peerName=${userName}`
+      `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager?roomName=${roomName}&peerName=${userName}`
     );
     const { url, peerToken } = await response.json();
 
