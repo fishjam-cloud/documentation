@@ -33,6 +33,8 @@ jobs:
       # 👇 Build steps
       - name: Set up Node.js
         uses: actions/setup-node@v4
+      - name: Use corepack
+        run: corepack enable
       - name: Install dependencies
         run: yarn install --frozen-lockfile --non-interactive
       - name: Build
