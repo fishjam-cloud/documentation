@@ -28,11 +28,11 @@ npx expo prebuild --clean
 
 Login to [Fishjam Cloud Dashboard](https://fishjam.io/app) and get your Room Manager URL.
 
-## TLDR:
+## TLDR
 
 Checkout [complete example below:](#full-example)
 
-## Step by step instructions:
+## Step by step instructions
 
 ### 1. Fetch peer token
 
