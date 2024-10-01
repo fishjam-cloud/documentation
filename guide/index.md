@@ -26,11 +26,11 @@ npx expo prebuild --clean
 
 Login to [Fishjam Cloud Dashboard](https://fishjam.io/app) and get your Room Manager URL.
 
-## TLDR:
+## TLDR
 
 Checkout [complete example below:](#full-example)
 
-## Step by step instructions:
+## Step by step instructions
 
 ### 1. Fetch peer token
 
@@ -49,7 +49,7 @@ const { url, peerToken } = await response.json();
 :::danger
 
 If you want to use the camera, you must first request permission.
-Check [this `guide`](./react-native/installation#step-2-configure-app-permissions) for more information.
+Check [this `guide`](/guide/react-native/installation#step-2-configure-app-permissions) for more information.
 
 :::
 
