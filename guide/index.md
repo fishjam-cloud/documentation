@@ -40,7 +40,7 @@ Use your room manager URL to fetch peer token to get a new room:
 
 ```ts
 const response = await fetch(
-  `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?roomName=*roomName*&peerName=*username*`
+  `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?roomName=*roomName*&peerName=*username*`,
 );
 
 const { url, peerToken } = await response.json();
@@ -64,12 +64,18 @@ Keep in mind that this won't work on iOS Simulator, as Simulator can't access th
 To start streaming, you have to prepare your camera and join the room:
 
 ```tsx
-function StartStreamingButton({ roomName, userName }: { roomName: string; userName: string }) {
+function StartStreamingButton({
+  roomName,
+  userName,
+}: {
+  roomName: string;
+  userName: string;
+}) {
   const { prepareCamera } = useCamera();
 
   const startStreaming = useCallback(async () => {
     const response = await fetch(
-      `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?roomName=*roomName*&peerName=*username*`
+      `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?roomName=*roomName*&peerName=*username*`,
     );
     const { url, peerToken } = await response.json();
 
@@ -97,12 +103,19 @@ Fetching other peers in your room can be done with `usePeers` hook. To display t
 function TracksView() {
   const { peers } = usePeers();
 
-  const videoTracks = peers.flatMap((peer) => peer.tracks.filter((track) => track.type === "Video" && track.isActive));
+  const videoTracks = peers.flatMap((peer) =>
+    peer.tracks.filter((track) => track.type === "Video" && track.isActive),
+  );
 
   return (
     <View style={styles.tracksContainer}>
       {videoTracks.map((track) => (
-        <VideoRendererView style={styles.videoElement} key={track.id} trackId={track.id} videoLayout="FIT" />
+        <VideoRendererView
+          style={styles.videoElement}
+          key={track.id}
+          trackId={track.id}
+          videoLayout="FIT"
+        />
       ))}
     </View>
   );
@@ -141,30 +154,48 @@ npx expo install expo-camera && npx expo prebuild
 ```tsx
 import { useCallback, useEffect } from "react";
 import { Button, StyleSheet, View } from "react-native";
-import { joinRoom, useCamera, usePeers, VideoRendererView } from "@fishjam-cloud/react-native-client";
+import {
+  joinRoom,
+  useCamera,
+  usePeers,
+  VideoRendererView,
+} from "@fishjam-cloud/react-native-client";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useCameraPermissions } from "expo-camera";
 
 function TracksView() {
   const { peers } = usePeers();
 
-  const videoTracks = peers.flatMap((peer) => peer.tracks.filter((track) => track.type === "Video" && track.isActive));
+  const videoTracks = peers.flatMap((peer) =>
+    peer.tracks.filter((track) => track.type === "Video" && track.isActive),
+  );
 
   return (
     <View style={styles.tracksContainer}>
       {videoTracks.map((track) => (
-        <VideoRendererView style={styles.videoElement} key={track.id} trackId={track.id} videoLayout="FIT" />
+        <VideoRendererView
+          style={styles.videoElement}
+          key={track.id}
+          trackId={track.id}
+          videoLayout="FIT"
+        />
       ))}
     </View>
   );
 }
 
-function StartStreamingButton({ roomName, userName }: { roomName: string; userName: string }) {
+function StartStreamingButton({
+  roomName,
+  userName,
+}: {
+  roomName: string;
+  userName: string;
+}) {
   const { prepareCamera } = useCamera();
 
   const startStreaming = useCallback(async () => {
     const response = await fetch(
-      `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager?roomName=${roomName}&peerName=${userName}`
+      `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager?roomName=${roomName}&peerName=${userName}`,
     );
     const { url, peerToken } = await response.json();
 
