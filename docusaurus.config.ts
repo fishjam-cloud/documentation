@@ -92,15 +92,15 @@ const config: Config = {
           items: [
             {
               label: "React Native",
-              to: "/guide/category/react-native-integration",
+              to: "/category/react-native-integration",
             },
             {
               label: "React",
-              to: "/guide/category/react-integration",
+              to: "/category/react-integration",
             },
             {
               label: "Backend",
-              to: "/guide/server",
+              to: "/server",
             },
           ],
         },
