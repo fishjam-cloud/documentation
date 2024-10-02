@@ -1,6 +1,6 @@
 # Fishjam Cloud Documentation
 
-You can access generated documentation here: https://fishjam-cloud.github.io/documentation/
+You can access generated documentation here: https://docs.fishjam.io/
 
 ### What is inside?
 
