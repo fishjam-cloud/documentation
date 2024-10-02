@@ -92,11 +92,11 @@ function StartStreamingButton({
 
 :::note
 
-In order to get peers, you must first join a room. See steps above.
+In order to get peers, you must first join a room. See the steps above.
 
 :::
 
-Fetching other peers in your room can be done with `usePeers` hook. To display their video stream, you can use
+Fetching other peers in your room can be done with the `usePeers` hook. To display their video stream, you can use the
 `VideoRendererView` component. Example code could look like this:
 
 ```tsx
