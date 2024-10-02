@@ -18,14 +18,13 @@ For production environment, make sure to [set up your own backend](../server.mdx
 :::
 
 ## Why should I use it?
+
 If you're a frontend developer and you want to quickly test your app, you can use the Room Manager to create a room and access it.
 This way you can start building your app without having to deploy any server side logic.
-
 
 :::note
 When moving to production, the only change you will need to make is to retrieve the **peer token from your backend** instead of the room manager.
 :::
-
 
 :::tip
 
@@ -35,12 +34,13 @@ It can be used as a reference for building your backend.
 
 :::
 
-
 ## How do I use it?
 
 Simply take the Fishjam instance url of your `sandbox` app, which should look like `https://fishjam.io/api/v1/connect/***`, append a
 `/room-manager` path and use `roomName` and `peerName` query params to build an url for the GET request.
+
 #### Example GET request url
+
 ```
 https://fishjam.io/api/v1/connect/<YOUR_APP_UUID>/room-manager?roomName=foo&peerName=bar
 ```
