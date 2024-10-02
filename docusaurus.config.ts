@@ -100,7 +100,7 @@ const config: Config = {
             },
             {
               label: "Backend",
-              to: "/server",
+              to: "/production/server",
             },
           ],
         },
