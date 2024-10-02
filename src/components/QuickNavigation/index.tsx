@@ -2,26 +2,14 @@ import Link from "@docusaurus/Link";
 import Heading from "@theme/Heading";
 import styles from "./index.module.css";
 import clsx from "clsx";
+import { CardItem } from "@site/types";
 
-const items = [
-  { title: "Introduction", href: "/guide/introduction", icon: "👋" },
-  { title: "Glossary", href: "/guide/glossary", icon: "📜" },
-  {
-    title: "Quick setup with React Native",
-    href: "/guide/react-native/quick-setup",
-    icon: "📱",
-  },
-  {
-    title: "Quick setup with React",
-    href: "/guide/react/installation",
-    icon: "💻",
-  },
-];
 
-export default function QuickNavigation() {
+
+export default function QuickNavigation(props: { items: CardItem[] }) {
   return (
     <section className="row">
-      {items.map((item, index) => (
+      {props.items.map((item, index) => (
         <article key={index} className="col col--6 margin-bottom--lg">
           <Link
             className={clsx("card padding--lg", styles.cardContainer)}
