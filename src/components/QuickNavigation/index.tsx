@@ -4,8 +4,6 @@ import styles from "./index.module.css";
 import clsx from "clsx";
 import { CardItem } from "@site/types";
 
-
-
 export default function QuickNavigation(props: { items: CardItem[] }) {
   return (
     <section className="row">

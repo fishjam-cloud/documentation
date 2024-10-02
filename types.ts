@@ -1,5 +1,5 @@
 export type CardItem = {
-    title: string;
-    icon: string;
-    href: string;
+  title: string;
+  icon: string;
+  href: string;
 };
