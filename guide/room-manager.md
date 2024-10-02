@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 4
 ---
 
 # Room Manager
@@ -13,7 +13,7 @@ However, for production purposes, you need to bring own backend using our Server
 Room Manager doesn't implement any form of authentication.
 Anyone using the same room name and user name will receive **the same Peer Token!**
 
-For production environment, make sure to [set up your own backend](../server.mdx) using our Server SDKs and authenticate the client on your own.
+For production environment, make sure to [set up your own backend](/guide/production/server.mdx) using our Server SDKs and authenticate the client on your own.
 
 :::
 

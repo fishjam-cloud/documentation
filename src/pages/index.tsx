@@ -17,8 +17,8 @@ function HomepageHeader() {
         </Heading>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.buttons}>
-          <Link className="button button--secondary button--lg" to="/guide">
-            Setup React Native App - 5min ⏱️
+          <Link className="button button--primary button--lg" to="/guide">
+            What is Fishjam Cloud? 🐟
           </Link>
         </div>
       </div>

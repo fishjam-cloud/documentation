@@ -1,8 +1,8 @@
 ---
-sidebar_position: 2
+sidebar_position: 8
 ---
 
-# Terms
+# Glossary
 
 Terms used in our documentation
 
