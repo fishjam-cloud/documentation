@@ -31,8 +31,10 @@ You can access it at [room.fishjam.io](https://room.fishjam.io/) - just pick a r
 
 Yes! You can find examples in our GitHub repositories that you can run locally. Examples are usually available under the `examples` directory in the relevant repository.
 
-- [Fishjam Chat](https://github.com/fishjam-cloud/web-client-sdk/tree/main/examples/react-client/fishjam-chat) - Web client SDK - simple videoconferencing app
-- [Videoroom](https://github.com/fishjam-cloud/fishjam-videoroom) - Web client SDK - a more advanced video conferencing example
+The easiest starting point for both web and mobile is Fishjam Chat. It is a simple chat application that uses Fishjam Cloud for video and audio streaming. You can find the code here:
+
+- [Fishjam Chat React Native](https://github.com/fishjam-cloud/mobile-client-sdk/tree/main/examples/fishjam-chat)
+- [Fishjam Chat React](https://github.com/fishjam-cloud/js-server-sdk/tree/main/examples/room-manager)
 
 ## What does Fishjam Cloud consist of?
 
@@ -42,11 +44,13 @@ Below is a list of components that you will need to get started:
 | Component | Description | Link |
 | --- | --- | --- |
 | Developer panel | Developer panel for setting up your own Fishjam Media Server. | [fishjam.io/app](https://fishjam.io/app) |
-| Fishjam Media Server | A media server that will route your multimedia traffic. | — |
+| Fishjam Media Server | A media server that will route your multimedia traffic. We host and manage it for you. You can control it via the developer panel. | — |
 | Fishjam Client SDKs | Toolkit used for multimedia integration on endpoint devices. | [React Native](/guide/react-native/quick-setup.md), [React](/guide/react/installation.mdx) |
 | Fishjam Server SDKs | Toolkit for integrating your backend with Fishjam. We support Python and NodeJS as well as REST API. | [Python, NodeJS, and REST](/guide/production/server.mdx) |
 | Room Manager | Simple backend for creating test rooms. You no longer need to bring your own backend to develop frontend apps. | [Repository](<https://github.com/fishjam-cloud/js-server-sdk/tree/main/examples/room-manager>) |
 
 ## How does it work?
+
+Streaming with Fishjam Cloud is simple. You create a room, add peers to it, and start streaming. Below is a high-level overview of how Fishjam Cloud works.
 
 ![Fishjam Cloud Data Flow](@site/static/img/architecture.svg)
