@@ -34,9 +34,9 @@ const config: Config = {
       "classic",
       {
         docs: {
-          sidebarPath: "./sidebars/guide.ts",
-          path: "guide",
-          routeBasePath: "guide",
+          sidebarPath: "./sidebars/docs.ts",
+          path: "docs",
+          routeBasePath: "/",
           editUrl: "https://github.com/fishjam-cloud/documentation/",
           remarkPlugins: [
             [require("@docusaurus/remark-plugin-npm2yarn"), { sync: true }],
@@ -60,8 +60,6 @@ const config: Config = {
     ],
   ],
 
-  plugins: [],
-
   themeConfig: {
     image: "img/social-card.png",
     colorMode: {
@@ -75,13 +73,6 @@ const config: Config = {
         src: "img/logo.svg",
       },
       items: [
-        {
-          to: "/guide",
-          label: "Guide",
-          position: "left",
-          sidebarId: "guideSidebar",
-        },
-
         {
           href: "https://fishjam.io/app/",
           label: "Fishjam Dashboard",
