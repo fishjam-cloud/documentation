@@ -2,20 +2,20 @@
 sidebar_position: 4
 ---
 
-# List other participants
+# List other peers
 
-In order see other streaming participants, you can use `useParticipants`. It will return all
-other participants, together with track that they are streaming.
+In order to see other streaming peers, you can use `usePeers`. It will return all  
+other peers, together with the tracks that they are streaming.
 
 ### Example code that show all videos
 
 ```ts
-import { useParticipants, VideoRendererView } from '@fishjam-cloud/react-native-client';
+import { usePeers, VideoRendererView } from '@fishjam-cloud/react-native-client';
 
 function Component() {
-  const { participants } = useParticipants();
-  const videoTracks = participants.flatMap((participant) =>
-    participant.tracks.filter(
+  const { peers } = usePeers();
+  const videoTracks = peers.flatMap((peer) =>
+    peer.tracks.filter(
       (track) => track.type === 'Video' && track.isActive,
     ),
   );

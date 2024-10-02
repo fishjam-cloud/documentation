@@ -7,7 +7,9 @@ sidebar_position: 1
 Integrate Fishjam Cloud into your React Native application.
 
 :::info
+
 This guide assumes you're using Expo Bare Workflow
+
 :::
 
 ### Install package
@@ -38,7 +40,7 @@ Use your room manager URL to fetch peer token to get a new room:
 
 ```ts
 const response = await fetch(
-  `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?roomName=*roomName*&participantName=*username*`,
+  `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?roomName=*roomName*&peerName=*username*`,
 );
 
 const { url, peerToken } = await response.json();
@@ -46,16 +48,17 @@ const { url, peerToken } = await response.json();
 
 ### 2. Join Room and start streaming
 
-:::danger
+:::warning
 
-If you want to use the camera, you must first request permission.
-Check [this `guide`](/guide/react-native/installation#step-2-configure-app-permissions) for more information.
+If you want to use the camera, you must first request permission. Check
+[permission guide](/guide/react-native/installation#step-2-configure-app-permissions) for more information.
 
 :::
 
 :::warning
 
-Keep in mind that this won't work on iOS Simulator.
+Keep in mind that this won't work on iOS Simulator, as Simulator can't access the camera.
+
 :::
 
 To start streaming, you have to prepare your camera and join the room:
@@ -72,7 +75,7 @@ function StartStreamingButton({
 
   const startStreaming = useCallback(async () => {
     const response = await fetch(
-      `https://cloud.fishjam.work/api/v1/connect/*YOUR_ID*/room-manager/${roomName}/users/${userName}`,
+      `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?roomName=*roomName*&peerName=*username*`,
     );
     const { url, peerToken } = await response.json();
 
@@ -88,11 +91,13 @@ function StartStreamingButton({
 ### 3. Show other peers
 
 :::note
-In order to get peers, you must first join a room. See steps above.
+
+In order to get peers, you must first join a room. See the steps above.
+
 :::
 
-Fetching other peers in your room can be done with `usePeers` hook. To display their video stream,
-you can use `VideoRendererView` component. Example code could look like this:
+Fetching other peers in your room can be done with the `usePeers` hook. To display their video stream, you can use the
+`VideoRendererView` component. Example code could look like this:
 
 ```tsx
 function TracksView() {
@@ -135,7 +140,10 @@ const styles = StyleSheet.create({
 Here is how it all could work together:
 
 :::info
-We are using expo-camera to request camera permissions. You can install and build it using the following command:
+
+We are using expo-camera to request camera permissions. You can install and build it using the following
+
+command:
 
 ```bash
 npx expo install expo-camera && npx expo prebuild
@@ -187,7 +195,7 @@ function StartStreamingButton({
 
   const startStreaming = useCallback(async () => {
     const response = await fetch(
-      `https://cloud.fishjam.work/api/v1/connect/*YOUR_ID*/room-manager?roomName=${roomName}&peerName=${userName}`,
+      `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager?roomName=${roomName}&peerName=${userName}`,
     );
     const { url, peerToken } = await response.json();
 

@@ -6,21 +6,21 @@ sidebar_position: 2
 
 ## Prerequisites
 
-In order to connect, you need a `PARTICIPANT_TOKEN` and the `FISHJAM_URL`.
+In order to connect, you need a `PEER_TOKEN` and the `FISHJAM_URL`.
 
 ## Connecting
 
 Use the `useConnect` hook to get the `connect` function.
 
 ```ts
-import { connect } from "@fishjam-cloud/react-native-client";
+import { connect } from "@fishjam-cloud/react-client";
 
 function Component() {
   const connect = useConnect();
 
   const joinRoom = async () => {
     await connect({
-      token: PARTICIPANT_TOKEN,
+      token: PEER_TOKEN,
       url: FISHJAM_URL,
     });
   };

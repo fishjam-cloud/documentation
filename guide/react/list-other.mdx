@@ -2,26 +2,26 @@
 sidebar_position: 4
 ---
 
-# Display other participants' media
+# Display other peers media
 
-To access data and media of other participants, use the `useParticipants` hook.  
-It returns two properties, `participants` and `localParticipant`.  
-They contain all tracks of other participants and all tracks of the local user, respectively.
+To access data and media of other peers, use the `usePeers` hook.  
+It returns two properties, `peers` and `localPeer`.  
+They contain all the tracks of other peers and all the tracks of the local user, respectively.
 
 ### Example of playing all available media
 
 ```tsx
 import React from "react";
-import { useParticipants } from "@fishjam-cloud/react-client";
+import { usePeers } from "@fishjam-cloud/react-client";
 
 function Component() {
-  const { localParticipant, participants } = useParticipants();
+  const { localPeer, peers } = usePeers();
 
-  const allParticipants = [localParticipant, ...participants];
+  const allPeers = [localPeer, ...peers];
 
   return (
       <ul>
-        {allParticipants.flatMap((p) => {
+        {allPeers.flatMap((p) => {
           const videoTracks = [...p.videoTracks, ...p.screenshareVideoTracks];
           const audioTracks = [...p.audioTracks, ...p.screenshareAudioTracks];
 

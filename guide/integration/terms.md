@@ -8,31 +8,32 @@ Terms used in our documentation
 
 ### Room
 
-Collection of participants that could see all videos streamed by other participants
+Collection of peers that can send and receive video/audio to and from other peers
 
-### Participant
+### Peer
 
-User that is connected to room. Each participant has associated some metadata and tracks.
+User that is connected to a room. Each peer has some associated metadata and tracks.
 
 ### Track
 
-Single video or audio streamed by participant. It could be camera view, shared screen or microphone audio. Each
-participant could stream few tracks.
+Single stream of video or audio of a peer. It could be a camera view, shared screen or microphone audio. Each peer can  
+stream multiple tracks.
 
 ### Management Token
 
-Secret token that should be stored on your backend. It allows to create rooms and add participants.
+Secret token that should be stored on your backend. It allows to create rooms and add peers.
 
-### Participant Token
+### Peer Token
 
-Token that your backend should pass to end client as authentication method for user to access room.
+Token that your backend should pass to end clients to allow access to a specific room.
 
 ### Fishjam URL
 
-URL to your Fishjam instance. It is used by server to adds participant to room (and create rooms). And also it is used
-by client apps to join room.
+URL to your Fishjam instance. It is used by your backend server to add peers to rooms (and create rooms). It is also
+used by  
+end client apps to join rooms.
 
-### Room manager
+### Room Manager
 
 Our test app available **only** on Sandbox environment. It allows to test Fishjam Cloud without need to add create rooms
 functionality on your backend.
