@@ -21,14 +21,14 @@ npm install @fishjam-cloud/react-native-client
 ### Build native dependencies
 
 ```bash
-npx expo prebuild --clean
+npx expo prebuild
 ```
 
 ### Get Room Manager URL
 
 Login to [Fishjam Cloud Dashboard](https://fishjam.io/app) and get your Room Manager URL.
 
-## TLDR
+## TL;DR;
 
 Checkout [complete example below:](#full-example)
 
@@ -88,7 +88,15 @@ function StartStreamingButton({
 }
 ```
 
-### 3. Show other peers
+### 3. Check if you are connected
+
+Once you are connected, you can check connection status with `usePeerStatus` hook
+
+```ts
+const { peerStatus } = usePeerStatus();
+```
+
+### 4. Show other peers
 
 :::note
 
@@ -135,15 +143,14 @@ const styles = StyleSheet.create({
 });
 ```
 
-### Full example
+## Full example
 
 Here is how it all could work together:
 
 :::info
 
-We are using expo-camera to request camera permissions. You can install and build it using the following
-
-command:
+We are using `expo-camera` to request camera permissions in example app. You can install and build it using the
+following command:
 
 ```bash
 npx expo install expo-camera && npx expo prebuild
@@ -165,6 +172,7 @@ import { useCameraPermissions } from "expo-camera";
 
 function TracksView() {
   const { peers } = usePeers();
+  const { peerStatus } = usePeerStatus();
 
   const videoTracks = peers.flatMap((peer) =>
     peer.tracks.filter((track) => track.type === "Video" && track.isActive),
@@ -209,6 +217,7 @@ function StartStreamingButton({
 
 export default function HomeScreen() {
   const [permission, requestPermission] = useCameraPermissions();
+  const { peerStatus } = usePeerStatus();
 
   useEffect(() => {
     requestPermission();
@@ -220,7 +229,9 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StartStreamingButton roomName={"*roomName*"} userName={"*username*"} />
+      {peerStatus !== "connected" && (
+        <StartStreamingButton roomName="*roomName*" userName="*username*" />
+      )}
       <TracksView />
     </SafeAreaView>
   );
