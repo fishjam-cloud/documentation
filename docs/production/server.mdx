@@ -70,12 +70,12 @@ They are required to proceed. Now, we are ready to dive into the code.
 
     ```python
     import os
-    from fishjam import RoomApi
+    from fishjam import FishjamClient
 
     fishjam_url = os.environ["FISHJAM_URL"]
     management_token = os.environ["FISHJAM_MANAGEMENT_TOKEN"]
 
-    fishjam_client = RoomApi(server_address="localhost:5002", server_api_token="development")
+    fishjam_client = FishjamClient(fishjam_url, management_token)
     ```
 
   </TabItem>
@@ -113,11 +113,11 @@ Create a room to get the `roomId` and be able to start adding peers.
   <TabItem value="python" label="Python">
 
     ```python
-    created_room = room_api.create_room()
+    created_room = fishjam_client.create_room()
 
-    the_same_room = room_api.get_room(created_room.id)
+    the_same_room = fishjam_client.get_room(created_room.id)
 
-    room_api.delete_room(the_same_room.id)
+    fishjam_client.delete_room(the_same_room.id)
 
     # puff, it's gone!
     ```
@@ -158,9 +158,9 @@ At any time you can terminate user's access by deleting the peer.
   <TabItem value="python" label="Python">
 
     ```python
-    response = room_api.add_peer(room_id)
+    peer, token = fishjam_client.create_peer(room_id)
 
-    room_api.delete_peer(room_id, response.peer.id)
+    fishjam_url.delete_peer(room_id, peer.id)
     ```
 
   </TabItem>
@@ -199,8 +199,11 @@ Simply pass the your webhook url as a `webhookUrl` parameter when creating a roo
   <TabItem value="python" label="Python">
 
     ```python
-    webhook_url = "https://example.com"
-    fishjam_client.add_room(webhook_url=webhook_url)
+    from fishjam import RoomOptions
+
+    options = RoomOptions(webhook_url="https://example.com")
+
+    fishjam_client.create_room(options)
     ```
 
   </TabItem>
@@ -241,9 +244,10 @@ It sets up a websocket connection with a Fishjam instance and provides a simple 
   <TabItem value="python" label="Python">
 
     ```python
-    from jellyfish import Notifier
+    import asyncio
+    from jellyfish import FishjamNotifier
 
-    notifier = Notifier(server_address=fishjam_url, server_api_token=management_token)
+    notifier = FishjamNotifier(server_address=fishjam_url, server_api_token=management_token)
 
     @notifier.on_server_notification
     def handle_notification(notification):
@@ -252,6 +256,12 @@ It sets up a websocket connection with a Fishjam instance and provides a simple 
                 print(notification)
             case _:
                 ...
+
+    # Connect notifier to fishjam
+    notifier_task = asyncio.create_task(notifier.connect())
+
+    # Wait for notifier to be ready to receive messages
+    await notifier.wait_ready()
     ```
 
   </TabItem>
