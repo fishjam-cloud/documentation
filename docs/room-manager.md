@@ -50,7 +50,7 @@ https://fishjam.io/api/v1/connect/<YOUR_APP_UUID>/room-manager?roomName=foo&peer
 ```json
 {
   "peerToken": "<YOUR_PEER_TOKEN>",
-  "url": "wss://cloud.fishjam.work/api/v1/connect/<YOUR_APP_UUID>",
+  "url": "wss://fishjam.io/api/v1/connect/<YOUR_APP_UUID>",
   "room": {
     "id": "<SOME_ID>",
     "name": "foo"
