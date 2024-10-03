@@ -40,7 +40,7 @@ Use your room manager URL to fetch peer token to get a new room:
 
 ```ts
 const response = await fetch(
-  `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?roomName=*roomName*&peerName=*username*`
+  `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?roomName=*roomName*&peerName=*username*`,
 );
 
 const { url, peerToken } = await response.json();
@@ -75,7 +75,7 @@ function StartStreamingButton({
 
   const startStreaming = useCallback(async () => {
     const response = await fetch(
-      `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?roomName=*roomName*&peerName=*username*`
+      `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?roomName=*roomName*&peerName=*username*`,
     );
     const { url, peerToken } = await response.json();
 
@@ -104,7 +104,7 @@ function TracksView() {
   const { peers } = usePeers();
 
   const videoTracks = peers.flatMap((peer) =>
-    peer.tracks.filter((track) => track.type === "Video" && track.isActive)
+    peer.tracks.filter((track) => track.type === "Video" && track.isActive),
   );
 
   return (
@@ -167,7 +167,7 @@ function TracksView() {
   const { peers } = usePeers();
 
   const videoTracks = peers.flatMap((peer) =>
-    peer.tracks.filter((track) => track.type === "Video" && track.isActive)
+    peer.tracks.filter((track) => track.type === "Video" && track.isActive),
   );
 
   return (
@@ -195,7 +195,7 @@ function StartStreamingButton({
 
   const startStreaming = useCallback(async () => {
     const response = await fetch(
-      `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager?roomName=${roomName}&peerName=${userName}`
+      `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager?roomName=${roomName}&peerName=${userName}`,
     );
     const { url, peerToken } = await response.json();
 
