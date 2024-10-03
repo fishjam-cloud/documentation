@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 4
 ---
 
 # Room Manager
@@ -13,7 +13,7 @@ However, for production purposes, you need to bring own backend using our Server
 Room Manager doesn't implement any form of authentication.
 Anyone using the same room name and user name will receive **the same Peer Token!**
 
-For production environment, make sure to [set up your own backend](../server.mdx) using our Server SDKs and authenticate the client on your own.
+For production environment, make sure to [set up your own backend](/production/server.mdx) using our Server SDKs and authenticate the client on your own.
 
 :::
 
@@ -50,7 +50,7 @@ https://fishjam.io/api/v1/connect/<YOUR_APP_UUID>/room-manager?roomName=foo&peer
 ```json
 {
   "peerToken": "<YOUR_PEER_TOKEN>",
-  "url": "wss://cloud.fishjam.work/api/v1/connect/<YOUR_APP_UUID>",
+  "url": "wss://fishjam.io/api/v1/connect/<YOUR_APP_UUID>",
   "room": {
     "id": "<SOME_ID>",
     "name": "foo"

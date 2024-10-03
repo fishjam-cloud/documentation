@@ -51,7 +51,7 @@ const { url, peerToken } = await response.json();
 :::warning
 
 If you want to use the camera, you must first request permission. Check
-[permission guide](/guide/react-native/installation#step-2-configure-app-permissions) for more information.
+[permission guide](/react-native/installation#step-2-configure-app-permissions) for more information.
 
 :::
 
@@ -242,7 +242,3 @@ const styles = StyleSheet.create({
   },
 });
 ```
-
-### More
-
-Check out our [full documentation](/guide/category/react-native-integration) for more details.

@@ -1,6 +1,6 @@
 # Fishjam Cloud Documentation
 
-You can access generated documentation here: https://docs.fishjam.io/
+You can access generated documentation here: <https://docs.fishjam.io>
 
 ### What is inside?
 
@@ -17,7 +17,7 @@ yarn
 and run development preview
 
 ```
-$ yarn start
+yarn start
 ```
 
 This command starts a local development server and opens up a browser window. Most changes are reflected live without
@@ -26,7 +26,7 @@ having to restart the server.
 #### Build
 
 ```
-$ yarn build
+yarn build
 ```
 
 This command generates static content into the `build` directory and can be served using any static contents hosting

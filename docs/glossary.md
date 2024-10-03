@@ -1,8 +1,8 @@
 ---
-sidebar_position: 2
+sidebar_position: 8
 ---
 
-# Terms
+# Glossary
 
 Terms used in our documentation
 
@@ -29,9 +29,9 @@ Token that your backend should pass to end clients to allow access to a specific
 
 ### Fishjam URL
 
-URL to your Fishjam instance. It is used by your backend server to add peers to rooms (and create rooms). It is also
-used by  
-end client apps to join rooms.
+URL to your Fishjam instance. It is used by your backend server to add peers to rooms (and create rooms).  
+It is also
+used by end client apps to join rooms.
 
 ### Room Manager
 
