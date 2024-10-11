@@ -2,44 +2,30 @@
 sidebar_position: 4
 ---
 
-# Display other peers media
+# Display other peers' media
 
-To access data and media of other peers, use the `usePeers` hook.  
-It returns two properties, `peers` and `localPeer`.  
+To access data and media of other peers, use the `usePeers` hook.
+It returns two properties, `peers` and `localPeer`.
 They contain all the tracks of other peers and all the tracks of the local user, respectively.
 
-### Example of playing all available media
+### Example of playing other peers' available media
 
 ```tsx
 import React from "react";
 import { usePeers } from "@fishjam-cloud/react-client";
 
 function Component() {
-  const { localPeer, peers } = usePeers();
-
-  const allPeers = [localPeer, ...peers];
+  const { peers } = usePeers();
 
   return (
-      <ul>
-        {allPeers.flatMap((p) => {
-          const videoTracks = [...p.videoTracks, ...p.screenshareVideoTracks];
-          const audioTracks = [...p.audioTracks, ...p.screenshareAudioTracks];
-
-          const videoTrackElements = videoTracks.map(({ stream, trackId }) => (
-            <li key={trackId}>
-              <VideoRenderer stream={stream} />
-            </li>
-          ));
-
-          const audioTrackElements = videoTracks.map(({ stream, trackId }) => (
-            <li key={trackId}>
-              <AudioPlayer stream={stream} />
-            </li>
-          ));
-
-          return [...videoTrackElements, ...audioTrackElements];
-        }}
-      </ul>
+    <ul>
+      {peers.map(({ id, cameraTrack, microphoneTrack }) => (
+        <li key={id}>
+          <VideoRenderer stream={cameraTrack?.stream} />
+          <AudioPlayer stream={microphoneTrack?.stream} />
+        </li>
+      ))}
+    </ul>
   );
 }
 ```
