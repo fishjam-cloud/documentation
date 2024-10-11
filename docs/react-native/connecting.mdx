@@ -11,21 +11,22 @@ How to connect to Fishjam Cloud
 
 ## Getting URL and token
 
-In order to connect, you need to retrieve URL (multimedia server address) and token (token that will authenticate you in your Room)
+In order to connect, you need to retrieve URL (multimedia server address) and token (token that will authenticate you in
+your Room)
 
 <Tabs groupId="app-type">
 
   <TabItem value="sandbox" label="Sandbox App">
 
-Once you get your account on [Fishjam Cloud](https://fishjam.io), you will have access to Sandbox App.
-This app comes with pre-configured test service called Room Manager. This is basically service that will
-create Room, add your app as Room's Participant and return token required to use that Room.
+Once you get your account on [Fishjam Cloud](https://fishjam.io), you will have access to Sandbox App. This app comes
+with pre-configured test service called Room Manager. This is basically service that will create Room, add your app as
+Room's Peer and return token required to use that Room.
 
 To use that simply call `fetch`:
 
 ```ts
 const response = await fetch(
-  `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager?room=*ROOM_NAME&user=*USER_NAME*`,
+  `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?roomName=*ROOM_NAME*&peerName=*USER_NAME*`,
 );
 
 const { fishjamUrl, peerToken } = await response.json();
@@ -34,8 +35,8 @@ const { fishjamUrl, peerToken } = await response.json();
   </TabItem>
   <TabItem value="production" label="Production App">
 
-For production app, you need to implement your own backend service that will provide user with `peerToken`.
-To do that, follow our [server setup instructions](/production/server).
+For production app, you need to implement your own backend service that will provide user with `peerToken`. To do that,
+follow our [server setup instructions](/production/server).
 
   </TabItem>
 </Tabs>
