@@ -153,29 +153,19 @@ Configuring screen sharing on iOS is a little complicated.
 
 You can use `useScreenShare` hook to enable screen sharing.
 
-First, you have to make sure that permissions are granted. To do that, you can call `handleScreenSharePermission` method:
+:::tip[Permissions]
 
-```tsx
-import { useScreenShare } from "@fishjam-cloud/react-native-client";
+Permission request is handled for you as soon as you call `toggleScreenShare`.
 
-function Component() {
-  const { handleScreenSharePermission } = useScreenShare();
+:::
 
-  useEffect(() => {
-    function checkPermissions() {
-      const result = await handleScreenSharePermission();
-      if (result === "granted") {
-        // permissions are granted
-      }
-    }
-    checkPermissions();
-  }, []);
+:::tip[Android Foreground Service]
 
-  return <View />;
-}
-```
+On Android API level >= 24, you must use a foreground service when screen sharing. This will be handled automatically for you. If you'd like to configure service behavior (like notification content, other permissions). Checkout `useForegroundService` hook.
 
-Then, you can enable/disable screen sharing with `toggleScreenShare` method. And check current state with `isScreenShareOn` property.
+:::
+
+You can enable/disable screen sharing with `toggleScreenShare` method. And check current state with `isScreenShareOn` property.
 
 ```tsx
 import { useScreenShare } from "@fishjam-cloud/react-native-client";
