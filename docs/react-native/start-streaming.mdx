@@ -45,7 +45,7 @@ const { cameraList, switchCamera, currentCamera } = useCamera();
 
 const flipCamera = () => {
   const otherCamera = cameraList.find(
-    (camera) => camera.facingDirection !== currentCamera?.facingDirection
+    (camera) => camera.facingDirection !== currentCamera?.facingDirection,
   );
   if (otherCamera) switchCamera(camera.id);
 };
