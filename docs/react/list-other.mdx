@@ -22,6 +22,7 @@ function Component() {
       {peers.map(({ id, cameraTrack, microphoneTrack }) => (
         <li key={id}>
           <VideoRenderer stream={cameraTrack?.stream} />
+
           <AudioPlayer stream={microphoneTrack?.stream} />
         </li>
       ))}
