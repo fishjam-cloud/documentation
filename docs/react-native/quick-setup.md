@@ -73,7 +73,7 @@ function StartStreamingButton({
 }) {
   const { prepareCamera } = useCamera();
 
-  const startStreaming = useCallback(async () => {
+  const startStreaming = async () => {
     const response = await fetch(
       `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?roomName=*roomName*&peerName=*username*`,
     );
@@ -82,7 +82,7 @@ function StartStreamingButton({
     await prepareCamera({ cameraEnabled: true });
 
     await joinRoom(url, peerToken);
-  }, []);
+  };
 
   return <Button title="Start Streaming" onPress={startStreaming} />;
 }
@@ -201,7 +201,7 @@ function StartStreamingButton({
 }) {
   const { prepareCamera } = useCamera();
 
-  const startStreaming = useCallback(async () => {
+  const startStreaming = async () => {
     const response = await fetch(
       `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager?roomName=${roomName}&peerName=${userName}`,
     );
@@ -210,7 +210,7 @@ function StartStreamingButton({
     await prepareCamera({ cameraEnabled: true });
 
     await joinRoom(url, peerToken);
-  }, []);
+  };
 
   return <Button title="Start Streaming" onPress={startStreaming} />;
 }
