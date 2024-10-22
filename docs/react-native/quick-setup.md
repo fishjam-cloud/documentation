@@ -40,7 +40,7 @@ Use your room manager URL to fetch peer token to get a new room:
 
 ```ts
 const response = await fetch(
-  `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?roomName=*roomName*&peerName=*username*`,
+  `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?roomName=*roomName*&peerName=*username*`
 );
 
 const { url, peerToken } = await response.json();
@@ -73,16 +73,16 @@ function StartStreamingButton({
 }) {
   const { prepareCamera } = useCamera();
 
-  const startStreaming = useCallback(async () => {
+  const startStreaming = async () => {
     const response = await fetch(
-      `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?roomName=*roomName*&peerName=*username*`,
+      `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?roomName=*roomName*&peerName=*username*`
     );
     const { url, peerToken } = await response.json();
 
     await prepareCamera({ cameraEnabled: true });
 
     await joinRoom(url, peerToken);
-  }, []);
+  };
 
   return <Button title="Start Streaming" onPress={startStreaming} />;
 }
@@ -112,7 +112,7 @@ function TracksView() {
   const { peers } = usePeers();
 
   const videoTracks = peers.flatMap((peer) =>
-    peer.tracks.filter((track) => track.type === "Video" && track.isActive),
+    peer.tracks.filter((track) => track.type === "Video" && track.isActive)
   );
 
   return (
@@ -175,7 +175,7 @@ function TracksView() {
   const { peerStatus } = usePeerStatus();
 
   const videoTracks = peers.flatMap((peer) =>
-    peer.tracks.filter((track) => track.type === "Video" && track.isActive),
+    peer.tracks.filter((track) => track.type === "Video" && track.isActive)
   );
 
   return (
@@ -201,16 +201,16 @@ function StartStreamingButton({
 }) {
   const { prepareCamera } = useCamera();
 
-  const startStreaming = useCallback(async () => {
+  const startStreaming = async () => {
     const response = await fetch(
-      `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager?roomName=${roomName}&peerName=${userName}`,
+      `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager?roomName=${roomName}&peerName=${userName}`
     );
     const { url, peerToken } = await response.json();
 
     await prepareCamera({ cameraEnabled: true });
 
     await joinRoom(url, peerToken);
-  }, []);
+  };
 
   return <Button title="Start Streaming" onPress={startStreaming} />;
 }

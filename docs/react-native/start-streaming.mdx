@@ -43,15 +43,12 @@ To change camera, simply call `switchCamera` method.
 ```ts
 const { cameraList, switchCamera, currentCamera } = useCamera();
 
-const flipCamera = useCallback(() => {
-  const camera =
-    cameraList.find(
-      (camera) => camera.facingDirection !== currentCamera?.facingDirection,
-    ) || null;
-  if (camera) {
-    switchCamera(camera.id);
-  }
-}, [camerasList, currentCamera?.facingDirection, switchCamera]);
+const flipCamera = () => {
+  const otherCamera = cameraList.find(
+    (camera) => camera.facingDirection !== currentCamera?.facingDirection
+  );
+  if (otherCamera) switchCamera(camera.id);
+};
 ```
 
 ### Disabling/enabling camera
