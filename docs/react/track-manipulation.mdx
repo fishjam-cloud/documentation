@@ -1,10 +1,10 @@
 ---
-sidebar_position: 5
+sidebar_position: 6s
 ---
 
-# Stream Middleware
+# Stream middleware
 
-Stream Middleware in Fishjam allows you to intercept and manipulate media tracks before they are sent to the Fishjam server.
+Stream middleware in Fishjam allows you to intercept and manipulate media tracks before they are sent to the Fishjam server.
 This feature is powerful for applying effects, custom encodings, or any other transformations to the media stream.
 
 ## Overview
@@ -12,21 +12,21 @@ This feature is powerful for applying effects, custom encodings, or any other tr
 Define a `TrackMiddleware` function which takes a `MediaStreamTrack` and returns an object containing the modified `MediaStreamTrack`
 and an optional `onClear` function, which is called when the middleware needs to be removed or reapplied when a device changes.
 
-### Type Definition
+### Type definition
 
 ```typescript
 export type TrackMiddleware = (
-  track: MediaStreamTrack,
+  track: MediaStreamTrack
 ) => { track: MediaStreamTrack; onClear?: () => void } | null;
 ```
 
-### Setting Middleware
+### Setting middleware
 
-You can set middleware for your media tracks using `setTrackMiddleware` method. This method accepts a `TrackMiddleware` or `null` for removing previously set middleware.
+You can set the middleware for your media tracks using `setTrackMiddleware` method. This method accepts a `TrackMiddleware` or `null` for removing previously set middleware.
 
-### Example: Applying a Blur Effect
+### Example: Applying a blur effect
 
-The following example demonstrates how to apply a custom blur effect to the camera track using `useCamera` hook and middleware.
+The following example demonstrates how to apply a custom blur effect to the camera track using the `useCamera` hook and middleware.
 
 ```tsx
 import { useCallback } from "react";
@@ -47,7 +47,7 @@ function CameraWithBlurEffect() {
         onClear: () => blurProcessor.destroy(),
       };
     },
-    [],
+    []
   );
 
   // Check if the current middleware is blur
@@ -70,4 +70,4 @@ function CameraWithBlurEffect() {
 }
 ```
 
-This example provides a button to toggle the blur effect on and off. The `BlurProcessor` handles the actual processing logic (assumed to be implemented elsewhere).
+This example provides a button to toggle the blur effect on and off. The `BlurProcessor` handles the actual processing logic and is assumed to be implemented elsewhere.
