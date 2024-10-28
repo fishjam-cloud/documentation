@@ -1,5 +1,5 @@
 ---
-sidebar_position: 6s
+sidebar_position: 6
 ---
 
 # Stream middleware
@@ -16,7 +16,7 @@ and an optional `onClear` function, which is called when the middleware needs to
 
 ```typescript
 export type TrackMiddleware = (
-  track: MediaStreamTrack,
+  track: MediaStreamTrack
 ) => { track: MediaStreamTrack; onClear?: () => void } | null;
 ```
 
@@ -47,7 +47,7 @@ function CameraWithBlurEffect() {
         onClear: () => blurProcessor.destroy(),
       };
     },
-    [],
+    []
   );
 
   // Check if the current middleware is blur
