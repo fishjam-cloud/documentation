@@ -1,0 +1,73 @@
+---
+sidebar_position: 5
+---
+
+# Stream Middleware
+
+Stream Middleware in Fishjam allows you to intercept and manipulate media tracks before they are sent to the Fishjam server.
+This feature is powerful for applying effects, custom encodings, or any other transformations to the media stream.
+
+## Overview
+
+Define a `TrackMiddleware` function which takes a `MediaStreamTrack` and returns an object containing the modified `MediaStreamTrack`
+and an optional `onClear` function, which is called when the middleware needs to be removed or reapplied when a device changes.
+
+### Type Definition
+
+```typescript
+export type TrackMiddleware = (
+  track: MediaStreamTrack
+) => { track: MediaStreamTrack; onClear?: () => void } | null;
+```
+
+### Setting Middleware
+
+You can set middleware for your media tracks using `setTrackMiddleware` method. This method accepts a `TrackMiddleware` or `null` for removing previously set middleware.
+
+### Example: Applying a Blur Effect
+
+The following example demonstrates how to apply a custom blur effect to the camera track using `useCamera` hook and middleware.
+
+```tsx
+import { useCallback } from "react";
+import { useCamera } from "@fishjam-cloud/react-client";
+import { BlurProcessor } from "path-to-blur-processor"; // Adjust import based on actual implementation
+
+function CameraWithBlurEffect() {
+  const camera = useCamera();
+
+  // Define blur middleware
+  const blurMiddleware: TrackMiddleware = useCallback(
+    (track: MediaStreamTrack) => {
+      const stream = new MediaStream([track]);
+      const blurProcessor = new BlurProcessor(stream);
+
+      return {
+        track: blurProcessor.track,
+        onClear: () => blurProcessor.destroy(),
+      };
+    },
+    []
+  );
+
+  // Check if the current middleware is blur
+  const isBlurEnabled = camera.currentMiddleware === blurMiddleware;
+
+  // Toggle blur effect
+  const toggleBlur = () => {
+    camera.setTrackMiddleware(isBlurEnabled ? null : blurMiddleware);
+  };
+
+  return (
+    <>
+      <button onClick={toggleBlur}>
+        {isBlurEnabled ? "Disable Blur" : "Enable Blur"}
+      </button>
+
+      {camera.stream && <video src={stream} />}
+    </>
+  );
+}
+```
+
+This example provides a button to toggle the blur effect on and off. The `BlurProcessor` handles the actual processing logic (assumed to be implemented elsewhere).
