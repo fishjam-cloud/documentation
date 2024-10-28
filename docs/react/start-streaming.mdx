@@ -42,7 +42,7 @@ function ExampleComponent() {
 
       <p>Active device: {camera.activeDevice?.label ?? "None"}</p>
 
-      <select onChange={(e) => device.initialize(e.target.value)}>
+      <select onChange={(e) => camera.initialize(e.target.value)}>
         {camera.devices.map(({ label, deviceId }) => (
           <option key={deviceId} value={deviceId}>
             {label}
