@@ -1,0 +1,56 @@
+---
+sidebar_position: 6
+---
+
+# Toggling Devices
+
+Fishjam Cloud provides functionality to control media device streams more dynamically. This includes both soft control, such as muting, and hard control, like physically turning the device on or off.
+
+## Soft Mode - Muting and Unmuting
+
+Soft Mode allows you to enable or disable the media stream without affecting the device's operational status.  
+If the soft mode is disabled, it starts the device, enables the media stream, and starts (or resumes) streaming.  
+When it's enabled, it disables the media stream and pauses streaming but does not stop the device.  
+In the case when the device is off, it starts the device, enables the media stream, and starts (or resumes) streaming.
+
+### Usage Example
+
+Use this function to programmatically toggle the mute state based on user interactions or other application logic.
+
+```tsx
+import { useCamera } from "@fishjam-cloud/react-client";
+
+function CameraControl() {
+  const camera = useCamera();
+
+  return (
+    <button onClick={() => camera.toggleMute()}>Toggle camera mute</button>
+  );
+}
+```
+
+This component provides a button that allows users to mute or unmute the camera stream.
+
+## Hard Mode - Turning Devices On and Off
+
+Hard Mode control involves physically toggling the device's operational state.  
+If the device is off, it starts the device and begins (or resumes) streaming.  
+When it's on, it disables the media stream, pauses streaming, and stops the device.
+
+### Usage Example
+
+This function allows you to control the device's power state directly from your application.
+
+```tsx
+import { useMicrophone } from "@fishjam-cloud/react-client";
+
+function MicrophoneControl() {
+  const microphone = useMicrophone();
+
+  return (
+    <button onClick={() => microphone.toggleDevice()}>Toggle microphone</button>
+  );
+}
+```
+
+This example provides functionality to start or stop the microphone, allowing for a complete control over the hardware from the user's interface.
