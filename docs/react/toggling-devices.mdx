@@ -4,13 +4,24 @@ sidebar_position: 4
 
 # Toggling devices
 
-Fishjam Cloud provides functionality to control media device streams more dynamically. This includes both soft control, such as muting, and hard control, like physically turning the device on or off.
+Fishjam SDK provides functionality to control media device streams more dynamically. This includes both muting and physically turning the device on or off.
 
-## Soft Mode - muting and unmuting
+Turning off the device saves battery and CPU power and turns off the LED.
+It takes longer to turn it back on, so other participants need to wait longer to receive the first data.
+You would use this method with a camera, as it's usually acceptable to wait longer to see someone's face.
+A disabled camera indicator reassures the user that the camera is truly turned off.
 
-Soft Mode allows you to enable or disable the media stream without affecting the device's operational status.  
-If the soft mode is disabled, it starts the device, enables the media stream, and starts (or resumes) streaming.  
-When it's enabled, it disables the media stream and pauses streaming but does not stop the device.  
+Muting and unmuting is faster, but a muted device still uses resources.
+This is useful for microphones, as it is common to mute and unmute during a meeting.
+Unmuting needs to be quick to capture the first word of a sentence.
+
+Both APIs are available for camera as well as for the microphone.
+
+## Muting and unmuting - `toggleMute()`
+
+The toggle mute function allows you to enable or disable the media stream without affecting the device's operational status.  
+If the device is muted, it starts the device, enables the media stream, and starts (or resumes) streaming.  
+When it's unmuted, it disables the media stream and pauses streaming but does not stop the device.  
 In the case when the device is off, it starts the device, enables the media stream, and starts (or resumes) streaming.
 
 ### Usage example
@@ -31,9 +42,9 @@ function CameraControl() {
 
 This component provides a button that allows users to mute or unmute the camera stream.
 
-## Hard mode - turning devices on and off
+## Turning devices on and off - `toggleDevice()`
 
-Hard Mode control involves physically toggling the device's operational state.  
+The toggle device function control involves physically toggling the device's operational state.  
 If the device is off, it starts the device and begins (or resumes) streaming.  
 When it's on, it disables the media stream, pauses streaming, and stops the device.
 
