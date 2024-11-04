@@ -121,54 +121,49 @@ fastify.post<{ Body: ServerMessage }>("/fishjam-webhook", (request) => {
 
 ### SDK Notifier
 
-You can also leverage the Fastify plugin mechanism to use websockets to receive messages from Fishjam.
+You can also leverage the Fastify plugin mechanism to use websockets to receive messages from Fishjam.  
+Let's create another plugin in `fishjamNotifierPlugin.ts` file.
 
-<Tabs groupId="language">
- <TabItem value="ts" label="Typescript">
+In this case, we don't need to extend any interfaces, because the plugin doesn't decorate the Fastify instance with any properties. It will work in the background.
 
 ```ts
+// fishjamNotifierPlugin.ts
+import { type FastifyInstance } from "fastify";
+import fp from "fastify-plugin";
 import { FishjamWSNotifier } from "@fishjam-cloud/js-server-sdk";
 
-const onClose = console.log;
-const onError = console.error;
-const onConnectionFailed = console.error;
+export const fishjamNotifierPlugin = fp((fastify) => {
+  const fishjamUrl = fastify.config.FISHJAM_URL;
+  const managementToken = fastify.config.FISHJAM_MANAGEMENT_TOKEN;
 
-const fishjamNotifier = new FishjamWSNotifier(
-  { fishjamUrl, managementToken },
-  onError,
-  onClose,
-  onConnectionFailed
-);
+  const fishjamNotifier = new FishjamWSNotifier(
+    { fishjamUrl, managementToken },
+    onError: (err) => fastify.log.error(err),
+    onClose: () => fastify.log.info("Websocket connection to Fishjam closed"),
+    onConnectionFailed: () => fastify.log.error("Failed to connect Fishjam notifier")
+  );
 
-fishjamNotifier.on("roomCreated", console.log);
+  // handle the messages
+  const handleRoomCreated = () => {};
+  const handlePeerCreated = () => {};
+
+  fishjamNotifier.on("roomCreated", handleRoomCreated);
+  fishjamNotifier.on("peerCreated", handlePeerCreated);
+});
 ```
 
- </TabItem>
+Don't forget to register your plugin.
 
- <TabItem value="python" label="Python">
+```ts
+// your main file
+import { Fastify } from "fastify";
+import fastifyEnv from "@fastify/env";
 
-```python
-import asyncio
-from jellyfish import FishjamNotifier
+import { fishjamPlugin } from "./fishjamPlugin";
+import { fishjamNotifierPlugin } from "./fishjamNotifierPlugin";
 
-notifier = FishjamNotifier(server_address=fishjam_url, server_api_token=management_token)
-
-@notifier.on_server_notification
-def handle_notification(notification):
-    match notification:
-        case ServerMessageRoomCreated():
-            print(notification)
-        case _:
-            ...
-
-# Connect notifier to fishjam
-notifier_task = asyncio.create_task(notifier.connect())
-
-# Wait for notifier to be ready to receive messages
-await notifier.wait_ready()
+const fastify = Fastify();
+// ...
+await fastify.register(fishjamPlugin);
+await fastify.register(fishjamNotifierPlugin);
 ```
-
- </TabItem>
-
-</Tabs>
-````
