@@ -6,12 +6,13 @@ title: FastAPI
 # FastAPI example
 
 The example assumes you've already installed [**our SDK**](https://github.com/fishjam-cloud/python-server-sdk) and you're ready to go.  
-If you wish to see more general info, visit [**Setup your server**](/production/server) article.
+If you wish to see more general info, visit [**Set up your server**](/production/server) article.
 
 ## Minimal setup
 
-As in the [**FastAPI docs**](https://fastapi.tiangolo.com/tutorial/first-steps/), the code below can be copied and run immediately.
-The `Depends` function allows the `FishjamClient` to be provided to route function as a dependency, which allows code deduplication and easy mocking.
+The same way as in the [**FastAPI docs**](https://fastapi.tiangolo.com/tutorial/first-steps/), the code below can be copied and run immediately.
+Just make sure you set `FISHJAM_URL` and `FISHJAM_MANAGEMENT_TOKEN` environment variables.
+The `Depends` function allows the `FishjamClient` to be provided to the route function as a dependency, which allows for code deduplication and easy mocking.
 
 ```python
 import os
@@ -38,11 +39,11 @@ async def get_rooms(fishjam_client: Annotated[FishjamClient, Depends(fishjam_cli
 
 Fishjam instance is a stateful server that is emitting messages upon certain events.
 You can listen for those messages and react as you prefer.
-There are two options to obtain these.
+There are two options for obtaining these.
 
 ### Webhooks
 
-To receive and parse the Fishjam protobuf messages, create a dependable function that parses the request body using `receive_binary` function from `fishjam` package.
+To receive and parse Fishjam protobuf messages, create a dependable function that parses the request body using the `receive_binary` function from the `fishjam` package.
 Then, you will be able to use pattern matching to respond to different kinds of events.
 
 ```python
@@ -89,7 +90,7 @@ def handle_notification(notification):
 async def run_notifier():
   notifier_task = asyncio.create_task(fishjam_notifier.connect())
 
-  # Wait for notifier to be ready to receive messages
+  # Wait for the notifier to be ready to receive messages
   await fishjam_notifier.wait_ready()
 
   await notifier_task

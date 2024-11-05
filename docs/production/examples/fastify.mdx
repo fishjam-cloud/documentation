@@ -43,10 +43,10 @@ fastify.listen({ port: 3000 });
 ## Setup Fishjam Fastify plugin
 
 Fastify allows you to create plugins to encapsulate functionality in scopes.  
-Read more [**here**](https://fastify.dev/docs/latest/Reference/Plugins) for a deeper understanding of the concept.
+[**Read more **](https://fastify.dev/docs/latest/Reference/Plugins) for a deeper understanding of the concept.
 
 First, extend the `FastifyInstance` interface with `fishjam` entry.  
-This will provide types of FishjamClient wherever we access `fastify.fishjam` in the codebase.  
+This will provide types of FishjamClient wherever you access `fastify.fishjam` in the codebase.  
 Then, declare the plugin by invoking the `fp` function with the setup function with as an argument.
 
 ```ts
@@ -110,7 +110,7 @@ const fastify = Fastify();
 fastify.addContentTypeParser(
   "application/x-protobuf",
   { parseAs: "buffer" },
-  async (_: FastifyRequest, body: Buffer) => ServerMessage.decode(body),
+  async (_: FastifyRequest, body: Buffer) => ServerMessage.decode(body)
 );
 
 fastify.post<{ Body: ServerMessage }>("/fishjam-webhook", (request) => {
