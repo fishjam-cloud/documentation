@@ -110,7 +110,7 @@ const fastify = Fastify();
 fastify.addContentTypeParser(
   "application/x-protobuf",
   { parseAs: "buffer" },
-  async (_: FastifyRequest, body: Buffer) => ServerMessage.decode(body)
+  async (_: FastifyRequest, body: Buffer) => ServerMessage.decode(body),
 );
 
 fastify.post<{ Body: ServerMessage }>("/fishjam-webhook", (request) => {
