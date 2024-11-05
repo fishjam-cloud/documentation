@@ -11,17 +11,14 @@ If you wish to see more general info, visit [**Setup your server**](/production/
 ## Minimal setup
 
 As in the [**FastAPI docs**](https://fastapi.tiangolo.com/tutorial/first-steps/), the code below can be copied and run immediately.
-The `dotenv.load_dotenv()` invocation loads environment variables from a `.env` file.
-Then, the `Depends` function allows the `FishjamClient` to be provided to route function as a dependency, which allows code deduplication and easy mocking.
+The `Depends` function allows the `FishjamClient` to be provided to route function as a dependency, which allows code deduplication and easy mocking.
 
 ```python
 import os
-import dotenv
 from typing import Annotated
 from fastapi import Depends, FastAPI
 from fishjam import FishjamClient
 
-dotenv.load_dotenv()
 
 app = FastAPI()
 
