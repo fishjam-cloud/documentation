@@ -12,7 +12,7 @@ If you wish to see more general info, visit [**Set up your server**](/production
 
 The same way as in the [**FastAPI docs**](https://fastapi.tiangolo.com/tutorial/first-steps/), the code below can be copied and run immediately.
 Just make sure you set `FISHJAM_URL` and `FISHJAM_MANAGEMENT_TOKEN` environment variables.
-The `Depends` function allows the `FishjamClient` to be provided to the route function as a dependency, which allows for code deduplication and easy mocking.
+The `Depends` function allows the `FishjamClient` to be provided to the route function as a dependency, which avoids code duplication and allows easy mocking.
 
 ```python
 import os
