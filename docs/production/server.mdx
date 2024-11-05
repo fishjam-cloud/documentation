@@ -257,11 +257,15 @@ It sets up a websocket connection with a Fishjam instance and provides a simple 
             case _:
                 ...
 
-    # Connect notifier to fishjam
-    notifier_task = asyncio.create_task(notifier.connect())
+    async def run_notifier():
+      notifier_task = asyncio.create_task(fishjam_notifier.connect())
 
-    # Wait for notifier to be ready to receive messages
-    await notifier.wait_ready()
+      # Wait for notifier to be ready to receive messages
+      await fishjam_notifier.wait_ready()
+
+      await notifier_task
+
+    asyncio.run(run_notifier())
     ```
 
   </TabItem>

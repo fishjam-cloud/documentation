@@ -124,7 +124,7 @@ fastify.post<{ Body: ServerMessage }>("/fishjam-webhook", (request) => {
 You can also leverage the Fastify plugin mechanism to use websockets to receive messages from Fishjam.  
 Let's create another plugin in `fishjamNotifierPlugin.ts` file.
 
-In this case, we don't need to extend any interfaces, because the plugin doesn't decorate the Fastify instance with any properties. It will work in the background.
+In this case, we don't need to extend the Fastify instance type, because the plugin doesn't decorate the Fastify instance with any properties. It will work in the background.
 
 ```ts
 // fishjamNotifierPlugin.ts
