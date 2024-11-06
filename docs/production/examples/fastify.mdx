@@ -110,7 +110,7 @@ const fastify = Fastify();
 fastify.addContentTypeParser(
   "application/x-protobuf",
   { parseAs: "buffer" },
-  async (_: FastifyRequest, body: Buffer) => ServerMessage.decode(body),
+  async (_: FastifyRequest, body: Buffer) => ServerMessage.decode(body)
 );
 
 fastify.post<{ Body: ServerMessage }>("/fishjam-webhook", (request) => {
@@ -144,8 +144,8 @@ export const fishjamNotifierPlugin = fp((fastify) => {
   );
 
   // handle the messages
-  const handleRoomCreated = () => {};
-  const handlePeerCreated = () => {};
+  const handleRoomCreated = console.log;
+  const handlePeerCreated = console.log;
 
   fishjamNotifier.on("roomCreated", handleRoomCreated);
   fishjamNotifier.on("peerCreated", handlePeerCreated);

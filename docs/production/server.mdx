@@ -245,7 +245,7 @@ It sets up a websocket connection with a Fishjam instance and provides a simple 
 
     ```python
     import asyncio
-    from jellyfish import FishjamNotifier
+    from fishjam import FishjamNotifier
 
     notifier = FishjamNotifier(server_address=fishjam_url, server_api_token=management_token)
 
@@ -258,10 +258,10 @@ It sets up a websocket connection with a Fishjam instance and provides a simple 
                 ...
 
     async def run_notifier():
-      notifier_task = asyncio.create_task(fishjam_notifier.connect())
+      notifier_task = asyncio.create_task(notifier.connect())
 
       # Wait for notifier to be ready to receive messages
-      await fishjam_notifier.wait_ready()
+      await notifier.wait_ready()
 
       await notifier_task
 
