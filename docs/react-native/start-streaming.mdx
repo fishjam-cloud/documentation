@@ -26,7 +26,7 @@ function Component() {
   const { prepareCamera } = useCamera();
 
   useEffect(() => {
-    prepareCamera({ enableCamera: true });
+    prepareCamera({ cameraEnabled: true });
   }, [])
 
   return <VideoPreviewView />
