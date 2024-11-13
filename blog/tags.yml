@@ -1,7 +1,7 @@
 fishjam-cloud:
-  label: Fishjam Cloud
+  label: Fishjam
   permalink: /fishjam-cloud
-  description: Fishjam Cloud
+  description: Fishjam
 
 sdk:
   label: SDK

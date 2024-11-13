@@ -14,8 +14,8 @@ const FeatureList: FeatureItem[] = [
     Svg: require("@site/static/img/fish-easy.svg").default,
     description: (
       <>
-        Fishjam Cloud was designed from the ground up to be easily installed and
-        used to get Video Streaming in your app up and running quickly.
+        Fishjam was designed from the ground up to be easily installed and used
+        to get Video Streaming in your app up and running quickly.
       </>
     ),
   },
@@ -24,8 +24,8 @@ const FeatureList: FeatureItem[] = [
     Svg: require("@site/static/img/fish-focus.svg").default,
     description: (
       <>
-        Fishjam Cloud lets you focus on your users, and we&apos;ll do all
-        difficult work. Go ahead and check that streaming can be easy.
+        Fishjam lets you focus on your users, and we&apos;ll do all difficult
+        work. Go ahead and check that streaming can be easy.
       </>
     ),
   },
