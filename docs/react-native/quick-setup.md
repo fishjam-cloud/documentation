@@ -4,7 +4,7 @@ sidebar_position: 0
 
 # Quick Setup
 
-Integrate Fishjam Cloud into your React Native application.
+Integrate Fishjam into your React Native application.
 
 :::info
 
@@ -26,9 +26,9 @@ npx expo prebuild
 
 ### Get Room Manager URL
 
-Login to [Fishjam Cloud Dashboard](https://fishjam.io/app) and get your Room Manager URL.
+Login to [Fishjam Dashboard](https://fishjam.io/app) and get your Room Manager URL.
 
-## TL;DR;
+## TL;DR
 
 Checkout [complete example below:](#full-example)
 
