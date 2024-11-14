@@ -52,7 +52,7 @@ Use your room manager URL to fetch peer token to get a new room:
 
 ```ts
 const response = await fetch(
-  `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?roomName=*roomName*&peerName=*username*`,
+  `https://fishjam.io/api/v1/connect/${YOUR_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
 );
 
 const { url, peerToken } = await response.json();
@@ -60,14 +60,14 @@ const { url, peerToken } = await response.json();
 
 ### 2. Join Room and start streaming
 
-:::warning
+:::danger
 
 If you want to use the camera, you must first request permission. Check
 [permission guide](/react-native/installation#step-2-configure-app-permissions) for more information.
 
 :::
 
-:::warning
+:::important
 
 Keep in mind that this won't work on iOS Simulator, as Simulator can't access the camera.
 
@@ -87,7 +87,7 @@ function StartStreamingButton({
 
   const startStreaming = async () => {
     const response = await fetch(
-      `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager/?roomName=*roomName*&peerName=*username*`,
+      `https://fishjam.io/api/v1/connect/${YOUR_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
     );
     const { url, peerToken } = await response.json();
 
