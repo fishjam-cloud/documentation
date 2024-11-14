@@ -34,10 +34,24 @@ You can also follow more detailed [expo instructions](https://docs.expo.dev/get-
 
 Install `@fishjam-cloud/react-native-client` package:
 
+<Tabs groupId="app-type">
+  <TabItem value="expo" label="Expo">
+
 ```bash npm2yarn
 npm install @fishjam-cloud/react-native-client
 ```
 
+  </TabItem>
+  
+  <TabItem value="rn" label="Bare workflow">
+  1. [Install](https://docs.expo.dev/bare/installing-expo-modules/) Expo dependencies
+  2. Install Fishjam
+    ```sh
+    npx expo install @fishjam-cloud/react-native-client
+    ```
+  </TabItem>
+    
+</Tabs>
 ## Step 2: Configure App permissions
 
 Your app must have permissions configured to use the microphone and camera.

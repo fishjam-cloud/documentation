@@ -8,12 +8,16 @@ Integrate Fishjam Cloud into your React Native application.
 
 :::info
 
-This guide assumes you're using Expo Bare Workflow
+This guide assumes you're using Expo Bare Workflow.
+
+If you have a React Native project, follow the [full installation guide](/react-native/installation#step-1-install-the-package) and come back after you finish.
 
 :::
 
 ### Install package
 
+<Tabs groupId="app-type">
+  <TabItem value="expo" label="Expo">
 ```bash npm2yarn
 npm install @fishjam-cloud/react-native-client
 ```
@@ -23,6 +27,14 @@ npm install @fishjam-cloud/react-native-client
 ```bash
 npx expo prebuild
 ```
+
+  </TabItem>
+  
+  <TabItem value="rn" label="Bare workflow">
+    Follow the [full installation guide](/react-native/installation#step-1-install-the-package) and come back.
+  </TabItem>
+    
+</Tabs>
 
 ### Get Room Manager URL
 
