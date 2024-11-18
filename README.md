@@ -1,10 +1,10 @@
-# Fishjam Cloud Documentation
+# Fishjam Documentation
 
 You can access generated documentation here: <https://docs.fishjam.io>
 
 ### What is inside?
 
-The Documentation explains how Fishjam Cloud works and how it can be integrated in your mobile or web application
+The Documentation explains how Fishjam works and how it can be integrated in your mobile or web application
 
 ### Local Development
 
@@ -44,7 +44,7 @@ Documentation is built using [Docusaurus](https://docusaurus.io/), a modern stat
 
 Licensed under the [Apache License, Version 2.0](LICENSE)
 
-## Fishjam Cloud is created by Software Mansion
+## Fishjam is created by Software Mansion
 
 Since 2012 [Software Mansion](https://swmansion.com) is a software agency with experience in building web and mobile
 apps. We are Core React Native Contributors and experts in dealing with all kinds of React Native issues. We can help

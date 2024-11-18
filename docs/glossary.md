@@ -35,5 +35,5 @@ used by end client apps to join rooms.
 
 ### Room Manager
 
-Our test app available **only** on Sandbox environment. It allows to test Fishjam Cloud without need to add create rooms
+Our test app available **only** on Sandbox environment. It allows to test Fishjam without need to add create rooms
 functionality on your backend.

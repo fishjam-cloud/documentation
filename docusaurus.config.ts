@@ -3,7 +3,7 @@ import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 
 const config: Config = {
-  title: "Fishjam Cloud Docs",
+  title: "Fishjam Docs",
   tagline: "Easiest way to add video streaming to your React Native app",
   favicon: "img/favicon.svg",
   // Set the production url of your site here
@@ -67,9 +67,9 @@ const config: Config = {
       disableSwitch: true,
     },
     navbar: {
-      title: "Fishjam Cloud ",
+      title: "Fishjam ",
       logo: {
-        alt: "Fishjam Cloud",
+        alt: "Fishjam",
         src: "img/logo.svg",
       },
       items: [
@@ -109,7 +109,7 @@ const config: Config = {
           title: "More",
           items: [
             {
-              label: "Fishjam Cloud",
+              label: "Fishjam",
               to: "https://fishjam.io",
             },
             {
