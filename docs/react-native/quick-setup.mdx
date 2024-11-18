@@ -2,39 +2,26 @@
 sidebar_position: 0
 ---
 
+import InstallPackage from "./components/install-package.mdx";
+import ConfigurePermissions from "./components/configure-permissions.mdx";
+
 # Quick Setup
 
 Integrate Fishjam into your React Native application.
 
-:::info
+## Install the package
 
-This guide assumes you're using Expo Bare Workflow.
+<InstallPackage />
 
-If you have a React Native project, follow the [full installation guide](/react-native/installation#step-1-install-the-package) and come back after you finish.
-
-:::
-
-### Install package
-
-<Tabs groupId="app-type">
-  <TabItem value="expo" label="Expo">
-```bash npm2yarn
-npm install @fishjam-cloud/react-native-client
-```
-
-### Build native dependencies
+## Build native dependencies
 
 ```bash
 npx expo prebuild
 ```
 
-  </TabItem>
-  
-  <TabItem value="rn" label="Bare workflow">
-    Follow the [full installation guide](/react-native/installation#step-1-install-the-package) and come back.
-  </TabItem>
-    
-</Tabs>
+## Configure App permissions
+
+<ConfigurePermissions />
 
 ### Get Room Manager URL
 
