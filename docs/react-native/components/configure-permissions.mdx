@@ -1,0 +1,92 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Your app must have permissions configured to use the microphone and camera.
+
+### Android
+
+For android you need to ask for certain permissions:
+
+- `android.permission.CAMERA`
+- `android.permission.RECORD_AUDIO`
+- `android.permission.MODIFY_AUDIO_SETTINGS`
+
+<Tabs groupId="app-type">
+
+  <TabItem value="expo" label="Expo">
+
+You need to modify `app.json` file and add all permissions:
+
+```json
+{
+  "expo": {
+    ...
+    "android": {
+      ...
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
+    }
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+You need to modify `AndroidManifest.xml` file, and these lines:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  ...
+  <uses-permission android:name="android.permission.CAMERA"/>
+  <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTING"/>
+  ...
+</manifest>
+```
+
+  </TabItem>
+</Tabs>
+
+### iOS
+
+<Tabs groupId="app-type">
+
+  <TabItem value="expo" label="Expo">
+
+You don't have to make any changes to run app on iOS.
+To update default content of permission alert, you can add these settings to `app.json`:
+
+```json
+{
+  "expo": {
+    ...
+   "ios": {
+      ...
+      "infoPlist": {
+        "NSCameraUsageDescription": "Your message.",
+        "NSMicrophoneUsageDescription": "Your message"
+      }
+    },
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+You need to make sure that `info.plist` contains these entries:
+
+```xml
+    <key>NSCameraUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your camera.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your microphone</string>
+
+```
+
+  </TabItem>
+</Tabs>
