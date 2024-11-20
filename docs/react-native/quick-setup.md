@@ -90,10 +90,10 @@ function StartStreamingButton({
 
 ### 3. Check if you are connected
 
-Once you are connected, you can check connection status with `usePeerStatus` hook
+Once you are connected, you can check connection status with `useConnection` hook
 
 ```ts
-const { peerStatus } = usePeerStatus();
+const { connectionStatus } = useConnection();
 ```
 
 ### 4. Show other peers
@@ -172,7 +172,7 @@ import { useCameraPermissions } from "expo-camera";
 
 function TracksView() {
   const { peers } = usePeers();
-  const { peerStatus } = usePeerStatus();
+  const { connectionStatus } = useConnection();
 
   const videoTracks = peers.flatMap((peer) =>
     peer.tracks.filter((track) => track.type === "Video" && track.isActive),
@@ -217,7 +217,7 @@ function StartStreamingButton({
 
 export default function HomeScreen() {
   const [permission, requestPermission] = useCameraPermissions();
-  const { peerStatus } = usePeerStatus();
+  const { connectionStatus } = useConnection();
 
   useEffect(() => {
     requestPermission();
@@ -229,7 +229,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {peerStatus !== "connected" && (
+      {connectionStatus !== "connected" && (
         <StartStreamingButton roomName="*roomName*" userName="*username*" />
       )}
       <TracksView />

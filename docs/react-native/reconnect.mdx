@@ -4,26 +4,26 @@ sidebar_position: 7
 
 # Reconnect
 
-If your connection is lost while you are connected to a room, the app will automatically handle the reconnection process. You can monitor these events by utilizing the `useReconnection` hook.
+If your connection is lost while you are connected to a room, the app will automatically handle the reconnection process. You can monitor these events by utilizing the `useConnection` hook.
 
 ### Example hook that logs the current status to the console:
 
 ```ts
 import { useEffect, useRef } from "react";
 import {
-  ReconnectionStatus,
-  useReconnection,
+  ConnectionStatus,
+  useConnection,
 } from "@fishjam-cloud/react-native-client";
 
-function useLogReconnectionStatus() {
-  const prevStatus = useRef<ReconnectionStatus>("idle");
-  const { reconnectionStatus } = useReconnection();
+function useLogConnectionStatus() {
+  const prevStatus = useRef<ConnectionStatus>("idle");
+  const { connectionStatus } = useConnection();
 
   useEffect(() => {
-    if (prevStatus.current === reconnectionStatus) return;
-    prevStatus.current = reconnectionStatus;
+    if (prevStatus.current === connectionStatus) return;
+    prevStatus.current = connectionStatus;
 
-    switch (reconnectionStatus) {
+    switch (connectionStatus) {
       case "error":
         return console.log("Failed to reconnect");
       case "reconnecting":
@@ -31,6 +31,6 @@ function useLogReconnectionStatus() {
       default:
         return console.log("Connected succesfully");
     }
-  }, [reconnectionStatus]);
+  }, [connectionStatus]);
 }
 ```
