@@ -59,3 +59,6 @@ protobuf
 websockets
 deduplication
 se
+InstallPackage
+ConfigurePermissions
+mdx
