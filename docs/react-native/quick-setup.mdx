@@ -71,6 +71,7 @@ function StartStreamingButton({
   userName: string;
 }) {
   const { prepareCamera } = useCamera();
+  const { joinRoom } = useConnection();
 
   const startStreaming = async () => {
     const response = await fetch(
@@ -161,7 +162,7 @@ npx expo install expo-camera && npx expo prebuild
 import { useCallback, useEffect } from "react";
 import { Button, StyleSheet, View } from "react-native";
 import {
-  joinRoom,
+  useConnection,
   useCamera,
   usePeers,
   VideoRendererView,
@@ -199,6 +200,7 @@ function StartStreamingButton({
   userName: string;
 }) {
   const { prepareCamera } = useCamera();
+  const { joinRoom } = useConnection();
 
   const startStreaming = async () => {
     const response = await fetch(
