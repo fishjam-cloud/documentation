@@ -46,7 +46,9 @@ follow our [server setup instructions](/production/server).
 In order to connect, you just need to call `joinRoom` method with data from previous step:
 
 ```ts
-import { joinRoom } from "@fishjam-cloud/react-native-client";
+import { useConnection } from "@fishjam-cloud/react-native-client";
+
+const { joinRoom } = useConnection();
 
 await joinRoom(fishjamUrl, peerToken);
 ```
@@ -56,7 +58,9 @@ await joinRoom(fishjamUrl, peerToken);
 In order to close connection, you have to call `leaveRoom` method.
 
 ```ts
-import { leaveRoom } from "@fishjam-cloud/react-native-client";
+import { useConnection } from "@fishjam-cloud/react-native-client";
+
+const { leaveRoom } = useConnection();
 
 await leaveRoom();
 ```
