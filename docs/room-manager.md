@@ -11,7 +11,7 @@ However, for production purposes, you need to bring own backend using our Server
 :::danger[ROOM MANAGER IS NOT SAFE FOR PRODUCTION]
 
 Room Manager doesn't implement any form of authentication.
-Anyone using the same room name and user name will receive **the same Peer Token!**
+Anyone using the same room name and peer name will receive **the same Peer Token!**
 
 For production environment, make sure to [set up your own backend](/production/server.mdx) using our Server SDKs and authenticate the client on your own.
 

@@ -19,17 +19,23 @@ enabled camera and microphone will start streaming to Room.
 First, you have to enable your camera by calling `prepareCamera` method.
 You can open show camera preview with `VideoPreviewView` component
 
-```ts
-import { useCamera, VideoPreviewView } from '@fishjam-cloud/react-native-client';
+```tsx
+import { useEffect } from "react";
+import {
+  useCamera,
+  VideoPreviewView,
+} from "@fishjam-cloud/react-native-client";
 
-function Component() {
+export function ViewPreview() {
+  // highlight-next-line
   const { prepareCamera } = useCamera();
 
   useEffect(() => {
+    // highlight-next-line
     prepareCamera({ cameraEnabled: true });
-  }, [])
+  }, [prepareCamera]);
 
-  return <VideoPreviewView />
+  return <VideoPreviewView />;
 }
 ```
 
@@ -40,29 +46,70 @@ This way, you can either automatically choose camera (front/back) or allow user 
 
 To change camera, simply call `switchCamera` method.
 
-```ts
-const { cameraList, switchCamera, currentCamera } = useCamera();
+```tsx
+import { useCallback } from "react";
+import { Button } from "react-native";
+import { useCamera } from "@fishjam-cloud/react-native-client";
 
-const flipCamera = () => {
-  const otherCamera = cameraList.find(
-    (camera) => camera.facingDirection !== currentCamera?.facingDirection,
-  );
-  if (otherCamera) switchCamera(camera.id);
-};
+export function FlipButton() {
+  // highlight-next-line
+  const { cameras, switchCamera, currentCamera } = useCamera();
+
+  const onPressFlipCamera = useCallback(() => {
+    // find first camera facing opposite direction than current camera
+    const otherCamera = cameras.find(
+      (camera) => camera.facingDirection !== currentCamera?.facingDirection,
+    );
+    if (otherCamera) {
+      // highlight-next-line
+      switchCamera(otherCamera.id);
+    }
+  }, [cameras, currentCamera?.facingDirection, switchCamera]);
+
+  return <Button onPress={onPressFlipCamera} title="Flip Camera" />;
+}
 ```
 
 ### Disabling/enabling camera
 
 To change camera state, you use `toggleCamera` method.
 
-```ts
-const { isCameraOn, toggleCamera } = useCamera();
+```tsx
+import { Button } from "react-native";
+import { useCamera } from "@fishjam-cloud/react-native-client";
+
+export function ToggleCameraButton() {
+  // highlight-next-line
+  const { isCameraOn, toggleCamera } = useCamera();
+
+  return (
+    <Button
+      // highlight-next-line
+      onPress={toggleCamera}
+      title={isCameraOn ? "Disable camera" : "Enable camera"}
+    />
+  );
+}
 ```
 
 ## Enable microphone
 
 Microphone works similar to camera. In order to enable it, you have to call `toggleMicrophone` method.
 
-```ts
-const { isMicrophoneOn, toggleMicrophone } = useMicrophone();
+```tsx
+import { Button } from "react-native";
+import { useMicrophone } from "@fishjam-cloud/react-native-client";
+
+export function ToggleMicrophoneButton() {
+  // highlight-next-line
+  const { isMicrophoneOn, toggleMicrophone } = useMicrophone();
+
+  return (
+    <Button
+      // highlight-next-line
+      onPress={toggleMicrophone}
+      title={isMicrophoneOn ? "Disable microphone" : "Enable microphone"}
+    />
+  );
+}
 ```

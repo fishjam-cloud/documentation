@@ -168,15 +168,25 @@ On Android API level >= 24, you must use a foreground service when screen sharin
 You can enable/disable screen sharing with `toggleScreenShare` method. And check current state with `isScreenShareOn` property.
 
 ```tsx
+import { useCallback } from "react";
+import { Button } from "react-native";
 import { useScreenShare } from "@fishjam-cloud/react-native-client";
 
-function ScreenShareButton() {
+export function ScreenShareButton() {
+  // highlight-next-line
   const { toggleScreenShare, isScreenShareOn } = useScreenShare();
 
+  const onPressToggle = useCallback(
+    // highlight-next-line
+    () => toggleScreenShare(),
+    [toggleScreenShare],
+  );
+
   return (
-    <Button onPress={toggleScreenShare}>
-      {isScreenShareOn ? "Disable" : "Enable"} screen share
-    </Button>
+    <Button
+      onPress={onPressToggle}
+      title={`${isScreenShareOn ? "Disable" : "Enable"} screen share`}
+    />
   );
 }
 ```
