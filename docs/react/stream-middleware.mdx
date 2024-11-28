@@ -29,18 +29,27 @@ You can set the middleware for your media tracks using `setTrackMiddleware` meth
 The following example demonstrates how to apply a custom blur effect to the camera track using the `useCamera` hook and middleware.
 
 ```tsx
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import type { TrackMiddleware } from "@fishjam-cloud/react-client";
 import { useCamera } from "@fishjam-cloud/react-client";
 import { BlurProcessor } from "path-to-blur-processor"; // Adjust import based on actual implementation
 
-function CameraWithBlurEffect() {
-  const camera = useCamera();
+export function CameraWithBlurEffect() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // highlight-next-line
+  const { stream, currentMiddleware, setTrackMiddleware } = useCamera();
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+    videoRef.current.srcObject = stream ?? null;
+  }, [stream]);
 
   // Define blur middleware
   const blurMiddleware: TrackMiddleware = useCallback(
     (track: MediaStreamTrack) => {
-      const stream = new MediaStream([track]);
-      const blurProcessor = new BlurProcessor(stream);
+      const streamToBlur = new MediaStream([track]);
+      const blurProcessor = new BlurProcessor(streamToBlur);
 
       return {
         track: blurProcessor.track,
@@ -51,11 +60,12 @@ function CameraWithBlurEffect() {
   );
 
   // Check if the current middleware is blur
-  const isBlurEnabled = camera.currentMiddleware === blurMiddleware;
+  const isBlurEnabled = currentMiddleware === blurMiddleware;
 
   // Toggle blur effect
   const toggleBlur = () => {
-    camera.setTrackMiddleware(isBlurEnabled ? null : blurMiddleware);
+    // highlight-next-line
+    setTrackMiddleware(isBlurEnabled ? null : blurMiddleware);
   };
 
   return (
@@ -64,7 +74,7 @@ function CameraWithBlurEffect() {
         {isBlurEnabled ? "Disable Blur" : "Enable Blur"}
       </button>
 
-      {camera.stream && <video src={stream} />}
+      {stream && <video ref={videoRef} />}
     </>
   );
 }
