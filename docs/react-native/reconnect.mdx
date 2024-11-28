@@ -15,8 +15,10 @@ import {
   useConnection,
 } from "@fishjam-cloud/react-native-client";
 
-function useLogConnectionStatus() {
+export function useLogConnectionStatus() {
   const prevStatus = useRef<ConnectionStatus>("idle");
+
+  // highlight-next-line
   const { connectionStatus } = useConnection();
 
   useEffect(() => {
@@ -29,7 +31,7 @@ function useLogConnectionStatus() {
       case "reconnecting":
         return console.log("Connection is broken, reconnecting...");
       default:
-        return console.log("Connected succesfully");
+        return console.log("Connected successfully");
     }
   }, [connectionStatus]);
 }

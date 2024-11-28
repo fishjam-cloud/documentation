@@ -45,22 +45,43 @@ follow our [server setup instructions](/production/server).
 
 In order to connect, you just need to call `joinRoom` method with data from previous step:
 
-```ts
+```tsx
+import { useCallback } from "react";
+import { Button } from "react-native";
 import { useConnection } from "@fishjam-cloud/react-native-client";
 
-const { joinRoom } = useConnection();
+export function JoinRoomButton() {
+  // highlight-next-line
+  const { joinRoom } = useConnection();
 
-await joinRoom(fishjamUrl, peerToken);
+  const onPressJoin = useCallback(async () => {
+    const { fishjamUrl, peerToken } = yourFunction();
+    // highlight-next-line
+    await joinRoom(fishjamUrl, peerToken);
+  }, [joinRoom]);
+
+  return <Button onPress={onPressJoin} title="Join Room" />;
+}
 ```
 
 ## Disconnecting
 
 In order to close connection, you have to call `leaveRoom` method.
 
-```ts
+```tsx
+import { useCallback } from "react";
+import { Button } from "react-native";
 import { useConnection } from "@fishjam-cloud/react-native-client";
 
-const { leaveRoom } = useConnection();
+export function LeaveRoomButton() {
+  // highlight-next-line
+  const { leaveRoom } = useConnection();
 
-await leaveRoom();
+  const onPressLeave = useCallback(async () => {
+    // highlight-next-line
+    await leaveRoom();
+  }, [leaveRoom]);
+
+  return <Button onPress={onPressLeave} title="Leave Room" />;
+}
 ```
