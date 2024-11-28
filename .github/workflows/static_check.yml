@@ -10,7 +10,7 @@ jobs:
       - name: Use corepack
         run: corepack enable
       - name: Install node dependencies
-        run: yarn
+        run: yarn --immutable
       - name: Spellcheck
         run: yarn spellcheck:report
       - name: Check formatting
