@@ -19,13 +19,13 @@ export function useLogConnectionStatus() {
   const prevStatus = useRef<ConnectionStatus>("idle");
 
   // highlight-next-line
-  const { connectionStatus } = useConnection();
+  const { reconnectionStatus } = useConnection();
 
   useEffect(() => {
-    if (prevStatus.current === connectionStatus) return;
-    prevStatus.current = connectionStatus;
+    if (prevStatus.current === reconnectionStatus) return;
+    prevStatus.current = reconnectionStatus;
 
-    switch (connectionStatus) {
+    switch (reconnectionStatus) {
       case "error":
         return console.log("Failed to reconnect");
       case "reconnecting":
@@ -33,6 +33,6 @@ export function useLogConnectionStatus() {
       default:
         return console.log("Connected successfully");
     }
-  }, [connectionStatus]);
+  }, [reconnectionStatus]);
 }
 ```

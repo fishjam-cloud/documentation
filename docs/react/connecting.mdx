@@ -10,31 +10,46 @@ In order to connect, you need a `PEER_TOKEN` and the `FISHJAM_URL`.
 
 ## Connecting
 
-Use the `useConnect` hook to get the `connect` function.
+Use the `useConnection` hook to get the `joinRoom` function.
 
-```ts
-import { connect } from "@fishjam-cloud/react-client";
+```tsx
+import { useConnection } from "@fishjam-cloud/react-client";
+import { useCallback } from "react";
 
-function Component() {
-  const connect = useConnect();
+export function JoinRoomButton() {
+  // highlight-next-line
+  const { joinRoom } = useConnection();
 
-  const joinRoom = async () => {
-    await connect({
+  const onJoinRoomPress = useCallback(async () => {
+    // highlight-next-line
+    await joinRoom({
       token: PEER_TOKEN,
       url: FISHJAM_URL,
     });
-  };
+  }, [joinRoom]);
+
+  return <button onClick={onJoinRoomPress}>Join room</button>;
 }
 ```
 
 ## Disconnecting
 
-In order to close connection, use the `useDisconnect` hook.
+In order to close connection, use the `leaveRoom` method from `useConnection` hook.
 
 ```ts
-import { useDisconnect } from "@fishjam-cloud/react-client";
+import { useConnection } from "@fishjam-cloud/react-client";
+import { useCallback } from "react";
 
-const disconnect = useDisconnect();
+export function LeaveRoomButton() {
+  // highlight-next-line
+  const { leaveRoom } = useConnection();
 
-await disconnect();
+  const onLeaveRoomPress = useCallback(() => {
+    // highlight-next-line
+    leaveRoom();
+  }, [leaveRoom]);
+
+  return <button onClick={onLeaveRoomPress}>Leave room</button>;
+}
+
 ```

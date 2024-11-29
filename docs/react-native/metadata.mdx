@@ -65,7 +65,7 @@ export function UpdateNameButton() {
 
   const onPressUpdateName = useCallback(async () => {
     // highlight-next-line
-    await updatePeerMetadata({ displayName: "Keanu Reeves" });
+    await updatePeerMetadata({ displayName: "Thomas A. Anderson" });
   }, [updatePeerMetadata]);
 
   return <Button onPress={onPressUpdateName} title="Change name" />;

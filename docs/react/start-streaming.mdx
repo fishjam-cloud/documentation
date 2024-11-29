@@ -10,9 +10,10 @@ Fishjam provides an API to browse and manage media devices you can use.
 To ask the browser for permission to list the available devices, call the `initializeDevices` function.
 
 ```ts
+import { useEffect } from "react";
 import { useInitializeDevices } from "@fishjam-cloud/react-client";
 
-function useExample() {
+export function useExample() {
   const { initializeDevices } = useInitializeDevices();
 
   useEffect(() => {
@@ -31,26 +32,35 @@ To manage users' camera and microphone devices, use the respective `useCamera` a
 Both of them has the same API. To keep things simple, let's just use the camera hook.
 
 ```tsx
+import { useEffect, useRef } from "react";
 import { useCamera } from "@fishjam-cloud/react-client";
 
-function ExampleComponent() {
-  const camera = useCamera();
+export function ExampleComponent() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // highlight-next-line
+  const { isStreaming, activeDevice, initialize, stream, devices } =
+    // highlight-next-line
+    useCamera();
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+    videoRef.current.srcObject = stream ?? null;
+  }, [stream]);
 
   return (
     <div>
-      {camera.isStreaming && <p>You are going live!</p>}
-
-      <p>Active device: {camera.activeDevice?.label ?? "None"}</p>
-
-      <select onChange={(e) => camera.initialize(e.target.value)}>
-        {camera.devices.map(({ label, deviceId }) => (
+      {isStreaming && <p>You are going live!</p>}
+      <p>Active device: {activeDevice?.label ?? "None"}</p>
+      <select onChange={(e) => initialize(e.target.value)}>
+        {devices.map(({ label, deviceId }) => (
           <option key={deviceId} value={deviceId}>
             {label}
           </option>
         ))}
       </select>
-
-      {camera.stream && <VideoPlayer stream={camera.stream} />}
+      // highlight-next-line
+      {stream && <video ref={videoRef} autoPlay />}
     </div>
   );
 }
