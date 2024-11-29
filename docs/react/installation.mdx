@@ -7,25 +7,27 @@ import TabItem from "@theme/TabItem";
 
 # Installation
 
-### 1. Install the package
-
-Install `@fishjam-cloud/react-client` package:
+## 1. Install the package
 
 ```bash npm2yarn
 npm install @fishjam-cloud/react-client
 ```
 
-### 2. Setup Fishjam context
+## 2. Setup Fishjam context
 
 Wrap your app in our `FishjamProvider` component.
 
 ```tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
 import { FishjamProvider } from "@fishjam-cloud/react-client";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
+    // highlight-next-line
     <FishjamProvider>
       <App />
+      // highlight-next-line
     </FishjamProvider>
   </React.StrictMode>,
 );

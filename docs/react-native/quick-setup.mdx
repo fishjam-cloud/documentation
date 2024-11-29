@@ -101,7 +101,7 @@ export function StartStreamingButton({
 Once you are connected, you can check connection status with `useConnection` hook
 
 ```ts
-const { connectionStatus } = useConnection();
+const { peerStatus } = useConnection();
 ```
 
 ### 4. Show other peers
@@ -217,7 +217,7 @@ function StartStreamingButton({
 
 export default function HomeScreen() {
   const [permission, requestPermission] = useCameraPermissions();
-  const { connectionStatus } = useConnection();
+  const { peerStatus } = useConnection();
 
   useEffect(() => {
     requestPermission();
@@ -229,7 +229,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {connectionStatus !== "connected" && (
+      {peerStatus !== "connected" && (
         <StartStreamingButton roomName="Room Name" peerName="Peer Name" />
       )}
       <TracksView />
