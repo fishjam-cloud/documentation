@@ -10,7 +10,7 @@ But it can be also used to send camera type, application information etc.
 
 :::info
 
-You can also set metatada on [server side, when adding user to the room](../production/metadata.mdx). These metadata can be defined only when user is joining room and can't be
+You can also set metadata on [server side, when adding user to the room](../production/metadata.mdx). These metadata can be defined only when user is joining room and can't be
 update later. Neither by server nor client SDK. They can be used to add information that can't be overwritten, like information about real user name
 or basic permission info.
 
@@ -18,7 +18,7 @@ or basic permission info.
 
 ## Setting metadata when joining room
 
-The `joinRoom` method from `useConnection` hook has `peerMetadata` param, that can be used to set object with metadata. You can also add your
+The `joinRoom` method from `useConnection` hook has `peerMetadata` parameter, that can be used to set object with metadata. You can also add your
 custom type, to define shape of metadata.
 
 ```tsx
@@ -74,7 +74,7 @@ export function JoinRoomButton() {
 ## Reading metadata
 
 Peer metadata are available as `metadata` property for each peer. When you list peers with `usePeers` hook, you can also read
-metadata associated with it.Note that `metadata.peer` property contains metadata set by client SDK (as in above examples).
+metadata associated with it. Note that `metadata.peer` property contains metadata set by client SDK (as in above examples).
 And `metadata.server` data are set with server SDK as [described here](../production/metadata.mdx).
 
 ```tsx
