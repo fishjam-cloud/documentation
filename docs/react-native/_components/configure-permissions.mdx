@@ -17,7 +17,7 @@ For android you need to ask for certain permissions:
 
 You need to modify `app.json` file and add all permissions:
 
-```json
+```json title='app.json'
 {
   "expo": {
     ...
@@ -38,7 +38,7 @@ You need to modify `app.json` file and add all permissions:
 
 You need to modify `AndroidManifest.xml` file, and these lines:
 
-```xml
+```xml title='AndroidManifest.xml'
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
   ...
   <uses-permission android:name="android.permission.CAMERA"/>
@@ -60,7 +60,7 @@ You need to modify `AndroidManifest.xml` file, and these lines:
 You don't have to make any changes to run app on iOS.
 To update default content of permission alert, you can add these settings to `app.json`:
 
-```json
+```json title='app.json'
 {
   "expo": {
     ...
@@ -78,9 +78,9 @@ To update default content of permission alert, you can add these settings to `ap
   </TabItem>
   <TabItem value="rn" label="Bare workflow">
 
-You need to make sure that `info.plist` contains these entries:
+You need to make sure that `Info.plist` contains these entries:
 
-```xml
+```xml title='Info.plist'
     <key>NSCameraUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your camera.</string>
     <key>NSMicrophoneUsageDescription</key>
