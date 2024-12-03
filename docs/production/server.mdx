@@ -176,6 +176,34 @@ At any time you can terminate user's access by deleting the peer.
   </TabItem>
 </Tabs>
 
+#### Metadata
+
+When creating peer, you can also add metadata assigned to that peer. They can be later on read with [mobile SDK](/react-native/metadata)
+or [web SDK](/react/metadata). These metadata can be only set when creating peer, and can't be updated later.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    const { peer, peerToken } = await fishjamClient.createPeer(roomId, {
+      metadata: { realName: 'Keanu Reeves' },
+    });
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```py
+    options = PeerOptions(
+      metadata={"realName": "Keanu Reeves"},
+    )
+    peer, token = self.fishjam_client.create_peer(room_id, options=options)
+    ```
+
+  </TabItem>
+</Tabs>
+
 ## Listening to events
 
 Fishjam instance is a stateful server that is emitting messages upon certain events.  
