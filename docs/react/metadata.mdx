@@ -1,25 +1,17 @@
 ---
 sidebar_position: 7
+title: "Metadata"
+description: "How to use metadata"
 ---
 
-# Metadata
+import MetadataHeader from "../_common/metadata/header.mdx";
+import JoiningRoom from "../_common/metadata/joining_room.mdx";
+import UpdatingMetadata from "../_common/metadata/updating.mdx";
+import ReadingMetadata from "../_common/metadata/reading.mdx";
 
-Alongside with Video and Audio, it also possible to send additional metadata with each peer. Metadata is just
-JSON that could contain additional information. Most common usage is to send user name associated with track.
-But it can be also used to send camera type, application information etc.
+<MetadataHeader />
 
-:::info
-
-You can also set metadata on [server side, when adding user to the room](/production/server#metadata). These metadata can be defined only when user is joining room and can't be
-update later. Neither by server nor client SDK. They can be used to add information that can't be overwritten, like information about real user name
-or basic permission info.
-
-:::
-
-## Setting metadata when joining room
-
-The `joinRoom` method from `useConnection` hook has `peerMetadata` parameter, that can be used to set object with metadata. You can also add your
-custom type, to define shape of metadata.
+<JoiningRoom>
 
 ```tsx
 import { useConnection } from "@fishjam-cloud/react-client";
@@ -46,9 +38,9 @@ export function JoinRoomButton() {
 }
 ```
 
-## Updating metadata during connection
+</JoiningRoom>
 
-Once you've joined the room, you can update peer metadata with `updatePeerMetadata` from `useUpdatePeerMetadata`:
+<UpdatingMetadata>
 
 ```tsx
 import { useUpdatePeerMetadata } from "@fishjam-cloud/react-client";
@@ -71,11 +63,9 @@ export function JoinRoomButton() {
 }
 ```
 
-## Reading metadata
+</UpdatingMetadata>
 
-Peer metadata are available as `metadata` property for each peer. When you list peers with `usePeers` hook, you can also read
-metadata associated with it. Note that `metadata.peer` property contains metadata set by client SDK (as in above examples).
-And `metadata.server` data are set with server SDK as [described here](/production/server#metadata).
+<ReadingMetadata>
 
 ```tsx
 import { usePeers } from "@fishjam-cloud/react-client";
@@ -107,3 +97,5 @@ export function ListAllNames() {
   );
 }
 ```
+
+</ReadingMetadata>
