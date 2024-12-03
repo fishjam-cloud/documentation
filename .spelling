@@ -64,3 +64,14 @@ ConfigurePermissions
 mdx
 _components
 JSON
+fastify
+props.children
+_common
+header.mdx
+MetadataHeader
+joining_room.mdx
+JoiningRoom
+updating.mdx
+UpdatingMetadata
+reading.mdx
+ReadingMetadata
