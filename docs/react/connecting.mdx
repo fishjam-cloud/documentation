@@ -23,8 +23,8 @@ export function JoinRoomButton() {
   const onJoinRoomPress = useCallback(async () => {
     // highlight-next-line
     await joinRoom({
-      token: PEER_TOKEN,
       url: FISHJAM_URL,
+      peerToken: PEER_TOKEN,
     });
   }, [joinRoom]);
 

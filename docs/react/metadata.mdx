@@ -1,0 +1,101 @@
+---
+sidebar_position: 7
+title: "Metadata"
+description: "How to use metadata"
+---
+
+import MetadataHeader from "../_common/metadata/header.mdx";
+import JoiningRoom from "../_common/metadata/joining_room.mdx";
+import UpdatingMetadata from "../_common/metadata/updating.mdx";
+import ReadingMetadata from "../_common/metadata/reading.mdx";
+
+<MetadataHeader />
+
+<JoiningRoom>
+
+```tsx
+import { useConnection } from "@fishjam-cloud/react-client";
+import { useCallback } from "react";
+
+type PeerMetadata = {
+  displayName: string;
+};
+
+export function JoinRoomButton() {
+  // highlight-next-line
+  const { joinRoom } = useConnection();
+
+  const onJoinRoomPress = useCallback(async () => {
+    await joinRoom<PeerMetadata>({
+      peerToken: PEER_TOKEN,
+      url: FISHJAM_URL,
+      // highlight-next-line
+      peerMetadata: { displayName: "John Wick" },
+    });
+  }, [joinRoom]);
+
+  return <button onClick={onJoinRoomPress}>Join room</button>;
+}
+```
+
+</JoiningRoom>
+
+<UpdatingMetadata>
+
+```tsx
+import { useUpdatePeerMetadata } from "@fishjam-cloud/react-client";
+import { useCallback } from "react";
+
+type PeerMetadata = {
+  displayName: string;
+};
+
+export function JoinRoomButton() {
+  // highlight-next-line
+  const { updatePeerMetadata } = useUpdatePeerMetadata<PeerMetadata>();
+
+  const onPressUpdateName = useCallback(async () => {
+    // highlight-next-line
+    await updatePeerMetadata({ displayName: "Thomas A. Anderson" });
+  }, [updatePeerMetadata]);
+
+  return <button onClick={onPressUpdateName}>Change name</button>;
+}
+```
+
+</UpdatingMetadata>
+
+<ReadingMetadata>
+
+```tsx
+import { usePeers } from "@fishjam-cloud/react-client";
+
+type PeerMetadata = {
+  displayName: string;
+};
+
+type ServerMetadata = {
+  realName: string;
+};
+
+export function ListAllNames() {
+  // highlight-next-line
+  const { remotePeers } = usePeers<PeerMetadata, ServerMetadata>();
+
+  return (
+    <div>
+      {remotePeers.map((peer) => (
+        // highlight-start
+        <span>
+          Display name: {peer.metadata?.peer.displayName}
+          <br />
+          Real name: {peer.metadata?.server.realName}
+        </span>
+        // highlight-end
+      ))}
+    </div>
+  );
+}
+```
+
+</ReadingMetadata>
