@@ -4,8 +4,7 @@ But it can be also used to send camera type, application information etc.
 
 :::info
 
-You can also set metadata on [server side, when adding user to the room](/production/server#metadata). These metadata can be defined only when user is joining room and can't be
-update later. Neither by server nor client SDK. They can be used to add information that can't be overwritten, like information about real user name
+You can also set metadata on [the server side, when adding user to the room](/production/server#metadata). These metadata are defined while creating a peer on the server side and are persistent throughout its lifetime.  Server metadata allow attaching information that can't be overwritten, like information about real user name
 or basic permission info.
 
 :::

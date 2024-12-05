@@ -1,7 +1,9 @@
 ## Reading metadata
 
 Peer metadata are available as `metadata` property for each peer. When you list peers with `usePeers` hook, you can also read
-metadata associated with it. Note that `metadata.peer` property contains metadata set by client SDK (as in above examples).
-And `metadata.server` data are set with server SDK as [described here](/production/server#metadata).
+metadata associated with it.
+Note that `metadata.peer` property contains metadata set by client SDK (as in above examples).
+The metadata set on the server side are available at `metadata.server`.
+Learn more about server metadata [here](/production/server#metadata).
 
 {props.children}
