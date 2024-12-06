@@ -63,3 +63,4 @@ InstallPackage
 ConfigurePermissions
 mdx
 _components
+fastify
