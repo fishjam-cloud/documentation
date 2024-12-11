@@ -131,6 +131,33 @@ const config: Config = {
       additionalLanguages: ["bash"],
     },
   } satisfies Preset.ThemeConfig,
+
+  plugins: [
+    [
+      "docusaurus-plugin-typedoc",
+      {
+        id: "web-api",
+        out: "docs/api/web",
+        entryPoints: [
+          "./packages/web-client-sdk/packages/react-client/src/index.ts",
+        ],
+        tsconfig:
+          "./packages/web-client-sdk/packages/react-client/tsconfig.json",
+      },
+    ],
+    [
+      "docusaurus-plugin-typedoc",
+      {
+        id: "mobile-api",
+        out: "docs/api/mobile",
+        entryPoints: [
+          "./packages/mobile-client-sdk/packages/react-native-client/src/index.tsx",
+        ],
+        tsconfig:
+          "./packages/mobile-client-sdk/packages/react-native-client/tsconfig.json",
+      },
+    ],
+  ],
 };
 
 export default config;
