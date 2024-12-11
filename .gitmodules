@@ -1,3 +1,6 @@
 [submodule "packages/web-client-sdk"]
 	path = packages/web-client-sdk
 	url = https://github.com/fishjam-cloud/web-client-sdk.git
+[submodule "packages/mobile-client-sdk"]
+	path = packages/mobile-client-sdk
+	url = https://github.com/fishjam-cloud/mobile-client-sdk.git
