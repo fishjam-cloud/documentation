@@ -2,6 +2,31 @@ import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 
+function injectTypeDocSidebar(items) {
+  return items.map((item) => {
+    if (item.customProps?.id === "generated-api") {
+      return {
+        ...item,
+        items: [
+          {
+            type: "category",
+            label: "React Native SDK",
+            link: { type: "doc", id: "api/mobile/index" },
+            items: require("./docs/api/mobile/typedoc-sidebar.cjs"),
+          },
+          {
+            type: "category",
+            label: "React SDK",
+            link: { type: "doc", id: "api/web/index" },
+            items: require("./docs/api/web/typedoc-sidebar.cjs"),
+          },
+        ],
+      };
+    }
+    return item;
+  });
+}
+
 const config: Config = {
   title: "Fishjam Docs",
   tagline: "Easiest way to add video streaming to your React Native app",
@@ -41,6 +66,14 @@ const config: Config = {
           remarkPlugins: [
             [require("@docusaurus/remark-plugin-npm2yarn"), { sync: true }],
           ],
+          async sidebarItemsGenerator({
+            defaultSidebarItemsGenerator,
+            ...args
+          }) {
+            return injectTypeDocSidebar(
+              await defaultSidebarItemsGenerator(args),
+            );
+          },
         },
         blog: {
           showReadingTime: true,
@@ -144,9 +177,9 @@ const config: Config = {
         tsconfig:
           "./packages/web-client-sdk/packages/react-client/tsconfig.json",
         readme: "none",
-        parametersFormat: "list",
-        propertyMembersFormat: "list",
-        typeDeclarationFormat: "list",
+        parametersFormat: "table",
+        propertyMembersFormat: "table",
+        typeDeclarationFormat: "table",
         tableColumnSettings: {
           hideSources: true,
         },
@@ -173,9 +206,9 @@ const config: Config = {
         tsconfig:
           "./packages/mobile-client-sdk/packages/react-native-client/tsconfig.json",
         readme: "none",
-        parametersFormat: "list",
+        parametersFormat: "table",
         propertyMembersFormat: "list",
-        typeDeclarationFormat: "list",
+        typeDeclarationFormat: "table",
         tableColumnSettings: {
           hideSources: true,
         },
