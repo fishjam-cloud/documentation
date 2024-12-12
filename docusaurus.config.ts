@@ -143,6 +143,23 @@ const config: Config = {
         ],
         tsconfig:
           "./packages/web-client-sdk/packages/react-client/tsconfig.json",
+        readme: "none",
+        parametersFormat: "list",
+        propertyMembersFormat: "list",
+        typeDeclarationFormat: "list",
+        tableColumnSettings: {
+          hideSources: true,
+        },
+        categoryOrder: [
+          "Connection",
+          "Devices",
+          "Screenshare",
+          "Component",
+          "*",
+          "Debugging",
+        ],
+        sort: ["kind", "alphabetical"],
+        kindSortOrder: ["Method", "Function"],
       },
     ],
     [
@@ -155,6 +172,13 @@ const config: Config = {
         ],
         tsconfig:
           "./packages/mobile-client-sdk/packages/react-native-client/tsconfig.json",
+        readme: "none",
+        parametersFormat: "list",
+        propertyMembersFormat: "list",
+        typeDeclarationFormat: "list",
+        tableColumnSettings: {
+          hideSources: true,
+        },
       },
     ],
   ],
