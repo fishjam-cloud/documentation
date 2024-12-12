@@ -134,5 +134,5 @@ dist
 
 build
 
-docs/api/**/*.md
-docs/api/**/*.cjs
+docs/api/mobile/**
+docs/api/web/**
