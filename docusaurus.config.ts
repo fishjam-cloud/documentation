@@ -27,6 +27,26 @@ function injectTypeDocSidebar(items) {
   });
 }
 
+const typedocConfig = {
+  readme: "none",
+  parametersFormat: "table",
+  propertyMembersFormat: "table",
+  typeDeclarationFormat: "list",
+  tableColumnSettings: {
+    hideSources: true,
+  },
+  categoryOrder: [
+    "Connection",
+    "Devices",
+    "Screenshare",
+    "Component",
+    "*",
+    "Debugging",
+  ],
+  sort: ["kind", "alphabetical"],
+  kindSortOrder: ["Method", "Function"],
+};
+
 const config: Config = {
   title: "Fishjam Docs",
   tagline: "Easiest way to add video streaming to your React Native app",
@@ -176,23 +196,7 @@ const config: Config = {
         ],
         tsconfig:
           "./packages/web-client-sdk/packages/react-client/tsconfig.json",
-        readme: "none",
-        parametersFormat: "table",
-        propertyMembersFormat: "table",
-        typeDeclarationFormat: "table",
-        tableColumnSettings: {
-          hideSources: true,
-        },
-        categoryOrder: [
-          "Connection",
-          "Devices",
-          "Screenshare",
-          "Component",
-          "*",
-          "Debugging",
-        ],
-        sort: ["kind", "alphabetical"],
-        kindSortOrder: ["Method", "Function"],
+        ...typedocConfig,
       },
     ],
     [
@@ -205,13 +209,7 @@ const config: Config = {
         ],
         tsconfig:
           "./packages/mobile-client-sdk/packages/react-native-client/tsconfig.json",
-        readme: "none",
-        parametersFormat: "table",
-        propertyMembersFormat: "list",
-        typeDeclarationFormat: "table",
-        tableColumnSettings: {
-          hideSources: true,
-        },
+        ...typedocConfig,
       },
     ],
   ],
