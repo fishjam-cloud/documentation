@@ -98,7 +98,7 @@ export function StartStreamingButton({
 
 ### 3. Check if you are connected
 
-Once you are connected, you can check connection status with `useConnection` hook
+Once you are connected, you can check connection status with [`useConnection`](/api/mobile/functions/useConnection) hook
 
 ```ts
 const { peerStatus } = useConnection();
@@ -112,8 +112,8 @@ In order to get peers, you must first join a room. See the steps above.
 
 :::
 
-Fetching other peers in your room can be done with the `usePeers` hook. To display their video stream, you can use the
-`VideoRendererView` component. Example code could look like this:
+Fetching other peers in your room can be done with the [`usePeers`](/api/mobile/functions/usePeers) hook. To display their video stream, you can use the
+[`VideoRendererView`](/api/mobile/functions/VideoRendererView) component. Example code could look like this:
 
 ```tsx
 import {
