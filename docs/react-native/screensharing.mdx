@@ -25,7 +25,7 @@ To enable screen share feature on iOS, you need to follow below steps
 
 You need to modify `app.json` file and add our plugin:
 
-```json
+```json title='app.json'
 {
   "expo": {
     ...
@@ -52,7 +52,7 @@ Configuring screen sharing on iOS is a little complicated.
 
 1. Add camera and microphone permissions to your main `Info.plist`.
 
-   ```xml
+   ```xml title='Info.plist'
    <key>NSCameraUsageDescription</key>
    <string>Allow $(PRODUCT_NAME) to use the camera</string>
    <key>NSMicrophoneUsageDescription</key>
@@ -129,7 +129,7 @@ Configuring screen sharing on iOS is a little complicated.
 
 1. In project's Podfile add the following code:
 
-   ```rb
+   ```rb title='Podfile'
    target 'FishjamScreenBroadcastExtension' do
      pod 'FishjamCloudClient/Broadcast'
    end
@@ -137,7 +137,7 @@ Configuring screen sharing on iOS is a little complicated.
 
 1. Add the following constants in your `Info.plist`:
 
-   ```xml
+   ```xml title='Info.plist'
    <key>AppGroupName</key>
    <string>group.{{BUNDLE_IDENTIFIER}}</string>
    <key>ScreencastExtensionBundleId</key>
