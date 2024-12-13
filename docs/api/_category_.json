@@ -1,0 +1,11 @@
+{
+  "label": "API",
+  "position": 9,
+  "link": {
+    "type": "generated-index",
+    "description": "API documentation for Web and Mobile SDKs."
+  },
+  "customProps": {
+    "id": "generated-api"
+  }
+}
