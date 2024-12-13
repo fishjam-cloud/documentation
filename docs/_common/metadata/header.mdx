@@ -1,11 +1,10 @@
-Alongside with audio and video, it also possible to send additional metadata with each peer. Metadata is just
-JSON that could contain additional information. Most common usage is to send user name associated with a track.
-But it can be also used to send camera type, application information etc.
+Alongside audio and video, it is possible to send additional metadata with each peer. Metadata is just
+JSON that can contain arbitrary information. Its most common use is sending a user name associated with a peer.
+However, it can be also used to send the peer's camera type, application information etc.
 
 :::info
 
-You can also set metadata on [the server side, when adding user to the room](/production/server#metadata). These metadata are defined
-while creating a peer on the server side and are persistent throughout its lifetime. Server metadata allow attaching information that
-can't be overwritten, like information about real user name or basic permission info.
+You can also set metadata on [the server side, when adding user to the room](/production/server#metadata). This metadata is persistent throughout its lifetime and is useful for attaching information that
+can't be overwritten by the peer, like information about real user names or basic permission info.
 
 :::
