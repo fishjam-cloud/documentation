@@ -43,7 +43,7 @@ follow our [server setup instructions](/production/server).
 
 ## Connecting
 
-In order to connect, you just need to call `joinRoom` method with data from previous step:
+In order to connect, you just need to call [`joinRoom`](/api/mobile/functions/useConnection#joinroom) method with data from previous step:
 
 ```tsx
 import { useCallback } from "react";
@@ -79,7 +79,7 @@ async function getRoomDetails(roomName: string, peerName: string) {
 
 ## Disconnecting
 
-In order to close connection, you have to call `leaveRoom` method.
+In order to close connection, you have to call [`leaveRoom`](/api/mobile/functions/useConnection#leaveroom) method.
 
 ```tsx
 import { useCallback } from "react";

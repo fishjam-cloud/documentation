@@ -14,6 +14,12 @@ Get all dependencies
 yarn
 ```
 
+Fetch packages source code:
+
+```
+yarn prepare
+```
+
 and run development preview
 
 ```

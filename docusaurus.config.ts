@@ -2,6 +2,51 @@ import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 
+function injectTypeDocSidebar(items) {
+  return items.map((item) => {
+    if (item.customProps?.id === "generated-api") {
+      return {
+        ...item,
+        items: [
+          {
+            type: "category",
+            label: "React Native SDK",
+            link: { type: "doc", id: "api/mobile/index" },
+            items: require("./docs/api/mobile/typedoc-sidebar.cjs"),
+          },
+          {
+            type: "category",
+            label: "React SDK",
+            link: { type: "doc", id: "api/web/index" },
+            items: require("./docs/api/web/typedoc-sidebar.cjs"),
+          },
+        ],
+      };
+    }
+    return item;
+  });
+}
+
+const typedocConfig = {
+  readme: "none",
+  parametersFormat: "table",
+  propertyMembersFormat: "table",
+  typeDeclarationFormat: "list",
+  tableColumnSettings: {
+    hideSources: true,
+  },
+  categoryOrder: [
+    "Connection",
+    "Devices",
+    "Screenshare",
+    "Component",
+    "*",
+    "Debugging",
+  ],
+  sort: ["kind", "alphabetical"],
+  kindSortOrder: ["Method", "Function"],
+};
+
 const config: Config = {
   title: "Fishjam Docs",
   tagline: "Easiest way to add video streaming to your React Native app",
@@ -41,6 +86,14 @@ const config: Config = {
           remarkPlugins: [
             [require("@docusaurus/remark-plugin-npm2yarn"), { sync: true }],
           ],
+          async sidebarItemsGenerator({
+            defaultSidebarItemsGenerator,
+            ...args
+          }) {
+            return injectTypeDocSidebar(
+              await defaultSidebarItemsGenerator(args),
+            );
+          },
         },
         blog: {
           showReadingTime: true,
@@ -131,6 +184,35 @@ const config: Config = {
       additionalLanguages: ["bash"],
     },
   } satisfies Preset.ThemeConfig,
+
+  plugins: [
+    [
+      "docusaurus-plugin-typedoc",
+      {
+        id: "web-api",
+        out: "docs/api/web",
+        entryPoints: [
+          "./packages/web-client-sdk/packages/react-client/src/index.ts",
+        ],
+        tsconfig:
+          "./packages/web-client-sdk/packages/react-client/tsconfig.json",
+        ...typedocConfig,
+      },
+    ],
+    [
+      "docusaurus-plugin-typedoc",
+      {
+        id: "mobile-api",
+        out: "docs/api/mobile",
+        entryPoints: [
+          "./packages/mobile-client-sdk/packages/react-native-client/src/index.tsx",
+        ],
+        tsconfig:
+          "./packages/mobile-client-sdk/packages/react-native-client/tsconfig.json",
+        ...typedocConfig,
+      },
+    ],
+  ],
 };
 
 export default config;
