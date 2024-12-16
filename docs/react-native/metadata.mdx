@@ -1,0 +1,98 @@
+---
+sidebar_position: 8
+title: "Metadata"
+description: "How to use metadata"
+---
+
+import MetadataHeader from "../_common/metadata/header.mdx";
+import JoiningRoom from "../_common/metadata/joining_room.mdx";
+import UpdatingMetadata from "../_common/metadata/updating.mdx";
+import ReadingMetadata from "../_common/metadata/reading.mdx";
+
+<MetadataHeader />
+
+<JoiningRoom>
+
+```tsx
+import { useCallback } from "react";
+import { Button } from "react-native";
+import { useConnection } from "@fishjam-cloud/react-native-client";
+
+type PeerMetadata = {
+  displayName: string;
+};
+
+export function JoinRoomButton() {
+  const { joinRoom } = useConnection();
+
+  const onPressJoin = useCallback(async () => {
+    await joinRoom<PeerMetadata>({
+      url: FISHJAM_URL,
+      peerToken: PEER_TOKEN,
+      // highlight-next-line
+      peerMetadata: { displayName: "John Wick" },
+    });
+  }, [joinRoom]);
+
+  return <Button onPress={onPressJoin} title="Join Room" />;
+}
+```
+
+</JoiningRoom>
+
+<UpdatingMetadata>
+
+```tsx
+import { useCallback } from "react";
+import { Button } from "react-native";
+import { useUpdatePeerMetadata } from "@fishjam-cloud/react-native-client";
+
+type PeerMetadata = {
+  displayName: string;
+};
+
+export function UpdateNameButton() {
+  // highlight-next-line
+  const { updatePeerMetadata } = useUpdatePeerMetadata<PeerMetadata>();
+
+  const onPressUpdateName = useCallback(async () => {
+    // highlight-next-line
+    await updatePeerMetadata({ displayName: "Thomas A. Anderson" });
+  }, [updatePeerMetadata]);
+
+  return <Button onPress={onPressUpdateName} title="Change name" />;
+}
+```
+
+</UpdatingMetadata>
+
+<ReadingMetadata>
+
+```tsx
+import { Text, View } from "react-native";
+import { usePeers } from "@fishjam-cloud/react-native-client";
+
+type PeerMetadata = {
+  displayName: string;
+};
+
+export function ListAllNames() {
+  // highlight-next-line
+  const { remotePeers } = usePeers<PeerMetadata>();
+
+  return (
+    <View>
+      {remotePeers.map((peer) => (
+        // highlight-start
+        <Text>
+          Display name: {peer.metadata.peer.displayName}
+          Real name: {peer.metadata.server.realName}
+        </Text>
+        // highlight-end
+      ))}
+    </View>
+  );
+}
+```
+
+</ReadingMetadata>

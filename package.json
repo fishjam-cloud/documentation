@@ -16,7 +16,7 @@
     "typecheck": "tsc",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "spellcheck": "mdspell '**/*.md' '**/*.mdx' '!node_modules/**' --en-us",
+    "spellcheck": "mdspell '**/*.md' '**/*.mdx' '!node_modules/**' '!packages/**' --en-us",
     "spellcheck:report": "yarn spellcheck -r"
   },
   "dependencies": {
