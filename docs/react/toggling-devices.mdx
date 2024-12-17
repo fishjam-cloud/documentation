@@ -4,62 +4,61 @@ sidebar_position: 4
 
 # Toggling devices
 
-Fishjam SDK provides functionality to control media device streams more dynamically. This includes both muting and physically turning the device on or off.
+The Fishjam SDK provides functions for dynamically controlling media device streams. This includes turning the cameras and microphones on and off, as well as muting and unmuting microphones.
 
-Turning off the device saves battery and CPU power and turns off the LED.
-It takes longer to turn it back on, so other participants need to wait longer to receive the first data.
-You would use this method with a camera, as it's usually acceptable to wait longer to see someone's face.
-A disabled camera indicator reassures the user that the camera is truly turned off.
+## Turning Cameras On and Off - `toggleCamera()`
 
-Muting and unmuting is faster, but a muted device still uses resources.
-This is useful for microphones, as it is common to mute and unmute during a meeting.
-Unmuting needs to be quick to capture the first word of a sentence.
+This function controls the physical operational state of the camera.
 
-Both APIs are available for camera as well as for the microphone.
+- **Turning the camera off**: This action stops the camera device, disables the media stream, and pauses streaming. The webcam indicator light will shut down.
+- **Turning the camera on**: This action starts the camera and resumes streaming, allowing other participants to see video after a brief initialization period.
 
-## Muting and unmuting - `toggleMute()`
-
-The toggle mute function allows you to enable or disable the media stream without affecting the device's operational status.
-If the device is muted, it starts the device, enables the media stream, and starts (or resumes) streaming.
-When it's unmuted, it disables the media stream and pauses streaming but does not stop the device.
-In the case when the device is off, it starts the device, enables the media stream, and starts (or resumes) streaming.
-
-### Usage example
-
-Use this function to programmatically toggle the mute state based on user interactions or other application logic.
+### Usage Example
 
 ```tsx
 import { useCamera } from "@fishjam-cloud/react-client";
 
 export function CameraControl() {
-  // highlight-next-line
-  const { toggleMute } = useCamera();
+  const { toggleCamera } = useCamera();
 
-  return <button onClick={() => toggleMute()}>Toggle camera mute</button>;
+  return <button onClick={() => toggleCamera()}>Toggle Camera Power</button>;
 }
 ```
 
-This component provides a button that allows users to mute or unmute the camera stream.
+## Toggling Microphones - `toggleMicrophone()` and `toggleMicrophoneMute()`
 
-## Turning devices on and off - `toggleDevice()`
+### Turning Microphones On and Off - `toggleMicrophone()`
 
-The toggle device function control involves physically toggling the device's operational state.  
-If the device is off, it starts the device and begins (or resumes) streaming.  
-When it's on, it disables the media stream, pauses streaming, and stops the device.
+This function toggles the microphone's physical operational state. The function interacts with a physical device, so it might take a noticeable amount of time.
 
-### Usage example
+- **Turning the microphone off**: Turns the microphone off, disables the media stream, and pauses any audio transmission.
+- **Turning the microphone on**: Turns the microphone on and resumes audio streaming.
 
-This function allows you to control the device's power state directly from your application.
+### Muting and Unmuting Microphones - `toggleMicrophoneMute()`
+
+This function manages the audio stream's operational status without affecting the microphone's hardware state.
+Muting and unmuting is faster, but a muted device still uses resources. This is useful, as it is common to mute and unmute during a meeting. Unmuting needs to be quick to capture the first word of a sentence.
+
+- **Muting the microphone**: This action disables the media stream and stops audio transmission while keeping the microphone active.
+- **Unmuting the microphone**: This action enables the media stream, allowing immediate transmission of sounds.
+
+### Usage Example
 
 ```tsx
 import { useMicrophone } from "@fishjam-cloud/react-client";
 
 export function MicrophoneControl() {
-  // highlight-next-line
-  const { toggleDevice } = useMicrophone();
+  const { toggleMicrophone, toggleMicrophoneMute } = useMicrophone();
 
-  return <button onClick={() => toggleDevice()}>Toggle microphone</button>;
+  return (
+    <div>
+      <button onClick={() => toggleMicrophone()}>
+        Toggle Microphone Power
+      </button>
+      <button onClick={() => toggleMicrophoneMute()}>
+        Toggle Microphone Mute
+      </button>
+    </div>
+  );
 }
 ```
-
-This example provides functionality to start or stop the microphone, allowing for a complete control over the hardware from the user's interface.
