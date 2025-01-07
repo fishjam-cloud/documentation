@@ -5,7 +5,7 @@ Your app must have permissions configured to use the microphone and camera.
 
 ### Android
 
-For android you need to ask for certain permissions:
+Permissions below are required to stream audio and video with Fishjam.
 
 - `android.permission.CAMERA`
 - `android.permission.RECORD_AUDIO`
@@ -15,7 +15,7 @@ For android you need to ask for certain permissions:
 
   <TabItem value="expo" label="Expo">
 
-You need to modify `app.json` file and add all permissions:
+Add required permissions to the `app.json` file.
 
 ```json title='app.json'
 {
@@ -36,7 +36,7 @@ You need to modify `app.json` file and add all permissions:
   </TabItem>
   <TabItem value="rn" label="Bare workflow">
 
-You need to modify `AndroidManifest.xml` file, and these lines:
+Add required permissions to the `AndroidManifest.xml` file.
 
 ```xml title='AndroidManifest.xml'
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
@@ -67,8 +67,8 @@ To update default content of permission alert, you can add these settings to `ap
    "ios": {
       ...
       "infoPlist": {
-        "NSCameraUsageDescription": "Your message.",
-        "NSMicrophoneUsageDescription": "Your message"
+        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera.",
+        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone."
       }
     },
   }
@@ -78,14 +78,13 @@ To update default content of permission alert, you can add these settings to `ap
   </TabItem>
   <TabItem value="rn" label="Bare workflow">
 
-You need to make sure that `Info.plist` contains these entries:
+Ensure `Info.plist` contains camera and microphone usage description entries:
 
 ```xml title='Info.plist'
     <key>NSCameraUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your camera.</string>
     <key>NSMicrophoneUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your microphone</string>
-
+    <string>Allow $(PRODUCT_NAME) to access your microphone.</string>
 ```
 
   </TabItem>
