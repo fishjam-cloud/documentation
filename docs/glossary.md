@@ -4,7 +4,7 @@ sidebar_position: 8
 
 # Glossary
 
-Terms used in our documentation
+A brief walk-through of the terms we use in the documentation.
 
 ### Room
 
