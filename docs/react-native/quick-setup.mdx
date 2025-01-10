@@ -7,31 +7,36 @@ import ConfigurePermissions from "./_components/configure-permissions.mdx";
 
 # Quick Setup
 
-Integrate Fishjam into your React Native application.
+This article is a fast track to integrate Fishjam into your React Native application.  
+It contains all required steps to start streaming video with Fishjam.  
+You can also [see a full example](#full-example) at the end of the article.
 
-## Install the package
+## Prerequisites
+
+In this part, let's focus on all the things you need to prepare to use Fishjam in your project.
+
+### 1. Install the package
 
 <InstallPackage />
 
-## Build native dependencies
+### 2. Build native dependencies
 
 ```bash
 npx expo prebuild
 ```
 
-## Configure App permissions
+### 3. Configure required app permissions
 
 <ConfigurePermissions />
 
-### Get Room Manager URL
+### 4. Get Room Manager URL
 
-Login to [Fishjam Dashboard](https://fishjam.io/app) and get your Room Manager URL.
-
-## TL;DR
-
-Checkout [complete example below:](#full-example)
+Login to [Fishjam Dashboard](https://fishjam.io/app) and get your [Room Manager](/glossary#room-manager) URL.
 
 ## Step by step instructions
+
+Now you are good to jump right into your IDE and integrate Fishjam into your app.
+In few simple steps, you will be able to implement a simple video call functionality.
 
 ### 1. Fetch peer token
 
