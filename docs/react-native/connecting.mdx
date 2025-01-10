@@ -58,10 +58,10 @@ export function JoinRoomButton() {
   const { joinRoom } = useConnection();
 
   const onPressJoin = useCallback(async () => {
-    const { fishjamUrl, peerToken } = await getRoomDetails("Room", "User");
+    const { url, peerToken } = await getRoomDetails("Room", "User");
 
     // highlight-next-line
-    await joinRoom(fishjamUrl, peerToken);
+    await joinRoom({ url, peerToken });
   }, [joinRoom]);
 
   return <Button onPress={onPressJoin} title="Join Room" />;
@@ -73,7 +73,7 @@ async function getRoomDetails(roomName: string, peerName: string) {
     `https://fishjam.io/api/v1/connect/${YOUR_APP_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
   );
   const { fishjamUrl, peerToken } = await response.json();
-  return { fishjamUrl, peerToken };
+  return { url: fishjamUrl, peerToken };
 }
 ```
 

@@ -94,7 +94,7 @@ export function StartStreamingButton({
     await prepareCamera({ cameraEnabled: true });
 
     // highlight-next-line
-    await joinRoom(url, peerToken);
+    await joinRoom({ url, peerToken });
   }, [joinRoom, prepareCamera, roomName, peerName]);
 
   return <Button title="Start Streaming" onPress={startStreaming} />;
