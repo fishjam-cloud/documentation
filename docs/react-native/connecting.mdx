@@ -7,12 +7,12 @@ import TabItem from "@theme/TabItem";
 
 # Connecting
 
-How to connect to Fishjam
+This article will guide you through the process of connecting to a Fishjam room.
 
 ## Getting URL and token
 
-In order to connect, you need to retrieve URL (multimedia server address) and token (token that will authenticate you in
-your Room)
+In order to connect, you need to retrieve `FISHJAM_URL` (multimedia server address) and `PEER_TOKEN` (token that will authenticate the peer in
+your Room).
 
 <Tabs groupId="app-type">
 
@@ -35,7 +35,7 @@ const { fishjamUrl, peerToken } = await response.json();
   </TabItem>
   <TabItem value="production" label="Production App">
 
-For production app, you need to implement your own backend service that will provide user with `peerToken`. To do that,
+For production app, you need to implement your own backend service that will provide user with `PEER_TOKEN`. To do that,
 follow our [server setup instructions](/production/server).
 
   </TabItem>
@@ -43,7 +43,7 @@ follow our [server setup instructions](/production/server).
 
 ## Connecting
 
-In order to connect, you just need to call [`joinRoom`](/api/mobile/functions/useConnection#joinroom) method with data from previous step:
+In order to connect, call [`joinRoom`](/api/mobile/functions/useConnection#joinroom) method with data from previous step:
 
 ```tsx
 import { useCallback } from "react";
@@ -58,10 +58,10 @@ export function JoinRoomButton() {
   const { joinRoom } = useConnection();
 
   const onPressJoin = useCallback(async () => {
-    const { fishjamUrl, peerToken } = await getRoomDetails("Room", "User");
+    const { url, peerToken } = await getRoomDetails("Room", "User");
 
     // highlight-next-line
-    await joinRoom(fishjamUrl, peerToken);
+    await joinRoom({ url, peerToken });
   }, [joinRoom]);
 
   return <Button onPress={onPressJoin} title="Join Room" />;
@@ -73,13 +73,13 @@ async function getRoomDetails(roomName: string, peerName: string) {
     `https://fishjam.io/api/v1/connect/${YOUR_APP_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
   );
   const { fishjamUrl, peerToken } = await response.json();
-  return { fishjamUrl, peerToken };
+  return { url: fishjamUrl, peerToken };
 }
 ```
 
 ## Disconnecting
 
-In order to close connection, you have to call [`leaveRoom`](/api/mobile/functions/useConnection#leaveroom) method.
+In order to close the connection, you have to call [`leaveRoom`](/api/mobile/functions/useConnection#leaveroom) method.
 
 ```tsx
 import { useCallback } from "react";
