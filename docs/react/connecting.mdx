@@ -11,7 +11,7 @@ In order to connect, you need a `PEER_TOKEN` and the `FISHJAM_URL`.
 ## Connecting
 
 Use the [`useConnection`](/api/web/functions/useConnection) hook to get
-the [`joinRoom`](/api/web/functions/useConnection#joinroom) function.
+the [`joinRoom`](/api/web/interfaces/UseConnectionResult#joinroom) function.
 
 ```tsx
 import { useConnection } from "@fishjam-cloud/react-client";
@@ -35,7 +35,7 @@ export function JoinRoomButton() {
 
 ## Disconnecting
 
-In order to close connection, use the [`leaveRoom`](/api/web/functions/useConnection#leaveroom) method
+In order to close connection, use the [`leaveRoom`](/api/web/interfaces/UseConnectionResult#leaveroom) method
 from [`useConnection`](/api/web/functions/useConnection) hook.
 
 ```ts

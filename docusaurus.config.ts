@@ -82,7 +82,7 @@ const config: Config = {
           sidebarPath: "./sidebars/docs.ts",
           path: "docs",
           routeBasePath: "/",
-          editUrl: "https://github.com/fishjam-cloud/documentation/",
+          editUrl: "https://github.com/fishjam-cloud/documentation/tree/main/",
           remarkPlugins: [
             [require("@docusaurus/remark-plugin-npm2yarn"), { sync: true }],
           ],
