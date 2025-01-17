@@ -4,7 +4,32 @@ sidebar_position: 4
 
 # Toggling devices
 
-The Fishjam SDK provides functions for dynamically controlling media device streams. This includes turning the cameras and microphones on and off, as well as muting and unmuting microphones.
+The Fishjam SDK provides functions for dynamically controlling media device streams. This includes selecting desired cameras and microphones, turning them on and off, as well as muting and unmuting microphones.
+
+### Selecting Camera and Microphone - [`selectCamera()`](/api/web/type-aliases/UseCameraResult#selectcamera) and [`selectMicrophone()`](/api/web/type-aliases/UseMicrophoneResult#selectmicrophone)
+
+To select the desired camera or microphone, use the [`selectCamera()`](/api/web/type-aliases/UseCameraResult#selectcamera) and [`selectMicrophone()`](/api/web/type-aliases/UseMicrophoneResult#listmicrophones) functions.  
+Lists of the available devices are available via the [`cameraDevices`](/api/web/type-aliases/UseCameraResult#cameradevices) and [`microphoneDevices`](/api/web/type-aliases/UseMicrophoneResult#microphonedevices) properties.
+
+#### Usage Example
+
+```tsx
+import { useCamera } from "@fishjam-cloud/react-client";
+
+export function CameraControl() {
+  const { cameraDevices, selectCamera } = useCamera();
+
+  return (
+    <ul>
+      {cameraDevices.map(({ deviceId, label }) => (
+        <li key={deviceId} onClick={() => selectCamera(deviceId)}>
+          {label}
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
 
 ### Turning Camera On and Off - [`toggleCamera()`](/api/web/type-aliases/UseCameraResult#togglecamera)
 
