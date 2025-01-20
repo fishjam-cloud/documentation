@@ -2,7 +2,7 @@
 sidebar_position: 4
 ---
 
-# Toggling devices
+# Managing devices
 
 The Fishjam SDK provides functions for dynamically controlling media device streams. This includes selecting desired cameras and microphones, turning them on and off, as well as muting and unmuting microphones.
 
@@ -22,8 +22,8 @@ export function CameraControl() {
   return (
     <ul>
       {cameraDevices.map(({ deviceId, label }) => (
-        <li key={deviceId} onClick={() => selectCamera(deviceId)}>
-          {label}
+        <li key={deviceId}>
+          <button onClick={() => selectCamera(deviceId)}>{label}</button>
         </li>
       ))}
     </ul>
