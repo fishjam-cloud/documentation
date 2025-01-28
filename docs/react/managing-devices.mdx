@@ -6,10 +6,10 @@ sidebar_position: 4
 
 The Fishjam SDK provides functions for dynamically controlling media device streams. This includes selecting desired cameras and microphones, turning them on and off, as well as muting and unmuting microphones.
 
-### Selecting Camera and Microphone - [`selectCamera()`](/api/web/type-aliases/UseCameraResult#selectcamera) and [`selectMicrophone()`](/api/web/type-aliases/UseMicrophoneResult#selectmicrophone)
+### Selecting Camera and Microphone - [`selectCamera()`](/api/web/functions/useCamera#selectcamera) and [`selectMicrophone()`](/api/web/functions/useMicrophone#selectmicrophone)
 
-To select the desired camera or microphone, use the [`selectCamera()`](/api/web/type-aliases/UseCameraResult#selectcamera) and [`selectMicrophone()`](/api/web/type-aliases/UseMicrophoneResult#listmicrophones) functions.  
-Lists of the available devices are available via the [`cameraDevices`](/api/web/type-aliases/UseCameraResult#cameradevices) and [`microphoneDevices`](/api/web/type-aliases/UseMicrophoneResult#microphonedevices) properties.
+To select the desired camera or microphone, use the [`selectCamera()`](/api/web/functions/useCamera#selectcamera) and [`selectMicrophone()`](/api/web/functions/useMicrophone#selectmicrophone) functions.  
+Lists of the available devices are available via the [`cameraDevices`](/api/web/functions/useCamera#cameradevices) and [`microphoneDevices`](/api/web/functions/useMicrophone#microphonedevices) properties.
 
 #### Usage Example
 
@@ -31,7 +31,7 @@ export function CameraControl() {
 }
 ```
 
-### Turning Camera On and Off - [`toggleCamera()`](/api/web/type-aliases/UseCameraResult#togglecamera)
+### Turning Camera On and Off - [`toggleCamera()`](/api/web/functions/useCamera#togglecamera)
 
 This function controls the physical operational state of the camera.
 
@@ -50,14 +50,14 @@ export function CameraControl() {
 }
 ```
 
-### Turning Microphone On and Off - [`toggleMicrophone()`](/api/web/type-aliases/UseMicrophoneResult#togglemicrophone)
+### Turning Microphone On and Off - [`toggleMicrophone()`](/api/web/functions/useMicrophone#togglemicrophone)
 
 This function toggles the microphone's physical operational state. The function interacts with a physical device, so it might take a noticeable amount of time.
 
 - **Turning the microphone off**: Turns the microphone off, disables the media stream, and pauses any audio transmission.
 - **Turning the microphone on**: Turns the microphone on and resumes audio streaming.
 
-### Muting and Unmuting Microphone - [`toggleMicrophoneMute()`](/api/web/type-aliases/UseMicrophoneResult#togglemicrophonemute)
+### Muting and Unmuting Microphone - [`toggleMicrophoneMute()`](/api/web/functions/useMicrophone#togglemicrophonemute)
 
 This function manages the audio stream's operational status without affecting the microphone's hardware state.
 Muting and unmuting is faster, but a muted device still uses resources. This is useful, as it is common to mute and unmute during a meeting. Unmuting needs to be quick to capture the first word of a sentence.
