@@ -29,11 +29,8 @@ Token that your backend should pass to end clients to allow access to a specific
 
 ### Fishjam URL
 
-URL to your Fishjam instance. It is used by your backend server to add peers to rooms (and create rooms).  
-It is also
-used by end client apps to join rooms.
+URL to your Fishjam instance. It is used by your backend server to add peers to rooms (and create rooms). It is also used by end client apps to join rooms.
 
 ### Room Manager
 
-Our test app available **only** on Sandbox environment. It allows to test Fishjam without need to add create rooms
-functionality on your backend.
+Our test app available **only** on Sandbox environment. It allows to test Fishjam without need to add create rooms functionality on your backend. You can find our more details [here](/room-manager).
