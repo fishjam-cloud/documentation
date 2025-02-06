@@ -11,7 +11,7 @@ This article will guide you through the process of connecting to a Fishjam room.
 
 ## Getting URL and token
 
-In order to connect, you need to retrieve `FISHJAM_URL` (multimedia server address) and `PEER_TOKEN` (token that will authenticate the peer in
+In order to connect, you need to retrieve **Fishjam URL** and **Peer Token** (token that will authenticate the peer in
 your Room).
 
 <Tabs groupId="app-type">
@@ -26,7 +26,7 @@ To use that simply call `fetch`:
 
 ```ts
 const response = await fetch(
-  `https://fishjam.io/api/v1/connect/${YOUR_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
+  `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
 );
 
 const { fishjamUrl, peerToken } = await response.json();
@@ -35,7 +35,7 @@ const { fishjamUrl, peerToken } = await response.json();
   </TabItem>
   <TabItem value="production" label="Production App">
 
-For production app, you need to implement your own backend service that will provide user with `PEER_TOKEN`. To do that,
+For production app, you need to implement your own backend service that will provide user with **Peer Token** To do that,
 follow our [server setup instructions](/production/server).
 
   </TabItem>

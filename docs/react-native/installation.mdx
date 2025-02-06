@@ -32,6 +32,8 @@ You can also follow more detailed [expo instructions](https://docs.expo.dev/get-
 
 ## Step 1: Install the package
 
+Install `@fishjam-cloud/react-native-client` with your preferred package manager.
+
 <InstallPackage />
 
 ## Step 2: Configure App permissions
@@ -39,6 +41,8 @@ You can also follow more detailed [expo instructions](https://docs.expo.dev/get-
 <ConfigurePermissions />
 
 ## Step 3: Request app permissions
+
+Before using camera or microphone, ask user for permissions.
 
 ```tsx
 import { useCameraPermissions } from "expo-camera";
