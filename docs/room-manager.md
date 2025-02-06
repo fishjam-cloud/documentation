@@ -4,7 +4,9 @@ sidebar_position: 4
 
 # Room Manager
 
-The **default sandbox app** comes with an HTTP server called **Room Manager**.
+## App for initial development
+
+The [**default sandbox app**](https://fishjam.io/app/sandbox) comes with an HTTP server called **Room Manager**.
 It allows you to start working on the Client App without having to setup an actual backend.
 However, for production purposes, you need to bring own backend using our Server SDKs. Production apps doesn't have a corresponding Room Manager.
 
@@ -23,7 +25,7 @@ If you're a frontend developer and you want to quickly test your app, you can us
 This way you can start building your app without having to deploy any server side logic.
 
 :::note
-When moving to production, the only change you will need to make is to retrieve the **peer token from your backend** instead of the room manager.
+When moving to production, the only change you will need to make is to retrieve the **peer token from your backend** instead of the Room Manager.
 :::
 
 :::tip
@@ -36,14 +38,18 @@ It can be used as a reference for building your backend.
 
 ## How do I use it?
 
-Simply take the Fishjam instance url of your `sandbox` app, which should look like `https://fishjam.io/api/v1/connect/***`, append a
-`/room-manager` path and use `roomName` and `peerName` query params to build an url for the GET request.
+Simply login to your Fishjam Dashboard and open [Sandbox App](https://fishjam.io/app/sandbox). You will see your Room Manager URL there.
+Now you need to add `roomName` and `peerName` query params to build an url for the GET request.
 
 #### Example GET request url
 
 ```
 https://fishjam.io/api/v1/connect/<YOUR_APP_UUID>/room-manager?roomName=foo&peerName=bar
 ```
+
+:::note
+`YOUR_APP_UUID` is your unique ID. Anyone that knows that ID, can join to your rooms. To reset this ID, you have to open Sandbox App, press Settings and Reset App.
+:::
 
 #### Example response
 
