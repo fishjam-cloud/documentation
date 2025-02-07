@@ -6,7 +6,7 @@ sidebar_position: 4
 
 ## App for initial development
 
-The [**default sandbox app**](https://fishjam.io/app/sandbox) comes with an HTTP server called **Room Manager**.
+The [**default Sandbox App**](https://fishjam.io/app/sandbox) comes with an HTTP server called **Room Manager**.
 It allows you to start working on the Client App without having to setup an actual backend.
 However, for production purposes, you need to bring own backend using our Server SDKs. Production apps doesn't have a corresponding Room Manager.
 
