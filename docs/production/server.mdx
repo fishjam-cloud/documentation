@@ -168,7 +168,8 @@ At any time you can terminate user's access by deleting the peer.
   <TabItem value="curl" label="cURL">
 
     ```bash
-    curl -X POST "$FISHJAM_URL/room/$ROOM_ID/peer" -H $AUTH_HEADER
+    PAYLOAD='{"options": {}, "type": "webrtc" }'
+    curl -X POST -H "Content-Type: application/json" -H $AUTH_HEADER --data $PAYLOAD "$FISHJAM_URL/room/$ROOM_ID/peer"
 
     curl -X DELETE "$FISHJAM_URL/room/$ROOM_ID/peer/$PEER_ID" -H $AUTH_HEADER
     ```
@@ -218,7 +219,7 @@ Simply pass the your webhook url as a `webhookUrl` parameter when creating a roo
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    const webhookUrl = "https://example.com";
+    const webhookUrl = "https://example.com/";
     await fishjamClient.createRoom({ webhookUrl });
     ```
 
@@ -229,7 +230,7 @@ Simply pass the your webhook url as a `webhookUrl` parameter when creating a roo
     ```python
     from fishjam import RoomOptions
 
-    options = RoomOptions(webhook_url="https://example.com")
+    options = RoomOptions(webhook_url="https://example.com/")
 
     fishjam_client.create_room(options)
     ```
@@ -239,8 +240,8 @@ Simply pass the your webhook url as a `webhookUrl` parameter when creating a roo
   <TabItem value="curl" label="cURL">
 
     ```bash
-    PAYLOAD='{"webhookUrl": "https://example.com" }'
-    curl -X POST -H "Content-Type: application/json" -H $AUTH_HEADER --data $PAYLOAD  "$FISHJAM_URL/room"
+    PAYLOAD='{"webhookUrl": "https://example.com/" }'
+    curl -X POST -H "Content-Type: application/json" -H $AUTH_HEADER --data $PAYLOAD "$FISHJAM_URL/room"
     ```
 
   </TabItem>
