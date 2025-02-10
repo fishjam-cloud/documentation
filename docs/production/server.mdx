@@ -79,16 +79,6 @@ They are required to proceed. Now, we are ready to dive into the code.
     ```
 
   </TabItem>
-
-  <TabItem value="curl" label="cURL">
-
-    ```sh
-    AUTH_HEADER="Authorization: Bearer $FISHJAM_MANAGEMENT_TOKEN"
-
-    curl -i "$FISHJAM_URL/room" -H $AUTH_HEADER
-    ```
-
-  </TabItem>
 </Tabs>
 
 ### Managing rooms
@@ -124,20 +114,7 @@ Create a room to get the `roomId` and be able to start adding peers.
 
   </TabItem>
 
-  <TabItem value="curl" label="cURL">
-
-    ```bash
-    curl -X POST "$FISHJAM_URL/room" -H $AUTH_HEADER
-
-    curl "$FISHJAM_URL/room/$ROOM_ID" -H $AUTH_HEADER
-
-    curl -X DELETE "$FISHJAM_URL/room/$ROOM_ID" -H $AUTH_HEADER
-
-    # puff, it's gone!
-    ```
-
-  </TabItem>
-</Tabs>
+ </Tabs>
 
 ### Managing peers
 
@@ -165,16 +142,7 @@ At any time you can terminate user's access by deleting the peer.
 
   </TabItem>
 
-  <TabItem value="curl" label="cURL">
-
-    ```bash
-    curl -X POST "$FISHJAM_URL/room/$ROOM_ID/peer" -H $AUTH_HEADER
-
-    curl -X DELETE "$FISHJAM_URL/room/$ROOM_ID/peer/$PEER_ID" -H $AUTH_HEADER
-    ```
-
-  </TabItem>
-</Tabs>
+ </Tabs>
 
 #### Metadata
 
@@ -218,7 +186,7 @@ Simply pass the your webhook url as a `webhookUrl` parameter when creating a roo
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    const webhookUrl = "https://example.com";
+    const webhookUrl = "https://example.com/";
     await fishjamClient.createRoom({ webhookUrl });
     ```
 
@@ -229,18 +197,9 @@ Simply pass the your webhook url as a `webhookUrl` parameter when creating a roo
     ```python
     from fishjam import RoomOptions
 
-    options = RoomOptions(webhook_url="https://example.com")
+    options = RoomOptions(webhook_url="https://example.com/")
 
     fishjam_client.create_room(options)
-    ```
-
-  </TabItem>
-
-  <TabItem value="curl" label="cURL">
-
-    ```bash
-    PAYLOAD='{"webhookUrl": "https://example.com" }'
-    curl -X POST -H "Content-Type: application/json" -H $AUTH_HEADER --data $PAYLOAD  "$FISHJAM_URL/room"
     ```
 
   </TabItem>
