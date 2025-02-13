@@ -19,5 +19,3 @@ cd $ROOTDIR
 cd packages/js-server-sdk/
 git checkout main
 git pull
-
-.

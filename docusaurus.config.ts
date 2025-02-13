@@ -22,7 +22,7 @@ function injectTypeDocSidebar(items) {
           },
           {
             type: "category",
-            label: "JS Server SDK",
+            label: "Server SDK for JS",
             link: { type: "doc", id: "api/server/index" },
             items: require("./docs/api/server/typedoc-sidebar.cjs"),
           },
