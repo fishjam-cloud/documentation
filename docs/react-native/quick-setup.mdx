@@ -8,12 +8,12 @@ import ConfigurePermissions from "./_components/configure-permissions.mdx";
 # Quick Setup
 
 This article is a fast track to integrate Fishjam into your React Native application.  
-It contains all required steps to start streaming video with Fishjam.  
+It contains all the required steps to start streaming video with Fishjam.  
 You can also [see a full example](#full-example) at the end of the article.
 
 ## Prerequisites
 
-In this part, let's focus on all the things you need to prepare to use Fishjam in your project.
+In this part, let's focus on everything you need to prepare to use Fishjam in your project.
 
 ### 1. Install the package
 
@@ -31,16 +31,16 @@ npx expo prebuild
 
 ### 4. Get Room Manager URL
 
-Login to [Fishjam Dashboard](https://fishjam.io/app) and get your [Room Manager](/glossary#room-manager) URL.
+Log in to [Fishjam Dashboard](https://fishjam.io/app) and get your [Room Manager](/room-manager) URL.
 
-## Step by step instructions
+## Step-by-step instructions
 
 Now you are good to jump right into your IDE and integrate Fishjam into your app.
-In few simple steps, you will be able to implement a simple video call functionality.
+In a few simple steps, you will be able to implement a simple video call functionality.
 
 ### 1. Fetch peer token
 
-Use your room manager URL to fetch peer token to get a new room:
+Use your Room Manager URL to fetch a peer token to get a new room:
 
 ```ts
 const response = await fetch(
@@ -61,7 +61,7 @@ If you want to use the camera, you must first request permission. Check
 
 :::important
 
-Keep in mind that this won't work on iOS Simulator, as Simulator can't access the camera.
+Keep in mind that this won't work on the iOS Simulator, as the Simulator can't access the camera.
 
 :::
 
@@ -103,7 +103,7 @@ export function StartStreamingButton({
 
 ### 3. Check if you are connected
 
-Once you are connected, you can check connection status with [`useConnection`](/api/mobile/functions/useConnection) hook
+Once you are connected, you can check the connection status with [`useConnection`](/api/mobile/functions/useConnection) hook
 
 ```ts
 const { peerStatus } = useConnection();
@@ -154,7 +154,7 @@ Here is how it all could work together:
 
 :::info
 
-We are using `expo-camera` to request camera permissions in example app. You can install and build it using the
+We are using `expo-camera` to request camera permissions in the example app. You can install and build it using the
 following command:
 
 ```bash
