@@ -98,9 +98,7 @@ export function Receiver() {
   const { joinRoom, leaveRoom } = useConnection();
   const { remotePeers } = usePeers();
 
-  const broadcastedTracks = remotePeers.flatMap((peer) =>
-    peer.tracks.filter((track) => track.type === "Video" && track.isActive),
-  );
+  const broadcastedTrack = remotePeers.at(0)?.cameraTrack;
 
   useEffect(() => {
     const startReceiving = async () => {
@@ -119,16 +117,18 @@ export function Receiver() {
     };
   }, [joinRoom, leaveRoom]);
 
+  if (!broadcastedTrack) {
+    return null;
+  }
+
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      {broadcastedTracks.map((track) => (
-        <VideoRendererView
-          key={track.id}
-          trackId={track.id}
-          videoLayout="FIT"
-          style={{ width: "90%", aspectRatio: 1, backgroundColor: "black" }}
-        />
-      ))}
+      <VideoRendererView
+        key={broadcastedTrack.id}
+        trackId={broadcastedTrack.id}
+        videoLayout="FIT"
+        style={{ width: "90%", aspectRatio: 1, backgroundColor: "black" }}
+      />
     </View>
   );
 }
