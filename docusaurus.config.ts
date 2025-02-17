@@ -20,6 +20,12 @@ function injectTypeDocSidebar(items) {
             link: { type: "doc", id: "api/web/index" },
             items: require("./docs/api/web/typedoc-sidebar.cjs"),
           },
+          {
+            type: "category",
+            label: "Server SDK for JS",
+            link: { type: "doc", id: "api/server/index" },
+            items: require("./docs/api/server/typedoc-sidebar.cjs"),
+          },
         ],
       };
     }
@@ -209,6 +215,19 @@ const config: Config = {
         ],
         tsconfig:
           "./packages/mobile-client-sdk/packages/react-native-client/tsconfig.json",
+        ...typedocConfig,
+      },
+    ],
+    [
+      "docusaurus-plugin-typedoc",
+      {
+        id: "server-api",
+        out: "docs/api/server",
+        entryPoints: [
+          "./packages/js-server-sdk/packages/js-server-sdk/src/index.ts",
+        ],
+        tsconfig:
+          "./packages/js-server-sdk/packages/js-server-sdk/tsconfig.json",
         ...typedocConfig,
       },
     ],
