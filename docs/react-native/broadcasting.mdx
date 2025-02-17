@@ -48,12 +48,14 @@ export function Broadcaster() {
 
   useEffect(() => {
     const startBroadcasting = async () => {
-      await prepareCamera({ cameraEnabled: true });
-
+      console.log("Getting room details...");
       const { url, peerToken } = await getRoomDetails(
         "RoomName",
         "BroadcastingUserName",
       );
+
+      console.log("Preparing camera...");
+      await prepareCamera({ cameraEnabled: true });
 
       await joinRoom({ url, peerToken });
       console.log("Broadcasting...");
@@ -102,6 +104,7 @@ export function Receiver() {
 
   useEffect(() => {
     const startReceiving = async () => {
+      console.log("Getting room details...");
       const { url, peerToken } = await getRoomDetails(
         "RoomName",
         "ReceivingUserName",
