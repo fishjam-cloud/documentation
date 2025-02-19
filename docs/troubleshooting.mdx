@@ -11,9 +11,13 @@ Fishjam supports the following video codecs:
 - **H.264**
 - **VP8**
 
+## Default Codec
+
+Fishjam uses H.264 by default, however, for better compatibility, VP8 is set when you're using Room Manager on Sandbox.
+
 ### Changing the Codec
 
-Override the default codec by setting the `codec` parameter when [creating a room](/api/server/interfaces/RoomConfig#videocodec) using server SDKs. Some clients may also allow codec selection on the device level.
+Override the default codec by setting the `codec` parameter when [creating a room](/api/server/interfaces/RoomConfig#videocodec) using server SDKs.
 
 ### Why VP8 and H.264?
 
@@ -21,3 +25,4 @@ Override the default codec by setting the `codec` parameter when [creating a roo
 - **H.264**: A hardware-accelerated codec offering superior performance. However, its availability varies by device, and it may not perform optimally at lower bitrates.
 
 For optimal performance and compatibility, assess your application's requirements and the environments in which it will operate when selecting a codec.
+We recommend using H.264 for production and VP8 for development as it works with Android emulators.
