@@ -236,6 +236,13 @@ const config: Config = {
       },
     ],
   ],
+
+  scripts: [
+    {
+      src: "//cdn.cookie-script.com/s/8f3788a0e07dc4d8223ff0a0d2f65923.js",
+      async: true,
+    },
+  ],
 };
 
 export default config;
