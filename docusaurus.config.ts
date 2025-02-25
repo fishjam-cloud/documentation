@@ -115,9 +115,8 @@ const config: Config = {
         theme: {
           customCss: "./src/css/custom.css",
         },
-        gtag: {
-          trackingID: "G-5180EY5LQR",
-          anonymizeIP: true,
+        googleTagManager: {
+          containerId: "GTM-MZWSHSWM",
         },
       } satisfies Preset.Options,
     ],
@@ -235,13 +234,6 @@ const config: Config = {
         ...typedocConfig,
       },
     ],
-  ],
-
-  scripts: [
-    {
-      src: "//cdn.cookie-script.com/s/8f3788a0e07dc4d8223ff0a0d2f65923.js",
-      async: true,
-    },
   ],
 };
 
