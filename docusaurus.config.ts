@@ -118,6 +118,12 @@ const config: Config = {
         googleTagManager: {
           containerId: "GTM-MZWSHSWM",
         },
+        sitemap: {
+          lastmod: "date",
+          changefreq: "weekly",
+          ignorePatterns: ["**/blog/**"],
+          filename: "sitemap.xml",
+        },
       } satisfies Preset.Options,
     ],
   ],
