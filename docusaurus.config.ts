@@ -101,17 +101,6 @@ const config: Config = {
             );
           },
         },
-        blog: {
-          showReadingTime: true,
-          feedOptions: {
-            type: ["rss", "atom"],
-            xslt: true,
-          },
-          editUrl: "https://github.com/fishjam-cloud/documentation/",
-          onInlineTags: "warn",
-          onInlineAuthors: "warn",
-          onUntruncatedBlogPosts: "warn",
-        },
         theme: {
           customCss: "./src/css/custom.css",
         },
@@ -121,7 +110,6 @@ const config: Config = {
         sitemap: {
           lastmod: "date",
           changefreq: "weekly",
-          ignorePatterns: ["**/blog/**"],
           filename: "sitemap.xml",
         },
       } satisfies Preset.Options,
