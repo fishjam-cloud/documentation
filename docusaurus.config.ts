@@ -118,6 +118,17 @@ const config: Config = {
         googleTagManager: {
           containerId: "GTM-MZWSHSWM",
         },
+        sitemap: {
+          lastmod: "date",
+          changefreq: "weekly",
+          priority: 0.5, // Google ignores this, and other search engines probably do too
+          ignorePatterns: ["**/blog/**"],
+          filename: "sitemap.xml",
+          createSitemapItems: async (params) => {
+            const { defaultCreateSitemapItems, ...rest } = params;
+            return await defaultCreateSitemapItems(rest);
+          },
+        },
       } satisfies Preset.Options,
     ],
   ],
