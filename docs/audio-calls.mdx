@@ -47,3 +47,7 @@ Now, you can connect peers normally to the room as described in our [React Nativ
 The React Native and React SDKs will log a warning in the console if any attempt to add video to an audio-only room is made.
 This aims to assist in debugging, as adding video to an audio-only room does nothing and is most likely a mistake.
 :::
+
+### Screen sharing
+
+If you attempt to screen share when connected to an `audio_only` room, then only the audio will actually be sent to the other peers.
