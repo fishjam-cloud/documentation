@@ -189,6 +189,7 @@ const config: Config = {
   } satisfies Preset.ThemeConfig,
 
   plugins: [
+    require.resolve("docusaurus-lunr-search"),
     [
       "docusaurus-plugin-typedoc",
       {
