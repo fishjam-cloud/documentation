@@ -32,38 +32,37 @@ The code above will make the browser ask the user for camera and microphone perm
 
 To manage users' camera and microphone devices, use the respective [`useCamera`](/api/web/functions/useCamera)
 and [`useMicrophone`](/api/web/functions/useMicrophone) hooks.  
-Both of them has the same API. To keep things simple, let's just use the camera hook.
+Both of them has similar API. To keep things simple, we will just use the camera hook.
 
 ```tsx
 import { useEffect, useRef } from "react";
 import { useCamera } from "@fishjam-cloud/react-client";
 
-export function ExampleComponent() {
+export function ExampleCameraPreview() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // highlight-next-line
-  const { isStreaming, activeDevice, initialize, stream, devices } =
+  const { activeCamera, selectCamera, cameraStream, cameraDevices } =
     // highlight-next-line
     useCamera();
 
   useEffect(() => {
     if (!videoRef.current) return;
-    videoRef.current.srcObject = stream ?? null;
+    videoRef.current.srcObject = cameraStream ?? null;
   }, [stream]);
 
   return (
     <div>
-      {isStreaming && <p>You are going live!</p>}
-      <p>Active device: {activeDevice?.label ?? "None"}</p>
-      <select onChange={(e) => initialize(e.target.value)}>
-        {devices.map(({ label, deviceId }) => (
+      <p>Active camera: {activeCamera?.label ?? "None"}</p>
+      <select onChange={(e) => selectCamera(e.target.value)}>
+        {cameraDevices.map(({ label, deviceId }) => (
           <option key={deviceId} value={deviceId}>
             {label}
           </option>
         ))}
       </select>
       // highlight-next-line
-      {stream && <video ref={videoRef} autoPlay />}
+      {cameraStream && <video ref={videoRef} autoPlay />}
     </div>
   );
 }
