@@ -43,6 +43,7 @@ import { useConnection } from "@fishjam-cloud/react-client";
 import { useCallback } from "react";
 
 export function LeaveRoomButton() {
+  // highlight-next-line
   const { leaveRoom } = useConnection();
 
   return <button onClick={leaveRoom}>Leave room</button>;

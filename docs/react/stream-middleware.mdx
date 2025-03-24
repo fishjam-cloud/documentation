@@ -45,7 +45,7 @@ export function CameraWithBlurEffect() {
   useEffect(() => {
     if (!videoRef.current) return;
     videoRef.current.srcObject = cameraStream ?? null;
-  }, [stream]);
+  }, [cameraStream]);
 
   // Define blur middleware
   const blurMiddleware: TrackMiddleware = useCallback(
@@ -76,7 +76,7 @@ export function CameraWithBlurEffect() {
         {isBlurEnabled ? "Disable Blur" : "Enable Blur"}
       </button>
 
-      {cameraStream && <video ref={videoRef} />}
+      {cameraStream && <video ref={videoRef} autoPlay />}
     </>
   );
 }

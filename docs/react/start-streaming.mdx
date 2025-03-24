@@ -49,7 +49,7 @@ export function ExampleCameraPreview() {
   useEffect(() => {
     if (!videoRef.current) return;
     videoRef.current.srcObject = cameraStream ?? null;
-  }, [stream]);
+  }, [cameraStream]);
 
   return (
     <div>
