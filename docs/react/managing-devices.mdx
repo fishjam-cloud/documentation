@@ -46,7 +46,7 @@ import { useCamera } from "@fishjam-cloud/react-client";
 export function CameraControl() {
   const { toggleCamera } = useCamera();
 
-  return <button onClick={() => toggleCamera()}>Toggle Camera Power</button>;
+  return <button onClick={() => toggleCamera()}>Toggle Camera Device</button>;
 }
 ```
 
@@ -76,7 +76,7 @@ export function MicrophoneControl() {
   return (
     <div>
       <button onClick={() => toggleMicrophone()}>
-        Toggle Microphone Power
+        Toggle Microphone Device
       </button>
       <button onClick={() => toggleMicrophoneMute()}>
         Toggle Microphone Mute

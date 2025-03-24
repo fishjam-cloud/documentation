@@ -46,12 +46,7 @@ export function LeaveRoomButton() {
   // highlight-next-line
   const { leaveRoom } = useConnection();
 
-  const onLeaveRoomPress = useCallback(() => {
-    // highlight-next-line
-    leaveRoom();
-  }, [leaveRoom]);
-
-  return <button onClick={onLeaveRoomPress}>Leave room</button>;
+  return <button onClick={leaveRoom}>Leave room</button>;
 }
 
 ```

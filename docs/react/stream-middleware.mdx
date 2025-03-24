@@ -38,12 +38,14 @@ export function CameraWithBlurEffect() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // highlight-next-line
-  const { stream, currentMiddleware, setTrackMiddleware } = useCamera();
+  const { cameraStream, currentCameraMiddleware, setCameraTrackMiddleware } =
+    // highlight-next-line
+    useCamera();
 
   useEffect(() => {
     if (!videoRef.current) return;
-    videoRef.current.srcObject = stream ?? null;
-  }, [stream]);
+    videoRef.current.srcObject = cameraStream ?? null;
+  }, [cameraStream]);
 
   // Define blur middleware
   const blurMiddleware: TrackMiddleware = useCallback(
@@ -60,12 +62,12 @@ export function CameraWithBlurEffect() {
   );
 
   // Check if the current middleware is blur
-  const isBlurEnabled = currentMiddleware === blurMiddleware;
+  const isBlurEnabled = currentCameraMiddleware === blurMiddleware;
 
   // Toggle blur effect
   const toggleBlur = () => {
     // highlight-next-line
-    setTrackMiddleware(isBlurEnabled ? null : blurMiddleware);
+    setCameraTrackMiddleware(isBlurEnabled ? null : blurMiddleware);
   };
 
   return (
@@ -74,7 +76,7 @@ export function CameraWithBlurEffect() {
         {isBlurEnabled ? "Disable Blur" : "Enable Blur"}
       </button>
 
-      {stream && <video ref={videoRef} />}
+      {cameraStream && <video ref={videoRef} autoPlay />}
     </>
   );
 }
