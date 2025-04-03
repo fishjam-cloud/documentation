@@ -11,6 +11,11 @@ To ask the browser for permission to list the available devices,
 call the [`initializeDevices`](/api/web/functions/useInitializeDevices#initializedevices)
 function from [`useInitializeDevices`](/api/web/functions/useInitializeDevices) hook.
 
+You can choose whether to initialize both camera and microphone devices or just one of them by passing [`InitializeDevicesSettings`](/api/web/type-aliases/InitializeDevicesSettings)
+as an argument. By default, both camera and microphone are initialized.
+
+The [`initializeDevices`](/api/web/functions/useInitializeDevices#initializedevices) function will return a [`Promise<InitializeDevicesResult>`](/api/web/type-aliases/InitializeDevicesResult) object.
+
 ```ts
 import { useEffect } from "react";
 import { useInitializeDevices } from "@fishjam-cloud/react-client";
@@ -19,19 +24,24 @@ export function useExample() {
   const { initializeDevices } = useInitializeDevices();
 
   useEffect(() => {
-    initializeDevices();
+    initializeDevices().then((result) => {
+      // optionally handle the result
+      console.log(result);
+    });
   }, [initializeDevices]);
 }
 ```
 
-:::info
-The code above will make the browser ask the user for camera and microphone permissions.  
+:::note
+The [`useInitializeDevices`](/api/web/functions/useInitializeDevices) hook gives you the convenience of asking the user for all permissions at once.
+
+It is not the only way to enable the device. You can just toggle the device using [`useCamera`](/api/web/functions/useCamera) or [`useMicrophone`](/api/web/functions/useMicrophone) hooks.
 :::
 
 ### Device API
 
 To manage users' camera and microphone devices, use the respective [`useCamera`](/api/web/functions/useCamera)
-and [`useMicrophone`](/api/web/functions/useMicrophone) hooks.  
+and [`useMicrophone`](/api/web/functions/useMicrophone) hooks.
 Both of them has similar API. To keep things simple, we will just use the camera hook.
 
 ```tsx
