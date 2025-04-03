@@ -28,7 +28,9 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
-
+html[data-theme="light"] body {
+  color: #221f1c;
+}
 html[data-theme="light"] footer.footer {
   background-color: #fcf4e4;
 }
@@ -37,5 +39,10 @@ html[data-theme="light"] nav.navbar--fixed-top {
 }
 html[data-theme="light"] header.heroBanner_src-pages-index-module {
   background-color: #9bdcfb;
-  color: #000;
+  color: #221f1c;
+}
+
+.navbar__search input {
+  border-radius: var(--ifm-global-radius);
+  background-color: white;
 }
