@@ -14,7 +14,7 @@ function from [`useInitializeDevices`](/api/web/functions/useInitializeDevices) 
 You can choose whether to initialize both camera and microphone devices or just one of them by passing [`InitializeDevicesSettings`](/api/web/type-aliases/InitializeDevicesSettings)
 as an argument. By default, both camera and microphone are initialized.
 
-The [`initializeDevices`](/api/web/functions/useInitializeDevices#initializedevices) function will return a promise of [`InitializeDevicesResult`](/api/web/type-aliases/InitializeDevicesResult).
+The [`initializeDevices`](/api/web/functions/useInitializeDevices#initializedevices) function will return a [`Promise<InitializeDevicesResult>`](/api/web/type-aliases/InitializeDevicesResult) object.
 
 ```ts
 import { useEffect } from "react";
