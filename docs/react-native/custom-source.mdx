@@ -40,7 +40,9 @@ It is your responsibility to implement the JS layer. It will depend on your reac
 
 :::
 
-## iOS Example
+<Tabs groupId="os-type">
+
+  <TabItem value="ios" label="iOS Example">
 
 ```swift
 import FishjamCloudClient
@@ -63,7 +65,8 @@ let source = CustomSourceExample()
 try await RNFishjamProxy.add(customSource: source)
 ```
 
-## Android Example
+  </TabItem>
+  <TabItem value="android" label="Android Example">
 
 ```kotlin
 class CustomSourceExample: CustomSource {
@@ -72,7 +75,7 @@ class CustomSourceExample: CustomSource {
   override val videoParameters = VideoParameters.presetFHD43
 
   var consumer: CustomSourceConsumer? = null
-    private set
+  private set
 
   override fun initialize(consumer: CustomSourceConsumer) {
     this.consumer = consumer
@@ -88,3 +91,6 @@ class CustomSourceExample: CustomSource {
 val source = CustomSourceExample()
 RNFishjamClient.createCustomSource(source)
 ```
+
+  </TabItem>
+</Tabs>
