@@ -9,7 +9,7 @@ import ConfigurePermissions from "./_components/configure-permissions.mdx";
 
 This article is a fast track to integrate Fishjam into your React Native application.  
 It contains all the required steps to start streaming video with Fishjam.  
-You can also [see a full example](#full-example) at the end of the article.
+You can also [see a minimal example](#minimal-example) at the end of the article.
 
 ## Prerequisites
 
@@ -148,20 +148,9 @@ export function TracksView() {
 }
 ```
 
-## Full example
+## Minimal example
 
-Here is how it all could work together:
-
-:::info
-
-We are using `expo-camera` to request camera permissions in the example app. You can install and build it using the
-following command:
-
-```bash
-npx expo install expo-camera && npx expo prebuild
-```
-
-:::
+Here is how it all could work for a minimal, working example:
 
 ```tsx
 import { useEffect, useState } from "react";
