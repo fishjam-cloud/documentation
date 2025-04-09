@@ -77,3 +77,7 @@ H.264
 VP8
 codec
 bitrates
+preprocess
+customsource
+js
+visioncamera

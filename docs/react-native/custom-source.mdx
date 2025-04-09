@@ -1,0 +1,96 @@
+---
+sidebar_position: 10
+title: "Custom Video Source"
+description: "Guide to creating a custom video source in Fishjam React Native SDK"
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import ConfigurePermissions from "./_components/configure-permissions.mdx";
+
+# Custom Video Source
+
+The Fishjam React Native SDK allows you to stream content from any native video source. This is useful if you have an existing camera setup or need to preprocess video frames.
+
+:::tip
+
+Check out our [**working example**](https://github.com/fishjam-cloud/mobile-client-sdk/tree/3473afd51ff3a4dc5849463d1ff8a4028e428739/examples/vision-camera) implementing [VisionCamera](https://github.com/mrousavy/react-native-vision-camera)
+
+:::
+
+## Overview
+
+To create a custom video source, follow these steps:
+
+1. **Implement the CustomSource Interface**:
+
+   - On iOS and Android, implement the `CustomSource` interface. This interface provides metadata for the video track and a delegate/consumer to send frames.
+
+2. **Extract and Send Frames**:
+
+   - Extract frames from your video source.
+   - Pass these frames to the delegate/consumer (`CMSampleBuffer` on iOS and `ImageProxy` on Android).
+
+3. **Add Your Custom Source**:
+   - Use `RNFishjamProxy` to register your custom video source to the SDK.
+
+:::warning
+
+It is your responsibility to implement the JS layer. It will depend on your react-native setup. If you use expo, we recommend creating a [Local Expo Module](https://docs.expo.dev/modules/get-started/).
+
+:::
+
+<Tabs groupId="os-type">
+
+  <TabItem value="ios" label="iOS Example">
+
+```swift
+import FishjamCloudClient
+
+class CustomSourceExample: CustomSource {
+  var delegate: CustomSourceDelegate?
+
+  let isScreenShare = false
+  let metadata = ["type":"camera"].toMetadata()
+  let videoParameters = VideoParameters.presetFHD43
+
+  func send(frameBuffer: CMSampleBuffer) {
+    delegate?.customSource(self, didOutputSampleBuffer: frameBuffer, rotation: .ninety)
+  }
+}
+```
+
+```swift
+let source = CustomSourceExample()
+try await RNFishjamProxy.add(customSource: source)
+```
+
+  </TabItem>
+  <TabItem value="android" label="Android Example">
+
+```kotlin
+class CustomSourceExample: CustomSource {
+  override val isScreenShare = false
+  override val metadata: Metadata = mapOf("type" to "camera")
+  override val videoParameters = VideoParameters.presetFHD43
+
+  var consumer: CustomSourceConsumer? = null
+  private set
+
+  override fun initialize(consumer: CustomSourceConsumer) {
+    this.consumer = consumer
+  }
+
+  fun sendImageFrame(imageFrame: ImageProxy) {
+    consumer?.onImageProxyCaptured(imageFrame)
+  }
+}
+```
+
+```kotlin
+val source = CustomSourceExample()
+RNFishjamClient.createCustomSource(source)
+```
+
+  </TabItem>
+</Tabs>
