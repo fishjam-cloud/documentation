@@ -32,6 +32,34 @@ There are two main components to implement:
    - This component sends the camera frames to Fishjam.
    - Check out the [CustomSource overview](./overview.mdx) to learn more about this concept.
 
+## How it works together?
+
+The `FrameProcessorPlugin` and `CustomSource` work together to process and transmit video frames from the Vision Camera to the Fishjam SDK. Here's a clearer breakdown of their roles:
+
+1. **FrameProcessorPlugin**:
+
+   - Extracts frames from the Vision Camera.
+   - Processes each frame and prepares it for transmission.
+   - Passes the processed frames to the `CustomSource`.
+
+2. **CustomSource**:
+   - Receives frames from the `FrameProcessorPlugin`.
+   - Transmits these frames to the Fishjam SDK.
+   - Ensures frames are in the correct format for the SDK.
+
+### Diagram
+
+Below is a diagram illustrating the flow of frames from the Vision Camera to the Fishjam SDK:
+
+```mermaid
+graph TD;
+    A[Vision Camera] -->|Extract Frames| B[FrameProcessorPlugin];
+    B -->|Pass Frames| C[CustomSource];
+    C -->|Transmit Frames| D[Fishjam SDK];
+```
+
+This diagram shows the flow of data from the Vision Camera through the `FrameProcessorPlugin` to the `CustomSource`, and finally to the Fishjam SDK.
+
 <Tabs groupId="os-type">
 
   <TabItem value="ios" label="iOS Example">
