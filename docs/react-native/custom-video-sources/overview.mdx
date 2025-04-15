@@ -1,12 +1,12 @@
 ---
-sidebar_position: 10
-title: "Custom Video Source"
+sidebar_position: 1
+title: "Overview"
 description: "Guide to creating a custom video source in Fishjam React Native SDK"
 ---
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
-import ConfigurePermissions from "./_components/configure-permissions.mdx";
+import ConfigurePermissions from "../_components/configure-permissions.mdx";
 
 # Custom Video Source
 
@@ -26,12 +26,12 @@ To create a custom video source, follow these steps:
 
    - On iOS and Android, implement the `CustomSource` interface. This interface provides metadata for the video track and a delegate/consumer to send frames.
 
-2. **Extract and Send Frames**:
+1. **Extract and Send Frames**:
 
    - Extract frames from your video source.
    - Pass these frames to the delegate/consumer (`CMSampleBuffer` on iOS and `ImageProxy` on Android).
 
-3. **Add Your Custom Source**:
+1. **Add Your Custom Source**:
    - Use `RNFishjamProxy` to register your custom video source to the SDK.
 
 :::warning
