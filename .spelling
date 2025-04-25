@@ -81,3 +81,5 @@ preprocess
 customsource
 js
 visioncamera
+frameprocessorplugin
+Javascript
