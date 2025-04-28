@@ -1,0 +1,159 @@
+---
+sidebar_position: 8
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Custom sources
+
+:::important
+
+If you only wish to send camera, microphone or screenshare output through Fishjam, then you most likely should refer to the documentation in [Streaming media](/react/start-streaming) and [Managing devices](/react/managing-devices) instead of this page.
+
+:::
+
+This section demonstrates how to stream non-standard video or audio to other peers in your web app.
+The utilities in this section allow you to integrate Fishjam with powerful browser APIs such as [WebGL](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API) and [WebGPU](https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API),
+or higher level libraries, which leverage these APIs, such as [Three.js](https://threejs.org/), [Smelter](https://smelter.dev) or [PixiJS](https://pixijs.com/)
+
+## Creating a custom source - [`useCustomSource()`](/api/web/functions/useCustomSource)
+
+To create a custom source, you only need to do two things:
+
+1. Call the `useCustomSource` hook.
+2. Call the [`setStream`](/api/web/functions/useCustomSource#setstream) callback provided by the `useCustomSource` hook with a [MediaStream](#how-to-get-a-mediastream-object) object.
+
+#### Usage Example
+
+```tsx
+import { useCustomSource } from "@fishjam-cloud/react-client";
+
+export function CameraControl() {
+  const stream: MediaStream = ...
+  const { setStream } = useCustomSource("my-custom-source");
+
+  useEffect(() => {
+    setStream(stream);
+  }, [stream, setStream]);
+
+  ...
+}
+```
+
+### Using a created custom source
+
+Once you have called [`setStream`](/api/web/functions/useCustomSource#setstream) for a given source ID (in the above example, `"my-custom-source"`), any subsequent calls to `useCustomSource` with the same ID will return the same state.
+This enables multiple components to control and read a shared custom source.
+
+### Deleting a custom source
+
+If you wish to remove a custom source, then you should call the [`setStream`](/api/web/functions/useCustomSource#setstream) callback with `null` as its argument.
+
+#### Usage Example
+
+```tsx
+const { setStream } = useCustomSource("my-custom-source");
+...
+await setStream(null);
+```
+
+## How to get a MediaStream object?
+
+Depending on your use-case, the way you can obtain a [MediaStream](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream) will vary.
+Below are some common examples of how to obtain one from an existing video or audio source.
+
+### Canvas
+
+If you have a `<canvas>` HTML element, then you will need to call the [`captureStream`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/captureStream) method of the given canvas.
+This is particularly useful if you are using [Three.js](https://threejs.org/) or [PixiJS](https://pixijs.com/) to render complex animations and more.
+
+#### Usage Example
+
+```tsx
+import { useCallback, useState } from "react";
+
+export function CanvasExample() {
+  const [canvasStream, setCanvasStream] = useState<MediaStream>();
+
+  const streamFromCanvas = useCallback((canvas: HTMLCanvasElement | null) => {
+    if (!canvas) return;
+    setCanvasStream(canvas.captureStream());
+  }, []);
+
+  // use canvasStream as desired
+
+  return <canvas ref={streamFromCanvas} />;
+}
+```
+
+### Smelter
+
+If you are using [Smelter](https://smelter.dev), then all you need to do is register an output via [`registerOutput`](https://smelter.dev/ts-sdk/outputs/wasm-stream/).
+
+#### Usage Example
+
+:::tip
+
+If you want to see a full example React app which uses Fishjam with Smelter, then you can check out our [full example on GitHub](https://github.com/fishjam-cloud/web-client-sdk/tree/main/examples/react-client/minimal-smelter).
+
+:::
+
+```tsx
+const { stream } = await smelter.registerOutput("example-output", <View />, {
+  type: "stream",
+  video: {
+    resolution: { width: 1920, height: 1080 },
+  },
+});
+```
+
+### Video/Audio HTML tag
+
+If you have a `<video>` or `<audio>` element, then you need to call their [`captureStream`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/captureStream) method, analogously as you would with a [`canvas`](#canvas).
+
+#### Usage Example
+
+<Tabs groupId="language">
+  <TabItem value="video" label="Video">
+
+    ```tsx
+    import { useCallback, useState } from "react";
+
+    export function CanvasExample() {
+      const [stream, setStream] = useState<MediaStream>();
+
+      const streamFromVideo = useCallback((video: HTMLVideoElement | null) => {
+        if (!video) return;
+        setStream(video.captureStream());
+      }, []);
+
+      // use stream as desired
+
+      return <video ref={streamFromVideo} ... />;
+    }
+    ```
+
+  </TabItem>
+
+  <TabItem value="audio" label="Audio">
+
+    ```tsx
+    import { useCallback, useState } from "react";
+
+    export function CanvasExample() {
+      const [stream, setStream] = useState<MediaStream>();
+
+      const streamFromAudio = useCallback((audio: HTMLAudioElement | null) => {
+        if (!audio) return;
+        setStream(audio.captureStream());
+      }, []);
+
+      // use stream as desired
+
+      return <audio ref={streamFromAudio} ... />;
+    }
+    ```
+
+  </TabItem>
+ </Tabs>
