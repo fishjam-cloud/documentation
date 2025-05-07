@@ -83,3 +83,8 @@ js
 visioncamera
 frameprocessorplugin
 Javascript
+WebGL
+WebGPU
+Three.js
+PixiJS
+MediaStream
