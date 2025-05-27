@@ -1,0 +1,78 @@
+---
+sidebar_position: 5
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Livestreaming
+
+For livestreaming purposes we suggest using livestream rooms specifically optimized for this use case.
+
+Main differences:
+*  Livestream rooms are 20% cheaper than regular rooms
+*  Livestream rooms allows for greater scalability
+*  Compatible with WHEP standard 
+<!-- *  TODO: compatibility with WHIP -->
+
+## How Do I Use It?
+### Streamer
+To create a livestream room, you must set the `roomType` field to `broadcaster` when creating a room using our [Server SDKs](/production/server). Then you have to create one peer that will be used to stream your content.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    const createdRoom = await fishjamClient.createRoom({ roomType: 'broadcaster' });
+
+    const peer = await fishjamClient.createPeer(createdRoom.id)
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    options = RoomOptions(room_type="broadcaster")
+    created_room = fishjam_client.create_room(options)
+
+    peer = fishjam_client.create_peer(created_room.id)
+    ```
+
+  </TabItem>
+ </Tabs>
+
+Now, you can connect peer normally to the room as described in our [React Native](/react-native/connecting) and [React](/react/connecting)  docs.
+
+:::info
+The livestream rooms support only one video and audio track; any additional tracks will be ignored and will not be available to the viewers.
+:::
+
+### Viewers
+To view the streamed content you need to obtain viewer token that can be generated using [Server SDKs](/production/server).
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    // createdRoom ... previously created room
+    const viewerToken = await fishjamClient.createBroadcastViewerToken(createdRoom.id)
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    # created_room ... previously created room
+    viewer_token = fishjam_client.create_livestream_viewer_token(created_room.id)
+    ```
+
+  </TabItem>
+ </Tabs>
+
+Now you can connect viewer to the livestream as described in our [React Native] and [React] docs.
+
+:::info
+Viewers connect using [WHEP](https://blog.swmansion.com/introducing-react-native-whip-whep-ac9e5588d4da) standard, allowing the use of any player that supports the WHEP standard.
+:::
