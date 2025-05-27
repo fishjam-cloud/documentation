@@ -29,6 +29,12 @@ const FISHJAM_LIVESTREAM_URL = "https://fishjam.io/api/v1/live";
 
 export function Livestream({ viewerToken }: LivestreamProps) {
   const { connect, disconnect, stream } = useLivestream();
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+    videoRef.current.srcObject = stream ?? null;
+  }, [stream]);
 
   useEffect(() => {
     connect({
@@ -44,6 +50,6 @@ export function Livestream({ viewerToken }: LivestreamProps) {
   // stream is null until the connection is established
   if (!stream) return null;
 
-  return <video stream={stream} />
+  return <video ref={videoRef} autoPlay />
 }
 ```
