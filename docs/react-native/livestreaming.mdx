@@ -10,6 +10,20 @@ import ConfigurePermissions from "./_components/configure-permissions.mdx";
 
 # Livestreaming
 
+## How to start streaming?
+
+If your case involves streaming live audio and/or video one-to-many with low latency, Fishjam provides the exact tools you need. This scenario is 20% cheaper than videoconferencing.
+First, you need to create a room of a special type `broadcaster`.
+
+As the streaming is one-to-many, you can have only one streaming participant in that room.  
+To start streaming, simply use a peer token to [join the room as you would normally do](/react-native/connecting).
+
+## How to receive the stream?
+
+Fishjam SDK provides a [`useLivestream`](/api/mobile/functions/useLivestream) hook to receive the broadcasted stream.
+In order to use it, you need to generate a viewer token using our Server SDKs (Room Manager also provides this functionality as an example).
+The `useLivestream` hook will handle the process of receving the stream and will forward it to `LivestreamView`.
+
 :::info
 
 This guide assumes you already finished either the [Quick Setup](/react-native/quick-setup) or [Installation](/react-native/installation) guide.
@@ -23,7 +37,7 @@ In order to do this you need to create two flows.
 1. The first flow will be used to broadcast the content.
 2. The second flow will be used to receive the livestream.
 
-## Broadcasting the stream
+## Broadcasting Example
 
 <details>
 <summary>Configure permissions before livestreaming</summary>
@@ -42,7 +56,7 @@ import {
   VideoPreviewView,
 } from "@fishjam-cloud/react-native-client";
 
-const ROOM_MANAGER_ID = "ea94930e3ffd47c490f5144c43d57340";
+const ROOM_MANAGER_ID = "";
 
 export default function Streamer() {
   const { prepareCamera } = useCamera();
