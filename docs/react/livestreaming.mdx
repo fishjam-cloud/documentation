@@ -4,18 +4,18 @@ sidebar_position: 8
 
 # Livestreaming
 
-If your case involves streaming live audio and/or video one-to-many with low latency, Fishjam provides the exact tools you need. This scenario is 20% cheaper than videoconferencing.
+If your case involves audio/video one-to-many streaming with low latency, Fishjam provides the exact tools you need. This scenario is 20% cheaper than videoconferencing.
 
 ## How to start streaming?
 
-First, you need to create a room of a special type `broadcaster`.  
+First, you need to create a room of a special type - `livestream`.  
 As the streaming is one-to-many, you can have only one streaming participant in that room.  
 To start streaming, simply use a peer token to [join the room as you would normally do](/react/connecting).
 
 ## How to receive the stream?
 
 Fishjam SDK provides a [`useLivestream`](/api/web/functions/useLivestream) hook to receive the broadcasted stream.
-In order to use it, you need to generate a viewer token using our Server SDKs (Room Manager also provides this functionality as an example).
+In order to use it, you need to generate a viewer token using our Server SDKs (Room Manager also [provides this functionality as an example](https://github.com/fishjam-cloud/js-server-sdk/blob/main/examples/room-manager/src/routes/rooms.ts)).
 The `useLivestream` hook will provide a [MediaStream](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream) object once the connection with Fishjam is established.
 
 ```ts
