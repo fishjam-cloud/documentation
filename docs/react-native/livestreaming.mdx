@@ -1,14 +1,14 @@
 ---
 sidebar_position: 9
-title: "Broadcasting"
-description: "How to use Fishjam for broadcasting"
+title: "Livestreaming"
+description: "How to use Fishjam for livestreaming"
 ---
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 import ConfigurePermissions from "./_components/configure-permissions.mdx";
 
-# Broadcasting
+# Livestreaming
 
 :::info
 
@@ -16,23 +16,23 @@ This guide assumes you already finished either the [Quick Setup](/react-native/q
 
 :::
 
-You can also use Fishjam to broadcast your content to users.
+You can also use Fishjam to livestream your content to users.
 
 In order to do this you need to create two flows.
 
 1. The first flow will be used to broadcast the content.
-2. The second flow will be used to receive the content.
+2. The second flow will be used to receive the livestream.
 
-## Broadcasting
+## Broadcasting the stream
 
 <details>
-<summary>Configure permissions before broadcasting</summary>
+<summary>Configure permissions before livestreaming</summary>
 
 <ConfigurePermissions />
 
 </details>
 
-Here is an example of a very simple broadcaster that immediately broadcasts the front camera to all users in a room:
+Here is an example of a very simple livestreamer that immediately livestreams the front camera to all users in a room:
 
 ```tsx
 import { useEffect } from "react";
@@ -42,26 +42,28 @@ import {
   VideoPreviewView,
 } from "@fishjam-cloud/react-native-client";
 
-export function Broadcaster() {
+const ROOM_MANAGER_ID = "ea94930e3ffd47c490f5144c43d57340";
+
+export default function Streamer() {
   const { prepareCamera } = useCamera();
   const { joinRoom, leaveRoom } = useConnection();
 
   useEffect(() => {
-    const startBroadcasting = async () => {
+    const startStreaming = async () => {
       console.log("Getting room details...");
       const { url, peerToken } = await getRoomDetails(
-        "RoomName",
-        "BroadcastingUserName",
+        "TestRoom",
+        "StreamerUserName",
       );
 
       console.log("Preparing camera...");
       await prepareCamera({ cameraEnabled: true });
 
       await joinRoom({ url, peerToken });
-      console.log("Broadcasting...");
+      console.log("Streaming...");
     };
 
-    startBroadcasting();
+    startStreaming();
     return () => {
       leaveRoom();
     };
@@ -77,69 +79,65 @@ export function Broadcaster() {
 async function getRoomDetails(roomName: string, peerName: string) {
   // This will work ONLY for the Sandbox App
   const response = await fetch(
-    `https://fishjam.io/api/v1/connect/${YOUR_APP_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
+    `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}&roomType=broadcaster`,
   );
   return response.json();
 }
 ```
 
-## Receiving
+## Receiving the stream
 
-Here is an example of a very simple receiver that receives the content from the broadcaster:
+Here is an example of a very simple receiver that receives the livestream:
 
 ```tsx
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { View } from "react-native";
 import {
-  useConnection,
-  usePeers,
-  VideoRendererView,
+  useLivestream,
+  LivestreamView,
 } from "@fishjam-cloud/react-native-client";
 
-export function Receiver() {
-  const { joinRoom, leaveRoom } = useConnection();
-  const { remotePeers } = usePeers();
+const YOUR_APP_ID = "";
+const YOUR_BROADCASTER_ID = "";
 
-  const broadcastedTrack = remotePeers.at(0)?.cameraTrack;
+export function Receiver() {
+  const { connect, disconnect } = useLivestream();
+
+  const handleConnect = useCallback(async () => {
+    try {
+      console.log("Getting stream details...");
+      const { token } = await getViewerToken("TestRoom");
+      await connect(
+        `https://fishjam.io/api/v1/connect/${YOUR_BROADCASTER_ID}`,
+        token,
+      );
+      console.log("Receiving...");
+    } catch (err) {
+      console.log(err);
+    }
+  }, [connect]);
 
   useEffect(() => {
-    const startReceiving = async () => {
-      console.log("Getting room details...");
-      const { url, peerToken } = await getRoomDetails(
-        "RoomName",
-        "ReceivingUserName",
-      );
-      await joinRoom({ url, peerToken });
-      console.log("Receiving...");
-    };
-
-    startReceiving();
+    handleConnect();
 
     return () => {
-      leaveRoom();
+      disconnect();
     };
-  }, [joinRoom, leaveRoom]);
-
-  if (!broadcastedTrack) {
-    return null;
-  }
+  }, [handleConnect, disconnect]);
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <VideoRendererView
-        key={broadcastedTrack.id}
-        trackId={broadcastedTrack.id}
-        videoLayout="FIT"
+      <LivestreamView
         style={{ width: "90%", aspectRatio: 1, backgroundColor: "black" }}
       />
     </View>
   );
 }
 
-async function getRoomDetails(roomName: string, peerName: string) {
+async function getViewerToken(roomName: string) {
   // This will work ONLY for the Sandbox App
   const response = await fetch(
-    `https://fishjam.io/api/v1/connect/${YOUR_APP_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
+    `https://fishjam.io/api/v1/connect/${YOUR_APP_ID}/room-manager/${roomName}/broadcast-viewer-token`,
   );
   return response.json();
 }
