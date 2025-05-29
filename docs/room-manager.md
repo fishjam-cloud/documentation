@@ -39,12 +39,18 @@ It can be used as a reference for building your backend.
 ## How Do I Use It?
 
 Simply log in to your Fishjam Dashboard and open the [Sandbox App](https://fishjam.io/app/sandbox). You will see your Room Manager URL there.
-Now you need to add `roomName` and `peerName` query params to build a URL for the GET request.
+Now you need to add `roomName`, `peerName` and optionally a `roomType` query params to build a URL for the GET request.
+
+You can create 3 types of rooms:
+
+- `full-feature` - for video/audio conferencing, the default type
+- `audio-only` - for audio-only conferencing
+- `livestream` - for one-to-many video/audio streaming
 
 #### Example GET Request URL
 
 ```
-https://fishjam.io/api/v1/connect/<YOUR_APP_UUID>/room-manager?roomName=foo&peerName=bar
+https://fishjam.io/api/v1/connect/<YOUR_APP_UUID>/room-manager?roomName=foo&peerName=bar&roomType=conference
 ```
 
 :::note

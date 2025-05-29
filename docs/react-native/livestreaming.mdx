@@ -10,11 +10,11 @@ import ConfigurePermissions from "./_components/configure-permissions.mdx";
 
 # Livestreaming
 
+If your case involves streaming live audio and/or video one-to-many with low latency, Fishjam provides the exact tools you need. This scenario is 20% cheaper than videoconferencing.
+
 ## How to start streaming?
 
-If your case involves streaming live audio and/or video one-to-many with low latency, Fishjam provides the exact tools you need. This scenario is 20% cheaper than videoconferencing.
-First, you need to create a room of a special type `broadcaster`.
-
+First, you need to create a room of a special `livestream` type using our Server SDKs. If you are using sandbox, the [Room Manager](/room-manager#how-do-i-use-it) also allows you to create such room.
 As the streaming is one-to-many, you can have only one streaming participant in that room.  
 To start streaming, simply use a peer token to [join the room as you would normally do](/react-native/connecting).
 
@@ -34,10 +34,10 @@ You can also use Fishjam to livestream your content to users.
 
 In order to do this you need to create two flows.
 
-1. The first flow will be used to broadcast the content.
+1. The first flow will be used to stream the content.
 2. The second flow will be used to receive the livestream.
 
-## Broadcasting Example
+## Livestreaming Example
 
 <details>
 <summary>Configure permissions before livestreaming</summary>
@@ -46,7 +46,7 @@ In order to do this you need to create two flows.
 
 </details>
 
-Here is an example of a very simple livestreamer that immediately livestreams the front camera to all users in a room:
+Here is an example of a simple component that immediately streams the front camera:
 
 ```tsx
 import { useEffect } from "react";
@@ -93,7 +93,7 @@ export default function Streamer() {
 async function getRoomDetails(roomName: string, peerName: string) {
   // This will work ONLY for the Sandbox App
   const response = await fetch(
-    `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}&roomType=broadcaster`,
+    `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}&roomType=livestream`,
   );
   return response.json();
 }
@@ -101,7 +101,8 @@ async function getRoomDetails(roomName: string, peerName: string) {
 
 ## Receiving the stream
 
-Here is an example of a very simple receiver that receives the livestream:
+Here is an example of a component that just receives a livestream.
+The `LivestreamView` component will render the video stream once you connect to Fishjam using the connect method from `useLivestream`.
 
 ```tsx
 import { useCallback, useEffect } from "react";
@@ -112,7 +113,6 @@ import {
 } from "@fishjam-cloud/react-native-client";
 
 const YOUR_APP_ID = "";
-const YOUR_BROADCASTER_ID = "";
 
 export function Receiver() {
   const { connect, disconnect } = useLivestream();
@@ -121,10 +121,7 @@ export function Receiver() {
     try {
       console.log("Getting stream details...");
       const { token } = await getViewerToken("TestRoom");
-      await connect(
-        `https://fishjam.io/api/v1/connect/${YOUR_BROADCASTER_ID}`,
-        token,
-      );
+      await connect(`https://fishjam.io/api/v1/live`, token);
       console.log("Receiving...");
     } catch (err) {
       console.log(err);
