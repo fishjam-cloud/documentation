@@ -34,7 +34,7 @@ You cannot stream the camera and share a screen at the same time.
 - A [viewer token](/livestreaming) generated for that room
 
 Fishjam SDK provides a [`useLivestream`](/api/mobile/functions/useLivestream) hook to receive the broadcasted stream.
-The `useLivestream` hook will authorize you using the viewer token, handle the process of receiving the stream and will forward it to the `LivestreamView` component.
+The [`useLivestream`](/api/mobile/functions/useLivestream) hook will authorize you using the [viewer token](/livestreaming), handle the process of receiving the stream and will forward it to the `LivestreamView` component.
 
 ## Examples
 
@@ -113,7 +113,7 @@ async function getRoomDetails(roomName: string, peerName: string) {
 ### Viewer setup example
 
 Here is an example of a component that just receives a livestream.
-The `LivestreamView` component will render the video stream once you connect to Fishjam using the connect method from `useLivestream`.
+The `LivestreamView` component will render the video stream once you connect to Fishjam using the connect method from [`useLivestream`](/api/mobile/functions/useLivestream).
 
 ```tsx
 import { useCallback, useEffect } from "react";
