@@ -50,7 +50,7 @@ You can create 3 types of rooms:
 #### Example GET Request URL
 
 ```
-https://fishjam.io/api/v1/connect/<YOUR_APP_UUID>/room-manager?roomName=foo&peerName=bar&roomType=conference
+https://fishjam.io/api/v1/connect/<YOUR_APP_UUID>/room-manager?roomName=foo&peerName=bar&roomType=full-feature
 ```
 
 :::note
