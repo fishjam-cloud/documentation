@@ -10,13 +10,15 @@ import ConfigurePermissions from "./_components/configure-permissions.mdx";
 
 # Livestreaming
 
-This section provides examples on how to quickly set up a livestreaming flow in React Native using Fishjam.  
+This section provides examples on how to quickly set up livestreaming in React Native using Fishjam.  
 You can learn more about [livestreaming in Fishjam](/livestreaming) in our documentation.
 
 ## How to start streaming?
 
-First, you need to create a room of a special `livestream` type using our Server SDKs. If you are using sandbox, the [Room Manager](/room-manager#how-do-i-use-it) also allows you to create such room.
-As the streaming is one-to-many, you can have only one streaming participant in that room.  
+### Prerequisites
+
+- [A room of `livestream` type](/livestreaming)
+
 To start streaming, simply [join the room](/react-native/connecting) and [stream as you would normally do](/react-native/start-streaming).
 
 :::warning
@@ -26,9 +28,17 @@ You cannot stream the camera and share a screen at the same time.
 
 ## How to receive the stream?
 
+### Prerequisites
+
+- A peer connected and streaming in a room of `livestream` type
+- A [viewer token](/livestreaming) generated for that room
+
 Fishjam SDK provides a [`useLivestream`](/api/mobile/functions/useLivestream) hook to receive the broadcasted stream.
-In order to use it, you need to generate a viewer token using our Server SDKs (Room Manager also provides this functionality as an example).
-The `useLivestream` hook will handle the process of receiving the stream and will forward it to `LivestreamView`.
+The `useLivestream` hook will authorize you using the viewer token, handle the process of receiving the stream and will forward it to the `LivestreamView` component.
+
+## Examples
+
+Below are examples of how to implement the flows described above in React Native using Fishjam.
 
 :::info
 
@@ -36,14 +46,7 @@ This guide assumes you already finished either the [Quick Setup](/react-native/q
 
 :::
 
-You can also use Fishjam to livestream your content to users.
-
-In order to do this you need to create two flows.
-
-1. The first flow will be used to stream the content.
-2. The second flow will be used to receive the livestream.
-
-## Livestreaming Example
+### Required permissions
 
 <details>
 <summary>Configure permissions before livestreaming</summary>
@@ -51,6 +54,8 @@ In order to do this you need to create two flows.
 <ConfigurePermissions />
 
 </details>
+
+### Streamer setup example
 
 Here is an example of a simple component that immediately streams the front camera:
 
@@ -105,7 +110,7 @@ async function getRoomDetails(roomName: string, peerName: string) {
 }
 ```
 
-## Receiving the stream
+### Viewer setup example
 
 Here is an example of a component that just receives a livestream.
 The `LivestreamView` component will render the video stream once you connect to Fishjam using the connect method from `useLivestream`.
