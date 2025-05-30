@@ -21,31 +21,6 @@ Livestreaming scenario allows only one video and one audio track to be sent at a
 Any additional tracks will be ignored and will not be available to the viewers.
 :::
 
-```ts
-import { useLivestream } from "@fishjam-cloud/react-client";
-
-export function useStreamContent(peerToken: string, fishjamUrl: string) {
-  const { initializeDevices } = useInitializeDevices();
-
-  const { connect } = useConnection();
-
-  const initializeDevicesAndStream = useCallback(async () => {
-    // Initialize devices (camera, microphone, etc.)
-    await initializeDevices();
-
-    // Connect to the livestream room
-    await connect({
-      url: fishjamUrl,
-      token: peerToken,
-    });
-  }, [initializeDevices, connect]);
-
-  useEffect(() => {
-    initializeDevicesAndStream();
-  }, [initializeDevicesAndStream]);
-}
-```
-
 ## How to receive the stream?
 
 ### Prerequisites
