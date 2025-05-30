@@ -4,19 +4,32 @@ sidebar_position: 8
 
 # Livestreaming
 
-If your case involves audio/video one-to-many streaming with low latency, Fishjam provides the exact tools you need. This scenario is 20% cheaper than videoconferencing.
+This section provides examples on how to quickly set up livestreaming in React using Fishjam.  
+You can learn more about [livestreaming in Fishjam](/livestreaming) in our documentation.
 
 ## How to start streaming?
 
-First, you need to create a room of a special type - `livestream`.  
-As the streaming is one-to-many, you can have only one streaming participant in that room.  
-To start streaming, simply use a peer token to [join the room as you would normally do](/react/connecting).
+### Prerequisites
+
+- [A room of `livestream` type](/livestreaming)
+- A [peer token](/glossary#peer-token) generated for that room
+
+To start streaming, simply [join the livestream room](/react/connecting) and [stream as you normally would](/react/start-streaming).
+
+:::note
+Livestreaming scenario allows only one video and one audio track to be sent at a time.  
+Any additional tracks will be ignored and will not be available to the viewers.
+:::
 
 ## How to receive the stream?
 
-Fishjam SDK provides a [`useLivestream`](/api/web/functions/useLivestream) hook to receive the broadcasted stream.
-In order to use it, you need to generate a viewer token using our Server SDKs (Room Manager also [provides this functionality as an example](https://github.com/fishjam-cloud/js-server-sdk/blob/main/examples/room-manager/src/routes/rooms.ts)).
-The `useLivestream` hook will provide a [MediaStream](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream) object once the connection with Fishjam is established.
+### Prerequisites
+
+- A peer connected and streaming in a room of `livestream` type
+- A [viewer token](/livestreaming) generated for that room
+
+Fishjam SDK provides the [`useLivestream`](/api/web/functions/useLivestream) hook to receive the broadcasted stream.
+The [`useLivestream`](/api/web/functions/useLivestream) hook will provide a [MediaStream](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream) object once the connection with Fishjam is established.
 
 ```ts
 import { useLivestream } from "@fishjam-cloud/react-client";

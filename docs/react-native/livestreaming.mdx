@@ -1,0 +1,169 @@
+---
+sidebar_position: 9
+title: "Livestreaming"
+description: "How to use Fishjam for livestreaming"
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import ConfigurePermissions from "./_components/configure-permissions.mdx";
+
+# Livestreaming
+
+This section provides examples on how to quickly set up livestreaming in React Native using Fishjam.  
+You can learn more about [livestreaming in Fishjam](/livestreaming) in our documentation.
+
+## How to start streaming?
+
+### Prerequisites
+
+- [A room of `livestream` type](/livestreaming)
+- A [peer token](/glossary#peer-token) generated for that room
+
+To start streaming, simply [join the room](/react-native/connecting) and [stream as you normally would](/react-native/start-streaming).
+
+:::note
+Livestreaming scenario allows only one video and one audio track to be sent at a time.  
+Any additional tracks will be ignored and will not be available to the viewers.
+:::
+
+## How to receive the stream?
+
+### Prerequisites
+
+- A peer connected and streaming in a room of `livestream` type
+- A [viewer token](/livestreaming) generated for that room
+
+Fishjam SDK provides a [`useLivestream`](/api/mobile/functions/useLivestream) hook to receive the broadcasted stream.
+Pass the viewer token to the `connect` method of the hook to establish a connection with Fishjam.
+Once the connection is established, the `LivestreamView` component will render the video stream.
+
+## Examples
+
+Below are examples of how to implement the flows described above in React Native using Fishjam.
+
+:::info
+
+This guide assumes you already finished either the [Quick Setup](/react-native/quick-setup) or [Installation](/react-native/installation) guide.
+
+:::
+
+### Required permissions
+
+<details>
+<summary>Configure permissions before livestreaming</summary>
+
+<ConfigurePermissions />
+
+</details>
+
+### Streamer setup example
+
+Here is an example of a simple component that immediately streams the front camera:
+
+```tsx
+import { useEffect } from "react";
+import {
+  useCamera,
+  useConnection,
+  VideoPreviewView,
+} from "@fishjam-cloud/react-native-client";
+
+const ROOM_MANAGER_ID = "";
+
+export default function Streamer() {
+  const { prepareCamera } = useCamera();
+  const { joinRoom, leaveRoom } = useConnection();
+
+  useEffect(() => {
+    const startStreaming = async () => {
+      console.log("Getting room details...");
+      const { url, peerToken } = await getRoomDetails(
+        "TestRoom",
+        "StreamerUserName",
+      );
+
+      console.log("Preparing camera...");
+      await prepareCamera({ cameraEnabled: true });
+
+      await joinRoom({ url, peerToken });
+      console.log("Streaming...");
+    };
+
+    startStreaming();
+    return () => {
+      leaveRoom();
+    };
+  }, [prepareCamera, joinRoom, leaveRoom]);
+
+  return (
+    <VideoPreviewView
+      style={{ width: "90%", aspectRatio: 1, alignSelf: "center" }}
+    />
+  );
+}
+
+async function getRoomDetails(roomName: string, peerName: string) {
+  // This will work ONLY for the Sandbox App
+  const response = await fetch(
+    `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}&roomType=livestream`,
+  );
+  return response.json();
+}
+```
+
+### Viewer setup example
+
+Here is an example of a component that just receives a livestream.
+The `LivestreamView` component will render the video stream once you connect to Fishjam using the connect method from [`useLivestream`](/api/mobile/functions/useLivestream).
+
+```tsx
+import { useCallback, useEffect } from "react";
+import { View } from "react-native";
+import {
+  useLivestream,
+  LivestreamView,
+} from "@fishjam-cloud/react-native-client";
+
+const YOUR_APP_ID = "";
+
+export function Receiver() {
+  const { connect, disconnect } = useLivestream();
+
+  const handleConnect = useCallback(async () => {
+    try {
+      console.log("Getting stream details...");
+      const { token } = await getViewerToken("TestRoom");
+      await connect(`https://fishjam.io/api/v1/live`, token);
+      console.log("Receiving...");
+    } catch (err) {
+      console.log(err);
+    }
+  }, [connect]);
+
+  useEffect(() => {
+    handleConnect();
+
+    return () => {
+      disconnect();
+    };
+  }, [handleConnect, disconnect]);
+
+  return (
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <LivestreamView
+        style={{ width: "90%", aspectRatio: 1, backgroundColor: "black" }}
+      />
+    </View>
+  );
+}
+
+async function getViewerToken(roomName: string) {
+  // This will work ONLY for the Sandbox App
+  // see https://fishjam.io/docs/livestreaming
+  const response = await fetch(
+    `https://fishjam.io/api/v1/connect/${YOUR_APP_ID}/room-manager/${roomName}/broadcast-viewer-token`,
+  );
+  return response.json();
+}
+```
