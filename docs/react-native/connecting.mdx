@@ -26,7 +26,7 @@ To use that, simply call `fetch`:
 
 ```ts
 const response = await fetch(
-  `https://fishjam.io/api/v1/connect/${SANDBOX_APP_UUID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
+  `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}room-manager/?roomName=${roomName}&peerName=${peerName}`,
 );
 
 const { fishjamUrl, peerToken } = await response.json();
@@ -70,7 +70,7 @@ export function JoinRoomButton() {
 async function getRoomDetails(roomName: string, peerName: string) {
   // This will work ONLY for the Sandbox App
   const response = await fetch(
-    `https://fishjam.io/api/v1/connect/${YOUR_APP_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
+    `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
   );
   const { fishjamUrl, peerToken } = await response.json();
   return { url: fishjamUrl, peerToken };

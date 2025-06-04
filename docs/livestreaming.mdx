@@ -20,7 +20,7 @@ First, you need to create a room with the livestream type using our [Server SDKs
 You can create a livestream room and obtain a peer token using this URL:
 
 ```
-https://fishjam.io/api/v1/connect/<YOUR_APP_UUID>/room-manager?roomName=foo&peerName=bar&roomType=livestream
+https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager?roomName=foo&peerName=bar&roomType=livestream
 ```
 
 #### Using Server SDKs
@@ -62,7 +62,7 @@ To view the streamed content, you need to obtain a viewer token that can be gene
 #### Using Room Manager
 
 ```
-https://fishjam.io/api/v1/connect/<YOUR_APP_UUID>/room-manager/<ROOM_NAME>/livestream-viewer-token
+https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager/<ROOM_NAME>/livestream-viewer-token
 ```
 
 #### Using Server SDKs

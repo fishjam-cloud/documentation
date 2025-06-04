@@ -44,7 +44,7 @@ Use your Room Manager URL to fetch a peer token to get a new room:
 
 ```ts
 const response = await fetch(
-  `https://fishjam.io/api/v1/connect/${YOUR_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
+  `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
 );
 
 const { url, peerToken } = await response.json();
@@ -86,7 +86,7 @@ export function StartStreamingButton({
 
   const startStreaming = useCallback(async () => {
     const response = await fetch(
-      `https://fishjam.io/api/v1/connect/${YOUR_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
+      `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
     );
     const { url, peerToken } = await response.json();
 
@@ -171,7 +171,7 @@ export default function HomeScreen() {
     const fetchRoomData = async () => {
       try {
         const response = await fetch(
-          `https://fishjam.io/api/v1/connect/*YOUR_ID*/room-manager?roomName=${roomName}&peerName=${peerName}`,
+          `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager?roomName=${roomName}&peerName=${peerName}`,
         );
         const responseData = await response.json();
         setRoomData(responseData);

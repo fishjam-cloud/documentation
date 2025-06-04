@@ -50,7 +50,7 @@ You can create 3 types of rooms:
 #### Example GET Request URL
 
 ```
-https://fishjam.io/api/v1/connect/<YOUR_APP_UUID>/room-manager?roomName=foo&peerName=bar&roomType=full-feature
+https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager?roomName=foo&peerName=bar&roomType=full-feature
 ```
 
 :::note
@@ -62,7 +62,7 @@ https://fishjam.io/api/v1/connect/<YOUR_APP_UUID>/room-manager?roomName=foo&peer
 ```json
 {
   "peerToken": "<PEER_TOKEN>",
-  "url": "wss://fishjam.io/api/v1/connect/<YOUR_APP_UUID>",
+  "url": "wss://fishjam.io/api/v1/connect/${APP_ID}",
   "room": {
     "id": "<SOME_ID>",
     "name": "foo"
