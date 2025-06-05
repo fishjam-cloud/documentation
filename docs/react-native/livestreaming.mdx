@@ -162,7 +162,7 @@ async function getViewerToken(roomName: string) {
   // This will work ONLY for the Sandbox App
   // see https://fishjam.io/docs/livestreaming
   const response = await fetch(
-    `https://fishjam.io/api/v1/connect/${YOUR_APP_ID}/room-manager/${roomName}/broadcast-viewer-token`,
+    `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager/${roomName}/broadcast-viewer-token`,
   );
   return response.json();
 }
