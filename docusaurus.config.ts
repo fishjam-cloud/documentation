@@ -1,6 +1,31 @@
-import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
+import { BundledLanguage, bundledLanguages } from "shiki";
+import type { MDXPlugin } from "@docusaurus/mdx-loader";
+import rehypeShiki, { RehypeShikiOptions } from "@shikijs/rehype";
+import {
+  transformerMetaHighlight,
+  transformerNotationDiff,
+  transformerNotationHighlight,
+  transformerNotationFocus,
+} from "@shikijs/transformers";
+
+const rehypeShikiPlugin = [
+  rehypeShiki,
+  {
+    themes: {
+      light: "catppuccin-latte",
+      dark: "catppuccin-macchiato",
+    },
+    langs: Object.keys(bundledLanguages) as BundledLanguage[],
+    transformers: [
+      transformerMetaHighlight(),
+      transformerNotationDiff(),
+      transformerNotationHighlight(),
+      transformerNotationFocus(),
+    ],
+  } satisfies RehypeShikiOptions,
+] satisfies MDXPlugin;
 
 function injectTypeDocSidebar(items) {
   return items.map((item) => {
@@ -94,6 +119,7 @@ const config: Config = {
           path: "docs",
           routeBasePath: "/",
           editUrl: "https://github.com/fishjam-cloud/documentation/tree/main/",
+          beforeDefaultRehypePlugins: [rehypeShikiPlugin],
           remarkPlugins: [
             [require("@docusaurus/remark-plugin-npm2yarn"), { sync: true }],
           ],
@@ -185,11 +211,6 @@ const config: Config = {
         },
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Software Mansion, Inc. All trademarks and copyrights belong to their respective owners.`,
-    },
-    prism: {
-      theme: prismThemes.gruvboxMaterialLight,
-      darkTheme: prismThemes.gruvboxMaterialDark,
-      additionalLanguages: ["bash"],
     },
   } satisfies Preset.ThemeConfig,
 
