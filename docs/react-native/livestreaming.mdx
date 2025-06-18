@@ -38,6 +38,144 @@ Fishjam SDK provides a [`useLivestream`](/api/mobile/functions/useLivestream) ho
 Pass the viewer token to the `connect` method of the hook to establish a connection with Fishjam.
 Once the connection is established, the `LivestreamView` component will render the video stream.
 
+## Picture-in-Picture Support
+
+The `LivestreamView` component supports Picture-in-Picture (PiP) mode, allowing users to continue watching the stream while using other apps.
+
+### Configuration
+
+<Tabs>
+<TabItem value="ios" label="iOS">
+
+Add the following to your `app.json`:
+
+```json
+{
+  "expo": {
+    "ios": {
+      "supportsPictureInPicture": true
+    }
+  }
+}
+```
+
+</TabItem>
+<TabItem value="android" label="Android">
+
+Add the following to your `app.json`:
+
+```json
+{
+  "expo": {
+    "android": {
+      "supportsPictureInPicture": true
+    }
+  }
+}
+```
+
+</TabItem>
+</Tabs>
+
+### Implementation
+
+The `LivestreamView` component accepts the following props:
+
+- `pipEnabled`: A variable deciding whether the Picture-in-Picture is enabled. Defaults to true
+- `autoStartPip`: A variable deciding whether the Picture-in-Picture mode should be started automatically after the app is backgrounded. Defaults to false
+- `autoStopPip`: A variable deciding whether the Picture-in-Picture mode should be stopped automatically on iOS after the app is foregrounded. Always enabled on Android as PiP is not supported in foreground. Defaults to false
+- `pipSize`: A variable deciding the size of the Picture-in-Picture mode. Accepts an object with `width` and `height` properties
+
+:::note
+On Android, PiP is not supported when the app is in the foreground, so `autoStopPip` is always enabled.
+:::
+
+Example usage:
+
+```tsx
+<LivestreamView
+  pipEnabled
+  autoStartPip
+  autoStopPip
+  pipSize={{ width: 1920, height: 1080 }}
+/>
+```
+
+### Imperative API
+
+The `LivestreamView` component is a wrapper around the `WhepClientView` from `react-native-whip-whep`. While you can use props to configure PiP behavior, you can also control it programmatically using the ref:
+
+```tsx
+import { useRef } from "react";
+import {
+  LivestreamView,
+  LivestreamViewRef,
+} from "@fishjam-cloud/react-native-client";
+
+function LivestreamPlayer() {
+  const livestreamRef = useRef<LivestreamViewRef>(null);
+
+  // Control PiP programmatically
+  livestreamRef.current?.startPip(); // Start PiP
+  livestreamRef.current?.stopPip(); // Stop PiP
+  livestreamRef.current?.togglePip(); // Toggle PiP
+
+  return (
+    <LivestreamView
+      ref={livestreamRef}
+      style={{ width: "90%", aspectRatio: 1, backgroundColor: "black" }}
+    />
+  );
+}
+```
+
+#### Platform-Specific Behavior
+
+##### iOS
+
+- PiP can be active both in foreground and background
+- `autoStopPip` controls whether PiP automatically stops when app returns to foreground
+
+##### Android
+
+- PiP is only supported when the app is in background
+- `autoStopPip` is always enabled (PiP automatically stops when app returns to foreground)
+
+Example usage:
+
+```tsx
+import { useRef } from "react";
+import {
+  LivestreamView,
+  LivestreamViewRef,
+  useLivestream,
+  UseLivestreamResult,
+} from "@fishjam-cloud/react-native-client";
+
+function LivestreamPlayer() {
+  const livestreamRef = useRef<LivestreamViewRef>(null);
+  const { connect, disconnect }: UseLivestreamResult = useLivestream();
+
+  // TypeScript will provide full type checking and autocompletion
+  const handleConnect = async () => {
+    try {
+      await connect("https://fishjam.io/api/v1/live", "your-token");
+    } catch (error) {
+      console.error("Connection failed:", error);
+    }
+  };
+
+  return (
+    <LivestreamView
+      ref={livestreamRef}
+      pipEnabled
+      autoStartPip
+      style={{ width: "90%", aspectRatio: 1, backgroundColor: "black" }}
+    />
+  );
+}
+```
+
 ## Examples
 
 Below are examples of how to implement the flows described above in React Native using Fishjam.
