@@ -10,44 +10,68 @@ import ConfigurePermissions from "./_components/configure-permissions.mdx";
 
 # Livestreaming
 
-This section provides examples on how to quickly set up livestreaming in React Native using Fishjam.  
-You can learn more about [livestreaming in Fishjam](/livestreaming) in our documentation.
+This guide shows you how to implement livestreaming in React Native using Fishjam. You'll learn how to broadcast video streams and receive them in your app.
 
-## How to start streaming?
+**Target audience:** React Native developers who want to add livestreaming capabilities to their apps.
+
+**Prerequisites:** You need a room of `livestream` type and appropriate tokens. See the [livestreaming overview](/livestreaming) for background information.
+
+## Overview
+
+Fishjam supports two livestreaming roles:
+
+- **Streamer**: Broadcasts video and audio to viewers
+- **Viewer**: Receives and displays the broadcast
+
+Each livestream room supports one streamer and unlimited viewers. The streamer can send only one video track and one audio track at a time.
+
+## Broadcasting a Stream
 
 ### Prerequisites
 
-- [A room of `livestream` type](/livestreaming)
-- A [peer token](/glossary#peer-token) generated for that room
+Before you start broadcasting, you need:
 
-To start streaming, simply [join the room](/react-native/connecting) and [stream as you normally would](/react-native/start-streaming).
+- A room of `livestream` type
+- A [peer token](/glossary#peer-token) for that room
+
+### Setup Steps
+
+1. **Join the room** using the [connection guide](/react-native/connecting)
+2. **Start streaming** following the [streaming guide](/react-native/start-streaming)
+
+The livestreaming scenario automatically handles the broadcast setup. You stream normally, and Fishjam distributes your content to all viewers.
 
 :::note
-Livestreaming scenario allows only one video and one audio track to be sent at a time.  
-Any additional tracks will be ignored and will not be available to the viewers.
+Livestreaming rooms accept only one video track and one audio track. Fishjam ignores additional tracks.
 :::
 
-## How to receive the stream?
+## Receiving a Stream
 
 ### Prerequisites
 
-- A peer connected and streaming in a room of `livestream` type
-- A [viewer token](/livestreaming) generated for that room
+To receive a stream, you need:
 
-Fishjam SDK provides a [`useLivestream`](/api/mobile/functions/useLivestream) hook to receive the broadcasted stream.
-Pass the viewer token to the `connect` method of the hook to establish a connection with Fishjam.
-Once the connection is established, the `LivestreamView` component will render the video stream.
+- An active streamer in a livestream room
+- A [viewer token](/livestreaming) for that room
+
+### Setup Steps
+
+1. **Use the `useLivestream` hook** to connect to the stream
+2. **Pass the viewer token** to the `connect` method
+3. **Display the stream** using the `LivestreamView` component
+
+The `LivestreamView` automatically renders the video once the connection establishes.
 
 ## Picture-in-Picture Support
 
-The `LivestreamView` component supports Picture-in-Picture (PiP) mode, allowing users to continue watching the stream while using other apps.
+The `LivestreamView` component supports Picture-in-Picture (PiP) mode. Users can continue watching the stream while using other apps.
 
-### Configuration
+### Enable PiP Support
 
 <Tabs>
 <TabItem value="ios" label="iOS">
 
-Add the following to your `app.json`:
+Add this configuration to your `app.json`:
 
 ```json
 {
@@ -62,7 +86,7 @@ Add the following to your `app.json`:
 </TabItem>
 <TabItem value="android" label="Android">
 
-Add the following to your `app.json`:
+Add this configuration to your `app.json`:
 
 ```json
 {
@@ -77,20 +101,22 @@ Add the following to your `app.json`:
 </TabItem>
 </Tabs>
 
-### Implementation
+### Configure PiP Behavior
 
-The `LivestreamView` component accepts the following props:
+The `LivestreamView` component accepts these PiP-related props:
 
-- `pipEnabled`: If the Picture-in-Picture is enabled.
-- `autoStartPip`: If the Picture-in-Picture mode should be started automatically after the app is backgrounded.
-- `autoStopPip`: If the Picture-in-Picture mode should be stopped automatically on iOS after the app is foregrounded. Always enabled on Android as PiP is not supported in foreground.
-- `pipSize`: The size of the Picture-in-Picture mode. Accepts an object with `width` and `height` properties. On Android it's the aspect ratio of the PiP window.
+| Prop           | Type    | Description                                               |
+| -------------- | ------- | --------------------------------------------------------- |
+| `pipEnabled`   | boolean | Enables Picture-in-Picture mode                           |
+| `autoStartPip` | boolean | Starts PiP automatically when app backgrounds             |
+| `autoStopPip`  | boolean | Stops PiP automatically when app foregrounds (iOS only)   |
+| `pipSize`      | object  | Sets PiP window size with `width` and `height` properties |
 
 :::note
-On Android, PiP is not supported when the app is in the foreground, so `autoStopPip` is always enabled.
+Android only supports PiP when the app is in the background. The `autoStopPip` prop is always enabled on Android.
 :::
 
-Example usage:
+### Basic PiP Usage
 
 ```tsx
 <LivestreamView
@@ -101,9 +127,9 @@ Example usage:
 />
 ```
 
-### Imperative API
+### Control PiP Programmatically
 
-While you can use props to configure Picture-in-Picture behavior, you can also control it imperatively using the ref:
+You can control PiP behavior using the component ref:
 
 ```tsx
 import { useRef } from "react";
@@ -129,29 +155,22 @@ function LivestreamPlayer() {
 }
 ```
 
-#### Platform-Specific Behavior
+### Platform Differences
 
-##### iOS
+| Platform | Foreground Support | Background Support | Auto-stop Behavior               |
+| -------- | ------------------ | ------------------ | -------------------------------- |
+| iOS      | ✅ Yes             | ✅ Yes             | Controlled by `autoStopPip` prop |
+| Android  | ❌ No              | ✅ Yes             | Always enabled                   |
 
-- PiP can be active both in foreground and background
-- `autoStopPip` controls whether PiP automatically stops when app returns to foreground
+## Complete Examples
 
-##### Android
-
-- PiP is only supported when the app is in background
-- `autoStopPip` is always enabled (PiP automatically stops when app returns to foreground)
-
-## Examples
-
-Below are examples of how to implement the flows described above in React Native using Fishjam.
+These examples show complete implementations for both streaming and viewing.
 
 :::info
-
-This guide assumes you already finished either the [Quick Setup](/react-native/quick-setup) or [Installation](/react-native/installation) guide.
-
+This guide assumes you completed either the [Quick Setup](/react-native/quick-setup) or [Installation](/react-native/installation) guide.
 :::
 
-### Required permissions
+### Required Permissions
 
 <details>
 <summary>Configure permissions before livestreaming</summary>
@@ -160,9 +179,9 @@ This guide assumes you already finished either the [Quick Setup](/react-native/q
 
 </details>
 
-### Streamer setup example
+### Streamer Example
 
-Here is an example of a simple component that immediately streams the front camera:
+This component automatically starts streaming when mounted:
 
 ```tsx
 import { useEffect } from "react";
@@ -215,10 +234,9 @@ async function getRoomDetails(roomName: string, peerName: string) {
 }
 ```
 
-### Viewer setup example
+### Viewer Example
 
-Here is an example of a component that just receives a livestream.
-The `LivestreamView` component will render the video stream once you connect to Fishjam using the connect method from [`useLivestream`](/api/mobile/functions/useLivestream).
+This component receives and displays a livestream:
 
 ```tsx
 import { useCallback, useEffect } from "react";
@@ -228,7 +246,7 @@ import {
   LivestreamView,
 } from "@fishjam-cloud/react-native-client";
 
-const YOUR_APP_ID = "";
+const ROOM_MANAGER_ID = "";
 
 export function Receiver() {
   const { connect, disconnect } = useLivestream();
@@ -270,3 +288,25 @@ async function getViewerToken(roomName: string) {
   return response.json();
 }
 ```
+
+## Troubleshooting
+
+### Common Issues
+
+**Stream not appearing for viewers:**
+
+- Verify the streamer successfully joined the room
+- Check that the viewer token is valid and not expired
+- Ensure the room type is `livestream`
+
+**PiP not working:**
+
+- Confirm PiP support is enabled in `app.json`
+- On Android, ensure the app is in the background
+- Check that `pipEnabled` prop is set to `true`
+
+**Connection errors:**
+
+- Verify your tokens are correct
+- Check your network connection
+- Ensure the room exists and is active
