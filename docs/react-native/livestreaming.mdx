@@ -12,20 +12,86 @@ import ConfigurePermissions from "./_components/configure-permissions.mdx";
 
 This guide shows you how to implement livestreaming in React Native using Fishjam. You'll learn how to broadcast video streams and receive them in your app.
 
-**Target audience:** React Native developers who want to add livestreaming capabilities to their apps.
+## 📋 Document Scope
 
-**Prerequisites:** You need a room of `livestream` type and appropriate tokens. See the [livestreaming overview](/livestreaming) for background information.
+**What this guide covers:**
 
-## Overview
+- Setting up livestreaming in React Native apps
+- Broadcasting video and audio streams
+- Receiving and displaying livestreams
+- Picture-in-Picture (PiP) functionality
+- Error handling and troubleshooting
 
-Fishjam supports two livestreaming roles:
+**What this guide doesn't cover:**
 
-- **Streamer**: Broadcasts video and audio to viewers
-- **Viewer**: Receives and displays the broadcast
+- Server-side room management
+- Advanced video processing
+- Custom video codecs
+- WebRTC internals
 
-Each livestream room supports one streamer and unlimited viewers. The streamer can send only one video track and one audio track at a time.
+**Estimated time to complete:** 30-45 minutes
 
-## Broadcasting a Stream
+**Difficulty level:** Intermediate (requires basic React Native knowledge)
+
+## 🎯 Target Audience
+
+**Primary audience:** React Native developers who want to add livestreaming capabilities to their apps.
+
+**Skill level:** You should be familiar with:
+
+- React Native basics
+- JavaScript/TypeScript
+- Async/await patterns
+- React hooks
+
+## 📋 Prerequisites
+
+Before you begin, ensure you have:
+
+- **React Native project** set up with Expo or bare React Native
+- **Fishjam SDK** installed: `npm install @fishjam-cloud/react-native-client`
+- **Room of `livestream` type** created on your Fishjam server
+- **Appropriate tokens** (peer token for streaming, viewer token for receiving)
+- **Camera and microphone permissions** configured
+
+See the [livestreaming overview](/livestreaming) for background information about Fishjam's livestreaming architecture.
+
+## 🏗️ Architecture Overview
+
+Fishjam livestreaming follows a **one-to-many** broadcasting model:
+
+```mermaid
+graph LR
+    A[Streamer<br/>1 peer] --> B[Fishjam<br/>Server]
+    B --> C[Viewer 1]
+    B --> D[Viewer 2]
+    B --> E[Viewer N...]
+
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style C fill:#e8f5e8
+    style D fill:#e8f5e8
+    style E fill:#e8f5e8
+```
+
+**Key characteristics:**
+
+- **One streamer** per room (broadcasts video/audio)
+- **Unlimited viewers** per room (receive the stream)
+- **Single video track** and **single audio track** per stream
+- **Automatic distribution** to all connected viewers
+
+## 🚀 Quick Start
+
+If you already have some experience with Fishjam and want to jump straight in:
+
+1. **Install the SDK:** `npm install @fishjam-cloud/react-native-client`
+2. **Configure permissions** (see Required Permissions section)
+3. **Copy the Streamer Example** or **Viewer Example** below
+4. **Replace placeholder values** with your actual room details
+5. **Test the implementation**
+
+## 📱 Broadcasting a Stream
 
 ### Prerequisites
 
@@ -33,19 +99,18 @@ Before you start broadcasting, you need:
 
 - A room of `livestream` type
 - A [peer token](/glossary#peer-token) for that room
+- Camera and microphone permissions configured
 
 ### Setup Steps
 
 1. **Join the room** using the [connection guide](/react-native/connecting)
 2. **Start streaming** following the [streaming guide](/react-native/start-streaming)
 
-The livestreaming scenario automatically handles the broadcast setup. You stream normally, and Fishjam distributes your content to all viewers.
-
 :::note
-Livestreaming rooms accept only one video track and one audio track. Fishjam ignores additional tracks.
+Livestreaming rooms accept only one video track and one audio track. Fishjam ignores additional tracks to maintain broadcast quality.
 :::
 
-## Receiving a Stream
+## 📺 Receiving a Stream
 
 ### Prerequisites
 
@@ -62,7 +127,7 @@ To receive a stream, you need:
 
 The `LivestreamView` automatically renders the video once the connection establishes.
 
-## Picture-in-Picture Support
+## 🖼️ Picture-in-Picture Support
 
 The `LivestreamView` component supports Picture-in-Picture (PiP) mode. Users can continue watching the stream while using other apps.
 
@@ -142,9 +207,9 @@ function LivestreamPlayer() {
   const livestreamRef = useRef<LivestreamViewRef>(null);
 
   // Control PiP programmatically
-  livestreamRef.current?.startPip(); // Start PiP
-  livestreamRef.current?.stopPip(); // Stop PiP
-  livestreamRef.current?.togglePip(); // Toggle PiP
+  livestreamRef.current?.startPip();
+  livestreamRef.current?.stopPip();
+  livestreamRef.current?.togglePip();
 
   return (
     <LivestreamView
@@ -162,7 +227,7 @@ function LivestreamPlayer() {
 | iOS      | ✅ Yes             | ✅ Yes             | Controlled by `autoStopPip` prop |
 | Android  | ❌ No              | ✅ Yes             | Always enabled                   |
 
-## Complete Examples
+## 💻 Complete Examples
 
 These examples show complete implementations for both streaming and viewing.
 
@@ -289,24 +354,32 @@ async function getViewerToken(roomName: string) {
 }
 ```
 
-## Troubleshooting
+## 🚨 Troubleshooting
 
 ### Common Issues
 
 **Stream not appearing for viewers:**
 
-- Verify the streamer successfully joined the room
-- Check that the viewer token is valid and not expired
-- Ensure the room type is `livestream`
+- ✅ Verify the streamer successfully joined the room
+- ✅ Check that the viewer token is valid and not expired
+- ✅ Ensure the room type is `livestream`
 
 **PiP not working:**
 
-- Confirm PiP support is enabled in `app.json`
-- On Android, ensure the app is in the background
-- Check that `pipEnabled` prop is set to `true`
+- ✅ Confirm PiP support is enabled in `app.json`
+- ✅ On Android, ensure the app is in the background
+- ✅ Check that `pipEnabled` prop is set to `true`
 
 **Connection errors:**
 
-- Verify your tokens are correct
-- Check your network connection
-- Ensure the room exists and is active
+- ✅ Verify your tokens are correct and not expired
+- ✅ Check your network connection
+- ✅ Ensure the room exists and is active
+- ✅ Confirm your Fishjam server is running
+
+## 📚 Additional Resources
+
+- [Livestreaming Overview](/livestreaming) - Learn about Fishjam's livestreaming architecture
+- [Connection Guide](/react-native/connecting) - Detailed connection setup
+- [Streaming Guide](/react-native/start-streaming) - Advanced streaming configuration
+- [API Reference](/api/mobile/functions/useLivestream) - Complete API documentation
