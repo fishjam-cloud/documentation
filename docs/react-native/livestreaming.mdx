@@ -81,10 +81,10 @@ Add the following to your `app.json`:
 
 The `LivestreamView` component accepts the following props:
 
-- `pipEnabled`: A variable deciding whether the Picture-in-Picture is enabled. Defaults to true
-- `autoStartPip`: A variable deciding whether the Picture-in-Picture mode should be started automatically after the app is backgrounded. Defaults to false
-- `autoStopPip`: A variable deciding whether the Picture-in-Picture mode should be stopped automatically on iOS after the app is foregrounded. Always enabled on Android as PiP is not supported in foreground. Defaults to false
-- `pipSize`: A variable deciding the size of the Picture-in-Picture mode. Accepts an object with `width` and `height` properties
+- `pipEnabled`: If the Picture-in-Picture is enabled.
+- `autoStartPip`: If the Picture-in-Picture mode should be started automatically after the app is backgrounded.
+- `autoStopPip`: If the Picture-in-Picture mode should be stopped automatically on iOS after the app is foregrounded. Always enabled on Android as PiP is not supported in foreground.
+- `pipSize`: The size of the Picture-in-Picture mode. Accepts an object with `width` and `height` properties. On Android it's the aspect ratio of the PiP window.
 
 :::note
 On Android, PiP is not supported when the app is in the foreground, so `autoStopPip` is always enabled.
@@ -103,7 +103,7 @@ Example usage:
 
 ### Imperative API
 
-The `LivestreamView` component is a wrapper around the `WhepClientView` from `react-native-whip-whep`. While you can use props to configure PiP behavior, you can also control it programmatically using the ref:
+While you can use props to configure Picture-in-Picture behavior, you can also control it imperatively using the ref:
 
 ```tsx
 import { useRef } from "react";
@@ -140,41 +140,6 @@ function LivestreamPlayer() {
 
 - PiP is only supported when the app is in background
 - `autoStopPip` is always enabled (PiP automatically stops when app returns to foreground)
-
-Example usage:
-
-```tsx
-import { useRef } from "react";
-import {
-  LivestreamView,
-  LivestreamViewRef,
-  useLivestream,
-  UseLivestreamResult,
-} from "@fishjam-cloud/react-native-client";
-
-function LivestreamPlayer() {
-  const livestreamRef = useRef<LivestreamViewRef>(null);
-  const { connect, disconnect }: UseLivestreamResult = useLivestream();
-
-  // TypeScript will provide full type checking and autocompletion
-  const handleConnect = async () => {
-    try {
-      await connect("https://fishjam.io/api/v1/live", "your-token");
-    } catch (error) {
-      console.error("Connection failed:", error);
-    }
-  };
-
-  return (
-    <LivestreamView
-      ref={livestreamRef}
-      pipEnabled
-      autoStartPip
-      style={{ width: "90%", aspectRatio: 1, backgroundColor: "black" }}
-    />
-  );
-}
-```
 
 ## Examples
 
