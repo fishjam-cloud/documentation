@@ -12,38 +12,6 @@ import ConfigurePermissions from "./_components/configure-permissions.mdx";
 
 This guide shows you how to implement livestreaming in React Native using Fishjam. You'll learn how to broadcast video streams and receive them in your app.
 
-## 📋 Document Scope
-
-**What this guide covers:**
-
-- Setting up livestreaming in React Native apps
-- Broadcasting video and audio streams
-- Receiving and displaying livestreams
-- Picture-in-Picture (PiP) functionality
-- Error handling and troubleshooting
-
-**What this guide doesn't cover:**
-
-- Server-side room management
-- Advanced video processing
-- Custom video codecs
-- WebRTC internals
-
-**Estimated time to complete:** 30-45 minutes
-
-**Difficulty level:** Intermediate (requires basic React Native knowledge)
-
-## 🎯 Target Audience
-
-**Primary audience:** React Native developers who want to add livestreaming capabilities to their apps.
-
-**Skill level:** You should be familiar with:
-
-- React Native basics
-- JavaScript/TypeScript
-- Async/await patterns
-- React hooks
-
 ## 📋 Prerequisites
 
 Before you begin, ensure you have:
@@ -80,16 +48,6 @@ graph LR
 - **Unlimited viewers** per room (receive the stream)
 - **Single video track** and **single audio track** per stream
 - **Automatic distribution** to all connected viewers
-
-## 🚀 Quick Start
-
-If you already have some experience with Fishjam and want to jump straight in:
-
-1. **Install the SDK:** `npm install @fishjam-cloud/react-native-client`
-2. **Configure permissions** (see Required Permissions section)
-3. **Copy the Streamer Example** or **Viewer Example** below
-4. **Replace placeholder values** with your actual room details
-5. **Test the implementation**
 
 ## 📱 Broadcasting a Stream
 
@@ -360,22 +318,14 @@ async function getViewerToken(roomName: string) {
 
 **Stream not appearing for viewers:**
 
-- ✅ Verify the streamer successfully joined the room
+- ✅ Verify the streamer successfully joined the room. If no one is streaming, there is nothing to join to.
 - ✅ Check that the viewer token is valid and not expired
-- ✅ Ensure the room type is `livestream`
+- ✅ Ensure the room type is `livestream`, when streaming.
 
 **PiP not working:**
 
 - ✅ Confirm PiP support is enabled in `app.json`
-- ✅ On Android, ensure the app is in the background
 - ✅ Check that `pipEnabled` prop is set to `true`
-
-**Connection errors:**
-
-- ✅ Verify your tokens are correct and not expired
-- ✅ Check your network connection
-- ✅ Ensure the room exists and is active
-- ✅ Confirm your Fishjam server is running
 
 ## 📚 Additional Resources
 
