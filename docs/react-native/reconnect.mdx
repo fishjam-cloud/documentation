@@ -12,12 +12,12 @@ You can monitor these events by utilizing the [`useConnection`](/api/mobile/func
 ```ts
 import { useEffect, useRef } from "react";
 import {
-  ConnectionStatus,
+  ReconnectionStatus,
   useConnection,
 } from "@fishjam-cloud/react-native-client";
 
 export function useLogConnectionStatus() {
-  const prevStatus = useRef<ConnectionStatus>("idle");
+  const prevStatus = useRef<ReconnectionStatus>("idle");
 
   // highlight-next-line
   const { reconnectionStatus } = useConnection();
