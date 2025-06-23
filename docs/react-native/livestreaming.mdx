@@ -19,8 +19,7 @@ Before you begin, ensure you have:
 - **React Native project** set up with Expo or bare React Native
 - **Fishjam SDK** installed: `npm install @fishjam-cloud/react-native-client`
 - **Room of `livestream` type** created on your Fishjam server
-- **Appropriate tokens** (peer token for streaming, viewer token for receiving)
-- **Camera and microphone permissions** configured
+- **Camera and microphone permissions** [configured](/react-native/installation#step-2-configure-app-permissions)
 
 See the [livestreaming overview](/livestreaming) for background information about Fishjam's livestreaming architecture.
 
@@ -47,7 +46,6 @@ graph LR
 - **One streamer** per room (broadcasts video/audio)
 - **Unlimited viewers** per room (receive the stream)
 - **Single video track** and **single audio track** per stream
-- **Automatic distribution** to all connected viewers
 
 ## 📱 Broadcasting a Stream
 
@@ -319,7 +317,6 @@ async function getViewerToken(roomName: string) {
 **Stream not appearing for viewers:**
 
 - Verify the streamer successfully joined the room. If no one is streaming, there is nothing to join to.
-- Check that the viewer token is valid and not expired
 - Ensure the room type is `livestream`, when streaming.
 
 **PiP not working:**
