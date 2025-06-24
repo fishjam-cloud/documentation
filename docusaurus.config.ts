@@ -10,15 +10,17 @@ import {
   transformerNotationFocus,
 } from "@shikijs/transformers";
 
+import { transformerTwoslash } from "@shikijs/twoslash";
+
 const rehypeShikiPlugin = [
   rehypeShiki,
   {
     themes: {
       light: "catppuccin-latte",
-      dark: "catppuccin-macchiato",
     },
     langs: Object.keys(bundledLanguages) as BundledLanguage[],
     transformers: [
+      transformerTwoslash(),
       transformerMetaHighlight(),
       transformerNotationDiff(),
       transformerNotationHighlight(),
