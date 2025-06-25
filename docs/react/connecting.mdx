@@ -14,19 +14,19 @@ Use the [`useConnection`](/api/web/functions/useConnection) hook to get
 the [`joinRoom`](/api/web/functions/useConnection#joinroom) function.
 
 ```tsx
+// @errors: 2304
 import { useConnection } from "@fishjam-cloud/react-client";
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 
 export function JoinRoomButton() {
-  // highlight-next-line
-  const { joinRoom } = useConnection();
+  const { joinRoom } = useConnection(); // [!code highlight]
 
   const onJoinRoomPress = useCallback(async () => {
-    // highlight-next-line
     await joinRoom({
-      url: FISHJAM_URL,
-      peerToken: PEER_TOKEN,
-    });
+      // [!code highlight]
+      url: FISHJAM_URL, // [!code highlight]
+      peerToken: PEER_TOKEN, // [!code highlight]
+    }); // [!code highlight]
   }, [joinRoom]);
 
   return <button onClick={onJoinRoomPress}>Join room</button>;
@@ -38,9 +38,9 @@ export function JoinRoomButton() {
 In order to close connection, use the [`leaveRoom`](/api/web/functions/useConnection#leaveroom) method
 from [`useConnection`](/api/web/functions/useConnection) hook.
 
-```ts
+```tsx
 import { useConnection } from "@fishjam-cloud/react-client";
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 
 export function LeaveRoomButton() {
   // highlight-next-line
@@ -48,5 +48,4 @@ export function LeaveRoomButton() {
 
   return <button onClick={leaveRoom}>Leave room</button>;
 }
-
 ```

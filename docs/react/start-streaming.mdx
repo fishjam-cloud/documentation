@@ -17,7 +17,7 @@ as an argument. By default, both camera and microphone are initialized.
 The [`initializeDevices`](/api/web/functions/useInitializeDevices#initializedevices) function will return a [`Promise<InitializeDevicesResult>`](/api/web/type-aliases/InitializeDevicesResult) object.
 
 ```ts
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useInitializeDevices } from "@fishjam-cloud/react-client";
 
 export function useExample() {
@@ -45,7 +45,7 @@ and [`useMicrophone`](/api/web/functions/useMicrophone) hooks.
 Both of them has similar API. To keep things simple, we will just use the camera hook.
 
 ```tsx
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useCamera } from "@fishjam-cloud/react-client";
 
 export function ExampleCameraPreview() {

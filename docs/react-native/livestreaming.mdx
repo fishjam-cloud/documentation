@@ -62,7 +62,7 @@ This guide assumes you already finished either the [Quick Setup](/react-native/q
 Here is an example of a simple component that immediately streams the front camera:
 
 ```tsx
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   useCamera,
   useConnection,
@@ -118,7 +118,8 @@ Here is an example of a component that just receives a livestream.
 The `LivestreamView` component will render the video stream once you connect to Fishjam using the connect method from [`useLivestream`](/api/mobile/functions/useLivestream).
 
 ```tsx
-import { useCallback, useEffect } from "react";
+// @errors: 2304
+import React, { useCallback, useEffect } from "react";
 import { View } from "react-native";
 import {
   useLivestream,

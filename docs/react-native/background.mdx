@@ -72,6 +72,15 @@ granted and only then allow to start a service.
 :::
 
 ```tsx
+import {
+  useForegroundService,
+  useCamera,
+  useMicrophone,
+} from "@fishjam-cloud/react-native-client";
+
+const { isCameraOn } = useCamera();
+const { isMicrophoneOn } = useMicrophone();
+
 useForegroundService({
   channelId: "io.fishjam.example.fishjamchat.foregroundservice.channel",
   channelName: "Fishjam Chat Notifications",

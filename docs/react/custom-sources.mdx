@@ -27,17 +27,19 @@ To create a custom source, you only need to do two things:
 #### Usage Example
 
 ```tsx
+// @errors: 1109
+import React, { useEffect } from "react";
 import { useCustomSource } from "@fishjam-cloud/react-client";
 
 export function CameraControl() {
-  const stream: MediaStream = ...
+  const stream: MediaStream = ...;
   const { setStream } = useCustomSource("my-custom-source");
 
   useEffect(() => {
     setStream(stream);
   }, [stream, setStream]);
 
-  ...
+  // ...
 }
 ```
 
@@ -53,8 +55,9 @@ If you wish to remove a custom source, then you should call the [`setStream`](/a
 #### Usage Example
 
 ```tsx
+// @errors: 2304
 const { setStream } = useCustomSource("my-custom-source");
-...
+// ...
 await setStream(null);
 ```
 
@@ -71,7 +74,7 @@ This is particularly useful if you are using [Three.js](https://threejs.org/) or
 #### Usage Example
 
 ```tsx
-import { useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 
 export function CanvasExample() {
   const [canvasStream, setCanvasStream] = useState<MediaStream>();
@@ -100,6 +103,8 @@ If you want to see a full example React app which uses Fishjam with Smelter, the
 :::
 
 ```tsx
+// @errors: 2304
+import React from "react";
 const { stream } = await smelter.registerOutput("example-output", <View />, {
   type: "stream",
   video: {
@@ -118,7 +123,8 @@ If you have a `<video>` or `<audio>` element, then you need to call their [`capt
   <TabItem value="video" label="Video">
 
     ```tsx
-    import { useCallback, useState } from "react";
+    // @errors: 1003 2339
+    import React, { useCallback, useState } from "react";
 
     export function CanvasExample() {
       const [stream, setStream] = useState<MediaStream>();
@@ -139,7 +145,8 @@ If you have a `<video>` or `<audio>` element, then you need to call their [`capt
   <TabItem value="audio" label="Audio">
 
     ```tsx
-    import { useCallback, useState } from "react";
+    // @errors: 1003 2339
+    import React, { useCallback, useState } from "react";
 
     export function CanvasExample() {
       const [stream, setStream] = useState<MediaStream>();

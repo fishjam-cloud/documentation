@@ -20,7 +20,7 @@ First, you have to enable your camera by calling [`prepareCamera`](/api/mobile/f
 You can open show camera preview with [`VideoPreviewView`](/api/mobile/functions/VideoPreviewView) component
 
 ```tsx
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   useCamera,
   VideoPreviewView,
@@ -47,7 +47,7 @@ This way, you can either automatically choose camera (front/back) or allow user 
 To change camera, simply call [`switchCamera`](/api/mobile/functions/useCamera#switchcamera) method.
 
 ```tsx
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import { Button } from "react-native";
 import { useCamera } from "@fishjam-cloud/react-native-client";
 
@@ -76,6 +76,7 @@ To change camera state, you use [`toggleCamera`](/api/mobile/functions/useCamera
 
 ```tsx
 import { Button } from "react-native";
+import React from "react";
 import { useCamera } from "@fishjam-cloud/react-native-client";
 
 export function ToggleCameraButton() {
@@ -98,6 +99,7 @@ Microphone works similar to camera. In order to enable it, you have to call [`to
 
 ```tsx
 import { Button } from "react-native";
+import React from "react";
 import { useMicrophone } from "@fishjam-cloud/react-native-client";
 
 export function ToggleMicrophoneButton() {

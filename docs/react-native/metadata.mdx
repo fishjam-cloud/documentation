@@ -14,7 +14,8 @@ import ReadingMetadata from "../_common/metadata/reading.mdx";
 <JoiningRoom>
 
 ```tsx
-import { useCallback } from "react";
+// @errors: 2304
+import React, { useCallback } from "react";
 import { Button } from "react-native";
 import { useConnection } from "@fishjam-cloud/react-native-client";
 
@@ -43,7 +44,7 @@ export function JoinRoomButton() {
 <UpdatingMetadata>
 
 ```tsx
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import { Button } from "react-native";
 import { useUpdatePeerMetadata } from "@fishjam-cloud/react-native-client";
 
@@ -69,6 +70,7 @@ export function UpdateNameButton() {
 <ReadingMetadata>
 
 ```tsx
+import React from "react";
 import { Text, View } from "react-native";
 import { usePeers } from "@fishjam-cloud/react-native-client";
 
@@ -76,17 +78,21 @@ type PeerMetadata = {
   displayName: string;
 };
 
+type ServerMetadata = {
+  realName: string;
+};
+
 export function ListAllNames() {
   // highlight-next-line
-  const { remotePeers } = usePeers<PeerMetadata>();
+  const { remotePeers } = usePeers<PeerMetadata, ServerMetadata>();
 
   return (
     <View>
       {remotePeers.map((peer) => (
         // highlight-start
-        <Text>
-          Display name: {peer.metadata.peer.displayName}
-          Real name: {peer.metadata.server.realName}
+        <Text key={peer.id}>
+          Display name: {peer.metadata.peer?.displayName || 'Unknown'}
+          Real name: {peer.metadata.server?.realName || 'Unknown'}
         </Text>
         // highlight-end
       ))}

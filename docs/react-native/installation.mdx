@@ -46,6 +46,7 @@ Before using the camera or microphone, ask the user for permissions.
 
 ```tsx
 import { useCameraPermissions } from "expo-camera";
+import React, { useEffect } from "react";
 
 const [permission, requestPermission] = useCameraPermissions();
 

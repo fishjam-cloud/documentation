@@ -43,6 +43,7 @@ In a few simple steps, you will be able to implement a simple video call functio
 Use your Room Manager URL to fetch a peer token to get a new room:
 
 ```ts
+// @errors: 2304
 const response = await fetch(
   `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
 );
@@ -68,7 +69,8 @@ Keep in mind that this won't work on the iOS Simulator, as the Simulator can't a
 To start streaming, you have to prepare your camera and join the room:
 
 ```tsx
-import { useCallback } from "react";
+// @errors: 2304
+import React, { useCallback } from "react";
 import { Button } from "react-native";
 import { useCamera, useConnection } from "@fishjam-cloud/react-native-client";
 
@@ -106,6 +108,7 @@ export function StartStreamingButton({
 Once you are connected, you can check the connection status with [`useConnection`](/api/mobile/functions/useConnection) hook
 
 ```ts
+// @errors: 2304
 const { peerStatus } = useConnection();
 ```
 
@@ -126,6 +129,7 @@ import {
   VideoRendererView,
 } from "@fishjam-cloud/react-native-client";
 import { View } from "react-native";
+import React from "react";
 
 export function TracksView() {
   const { remotePeers } = usePeers();
@@ -153,7 +157,8 @@ export function TracksView() {
 Here is how it all could work for a minimal, working example:
 
 ```tsx
-import { useEffect, useState } from "react";
+// @errors: 2304
+import React, { useEffect, useState } from "react";
 import { FishjamRoom } from "@fishjam-cloud/react-native-client";
 
 type RoomData = {
