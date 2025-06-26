@@ -40,7 +40,7 @@ Install `@fishjam-cloud/react-native-client` with your preferred package manager
 
 <ConfigurePermissions />
 
-## Step 3: Request App Permissions
+## Step 3: Request Camera Permissions
 
 Before using the camera or microphone, ask the user for permissions. The `useCameraPermissions` hook returns an array with three elements:
 
@@ -76,6 +76,45 @@ The `permission` object has the following properties:
 > ```tsx
 > // Do not auto-fetch permission status, do not auto-request
 > const [permission, requestPermission] = useCameraPermissions({
+>   get: false, // disables auto-fetch
+>   request: true, // enables auto-request
+> });
+> ```
+>
+> Adjust these options to fit your app's needs.
+
+## Step 4: Request Microphone Permissions
+
+To use the microphone, you should also request permissions using the `useMicrophonePermissions` hook. This hook works the same way as `useCameraPermissions` and returns an array with three elements:
+
+1. `permission`: The current permission status (`null` or a `PermissionResponse` object)
+2. `requestPermission`: A function to request permission
+3. `getPermission`: A function to get the current permission status
+
+Here's an example of how to use it:
+
+```tsx
+import { useMicrophonePermissions } from "@fishjam-cloud/react-native-client";
+
+const [permission, requestPermission, getPermission] =
+  useMicrophonePermissions();
+```
+
+The `permission` object has the following properties:
+
+- `canAskAgain`: Indicates if the user can be asked again for this permission. If `false`, direct the user to the Settings app to enable/disable the permission.
+- `expires`: When the permission expires.
+- `granted`: Indicates if the permission is granted.
+- `status`: The current status of the permission.
+
+> **Note:**
+> You can control whether the hook automatically fetches the current permission status (`getMethod`) or requests permission (`requestMethod`) by passing an `options` object to the hook. By default, `getMethod` is called automatically (auto fetch is `true`), and `requestMethod` is not (auto request is `false`).
+>
+> For example:
+>
+> ```tsx
+> // Do not auto-fetch permission status, enable auto-request
+> const [permission, requestPermission] = useMicrophonePermissions({
 >   get: false, // disables auto-fetch
 >   request: true, // enables auto-request
 > });
