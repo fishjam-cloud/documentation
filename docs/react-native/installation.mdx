@@ -40,53 +40,42 @@ Install `@fishjam-cloud/react-native-client` with your preferred package manager
 
 <ConfigurePermissions />
 
-## Step 3: Request Camera Permissions
+## Optional: Request Camera and Microphone Permissions
 
-Before using the camera or microphone, ask the user for permissions. The `useCameraPermissions` hook returns an array with three elements:
+> **Important:**
+> You usually don't need to explicitly ask for camera or microphone permissions in your code. By default, the user will be prompted for permissions automatically when the relevant component mounts.
 
-1. `permission`: The current permission status (`null` or a `PermissionResponse` object)
+If you want more control, you can use the `useCameraPermissions` and `useMicrophonePermissions` hooks to manage permissions manually. Both hooks return an array with three elements:
+
+1. `permission`: The current permission status
 2. `requestPermission`: A function to request permission
 3. `getPermission`: A function to get the current permission status
 
-Here's an example of how to use it:
+Here's an example of how to use both hooks:
 
 ```tsx
-import { useCameraPermissions } from "@fishjam-cloud/react-native-client";
+import {
+  useCameraPermissions,
+  useMicrophonePermissions,
+} from "@fishjam-cloud/react-native-client";
+import { useEffect } from "react";
 
-const [permission, requestPermission, getPermission] = useCameraPermissions();
+const [cameraPermission, requestCameraPermission, getCameraPermission] =
+  useCameraPermissions();
+
+const [
+  microphonePermission,
+  requestMicrophonePermission,
+  getMicrophonePermission,
+] = useMicrophonePermissions();
 
 useEffect(() => {
-  // Request permission when the component mounts
-  requestPermission();
+  requestCameraPermission();
+  requestMicrophonePermission();
 }, []);
 ```
 
-The `permission` object has the following properties:
-
-- `canAskAgain`: Indicates if the user can be asked again for this permission. If `false`, direct the user to the Settings app to enable/disable the permission.
-- `expires`: When the permission expires.
-- `granted`: Indicates if the permission is granted.
-- `status`: The current status of the permission.
-
-> **Important:**
-> If you use the default options, you don't need to manually ask for permissions—permission will be requested automatically when the component mounts.
-
-## Step 4: Request Microphone Permissions
-
-To use the microphone, you should also request permissions using the `useMicrophonePermissions` hook. This hook works the same way as `useCameraPermissions` and returns an array with three elements:
-
-1. `permission`: The current permission status (`null` or a `PermissionResponse` object)
-2. `requestPermission`: A function to request permission
-3. `getPermission`: A function to get the current permission status
-
-Here's an example of how to use it:
-
-```tsx
-import { useMicrophonePermissions } from "@fishjam-cloud/react-native-client";
-
-const [permission, requestPermission, getPermission] =
-  useMicrophonePermissions();
-```
+**PermissionResponse**
 
 The `permission` object has the following properties:
 
@@ -95,5 +84,17 @@ The `permission` object has the following properties:
 - `granted`: Indicates if the permission is granted.
 - `status`: The current status of the permission.
 
-> **Important:**
-> If you use the default options, you don't need to manually ask for permissions—permission will be requested automatically when the component mounts.
+> **Note:**
+> You can control whether the hook automatically fetches the current permission status or requests permission by passing an `options` object to the hook. By default, `get` is called automatically (auto fetch is `true`), and `request` is not (auto request is `false`).
+>
+> For example:
+>
+> ```tsx
+> // Do not auto-fetch permission status, enable auto-request
+> const [permission, requestPermission] = useCameraPermissions({
+>   get: false, // disables auto-fetch
+>   request: true, // enables auto-request
+> });
+> ```
+>
+> Adjust these options to fit your app's needs.
