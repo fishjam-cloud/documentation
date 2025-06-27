@@ -42,9 +42,9 @@ Install `@fishjam-cloud/react-native-client` with your preferred package manager
 
 ## Optional: Request Camera and Microphone Permissions
 
-> **Important:**
-> You usually don't need to explicitly ask for camera or microphone permissions in your code. By default, the user will be prompted for permissions automatically when the relevant component mounts.
-
+:::info
+You don't need to explicitly ask for permissions because it is done automatically on mounting. You can opt for asking them at a different time if you want to customize the user experience.
+:::
 If you want more control, you can use the `useCameraPermissions` and `useMicrophonePermissions` hooks to manage permissions manually. Both hooks return an array with three elements:
 
 1. `permission`: The current permission status
@@ -84,17 +84,20 @@ The `permission` object has the following properties:
 - `granted`: Indicates if the permission is granted.
 - `status`: The current status of the permission.
 
-> **Note:**
-> You can control whether the hook automatically fetches the current permission status or requests permission by passing an `options` object to the hook. By default, `get` is called automatically (auto fetch is `true`), and `request` is not (auto request is `false`).
->
-> For example:
->
-> ```tsx
-> // Do not auto-fetch permission status, enable auto-request
-> const [permission, requestPermission] = useCameraPermissions({
->   get: false, // disables auto-fetch
->   request: true, // enables auto-request
-> });
-> ```
->
-> Adjust these options to fit your app's needs.
+:::info
+You can control when and how permissions are requested by passing an `options` object to the hook.
+:::
+
+### Customizing Permission Request Behavior
+
+By default, `get` is called automatically (auto fetch is `true`), and `request` is not (auto request is `false`). You can change this behavior:
+
+```tsx
+// Do not auto-fetch permission status, enable auto-request
+const [permission, requestPermission] = useCameraPermissions({
+  get: false, // disables auto-fetch
+  request: true, // enables auto-request
+});
+```
+
+Adjust these options to fit your app's needs.
