@@ -21,10 +21,10 @@
     "spellcheck:report": "yarn spellcheck -r"
   },
   "dependencies": {
-    "@docusaurus/core": "^3.7.0",
-    "@docusaurus/preset-classic": "^3.7.0",
-    "@docusaurus/remark-plugin-npm2yarn": "^3.7.0",
-    "@docusaurus/theme-mermaid": "^3.7.0",
+    "@docusaurus/core": "^3.8.1",
+    "@docusaurus/preset-classic": "^3.8.1",
+    "@docusaurus/remark-plugin-npm2yarn": "^3.8.1",
+    "@docusaurus/theme-mermaid": "^3.8.1",
     "@fastify/env": "^5.0.2",
     "@fishjam-cloud/js-server-sdk": "^0.17.1",
     "@fishjam-cloud/react-native-client": "^0.18.1",
@@ -43,9 +43,9 @@
     "shiki": "^3.6.0"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "^3.7.0",
-    "@docusaurus/tsconfig": "^3.7.0",
-    "@docusaurus/types": "^3.7.0",
+    "@docusaurus/module-type-aliases": "^3.8.1",
+    "@docusaurus/tsconfig": "^3.8.1",
+    "@docusaurus/types": "^3.8.1",
     "@fishjam-cloud/react-client": "^0.18.0",
     "@shikijs/twoslash": "^3.6.0",
     "docusaurus-plugin-typedoc": "1.4.0",
