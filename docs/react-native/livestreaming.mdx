@@ -140,6 +140,9 @@ Android only supports PiP when the app is in the background. The `autoStopPip` p
 ### Basic PiP Usage
 
 ```tsx
+import React from "react";
+import { LivestreamView } from "@fishjam-cloud/react-native-client";
+
 <LivestreamView
   pipEnabled
   autoStartPip
@@ -153,7 +156,7 @@ Android only supports PiP when the app is in the background. The `autoStopPip` p
 You can control PiP behavior using the component ref:
 
 ```tsx
-import { useRef } from "react";
+import React, { useRef } from "react";
 import {
   LivestreamView,
   LivestreamViewRef,
