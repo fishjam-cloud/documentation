@@ -5,9 +5,136 @@ sidebar_position: 0
 import QuickNavigation from "@site/src/components/QuickNavigation";
 import { items } from "@site/src/content/cardItems";
 
-# Welcome to Fishjam!
+# Welcome to Fishjam
 
-Here you will find everything you need to start building your multimedia streaming applications using our service.  
-Start from the beginning, get right away to setup or get to know our glossary.
+Welcome to the Fishjam documentation! Build real-time video and audio streaming applications with confidence using our organized, developer-friendly guides.
 
-<QuickNavigation items={items} />
+## New to Fishjam? Start here 🚀
+
+If you're just getting started, follow our **tutorials** to build your first application:
+
+<QuickNavigation
+  items={items.filter(
+    (item) =>
+      item.title.toLowerCase().includes("tutorial") ||
+      item.title.toLowerCase().includes("start"),
+  )}
+/>
+
+### Quick Start Paths
+
+**📱 Mobile Developer?** → [React Native Tutorial](/tutorials/react-native-quick-start)  
+**🌐 Web Developer?** → [React Tutorial](/tutorials/react-quick-start)  
+**⚙️ Backend Developer?** → [Backend Tutorial](/tutorials/backend-quick-start)
+
+## How This Documentation is Organized
+
+Our documentation follows the [Diátaxis framework](https://diataxis.fr/) to help you find exactly what you need:
+
+### 📚 **Tutorials** - _Learn by building_
+
+Step-by-step guides that teach you the fundamentals by building working applications.
+
+- [React Native Quick Start](/tutorials/react-native-quick-start)
+- [React Quick Start](/tutorials/react-quick-start)
+- [Backend Quick Start](/tutorials/backend-quick-start)
+
+### 🛠️ **How-to Guides** - _Solve specific problems_
+
+Goal-oriented guides that show you how to solve real problems and implement features.
+
+- **React Native**: [Installation](/how-to/react-native/installation), [Screen Sharing](/how-to/react-native/screensharing), [Background Streaming](/how-to/react-native/background-streaming)
+- **React/Web**: [Managing Devices](/how-to/react/managing-devices), [Livestreaming](/how-to/react/livestreaming), [Custom Sources](/how-to/react/custom-sources)
+- **Features**: [Audio-only Calls](/how-to/features/audio-only-calls), [Room Manager Testing](/how-to/features/room-manager-testing)
+- **Backend**: [Production Deployment](/how-to/backend/production-deployment), [Server Setup](/how-to/backend/server-setup)
+
+### 📖 **Reference** - _Look up specific information_
+
+Technical reference for APIs, parameters, and detailed specifications.
+
+- [React Native SDK API](/api/mobile)
+- [React/Web SDK API](/api/web)
+- [Server SDK API](/api/server)
+- [Glossary](/reference/glossary)
+
+### 💡 **Explanation** - _Understand the concepts_
+
+Background information that explains how Fishjam works and why it's designed this way.
+
+- [What is Fishjam?](/explanation/what-is-fishjam)
+- [Architecture](/explanation/architecture)
+- [Core Concepts](/explanation/core-concepts)
+- [Room Types](/explanation/room-types)
+- [Security & Tokens](/explanation/security-tokens)
+
+## Try Fishjam Right Now
+
+Want to see Fishjam in action immediately?
+
+- **Live Demo**: Try our [Videoroom app](https://room.fishjam.io/)
+- **Example Apps**: Check out [Fishjam Chat examples](https://github.com/fishjam-cloud/mobile-client-sdk/tree/main/examples/fishjam-chat)
+
+## Get Your Development Environment Ready
+
+1. **Create account**: [Sign up for Fishjam](https://fishjam.io/app)
+2. **Get Sandbox access**: Automatic Sandbox instance with Room Manager
+3. **Copy Room Manager URL**: From your developer panel
+4. **Pick your platform**: Choose React Native, React, or backend first
+
+## Common First Questions
+
+### "Which SDK should I use?"
+
+- **Building mobile apps?** → React Native SDK
+- **Building web apps?** → React/Web SDK
+- **Building backends?** → Node.js or Python Server SDK
+
+### "Do I need my own backend?"
+
+- **For testing**: No! Use [Room Manager](/how-to/features/room-manager-testing)
+- **For production**: Yes, see [Backend Tutorial](/tutorials/backend-quick-start)
+
+### "What room type do I need?"
+
+- **Video calls/meetings**: `full-feature` rooms
+- **Voice-only calls**: `audio-only` rooms (75% cheaper!)
+- **Livestreaming/webinars**: `livestream` rooms
+
+Learn more in [Room Types Explained](/explanation/room-types).
+
+### "Is Fishjam secure?"
+
+Yes! Fishjam uses a secure token-based system. Learn about [Security & Tokens](/explanation/security-tokens).
+
+## Development vs Production
+
+### 🧪 **Development Phase**
+
+- Use [Room Manager](/how-to/features/room-manager-testing) for quick testing
+- No backend setup required initially
+- Focus on client-side features first
+
+### 🚀 **Production Phase**
+
+- Set up your own backend with [Server SDKs](/tutorials/backend-quick-start)
+- Implement proper authentication
+- Follow [production deployment guide](/how-to/backend/production-deployment)
+
+## Need Help?
+
+- **Can't find what you're looking for?** Use the search bar above
+- **Want to contribute?** Check our GitHub repositories
+- **Need support?** Contact us through the developer panel
+
+## What's New in This Documentation
+
+We've restructured our docs to make them more developer-friendly:
+
+- ✨ **Clear learning paths**: Tutorials get you building quickly
+- 🎯 **Problem-focused guides**: Find solutions to specific challenges
+- 📚 **Conceptual explanations**: Understand how and why Fishjam works
+- 🔍 **Easy reference**: Quick lookup for APIs and specifications
+
+---
+
+**Ready to build?** Start with a [tutorial](/tutorials/react-native-quick-start) or explore [what Fishjam can do](/explanation/what-is-fishjam).

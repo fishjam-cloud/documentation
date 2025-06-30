@@ -1,0 +1,479 @@
+---
+type: how-to
+---
+
+# How to Deploy Fishjam to Production
+
+**How-to Guide** - *Deploy your Fishjam backend safely to production*
+
+This guide covers the essential steps to move from development (using Room Manager) to a production-ready Fishjam backend deployment.
+
+## Prerequisites
+
+- Working Fishjam backend (see [Backend Quick Start](/tutorials/backend-quick-start))
+- Production Fishjam environment (not Sandbox)
+- Domain and SSL certificates for your backend
+- Production database and infrastructure
+
+## Step 1: Set up production Fishjam environment
+
+### Get production credentials
+
+1. Log in to [Fishjam Dashboard](https://fishjam.io/app)
+2. Create or select your **Production** environment (not Sandbox)
+3. Copy your production **Fishjam URL** and **Management Token**
+4. Note: These are different from your sandbox credentials
+
+### Environment variables setup
+
+Create production environment variables:
+
+```bash
+# Production Fishjam credentials
+FISHJAM_URL="your-production-fishjam-url"
+FISHJAM_MANAGEMENT_TOKEN="your-production-management-token"
+
+# Your application settings
+NODE_ENV="production"
+PORT="3000"
+DATABASE_URL="your-production-database-url"
+
+# Security settings
+JWT_SECRET="your-secure-jwt-secret"
+CORS_ORIGIN="https://yourdomain.com"
+```
+
+## Step 2: Implement proper authentication
+
+### Replace Room Manager calls
+
+Remove any Room Manager dependencies from your client code:
+
+```typescript
+// ❌ Remove: Room Manager calls
+const response = await fetch(
+  `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager?...`
+);
+
+// ✅ Replace with: Your authenticated API
+const response = await fetch('/api/join-room', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${userToken}`
+  },
+  body: JSON.stringify({ roomName })
+});
+```
+
+### Implement user authentication
+
+```typescript
+import jwt from 'jsonwebtoken';
+import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+const fishjamClient = new FishjamClient({
+  fishjamUrl: process.env.FISHJAM_URL!,
+  managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN!
+});
+
+// Authentication middleware
+const authenticateUser = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (!token) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await getUserById(decoded.userId);
+    next();
+  } catch (error) {
+    res.status(401).json({ error: 'Invalid token' });
+  }
+};
+
+// Protected endpoint for joining rooms
+app.post('/api/join-room', authenticateUser, async (req, res) => {
+  try {
+    const { roomName } = req.body;
+    const user = req.user;
+
+    // Create or get room
+    const room = await getOrCreateRoom(roomName);
+
+    // Verify user has permission to join this room
+    if (!canUserJoinRoom(user, room)) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    // Create peer with user metadata
+    const { peer, peerToken } = await fishjamClient.createPeer(room.id, {
+      metadata: {
+        userId: user.id,
+        name: user.name,
+        avatar: user.avatar,
+        role: user.role
+      }
+    });
+
+    res.json({
+      peerToken,
+      fishjamUrl: process.env.FISHJAM_URL
+    });
+
+  } catch (error) {
+    console.error('Join room error:', error);
+    res.status(500).json({ error: 'Failed to join room' });
+  }
+});
+```
+
+## Step 3: Implement security best practices
+
+### Rate limiting
+
+```typescript
+import rateLimit from 'express-rate-limit';
+
+// Rate limit room creation
+const roomLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each user to 10 room joins per window
+  message: 'Too many room join attempts, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.post('/api/join-room', roomLimiter, authenticateUser, async (req, res) => {
+  // ... room joining logic
+});
+```
+
+### Input validation
+
+```typescript
+import { body, validationResult } from 'express-validator';
+
+const validateJoinRoom = [
+  body('roomName').isString().isLength({ min: 1, max: 100 }).trim(),
+  body('roomType').optional().isIn(['full-feature', 'audio-only', 'livestream']),
+];
+
+app.post('/api/join-room', 
+  validateJoinRoom,
+  authenticateUser, 
+  async (req, res) => {
+    // Check validation results
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    // ... proceed with room joining
+  }
+);
+```
+
+### CORS configuration
+
+```typescript
+import cors from 'cors';
+
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000'],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+```
+
+## Step 4: Handle webhooks and events
+
+### Set up webhook endpoint
+
+```typescript
+import crypto from 'crypto';
+
+// Webhook signature verification
+const verifyWebhookSignature = (req, res, next) => {
+  const signature = req.headers['x-fishjam-signature'];
+  const payload = JSON.stringify(req.body);
+  
+  const expectedSignature = crypto
+    .createHmac('sha256', process.env.WEBHOOK_SECRET)
+    .update(payload, 'utf8')
+    .digest('hex');
+
+  if (signature !== expectedSignature) {
+    return res.status(401).json({ error: 'Invalid signature' });
+  }
+  
+  next();
+};
+
+// Webhook handler
+app.post('/api/webhooks/fishjam', 
+  express.raw({ type: 'application/json' }),
+  verifyWebhookSignature,
+  (req, res) => {
+    const event = req.body;
+    
+    switch (event.type) {
+      case 'peer_connected':
+        handlePeerConnected(event.data);
+        break;
+      case 'peer_disconnected':
+        handlePeerDisconnected(event.data);
+        break;
+      case 'room_empty':
+        handleRoomEmpty(event.data);
+        break;
+      default:
+        console.log('Unhandled event type:', event.type);
+    }
+    
+    res.status(200).json({ received: true });
+  }
+);
+```
+
+### Create rooms with webhooks
+
+```typescript
+const createRoomWithWebhooks = async (roomName, roomType = 'full-feature') => {
+  const room = await fishjamClient.createRoom({
+    roomType,
+    webhookUrl: `${process.env.BASE_URL}/api/webhooks/fishjam`
+  });
+  
+  return room;
+};
+```
+
+## Step 5: Set up monitoring and logging
+
+### Structured logging
+
+```typescript
+import winston from 'winston';
+
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.errors({ stack: true }),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.File({ filename: 'error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'combined.log' })
+  ]
+});
+
+// Use in your endpoints
+app.post('/api/join-room', authenticateUser, async (req, res) => {
+  try {
+    // ... room joining logic
+    
+    logger.info('User joined room', {
+      userId: req.user.id,
+      roomName: req.body.roomName,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    logger.error('Room join failed', {
+      userId: req.user?.id,
+      error: error.message,
+      stack: error.stack
+    });
+    
+    res.status(500).json({ error: 'Failed to join room' });
+  }
+});
+```
+
+### Health checks
+
+```typescript
+app.get('/health', async (req, res) => {
+  try {
+    // Check Fishjam connectivity
+    const rooms = await fishjamClient.getRooms();
+    
+    res.json({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      services: {
+        fishjam: 'connected',
+        database: 'connected' // Add your DB check
+      }
+    });
+  } catch (error) {
+    res.status(503).json({
+      status: 'unhealthy',
+      error: error.message
+    });
+  }
+});
+```
+
+## Step 6: Configure HTTPS and domain
+
+### SSL/TLS setup
+
+```typescript
+import https from 'https';
+import fs from 'fs';
+
+// For production, use proper SSL certificates
+const options = {
+  key: fs.readFileSync('path/to/private-key.pem'),
+  cert: fs.readFileSync('path/to/certificate.pem')
+};
+
+const server = https.createServer(options, app);
+server.listen(443, () => {
+  console.log('HTTPS Server running on port 443');
+});
+```
+
+### Environment-specific configuration
+
+```typescript
+const config = {
+  development: {
+    fishjamUrl: process.env.FISHJAM_URL_DEV,
+    managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN_DEV,
+    baseUrl: 'http://localhost:3000'
+  },
+  production: {
+    fishjamUrl: process.env.FISHJAM_URL_PROD,
+    managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN_PROD,
+    baseUrl: 'https://yourdomain.com'
+  }
+};
+
+const currentConfig = config[process.env.NODE_ENV || 'development'];
+```
+
+## Step 7: Deploy and monitor
+
+### Deployment checklist
+
+- [ ] Environment variables configured
+- [ ] SSL certificates installed
+- [ ] Database migrations run
+- [ ] Webhook endpoints accessible
+- [ ] Rate limiting configured
+- [ ] Logging configured
+- [ ] Health checks working
+- [ ] Authentication implemented
+- [ ] CORS properly configured
+
+### Production monitoring
+
+Set up monitoring for:
+- **API response times**: Track join-room endpoint performance
+- **Error rates**: Monitor failed room creations
+- **Fishjam connectivity**: Ensure media server is reachable
+- **Webhook delivery**: Track webhook success/failure rates
+- **User activity**: Monitor concurrent users and room usage
+
+### Example monitoring with Prometheus
+
+```typescript
+import prometheus from 'prom-client';
+
+// Metrics
+const roomJoinCounter = new prometheus.Counter({
+  name: 'fishjam_room_joins_total',
+  help: 'Total number of room join attempts',
+  labelNames: ['status']
+});
+
+const roomJoinDuration = new prometheus.Histogram({
+  name: 'fishjam_room_join_duration_seconds',
+  help: 'Duration of room join operations'
+});
+
+// Use in your endpoint
+app.post('/api/join-room', authenticateUser, async (req, res) => {
+  const timer = roomJoinDuration.startTimer();
+  
+  try {
+    // ... room joining logic
+    roomJoinCounter.inc({ status: 'success' });
+    res.json({ peerToken, fishjamUrl });
+  } catch (error) {
+    roomJoinCounter.inc({ status: 'error' });
+    res.status(500).json({ error: 'Failed to join room' });
+  } finally {
+    timer();
+  }
+});
+```
+
+## Common production issues
+
+### Issue: Token expiration handling
+
+**Solution**: Implement token refresh logic:
+
+```typescript
+// Client-side token refresh
+const refreshRoomAccess = async () => {
+  const response = await fetch('/api/refresh-room-access', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${authToken}` }
+  });
+  
+  if (response.ok) {
+    const { peerToken } = await response.json();
+    return peerToken;
+  }
+  
+  throw new Error('Failed to refresh room access');
+};
+```
+
+### Issue: High load on room creation
+
+**Solution**: Implement room pooling or caching:
+
+```typescript
+const roomCache = new Map();
+
+const getOrCreateRoom = async (roomName) => {
+  if (roomCache.has(roomName)) {
+    return roomCache.get(roomName);
+  }
+  
+  const room = await fishjamClient.createRoom();
+  roomCache.set(roomName, room);
+  
+  // Cache cleanup after room is empty
+  setTimeout(() => roomCache.delete(roomName), 5 * 60 * 1000);
+  
+  return room;
+};
+```
+
+## Next steps
+
+After production deployment:
+
+- Monitor your application performance
+- Set up alerting for critical issues
+- Plan for scaling based on usage patterns
+- Review and update security practices regularly
+
+For scaling considerations:
+- [Understanding Fishjam Architecture](/explanation/architecture)
+- [Security best practices](/explanation/security-tokens)
+
+For specific backend frameworks:
+- [FastAPI example](/how-to/backend/fastapi-example)
+- [Fastify example](/how-to/backend/fastify-example) 

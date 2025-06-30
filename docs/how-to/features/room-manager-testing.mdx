@@ -1,0 +1,272 @@
+---
+type: how-to
+---
+
+# How to Use Room Manager for Testing
+
+**How-to Guide** - *Use Room Manager to test your Fishjam integration without a backend*
+
+Room Manager is a development tool that lets you create rooms and peers for testing without setting up your own backend server. This guide shows you how to use it effectively.
+
+## Prerequisites
+
+- Access to [Fishjam Dashboard](https://fishjam.io/app)
+- A Sandbox environment set up
+
+## Step 1: Get your Room Manager URL
+
+1. Log in to [Fishjam Dashboard](https://fishjam.io/app)
+2. Navigate to your [Sandbox App](https://fishjam.io/app/sandbox)
+3. Copy your **Room Manager URL** - it will look like:
+   ```
+   https://fishjam.io/api/v1/connect/YOUR_APP_UUID/room-manager
+   ```
+
+:::note
+`YOUR_APP_UUID` is your unique sandbox identifier. Anyone who knows this ID can join your rooms, so keep it secure during development.
+:::
+
+## Step 2: Create a room and get peer tokens
+
+### Using HTTP GET requests
+
+The Room Manager API uses simple GET requests. Add query parameters to create rooms and peers:
+
+```
+https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=foo&peerName=bar&roomType=full-feature
+```
+
+### Required parameters:
+- `roomName` - Name of the room to create/join
+- `peerName` - Name for the peer joining the room
+
+### Optional parameters:
+- `roomType` - Type of room to create (defaults to `full-feature`)
+
+### Room types available:
+- `full-feature` - For video/audio conferencing (default)
+- `audio-only` - For audio-only conferencing  
+- `livestream` - For one-to-many video/audio streaming
+
+## Step 3: Handle the response
+
+The Room Manager returns a JSON response with connection details:
+
+```json
+{
+  "peerToken": "<PEER_TOKEN>",
+  "url": "wss://fishjam.io/api/v1/connect/${YOUR_APP_UUID}",
+  "room": {
+    "id": "<ROOM_ID>",
+    "name": "foo"
+  },
+  "peer": {
+    "id": "<PEER_ID>",
+    "name": "bar"
+  }
+}
+```
+
+## Step 4: Use the tokens in your client app
+
+### React Native example:
+```tsx
+import { useEffect, useState } from "react";
+import { FishjamRoom } from "@fishjam-cloud/react-native-client";
+
+const roomName = "testRoom";
+const peerName = `user_${Date.now()}`;
+const YOUR_APP_UUID = "your-app-uuid-here";
+
+export default function TestScreen() {
+  const [roomData, setRoomData] = useState(null);
+
+  useEffect(() => {
+    const fetchRoomData = async () => {
+      try {
+        const response = await fetch(
+          `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=${roomName}&peerName=${peerName}&roomType=full-feature`
+        );
+        const data = await response.json();
+        setRoomData(data);
+      } catch (error) {
+        console.error('Failed to create room:', error);
+      }
+    };
+
+    fetchRoomData();
+  }, []);
+
+  if (!roomData) {
+    return <Text>Creating room...</Text>;
+  }
+
+  return (
+    <FishjamRoom 
+      fishjamUrl={roomData.url} 
+      peerToken={roomData.peerToken} 
+    />
+  );
+}
+```
+
+### React/Web example:
+```tsx
+import { useState, useEffect } from "react";
+import { FishjamProvider, useConnection } from "@fishjam-cloud/react-client";
+
+const YOUR_APP_UUID = "your-app-uuid-here";
+
+function VideoCallComponent() {
+  const { joinRoom } = useConnection();
+  const [isConnected, setIsConnected] = useState(false);
+
+  const handleJoinRoom = async () => {
+    const roomName = "testRoom";
+    const peerName = `user_${Date.now()}`;
+
+    try {
+      const response = await fetch(
+        `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=${roomName}&peerName=${peerName}`
+      );
+      const { url, peerToken } = await response.json();
+
+      await joinRoom({ url, peerToken });
+      setIsConnected(true);
+    } catch (error) {
+      console.error('Failed to join room:', error);
+    }
+  };
+
+  return (
+    <div>
+      {!isConnected && (
+        <button onClick={handleJoinRoom}>Join Room</button>
+      )}
+      {isConnected && <p>Connected to room!</p>}
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <FishjamProvider>
+      <VideoCallComponent />
+    </FishjamProvider>
+  );
+}
+```
+
+## Step 5: Test different room types
+
+### Testing audio-only rooms:
+```typescript
+const audioOnlyUrl = `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=audioTest&peerName=user1&roomType=audio-only`;
+```
+
+### Testing livestream rooms:
+```typescript
+// For the broadcaster
+const broadcasterUrl = `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=liveStream&peerName=broadcaster&roomType=livestream`;
+
+// For viewers, you need a viewer token (different endpoint)
+const viewerTokenUrl = `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager/liveStream/livestream-viewer-token`;
+```
+
+## Step 6: Handle multiple peers
+
+To test with multiple participants, create multiple peer tokens with different peer names:
+
+```typescript
+// First peer
+const peer1Response = await fetch(
+  `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=multiTest&peerName=alice`
+);
+
+// Second peer  
+const peer2Response = await fetch(
+  `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=multiTest&peerName=bob`
+);
+```
+
+Both peers will join the same room (`multiTest`) and can communicate with each other.
+
+## Common testing patterns
+
+### Pattern 1: Random room names for isolation
+```typescript
+const roomName = `test_${Math.random().toString(36).substring(7)}`;
+const peerName = `user_${Date.now()}`;
+```
+
+### Pattern 2: Consistent naming for repeated tests
+```typescript
+const roomName = "development-room";
+const peerName = `developer_${userIndex}`;
+```
+
+### Pattern 3: Feature-specific room names
+```typescript
+const roomName = `screenshare-test-${Date.now()}`;
+const roomName = `audio-only-test`;
+const roomName = `livestream-demo`;
+```
+
+## Troubleshooting
+
+### Issue: Same peer name returns same token
+**Problem**: Using the same `roomName` and `peerName` combination returns identical tokens.
+
+**Solution**: Use unique peer names for each test:
+```typescript
+const peerName = `test_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+```
+
+### Issue: Room not found errors
+**Problem**: Rooms might not persist between requests.
+
+**Solution**: Always create rooms fresh for each test session.
+
+### Issue: Connection failures
+**Problem**: Invalid app UUID or network issues.
+
+**Solution**: 
+1. Verify your app UUID in the Fishjam Dashboard
+2. Check network connectivity
+3. Ensure you're using the sandbox environment
+
+## Security reminder
+
+:::danger
+**Room Manager is not safe for production!**
+
+- No authentication required
+- Anyone with your app UUID can join rooms
+- Identical room/peer names get the same tokens
+- No rate limiting or abuse protection
+
+Only use Room Manager for development and testing.
+:::
+
+## Resetting your app
+
+If you need to reset your Room Manager:
+
+1. Go to [Fishjam Dashboard](https://fishjam.io/app/sandbox)
+2. Click **Settings** 
+3. Click **Reset App**
+4. Get your new app UUID
+
+This will invalidate all existing tokens and give you a fresh sandbox environment.
+
+## Next steps
+
+Once you've tested your integration with Room Manager:
+
+- [Set up your own backend](/tutorials/backend-quick-start)
+- [Learn about Room Manager concepts](/explanation/room-manager-concept)
+- [Understand security implications](/explanation/security-tokens)
+
+For production deployment:
+- [How to set up production server](/how-to/backend/server-setup)
+- [How to implement proper authentication](/explanation/security-tokens) 

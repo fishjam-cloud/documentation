@@ -1,0 +1,91 @@
+---
+type: explanation
+---
+
+# What is Fishjam?
+
+**Explanation** - *Understanding the concept and purpose of Fishjam*
+
+Fishjam is a multimedia streaming toolkit that allows you to build real-time video and audio streaming applications using [WebRTC](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API).
+We provide the infrastructure, media server, and client SDKs so you can focus on building your apps.
+
+**No WebRTC knowledge is required!**
+
+## The Problem Fishjam Solves
+
+Building real-time video and audio applications is complex. Developers typically need to:
+
+- Set up and manage WebRTC infrastructure
+- Handle complex peer-to-peer networking 
+- Manage media servers and scaling
+- Deal with different devices and codec compatibility
+- Implement secure token-based authentication
+
+Fishjam abstracts away this complexity, providing a simple API and managed infrastructure.
+
+## What Fishjam Provides
+
+Fishjam consists of several components that work together to provide a seamless multimedia streaming experience:
+
+| Component            | Description                                                                                                                        |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Developer panel      | Developer panel for setting up your own Fishjam Media Server.                                                                      |
+| Fishjam Media Server | A media server that will route your multimedia traffic. We host and manage it for you. You can control it via the developer panel. |
+| Fishjam Client SDKs  | Toolkit used for multimedia integration on endpoint devices.                                                                       |
+| Fishjam Server SDKs  | Toolkit for integrating your backend with Fishjam. We support Python and NodeJS as well as REST API.                               |
+| Room Manager         | Simple backend for creating test rooms. You no longer need to bring your own backend to develop frontend apps.                     |
+
+## Use Cases
+
+Fishjam is ideal for:
+
+### Video Conferencing
+Build Zoom-like applications with multiple participants in rooms, screen sharing, and audio/video controls.
+
+### Livestreaming  
+Stream live content from one broadcaster to many viewers with low latency, perfect for webinars, live events, or streaming platforms.
+
+### Audio-only Applications
+Create voice-only experiences like audio conferencing, podcasts, or voice chat applications.
+
+## Key Benefits
+
+### 🚀 **Fast Development**
+Get started quickly with our SDKs and Room Manager for testing - no backend setup required initially.
+
+### 🔧 **No WebRTC Expertise Needed**  
+Our SDKs handle all the WebRTC complexity, codec negotiations, and networking.
+
+### 📱 **Cross-platform**
+Works on React Native (iOS/Android), React/Web, and server-side environments.
+
+### 🛡️ **Secure by Default**
+Token-based authentication and secure media routing built-in.
+
+### 💰 **Cost-effective**
+Pay only for what you use, with special pricing for audio-only rooms.
+
+## How It Differs from Alternatives
+
+Unlike pure WebRTC solutions, Fishjam provides:
+- Managed infrastructure (no server setup required)
+- Simple APIs (no WebRTC knowledge needed)  
+- Built-in scaling and reliability
+- Multiple room types optimized for different use cases
+
+Unlike generic streaming platforms, Fishjam offers:
+- Real-time, low-latency communication
+- Full control over your application experience
+- Developer-friendly APIs and SDKs
+- Flexible room management
+
+## Next Steps
+
+To understand how Fishjam works technically, see [Fishjam Architecture](/explanation/architecture).
+
+To learn about the different types of rooms available, see [Room Types Explained](/explanation/room-types).
+
+Ready to start building? Check out our tutorials:
+- [React Native Quick Start](/tutorials/react-native-quick-start)
+- [React Quick Start](/tutorials/react-quick-start)  
+- [Backend Quick Start](/tutorials/backend-quick-start) 
