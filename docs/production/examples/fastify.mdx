@@ -107,7 +107,8 @@ const fastify = Fastify();
 fastify.addContentTypeParser(
   "application/x-protobuf",
   { parseAs: "buffer" },
-  async (_: FastifyRequest, body: Buffer) => ServerMessage.decode(new Uint8Array(body)),
+  async (_: FastifyRequest, body: Buffer) =>
+    ServerMessage.decode(new Uint8Array(body)),
 );
 
 fastify.post<{ Body: ServerMessage }>("/fishjam-webhook", (request) => {
@@ -137,7 +138,7 @@ export const fishjamNotifierPlugin = fp((fastify) => {
     { fishjamUrl, managementToken },
     (err) => fastify.log.error(err),
     () => fastify.log.info("Websocket connection to Fishjam closed"),
-    () => fastify.log.error("Failed to connect Fishjam notifier")
+    () => fastify.log.error("Failed to connect Fishjam notifier"),
   );
 
   // handle the messages
