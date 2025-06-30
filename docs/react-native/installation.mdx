@@ -43,8 +43,9 @@ Install `@fishjam-cloud/react-native-client` with your preferred package manager
 ## Optional: Request Camera and Microphone Permissions
 
 :::info
-You don't need to explicitly ask for permissions because it is done automatically on mounting. You can opt for asking them at a different time if you want to customize the user experience.
+You don’t need to explicitly request permissions as they’re automatically asked for when your app needs them.
 :::
+
 If you want more control, you can use the `useCameraPermissions` and `useMicrophonePermissions` hooks to manage permissions manually. Both hooks return an array with three elements:
 
 1. `permission`: The current permission status
@@ -79,7 +80,7 @@ useEffect(() => {
 
 The `permission` object has the following properties:
 
-- `canAskAgain`: Indicates if the user can be asked again for this permission. If `false`, direct the user to the Settings app to enable/disable the permission.
+- `canAskAgain`: Indicates if the user can be asked again for this permission. If `false`, it is recommended to direct the user to Settings app to enable/disable the permission.
 - `expires`: When the permission expires.
 - `granted`: Indicates if the permission is granted.
 - `status`: The current status of the permission.
