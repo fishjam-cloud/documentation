@@ -40,17 +40,65 @@ Install `@fishjam-cloud/react-native-client` with your preferred package manager
 
 <ConfigurePermissions />
 
-## Step 3: Request App Permissions
+## Optional: Request Camera and Microphone Permissions
 
-Before using the camera or microphone, ask the user for permissions.
+:::info
+You don’t need to explicitly request permissions as they’re automatically asked for when your app needs them.
+:::
+
+If you want more control, you can use the `useCameraPermissions` and `useMicrophonePermissions` hooks to manage permissions manually. Both hooks return an array with three elements:
+
+1. `permission`: The current permission status
+2. `requestPermission`: A function to request permission
+3. `getPermission`: A function to get the current permission status
+
+Here's an example of how to use both hooks:
 
 ```tsx
-import { useCameraPermissions } from "expo-camera";
-import React, { useEffect } from "react";
+import {
+  useCameraPermissions,
+  useMicrophonePermissions,
+} from "@fishjam-cloud/react-native-client";
+import { useEffect } from "react";
 
-const [permission, requestPermission] = useCameraPermissions();
+const [cameraPermission, requestCameraPermission, getCameraPermission] =
+  useCameraPermissions();
+
+const [
+  microphonePermission,
+  requestMicrophonePermission,
+  getMicrophonePermission,
+] = useMicrophonePermissions();
 
 useEffect(() => {
-  requestPermission();
+  requestCameraPermission();
+  requestMicrophonePermission();
 }, []);
 ```
+
+**Permission Response**
+
+The `permission` object has the following properties:
+
+- `canAskAgain`: Indicates if the user can be asked again for this permission. If `false`, it is recommended to direct the user to Settings app to enable/disable the permission.
+- `expires`: When the permission expires.
+- `granted`: Indicates if the permission is granted.
+- `status`: The current status of the permission.
+
+:::info
+You can control when and how permissions are requested by passing an `options` object to the hook.
+:::
+
+### Customizing Permission Request Behavior
+
+By default, `get` is called automatically (auto fetch is `true`), and `request` is not (auto request is `false`). You can change this behavior:
+
+```tsx
+// Do not auto-fetch permission status, enable auto-request
+const [permission, requestPermission] = useCameraPermissions({
+  get: false, // disables auto-fetch
+  request: true, // enables auto-request
+});
+```
+
+Adjust these options to fit your app's needs.

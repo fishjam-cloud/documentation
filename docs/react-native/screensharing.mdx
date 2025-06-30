@@ -29,18 +29,19 @@ You need to modify `app.json` file and add our plugin:
 {
   "expo": {
     ...
-    "plugins": {
-      ...
+    "plugins": [
       [
         "@fishjam-cloud/react-native-client",
         {
           "ios": {
             "enableScreensharing": true
+          },
+          "android": {
+            "enableForegroundService": true
           }
         }
-      ],
-      ...
-    }
+      ]
+    ]
   }
 }
 ```
