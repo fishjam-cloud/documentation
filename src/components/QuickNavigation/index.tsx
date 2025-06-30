@@ -3,6 +3,7 @@ import Heading from "@theme/Heading";
 import styles from "./index.module.css";
 import clsx from "clsx";
 import { CardItem } from "@site/types";
+import React from "react";
 
 export default function QuickNavigation(props: { items: CardItem[] }) {
   return (
