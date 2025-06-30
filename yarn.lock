@@ -5997,16 +5997,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@fishjam-cloud/js-server-sdk@npm:^0.17.1":
-  version: 0.17.1
-  resolution: "@fishjam-cloud/js-server-sdk@npm:0.17.1"
-  dependencies:
-    axios: "npm:^1.7.9"
-    websocket: "npm:^1.0.35"
-  checksum: 10c0/3c463dbe00cf885b7dc83f91c23c55ddc7b259d0eeb9b64c60e6dc4c6da1e179560fb011e366890ba2de08dda2567b97c193f9977c67e0c2a4298f3e959a5213
-  languageName: node
-  linkType: hard
-
 "@fishjam-cloud/js-server-sdk@workspace:packages/js-server-sdk/packages/js-server-sdk":
   version: 0.0.0-use.local
   resolution: "@fishjam-cloud/js-server-sdk@workspace:packages/js-server-sdk/packages/js-server-sdk"
@@ -6031,17 +6021,6 @@ __metadata:
     tsup: "npm:^8.4.0"
   languageName: unknown
   linkType: soft
-
-"@fishjam-cloud/react-client@npm:^0.18.0":
-  version: 0.18.0
-  resolution: "@fishjam-cloud/react-client@npm:0.18.0"
-  dependencies:
-    "@fishjam-cloud/ts-client": "npm:0.18.0"
-    events: "npm:3.3.0"
-    lodash.isequal: "npm:4.5.0"
-  checksum: 10c0/31e887f198985c659bf0b70dd4ca05e3dcb798556a61bbdaf224f4b5ae373ab68ef0f6124e1300b5273dbdabb523a4bd10e0feaa2441bbb35676d69ba4817073
-  languageName: node
-  linkType: hard
 
 "@fishjam-cloud/react-client@workspace:packages/web-client-sdk/packages/react-client":
   version: 0.0.0-use.local
@@ -6105,19 +6084,6 @@ __metadata:
     react-native: "*"
   languageName: unknown
   linkType: soft
-
-"@fishjam-cloud/ts-client@npm:0.18.0":
-  version: 0.18.0
-  resolution: "@fishjam-cloud/ts-client@npm:0.18.0"
-  dependencies:
-    "@binbat/whip-whep": "npm:^1.1.1-sdp-trickle-throw"
-    "@bufbuild/protobuf": "npm:^2.2.3"
-    events: "npm:^3.3.0"
-    typed-emitter: "npm:^2.1.0"
-    uuid: "npm:^11.1.0"
-  checksum: 10c0/8c1cd19e4fba9ccd2727ac43850fa44cacabefb8a4e1c5459b6fd0c00cf71d2a29bb15fef93627730408ba3f60dc19067d9eccf79ed533580e407d59240450b3
-  languageName: node
-  linkType: hard
 
 "@fishjam-cloud/ts-client@workspace:*, @fishjam-cloud/ts-client@workspace:packages/web-client-sdk/packages/ts-client":
   version: 0.0.0-use.local
@@ -20092,8 +20058,6 @@ __metadata:
     "@docusaurus/tsconfig": "npm:^3.8.1"
     "@docusaurus/types": "npm:^3.8.1"
     "@fastify/env": "npm:^5.0.2"
-    "@fishjam-cloud/js-server-sdk": "npm:^0.17.1"
-    "@fishjam-cloud/react-client": "npm:^0.18.0"
     "@mdx-js/react": "npm:^3.1.0"
     "@shikijs/rehype": "npm:^3.6.0"
     "@shikijs/transformers": "npm:^3.6.0"
