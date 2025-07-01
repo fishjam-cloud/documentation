@@ -2,16 +2,6 @@
   "name": "my-website",
   "version": "0.0.0",
   "private": true,
-  "workspaces": [
-    "packages/web-client-sdk/packages/react-client",
-    "packages/web-client-sdk/packages/ts-client",
-    "packages/web-client-sdk/packages/protobufs",
-    "packages/web-client-sdk/packages/webrtc-client",
-    "packages/mobile-client-sdk/packages/react-native-client",
-    "packages/js-server-sdk/packages/js-server-sdk",
-    "packages/js-server-sdk/packages/fishjam-openapi",
-    "packages/js-server-sdk/packages/fishjam-proto"
-  ],
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
@@ -36,6 +26,8 @@
     "@docusaurus/remark-plugin-npm2yarn": "^3.8.1",
     "@docusaurus/theme-mermaid": "^3.8.1",
     "@fastify/env": "^5.0.2",
+    "@fishjam-cloud/js-server-sdk": "^0.17.1",
+    "@fishjam-cloud/react-native-client": "^0.18.1",
     "@mdx-js/react": "^3.1.0",
     "@shikijs/rehype": "^3.6.0",
     "@shikijs/transformers": "^3.6.0",
