@@ -9,6 +9,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: "recursive"
+      - name: init and update submodules
+        run: git submodule update --init --recursive
       - name: Use corepack
         run: corepack enable
       - name: Install node dependencies
