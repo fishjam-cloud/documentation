@@ -11,6 +11,10 @@ const sidebars: SidebarsConfig = {
       type: "category",
       label: "Tutorials",
       collapsible: false,
+      link: {
+        type: "doc",
+        id: "tutorials/index",
+      },
       items: [
         "tutorials/react-native-quick-start",
         "tutorials/react-quick-start",
@@ -21,6 +25,10 @@ const sidebars: SidebarsConfig = {
       type: "category",
       label: "How-to Guides",
       collapsible: false,
+      link: {
+        type: "doc",
+        id: "how-to/index",
+      },
       items: [
         {
           type: "category",
@@ -83,6 +91,10 @@ const sidebars: SidebarsConfig = {
       type: "category",
       label: "Reference",
       collapsible: false,
+      link: {
+        type: "doc",
+        id: "reference/index",
+      },
       items: [
         {
           type: "link",
@@ -106,6 +118,10 @@ const sidebars: SidebarsConfig = {
       type: "category",
       label: "Explanation",
       collapsible: false,
+      link: {
+        type: "doc",
+        id: "explanation/index",
+      },
       items: [
         "explanation/what-is-fishjam",
         "explanation/architecture",
