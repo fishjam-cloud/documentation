@@ -4,7 +4,7 @@ type: explanation
 
 # Security & Token Model
 
-**Explanation** - *Understanding Fishjam's security architecture and token system*
+**Explanation** - _Understanding Fishjam's security architecture and token system_
 
 Fishjam uses a token-based security model to ensure secure access control while keeping the developer experience simple.
 
@@ -20,33 +20,38 @@ This separation ensures that sensitive operations remain on your backend while a
 ## Management Tokens
 
 ### Purpose
+
 Management tokens provide your backend server with administrative access to Fishjam resources. They allow creating, managing, and deleting rooms and peers.
 
 ### Characteristics
+
 - **Long-lived**: Valid until manually regenerated
 - **High privilege**: Can perform any operation on your Fishjam instance
 - **Backend-only**: Never send to client applications
 - **Environment-specific**: Different tokens for sandbox and production
 
 ### What Management Tokens Can Do
+
 ```typescript
 const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
 
 // Full administrative access:
-await fishjamClient.createRoom();           // Create rooms
-await fishjamClient.deleteRoom(roomId);     // Delete rooms  
-await fishjamClient.createPeer(roomId);     // Add peers
-await fishjamClient.deletePeer(roomId, peerId);  // Remove peers
-await fishjamClient.getRooms();             // List all rooms
+await fishjamClient.createRoom(); // Create rooms
+await fishjamClient.deleteRoom(roomId); // Delete rooms
+await fishjamClient.createPeer(roomId); // Add peers
+await fishjamClient.deletePeer(roomId, peerId); // Remove peers
+await fishjamClient.getRooms(); // List all rooms
 ```
 
 ### Security Best Practices
+
 - **Environment variables**: Store in secure environment variables
 - **Server-side only**: Never include in client-side code
 - **Rotation**: Regenerate periodically or when compromised
 - **Access control**: Limit backend server access to management tokens
 
 ### Example Secure Storage
+
 ```typescript
 // ✅ Correct: Server-side environment variable
 const managementToken = process.env.FISHJAM_MANAGEMENT_TOKEN;
@@ -57,23 +62,28 @@ const managementToken = "your-management-token"; // DON'T DO THIS
 
 ## Peer Tokens
 
-### Purpose  
+### Purpose
+
 Peer tokens provide client applications with limited, time-bound access to join a specific room as a specific peer.
 
 ### Characteristics
+
 - **Short-lived**: Expire after a reasonable time period
 - **Scope-limited**: Access to one specific room only
 - **Client-safe**: Safe to send to frontend applications
 - **Single-use concept**: Tied to one peer identity
 
 ### What Peer Tokens Can Do
+
 Peer tokens allow clients to:
+
 - Connect to the specific room they were issued for
 - Send and receive media streams within that room
 - Access peer metadata and room state
 - Participate in room activities (audio/video/screen sharing)
 
 ### What Peer Tokens Cannot Do
+
 - Create or delete rooms
 - Add or remove other peers
 - Access different rooms
@@ -81,32 +91,35 @@ Peer tokens allow clients to:
 - Access management functions
 
 ### Generation Process
+
 ```typescript
 // Backend generates peer token (using management token)
 const { peer, peerToken } = await fishjamClient.createPeer(roomId, {
-  metadata: { name: "John Doe", userId: "user-123" }
+  metadata: { name: "John Doe", userId: "user-123" },
 });
 
 // Backend sends peer token to client
-res.json({ 
-  peerToken,           // Client uses this to connect
-  fishjamUrl,         // Fishjam server URL
-  roomId: peer.roomId // Room information
+res.json({
+  peerToken, // Client uses this to connect
+  fishjamUrl, // Fishjam server URL
+  roomId: peer.roomId, // Room information
 });
 ```
 
 ### Client Usage
+
 ```typescript
 // Client uses peer token to connect (safe to use in frontend)
-await joinRoom({ 
-  url: fishjamUrl, 
-  peerToken: peerToken  // This is safe in client code
+await joinRoom({
+  url: fishjamUrl,
+  peerToken: peerToken, // This is safe in client code
 });
 ```
 
 ## Token Lifecycle
 
 ### Management Token Lifecycle
+
 ```
 Generate → Store Securely → Use in Backend → Rotate Periodically
     ↑                                              ↓
@@ -114,6 +127,7 @@ Generate → Store Securely → Use in Backend → Rotate Periodically
 ```
 
 ### Peer Token Lifecycle
+
 ```
 Backend Request → Create Peer → Generate Token → Send to Client
                                       ↓
@@ -125,16 +139,19 @@ Client Connect → Validate Token → Join Room → Media Streaming
 ## Security Benefits
 
 ### Principle of Least Privilege
+
 - **Clients**: Only get access to what they need (one room)
 - **Backend**: Has administrative control but stays secure
 - **Isolation**: Peers cannot interfere with other rooms or peers
 
 ### Time-bound Access
+
 - **Automatic expiration**: Peer tokens expire automatically
 - **Reduced attack window**: Short-lived tokens limit security exposure
 - **Session control**: Backend controls how long clients can stay connected
 
 ### No Direct Backend Access
+
 - **Client isolation**: Clients never access your backend credentials
 - **Reduced attack surface**: Management tokens never leave your backend
 - **Secure delegation**: Clients get just enough access through peer tokens
@@ -142,47 +159,51 @@ Client Connect → Validate Token → Join Room → Media Streaming
 ## Authentication Patterns
 
 ### Pattern 1: Simple Authentication
+
 ```typescript
 // Backend endpoint (authenticated by your system)
-app.post('/join-room', authenticateUser, async (req, res) => {
+app.post("/join-room", authenticateUser, async (req, res) => {
   const userId = req.user.id;
   const { roomName } = req.body;
-  
+
   // Create room if needed
   const room = await getOrCreateRoom(roomName);
-  
+
   // Create peer with user info
   const { peer, peerToken } = await fishjamClient.createPeer(room.id, {
-    metadata: { 
+    metadata: {
       name: req.user.name,
       userId: userId,
-      avatar: req.user.avatar 
-    }
+      avatar: req.user.avatar,
+    },
   });
-  
+
   res.json({ peerToken, fishjamUrl });
 });
 ```
 
 ### Pattern 2: Role-based Access
+
 ```typescript
-app.post('/join-room', authenticateUser, async (req, res) => {
+app.post("/join-room", authenticateUser, async (req, res) => {
   const user = req.user;
   const { roomId } = req.body;
-  
+
   // Check permissions
   if (!canUserJoinRoom(user, roomId)) {
-    return res.status(403).json({ error: 'Access denied' });
+    return res.status(403).json({ error: "Access denied" });
   }
-  
+
   // Determine role-based metadata
   const metadata = {
     name: user.name,
     role: user.role, // 'host', 'presenter', 'participant'
-    permissions: getUserPermissions(user, roomId)
+    permissions: getUserPermissions(user, roomId),
   };
-  
-  const { peer, peerToken } = await fishjamClient.createPeer(roomId, { metadata });
+
+  const { peer, peerToken } = await fishjamClient.createPeer(roomId, {
+    metadata,
+  });
   res.json({ peerToken, fishjamUrl });
 });
 ```
@@ -190,48 +211,53 @@ app.post('/join-room', authenticateUser, async (req, res) => {
 ## Common Security Pitfalls
 
 ### ❌ Don't: Expose Management Tokens
+
 ```typescript
 // DON'T: Send management token to client
-res.json({ 
-  managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN,  // NEVER
-  peerToken 
+res.json({
+  managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN, // NEVER
+  peerToken,
 });
 ```
 
 ### ❌ Don't: Store Tokens in Client Storage
+
 ```typescript
 // DON'T: Store sensitive tokens in localStorage/sessionStorage
-localStorage.setItem('managementToken', token);  // NEVER
+localStorage.setItem("managementToken", token); // NEVER
 ```
 
 ### ❌ Don't: Use Peer Tokens for Backend Operations
+
 ```typescript
 // DON'T: Try to create rooms with peer token
 const client = new FishjamClient({ fishjamUrl, managementToken: peerToken }); // WON'T WORK
 ```
 
 ### ✅ Do: Validate Users Before Creating Peers
+
 ```typescript
 // DO: Always authenticate users in your backend
-app.post('/join-room', async (req, res) => {
+app.post("/join-room", async (req, res) => {
   // Authenticate user first
   const user = await authenticateRequest(req);
   if (!user) {
-    return res.status(401).json({ error: 'Unauthorized' });
+    return res.status(401).json({ error: "Unauthorized" });
   }
-  
+
   // Then create peer
   const { peer, peerToken } = await fishjamClient.createPeer(roomId, {
-    metadata: { userId: user.id, name: user.name }
+    metadata: { userId: user.id, name: user.name },
   });
-  
+
   res.json({ peerToken, fishjamUrl });
 });
 ```
 
 ## Token Rotation and Management
 
-### Management Token Rotation  
+### Management Token Rotation
+
 ```typescript
 // Regular rotation schedule
 const rotateManagementToken = async () => {
@@ -243,19 +269,20 @@ const rotateManagementToken = async () => {
 ```
 
 ### Handling Token Expiration
+
 ```typescript
 // Client-side: Handle peer token expiration
 const { peerStatus } = useConnection();
 
 useEffect(() => {
-  if (peerStatus === 'disconnected') {
+  if (peerStatus === "disconnected") {
     // Token may have expired, request new one
     refreshTokenAndReconnect();
   }
 }, [peerStatus]);
 
 const refreshTokenAndReconnect = async () => {
-  const response = await fetch('/api/refresh-room-access');
+  const response = await fetch("/api/refresh-room-access");
   const { peerToken } = await response.json();
   await joinRoom({ url: fishjamUrl, peerToken });
 };
@@ -264,36 +291,39 @@ const refreshTokenAndReconnect = async () => {
 ## Security Monitoring
 
 ### What to Monitor
+
 - **Failed authentication attempts**: Multiple failed peer creations
 - **Unusual room creation patterns**: Spike in room creation
 - **Token usage patterns**: Peer tokens used outside expected timeframes
 
 ### Logging Best Practices
+
 ```typescript
 // Log security events (but not token values)
-app.post('/join-room', async (req, res) => {
+app.post("/join-room", async (req, res) => {
   try {
     const user = await authenticateRequest(req);
-    
+
     // Log successful peer creation (without token value)
-    logger.info('Peer created', {
+    logger.info("Peer created", {
       userId: user.id,
       roomId,
       timestamp: new Date().toISOString(),
       // Don't log actual token values
     });
-    
-    const { peer, peerToken } = await fishjamClient.createPeer(roomId, { metadata });
+
+    const { peer, peerToken } = await fishjamClient.createPeer(roomId, {
+      metadata,
+    });
     res.json({ peerToken, fishjamUrl });
-    
   } catch (error) {
     // Log security errors
-    logger.error('Failed peer creation', {
+    logger.error("Failed peer creation", {
       error: error.message,
       ip: req.ip,
-      userAgent: req.get('User-Agent')
+      userAgent: req.get("User-Agent"),
     });
-    res.status(500).json({ error: 'Access denied' });
+    res.status(500).json({ error: "Access denied" });
   }
 });
 ```
@@ -301,12 +331,15 @@ app.post('/join-room', async (req, res) => {
 ## Next Steps
 
 To implement secure authentication:
+
 - [Backend Quick Start Tutorial](/tutorials/backend-quick-start)
 - [How to set up your server](/how-to/backend/server-setup)
 
 To understand the broader architecture:
+
 - [Fishjam Architecture](/explanation/architecture)
 - [Core Concepts](/explanation/core-concepts)
 
 To learn about Room Manager's security limitations:
-- [Room Manager Concept](/explanation/room-manager-concept) 
+
+- [Room Manager Concept](/explanation/room-manager-concept)

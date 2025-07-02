@@ -4,39 +4,45 @@ type: explanation
 
 # Core Concepts
 
-**Explanation** - *Essential concepts you need to understand to work with Fishjam*
+**Explanation** - _Essential concepts you need to understand to work with Fishjam_
 
 Understanding these core concepts will help you design and build applications with Fishjam more effectively.
 
 ## Rooms
 
 ### What is a Room?
+
 A **room** is a logical container that groups participants together for multimedia communication. Think of it as a virtual meeting space where peers can join to share audio and video.
 
 ### Room Characteristics
+
 - **Unique identity**: Each room has a unique ID
 - **Type-specific**: Room type (full-feature, audio-only, livestream) is set at creation
 - **Isolated**: Participants in different rooms cannot interact
 - **Temporary**: Rooms exist only while needed, can be deleted when empty
 
 ### Room Lifecycle
+
 1. **Creation**: Backend creates room using Server SDK
-2. **Population**: Peers are added to the room  
+2. **Population**: Peers are added to the room
 3. **Activity**: Peers connect and communicate
 4. **Cleanup**: Room is deleted when no longer needed
 
 ## Peers
 
 ### What is a Peer?
+
 A **peer** represents a single participant in a room. Each peer corresponds to one client connection (e.g., one user's phone or browser).
 
 ### Peer Characteristics
+
 - **Unique within room**: Each peer has a unique ID within their room
 - **Associated metadata**: Custom data attached when creating the peer
 - **Track ownership**: Peers own the tracks (audio/video streams) they send
 - **State management**: Connection status, track states
 
 ### Peer Lifecycle
+
 1. **Creation**: Backend creates peer in a room (gets peer token)
 2. **Connection**: Client uses peer token to connect to room
 3. **Media sharing**: Peer sends/receives tracks
@@ -46,57 +52,67 @@ A **peer** represents a single participant in a room. Each peer corresponds to o
 ## Tracks
 
 ### What is a Track?
+
 A **track** represents a single stream of media data - either audio or video. Each track carries one type of media from one source.
 
 ### Track Types
+
 - **Video tracks**: Camera feed, screen sharing, custom video
 - **Audio tracks**: Microphone, system audio, custom audio
 
 ### Track Characteristics
+
 - **Owned by peers**: Each track belongs to one peer
 - **Typed**: Video or audio, cannot change type
 - **Stateful**: Active/inactive, enabled/disabled
 - **Metadata**: Description, source information
 
 ### Track Examples
+
 - Camera from user's phone → Video track
-- Microphone from user's computer → Audio track  
+- Microphone from user's computer → Audio track
 - Screen sharing → Video track (screen content)
 - Shared app audio → Audio track (application sound)
 
 ## Tokens
 
 ### Management Tokens
+
 **Management tokens** are long-lived credentials that authorize your backend to control Fishjam resources.
 
 #### Characteristics
+
 - **Backend-only**: Never expose to client applications
 - **Long-lived**: Remain valid until regenerated
 - **Full access**: Can create/delete rooms and peers
 - **Environment-specific**: Different tokens for sandbox vs production
 
 #### Usage
+
 ```typescript
-const fishjamClient = new FishjamClient({ 
-  fishjamUrl, 
-  managementToken: process.env.MANAGEMENT_TOKEN 
+const fishjamClient = new FishjamClient({
+  fishjamUrl,
+  managementToken: process.env.MANAGEMENT_TOKEN,
 });
 ```
 
-### Peer Tokens  
+### Peer Tokens
+
 **Peer tokens** are short-lived credentials that allow client applications to join specific rooms.
 
 #### Characteristics
+
 - **Client-safe**: Safe to send to frontend applications
 - **Short-lived**: Expire after reasonable time period
 - **Room-specific**: Grant access to one specific room only
 - **Peer-specific**: Tied to one peer identity
 
 #### Generation
+
 ```typescript
 // Backend generates peer token
 const { peer, peerToken } = await fishjamClient.createPeer(roomId, {
-  metadata: { name: "John Doe" }
+  metadata: { name: "John Doe" },
 });
 
 // Send to client
@@ -104,6 +120,7 @@ response.json({ peerToken, fishjamUrl });
 ```
 
 #### Usage
+
 ```typescript
 // Client uses peer token to connect
 await joinRoom({ url: fishjamUrl, peerToken });
@@ -112,30 +129,33 @@ await joinRoom({ url: fishjamUrl, peerToken });
 ## Metadata
 
 ### What is Metadata?
+
 **Metadata** is custom data associated with peers that other participants can read. It's set when creating a peer and cannot be changed afterward.
 
 ### Use Cases
+
 - **User information**: Names, avatars, roles
 - **Application state**: User preferences, permissions
 - **Custom identifiers**: External user IDs, session data
 
 ### Example
+
 ```typescript
-// Backend sets metadata when creating peer  
+// Backend sets metadata when creating peer
 const { peer, peerToken } = await fishjamClient.createPeer(roomId, {
-  metadata: { 
+  metadata: {
     name: "Alice Johnson",
     role: "presenter",
     avatar: "https://example.com/avatar.jpg",
-    userId: "user-123"
-  }
+    userId: "user-123",
+  },
 });
 ```
 
 ```typescript
 // Clients can read metadata of all peers
 const { remotePeers } = usePeers();
-remotePeers.forEach(peer => {
+remotePeers.forEach((peer) => {
   console.log(peer.metadata.name); // "Alice Johnson"
 });
 ```
@@ -143,14 +163,16 @@ remotePeers.forEach(peer => {
 ## Media Flow Architecture
 
 ### Client-Server-Client Pattern
+
 Fishjam uses a **Selective Forwarding Unit (SFU)** architecture:
 
 1. **Upload**: Each peer sends their media to Fishjam servers
-2. **Processing**: Server processes, adapts quality, applies policies  
+2. **Processing**: Server processes, adapts quality, applies policies
 3. **Distribution**: Server forwards media to other peers in the room
 4. **Download**: Each peer receives media from other participants
 
 ### Benefits of SFU Architecture
+
 - **Bandwidth efficiency**: Each client uploads once, server handles distribution
 - **Quality adaptation**: Server can adjust quality per recipient
 - **Selective forwarding**: Server can choose which streams to forward
@@ -159,6 +181,7 @@ Fishjam uses a **Selective Forwarding Unit (SFU)** architecture:
 ## Connection States
 
 ### Peer Connection States
+
 Understanding connection states helps with UI and error handling:
 
 - **`connecting`**: Attempting to join room
@@ -167,6 +190,7 @@ Understanding connection states helps with UI and error handling:
 - **`disconnected`**: Permanently disconnected from room
 
 ### Track States
+
 Tracks also have states that affect media flow:
 
 - **`active`**: Track is sending/receiving media
@@ -182,7 +206,7 @@ Room (container)
 │   ├── Video Track (camera)
 │   ├── Audio Track (microphone)
 │   └── Video Track (screen share)
-├── Peer 2 (participant)  
+├── Peer 2 (participant)
 │   ├── Video Track (camera)
 │   └── Audio Track (microphone)
 └── Peer 3 (participant)
@@ -194,35 +218,40 @@ Room (container)
 Here's a complete example of how these concepts work together:
 
 ### 1. Room Setup (Backend)
+
 ```typescript
 // Create room
-const room = await fishjamClient.createRoom({ roomType: 'full-feature' });
+const room = await fishjamClient.createRoom({ roomType: "full-feature" });
 
 // Add peer for Alice
-const { peer: alicePeer, peerToken: aliceToken } = 
+const { peer: alicePeer, peerToken: aliceToken } =
   await fishjamClient.createPeer(room.id, {
-    metadata: { name: "Alice", role: "host" }
+    metadata: { name: "Alice", role: "host" },
   });
 
-// Add peer for Bob  
-const { peer: bobPeer, peerToken: bobToken } = 
-  await fishjamClient.createPeer(room.id, {
-    metadata: { name: "Bob", role: "participant" }
-  });
+// Add peer for Bob
+const { peer: bobPeer, peerToken: bobToken } = await fishjamClient.createPeer(
+  room.id,
+  {
+    metadata: { name: "Bob", role: "participant" },
+  },
+);
 ```
 
 ### 2. Client Connection
+
 ```typescript
 // Alice's client connects
 await joinRoom({ url: fishjamUrl, peerToken: aliceToken });
 
-// Bob's client connects  
+// Bob's client connects
 await joinRoom({ url: fishjamUrl, peerToken: bobToken });
 ```
 
 ### 3. Media Sharing
+
 - Alice starts camera → Creates video track
-- Alice starts microphone → Creates audio track  
+- Alice starts microphone → Creates audio track
 - Bob starts microphone → Creates audio track
 - Bob receives Alice's video and audio tracks
 - Alice receives Bob's audio track
@@ -236,5 +265,6 @@ Now that you understand the core concepts:
 - See how it all works in [Fishjam Architecture](/explanation/architecture)
 
 Ready to implement? Start with:
+
 - [React Native Quick Start](/tutorials/react-native-quick-start)
-- [Backend Quick Start](/tutorials/backend-quick-start) 
+- [Backend Quick Start](/tutorials/backend-quick-start)
