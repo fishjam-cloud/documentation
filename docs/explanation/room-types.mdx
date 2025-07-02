@@ -4,67 +4,81 @@ type: explanation
 
 # Room Types Explained
 
-**Explanation** - *Understanding different types of rooms and when to use them*
+**Explanation** - _Understanding different types of rooms and when to use them_
 
 Fishjam provides three distinct room types, each optimized for different use cases and scenarios. Understanding these room types helps you choose the right approach for your application.
 
 ## Full-feature Rooms (Default)
 
 ### What are Full-feature Rooms?
+
 Full-feature rooms are the default room type designed for multi-participant video conferencing scenarios. They support all Fishjam features and provide the most flexibility.
 
 ### Key Characteristics
+
 - **Multi-participant**: Support for many participants simultaneously
 - **Bidirectional media**: All participants can send and receive video/audio
 - **Rich features**: Screen sharing, multiple video tracks, audio controls
 - **Flexible track management**: Participants can add/remove tracks dynamically
 
 ### Architecture
+
 Full-feature rooms use a Selective Forwarding Unit (SFU) architecture:
+
 - Each participant sends their media to Fishjam Media Server
 - Server selectively forwards streams to other participants
 - Efficient bandwidth usage compared to mesh networking
 - Quality adaptation based on network conditions
 
 ### Best Use Cases
+
 - **Video conferencing applications** (Zoom-like experiences)
 - **Virtual meetings** with screen sharing
 - **Collaborative workspaces** with multiple media types
 - **Interactive webinars** with participant engagement
 
 ### Cost Considerations
+
 Full-feature rooms are priced based on total connection time of all peers.
 
 ## Audio-only Rooms
 
 ### What are Audio-only Rooms?
+
 Audio-only rooms are optimized specifically for voice communication, removing video capabilities to improve performance and reduce costs.
 
 ### Key Characteristics
+
 - **Voice-only communication**: No video tracks allowed
 - **Optimized bandwidth**: Reduced network usage
 - **Better performance**: Lower CPU and battery usage
 - **Higher capacity**: Support for more simultaneous participants
 
 ### Architecture
+
 - Similar to full-feature rooms but audio-only routing
 - Optimized audio processing and codec selection
 - Reduced server resources per participant
 - Enhanced audio quality algorithms
 
 ### Best Use Cases
+
 - **Voice-only conferencing** and calls
 - **Podcast recording** with multiple participants
 - **Audio chat applications**
 - **Large-scale audio events** (town halls, announcements)
 
 ### Cost Benefits
+
 Audio-only rooms come at a **75% discount** compared to full-feature rooms:
+
 - 2 peers for 30 minutes = 60 minutes total time in full-feature room
 - Same scenario in audio-only room = 15 minutes equivalent cost
 
 ### Video Behavior in Audio-only Rooms
+
 If you attempt to add video to an audio-only room:
+
 - Video tracks are ignored (not transmitted)
 - SDKs log warnings to help with debugging
 - Only audio from screen sharing is transmitted
@@ -73,9 +87,11 @@ If you attempt to add video to an audio-only room:
 ## Livestream Rooms
 
 ### What are Livestream Rooms?
+
 Livestream rooms are designed for one-to-many broadcasting scenarios where a single broadcaster streams to multiple viewers.
 
 ### Key Characteristics
+
 - **One broadcaster**: Only one peer can send media
 - **Many viewers**: Unlimited viewers can watch
 - **Optimized for scale**: Efficient distribution architecture
@@ -83,22 +99,26 @@ Livestream rooms are designed for one-to-many broadcasting scenarios where a sin
 - **WHEP compatibility**: Standards-based viewer connections
 
 ### Architecture
+
 - **Broadcaster**: Sends video/audio using standard Fishjam client SDKs
 - **Viewers**: Connect using WHEP (WebRTC-HTTP Egress Protocol)
 - **Media distribution**: Optimized server-side distribution
 - **Geographic distribution**: Edge servers for global reach
 
 ### Broadcasting Limitations
+
 - **Single video track**: Only one video stream allowed
 - **Single audio track**: Only one audio stream allowed
 - **Additional tracks ignored**: Extra tracks are not forwarded to viewers
 
 ### Viewer Experience
+
 - **Token-based access**: Viewers need special viewer tokens
 - **Standard compatibility**: Any WHEP-compatible player works
 - **Automatic quality**: Adaptive streaming based on viewer connection
 
 ### Best Use Cases
+
 - **Live events** and webinars
 - **Streaming platforms** and content distribution
 - **Corporate broadcasts** and announcements
@@ -106,46 +126,53 @@ Livestream rooms are designed for one-to-many broadcasting scenarios where a sin
 - **Sports and entertainment** streaming
 
 ### Cost Benefits
-Livestream rooms are **20% cheaper** than full-feature rooms for equivalent usage.
+
+Livestream rooms are **cheaper** than full-feature rooms for equivalent usage, because there is only one broadcaster.
 
 ## Choosing the Right Room Type
 
 ### Decision Matrix
 
-| Use Case | Room Type | Why |
-|----------|-----------|-----|
-| Video meetings with 2-10 people | Full-feature | Bidirectional video, screen sharing |
-| Large video conference (10+ people) | Full-feature | Multi-participant support |
-| Voice-only meetings | Audio-only | Cost savings, better performance |
-| Podcast recording | Audio-only | Audio focus, multiple participants |
-| Webinar (1 presenter, many viewers) | Livestream | One-to-many, cost effective |
-| Live event streaming | Livestream | Scalable viewing, optimized distribution |
-| Interactive workshop | Full-feature | Participant engagement, screen sharing |
+| Use Case                            | Room Type    | Why                                      |
+| ----------------------------------- | ------------ | ---------------------------------------- |
+| Video meetings with 2-10 people     | Full-feature | Bidirectional video, screen sharing      |
+| Large video conference (10+ people) | Full-feature | Multi-participant support                |
+| Voice-only meetings                 | Audio-only   | Cost savings, better performance         |
+| Podcast recording                   | Audio-only   | Audio focus, multiple participants       |
+| Webinar (1 presenter, many viewers) | Livestream   | One-to-many, cost effective              |
+| Live event streaming                | Livestream   | Scalable viewing, optimized distribution |
+| Interactive workshop                | Full-feature | Participant engagement, screen sharing   |
 
 ### Performance Considerations
 
 #### Network Bandwidth
+
 - **Full-feature**: Highest bandwidth usage
-- **Audio-only**: Lowest bandwidth usage  
+- **Audio-only**: Lowest bandwidth usage
 - **Livestream**: Moderate for broadcaster, low for viewers
 
 #### Server Resources
+
 - **Full-feature**: Highest server resource usage
 - **Audio-only**: Lowest server resource usage
 - **Livestream**: Optimized for many viewers
 
 #### Client Performance
+
 - **Full-feature**: Higher CPU/battery usage
 - **Audio-only**: Lowest resource usage
 - **Livestream**: Low for viewers, normal for broadcaster
 
 ### Migration Between Room Types
+
 Room types are set at creation time and cannot be changed:
+
 - Each room has a fixed type for its entire lifecycle
 - To change types, create a new room
 - Plan your room type choice carefully
 
 ### Development vs Production
+
 For development, you can create any room type using [Room Manager](/how-to/features/room-manager-testing).
 
 For production, room types are specified when creating rooms via [Server SDKs](/how-to/backend/server-setup):
@@ -154,23 +181,26 @@ For production, room types are specified when creating rooms via [Server SDKs](/
 // Full-feature room (default)
 const fullRoom = await fishjamClient.createRoom();
 
-// Audio-only room  
-const audioRoom = await fishjamClient.createRoom({ roomType: 'audio_only' });
+// Audio-only room
+const audioRoom = await fishjamClient.createRoom({ roomType: "audio_only" });
 
 // Livestream room
-const liveRoom = await fishjamClient.createRoom({ roomType: 'livestream' });
+const liveRoom = await fishjamClient.createRoom({ roomType: "livestream" });
 ```
 
 ## Next Steps
 
 To understand how to implement each room type:
+
 - [How to create audio-only calls](/how-to/features/audio-only-calls)
 - [How to implement livestreaming](/how-to/features/livestreaming)
 
 To learn about the underlying architecture:
+
 - [Fishjam Architecture](/explanation/architecture)
 - [Security & Token Model](/explanation/security-tokens)
 
 Ready to start building? Check our tutorials:
+
 - [React Native Quick Start](/tutorials/react-native-quick-start)
-- [Backend Quick Start](/tutorials/backend-quick-start) 
+- [Backend Quick Start](/tutorials/backend-quick-start)

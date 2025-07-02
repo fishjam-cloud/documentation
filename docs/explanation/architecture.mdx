@@ -4,7 +4,7 @@ type: explanation
 
 # Fishjam Architecture
 
-**Explanation** - *Understanding how Fishjam works under the hood*
+**Explanation** - _Understanding how Fishjam works under the hood_
 
 This document explains the technical architecture of Fishjam and how data flows through the system.
 
@@ -17,14 +17,18 @@ Streaming with Fishjam is simple: you create a room, add peers to it, and start 
 ## Components Overview
 
 ### 1. Your Backend Server
+
 Your application's backend server is responsible for:
+
 - Authenticating users
 - Creating rooms using Fishjam Server SDKs
 - Generating peer tokens for clients
 - Managing room lifecycle and permissions
 
 ### 2. Fishjam Media Server
+
 The Fishjam Media Server is the core infrastructure component that:
+
 - Routes audio and video streams between participants
 - Handles WebRTC negotiations and connections
 - Manages different room types (full-feature, audio-only, livestream)
@@ -32,7 +36,9 @@ The Fishjam Media Server is the core infrastructure component that:
 - Enforces security policies and token validation
 
 ### 3. Client Applications
+
 Client applications (React Native, React/Web) use Fishjam Client SDKs to:
+
 - Connect to rooms using peer tokens
 - Send and receive audio/video streams
 - Handle device management (cameras, microphones)
@@ -41,50 +47,55 @@ Client applications (React Native, React/Web) use Fishjam Client SDKs to:
 ## Data Flow
 
 ### 1. Room Creation Flow
+
 ```mermaid
 sequenceDiagram
     participant BE as Your Backend
     participant FM as Fishjam Media Server
     participant Client as Client App
-    
+
     Client->>BE: Request to join room
     BE->>FM: Create room (Server SDK)
     FM->>BE: Return room ID
-    BE->>FM: Create peer (Server SDK)  
+    BE->>FM: Create peer (Server SDK)
     FM->>BE: Return peer token
     BE->>Client: Send peer token + Fishjam URL
 ```
 
 ### 2. Media Streaming Flow
+
 ```mermaid
 sequenceDiagram
     participant C1 as Client 1
     participant FM as Fishjam Media Server
     participant C2 as Client 2
-    
+
     C1->>FM: Connect with peer token
     C2->>FM: Connect with peer token
     C1->>FM: Send video/audio stream
     FM->>C2: Route stream to other peers
-    C2->>FM: Send video/audio stream  
+    C2->>FM: Send video/audio stream
     FM->>C1: Route stream to other peers
 ```
 
 ## Room Types and Architecture
 
 ### Full-feature Rooms
+
 - **Purpose**: Multi-participant video conferencing
 - **Media flow**: Peer-to-peer through media server (SFU architecture)
 - **Scaling**: Supports many participants efficiently
 - **Features**: Screen sharing, multiple video tracks, audio controls
 
-### Audio-only Rooms  
+### Audio-only Rooms
+
 - **Purpose**: Voice-only communication
 - **Media flow**: Audio-only routing with optimized bandwidth
 - **Scaling**: Highly efficient, supports more participants
 - **Cost**: 75% cheaper than full-feature rooms
 
 ### Livestream Rooms
+
 - **Purpose**: One-to-many broadcasting
 - **Media flow**: Single broadcaster to multiple viewers
 - **Protocols**: Uses WHEP/WHIP standards for viewers
@@ -93,11 +104,13 @@ sequenceDiagram
 ## Security Architecture
 
 ### Token-based Authentication
+
 1. **Management Tokens**: Secure your backend-to-Fishjam communication
 2. **Peer Tokens**: Short-lived tokens for client access to specific rooms
 3. **Token Validation**: All client connections validated by media server
 
 ### Network Security
+
 - All media streams are encrypted using WebRTC's built-in encryption
 - HTTPS/WSS connections required
 - No direct peer-to-peer connections (everything routes through Fishjam)
@@ -105,11 +118,13 @@ sequenceDiagram
 ## Scaling and Reliability
 
 ### Media Server Scaling
+
 - Automatic scaling based on load
 - Geographic distribution for low latency
 - Redundancy and failover handling
 
 ### Client Resilience
+
 - Automatic reconnection handling
 - Network change detection
 - Graceful degradation on poor connections
@@ -117,13 +132,17 @@ sequenceDiagram
 ## Integration Patterns
 
 ### Development Pattern (Room Manager)
+
 For development and testing:
+
 ```
 Client App <-> Room Manager <-> Fishjam Media Server
 ```
 
-### Production Pattern  
+### Production Pattern
+
 For production applications:
+
 ```
 Client App <-> Your Backend <-> Fishjam Media Server
 ```
@@ -131,29 +150,20 @@ Client App <-> Your Backend <-> Fishjam Media Server
 ## Supported Protocols and Standards
 
 ### WebRTC Standards
+
 - **DTLS-SRTP**: Secure media transport
 - **ICE/STUN/TURN**: NAT traversal and connectivity
 - **SDP**: Session description and negotiation
 
 ### Streaming Protocols
+
 - **WHEP**: WebRTC-HTTP Egress Protocol (for viewers)
 - **WHIP**: WebRTC-HTTP Ingress Protocol (for broadcasters)
 
 ### Codecs Supported
+
 - **Video**: H.264, VP8
 - **Audio**: Opus, G.711
-
-## Performance Characteristics
-
-### Latency
-- **P2P-style**: < 100ms between participants
-- **Livestream**: < 500ms broadcaster to viewer
-- **Geographic optimization**: Edge servers reduce latency
-
-### Quality
-- **Adaptive bitrate**: Automatically adjusts to network conditions
-- **Quality controls**: Client-side quality management
-- **Hardware acceleration**: Uses device capabilities when available
 
 ## Next Steps
 
@@ -162,5 +172,6 @@ To understand different room types in detail, see [Room Types Explained](/explan
 To learn about security and token management, see [Security & Token Model](/explanation/security-tokens).
 
 Ready to implement? Start with our tutorials:
+
 - [React Native Quick Start](/tutorials/react-native-quick-start)
-- [Backend Quick Start](/tutorials/backend-quick-start) 
+- [Backend Quick Start](/tutorials/backend-quick-start)
