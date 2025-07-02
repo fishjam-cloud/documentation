@@ -97,19 +97,19 @@ const sidebars: SidebarsConfig = {
       },
       items: [
         {
-          type: "link",
+          type: "doc",
+          id: "api/mobile/index",
           label: "React Native SDK API",
-          href: "/api/mobile",
         },
         {
-          type: "link",
+          type: "doc",
+          id: "api/web/index",
           label: "React/Web SDK API",
-          href: "/api/web",
         },
         {
-          type: "link",
+          type: "doc",
+          id: "api/server/index",
           label: "Server SDK API",
-          href: "/api/server",
         },
         "reference/glossary",
       ],
