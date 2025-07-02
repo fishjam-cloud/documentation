@@ -4366,7 +4366,7 @@ __metadata:
 
 "@fishjam-cloud/react-native-client@file:./packages/mobile-client-sdk/packages/react-native-client/package.tgz::locator=my-website%40workspace%3A.":
   version: 0.18.1
-  resolution: "@fishjam-cloud/react-native-client@file:./packages/mobile-client-sdk/packages/react-native-client/package.tgz#./packages/mobile-client-sdk/packages/react-native-client/package.tgz::hash=42bcb3&locator=my-website%40workspace%3A."
+  resolution: "@fishjam-cloud/react-native-client@file:./packages/mobile-client-sdk/packages/react-native-client/package.tgz#./packages/mobile-client-sdk/packages/react-native-client/package.tgz::hash=74b54c&locator=my-website%40workspace%3A."
   dependencies:
     promise-fs: "npm:^2.1.1"
     protobufjs: "npm:^7.4.0"
@@ -4376,7 +4376,7 @@ __metadata:
     expo: "*"
     react: "*"
     react-native: "*"
-  checksum: 10c0/c7e5f25e5ac6ceb6246d9d580119f62bf42a55a5c5b7e7e7bcde1d9d6c3e527e0883370c058de682026c4b4b2e72d80aa41332c56f2693cfd5e93229c47d372f
+  checksum: 10c0/33b0672c2b37a51ab6f3b5f6962d8a3850a7ce4dd597bbc717b78ec5550f721e5ec6a97eb08bcc656998ad17253c9a3c2e75f754c71133f64c65b26523d046c5
   languageName: node
   linkType: hard
 
