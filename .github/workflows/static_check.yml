@@ -13,6 +13,8 @@ jobs:
         run: git submodule update --init --recursive
       - name: Use corepack
         run: corepack enable
+      - name: Run prepare
+        run: scripts/prepare.sh
       - name: Install node dependencies
         run: yarn --immutable
       - name: Spellcheck
