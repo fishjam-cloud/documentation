@@ -12,8 +12,11 @@ const sidebars: SidebarsConfig = {
       label: "Tutorials",
       collapsible: false,
       link: {
-        type: "doc",
-        id: "tutorials/index",
+        type: "generated-index",
+        title: "Tutorials",
+        description:
+          "Learning-oriented lessons that take you through a series of steps to complete a project. Most useful when you want to get started with Fishjam.",
+        slug: "/tutorials",
       },
       items: [
         "tutorials/react-native-quick-start",
@@ -26,8 +29,11 @@ const sidebars: SidebarsConfig = {
       label: "How-to Guides",
       collapsible: false,
       link: {
-        type: "doc",
-        id: "how-to/index",
+        type: "generated-index",
+        title: "How-to Guides",
+        description:
+          "Practical step-by-step guides to help you achieve a specific goal. Most useful when you're trying to get something done.",
+        slug: "/how-to",
       },
       items: [
         {
@@ -92,8 +98,11 @@ const sidebars: SidebarsConfig = {
       label: "Reference",
       collapsible: false,
       link: {
-        type: "doc",
-        id: "reference/index",
+        type: "generated-index",
+        title: "Reference",
+        description:
+          "Nitty-gritty technical descriptions of how Fishjam works. Most useful when you need detailed information about Fishjam's APIs.",
+        slug: "/reference",
       },
       items: [
         {
@@ -118,8 +127,11 @@ const sidebars: SidebarsConfig = {
       label: "Explanation",
       collapsible: false,
       link: {
-        type: "doc",
-        id: "explanation/index",
+        type: "generated-index",
+        title: "Explanation",
+        description:
+          "Big-picture explanations of higher-level Fishjam concepts. Most useful for building understanding of a particular topic.",
+        slug: "/explanation",
       },
       items: [
         "explanation/what-is-fishjam",
