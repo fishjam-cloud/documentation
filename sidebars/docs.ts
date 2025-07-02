@@ -111,7 +111,6 @@ const sidebars: SidebarsConfig = {
           id: "api/server/index",
           label: "Server SDK API",
         },
-        "reference/glossary",
       ],
     },
     {
@@ -129,6 +128,7 @@ const sidebars: SidebarsConfig = {
         "explanation/room-types",
         "explanation/security-tokens",
         "explanation/room-manager-concept",
+        "explanation/glossary",
       ],
     },
   ],
