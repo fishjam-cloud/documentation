@@ -92,8 +92,13 @@ WHEP
 livestream
 livestreaming
 broadcasted
-livestream
 livestreamer
 livestreams
 async
 boolean
+asyncio
+mrousavy
+xcworkspace
+Pixi
+pydantic
+uvicorn
