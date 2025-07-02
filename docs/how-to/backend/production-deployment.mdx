@@ -4,7 +4,7 @@ type: how-to
 
 # How to Deploy Fishjam to Production
 
-**How-to Guide** - *Deploy your Fishjam backend safely to production*
+**How-to Guide** - _Deploy your Fishjam backend safely to production_
 
 This guide covers the essential steps to move from development (using Room Manager) to a production-ready Fishjam backend deployment.
 
@@ -52,49 +52,49 @@ Remove any Room Manager dependencies from your client code:
 ```typescript
 // ❌ Remove: Room Manager calls
 const response = await fetch(
-  `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager?...`
+  `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager?...`,
 );
 
 // ✅ Replace with: Your authenticated API
-const response = await fetch('/api/join-room', {
-  method: 'POST',
+const response = await fetch("/api/join-room", {
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${userToken}`
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${userToken}`,
   },
-  body: JSON.stringify({ roomName })
+  body: JSON.stringify({ roomName }),
 });
 ```
 
 ### Implement user authentication
 
 ```typescript
-import jwt from 'jsonwebtoken';
-import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+import jwt from "jsonwebtoken";
+import { FishjamClient } from "@fishjam-cloud/js-server-sdk";
 
 const fishjamClient = new FishjamClient({
   fishjamUrl: process.env.FISHJAM_URL!,
-  managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN!
+  managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN!,
 });
 
 // Authentication middleware
 const authenticateUser = async (req, res, next) => {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
+    const token = req.headers.authorization?.replace("Bearer ", "");
     if (!token) {
-      return res.status(401).json({ error: 'Authentication required' });
+      return res.status(401).json({ error: "Authentication required" });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = await getUserById(decoded.userId);
     next();
   } catch (error) {
-    res.status(401).json({ error: 'Invalid token' });
+    res.status(401).json({ error: "Invalid token" });
   }
 };
 
 // Protected endpoint for joining rooms
-app.post('/api/join-room', authenticateUser, async (req, res) => {
+app.post("/api/join-room", authenticateUser, async (req, res) => {
   try {
     const { roomName } = req.body;
     const user = req.user;
@@ -104,7 +104,7 @@ app.post('/api/join-room', authenticateUser, async (req, res) => {
 
     // Verify user has permission to join this room
     if (!canUserJoinRoom(user, room)) {
-      return res.status(403).json({ error: 'Access denied' });
+      return res.status(403).json({ error: "Access denied" });
     }
 
     // Create peer with user metadata
@@ -113,18 +113,17 @@ app.post('/api/join-room', authenticateUser, async (req, res) => {
         userId: user.id,
         name: user.name,
         avatar: user.avatar,
-        role: user.role
-      }
+        role: user.role,
+      },
     });
 
     res.json({
       peerToken,
-      fishjamUrl: process.env.FISHJAM_URL
+      fishjamUrl: process.env.FISHJAM_URL,
     });
-
   } catch (error) {
-    console.error('Join room error:', error);
-    res.status(500).json({ error: 'Failed to join room' });
+    console.error("Join room error:", error);
+    res.status(500).json({ error: "Failed to join room" });
   }
 });
 ```
@@ -134,18 +133,18 @@ app.post('/api/join-room', authenticateUser, async (req, res) => {
 ### Rate limiting
 
 ```typescript
-import rateLimit from 'express-rate-limit';
+import rateLimit from "express-rate-limit";
 
 // Rate limit room creation
 const roomLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10, // Limit each user to 10 room joins per window
-  message: 'Too many room join attempts, please try again later.',
+  message: "Too many room join attempts, please try again later.",
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-app.post('/api/join-room', roomLimiter, authenticateUser, async (req, res) => {
+app.post("/api/join-room", roomLimiter, authenticateUser, async (req, res) => {
   // ... room joining logic
 });
 ```
@@ -153,16 +152,17 @@ app.post('/api/join-room', roomLimiter, authenticateUser, async (req, res) => {
 ### Input validation
 
 ```typescript
-import { body, validationResult } from 'express-validator';
+import { body, validationResult } from "express-validator";
 
 const validateJoinRoom = [
-  body('roomName').isString().isLength({ min: 1, max: 100 }).trim(),
-  body('roomType').optional().isIn(['full-feature', 'audio-only', 'livestream']),
+  body("roomName").isString().isLength({ min: 1, max: 100 }).trim(),
+  body("roomType").optional().isIn(["conference", "audio-only", "livestream"]),
 ];
 
-app.post('/api/join-room', 
+app.post(
+  "/api/join-room",
   validateJoinRoom,
-  authenticateUser, 
+  authenticateUser,
   async (req, res) => {
     // Check validation results
     const errors = validationResult(req);
@@ -171,19 +171,19 @@ app.post('/api/join-room',
     }
 
     // ... proceed with room joining
-  }
+  },
 );
 ```
 
 ### CORS configuration
 
 ```typescript
-import cors from 'cors';
+import cors from "cors";
 
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000'],
+  origin: process.env.CORS_ORIGIN?.split(",") || ["http://localhost:3000"],
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
@@ -194,60 +194,61 @@ app.use(cors(corsOptions));
 ### Set up webhook endpoint
 
 ```typescript
-import crypto from 'crypto';
+import crypto from "crypto";
 
 // Webhook signature verification
 const verifyWebhookSignature = (req, res, next) => {
-  const signature = req.headers['x-fishjam-signature'];
+  const signature = req.headers["x-fishjam-signature"];
   const payload = JSON.stringify(req.body);
-  
+
   const expectedSignature = crypto
-    .createHmac('sha256', process.env.WEBHOOK_SECRET)
-    .update(payload, 'utf8')
-    .digest('hex');
+    .createHmac("sha256", process.env.WEBHOOK_SECRET)
+    .update(payload, "utf8")
+    .digest("hex");
 
   if (signature !== expectedSignature) {
-    return res.status(401).json({ error: 'Invalid signature' });
+    return res.status(401).json({ error: "Invalid signature" });
   }
-  
+
   next();
 };
 
 // Webhook handler
-app.post('/api/webhooks/fishjam', 
-  express.raw({ type: 'application/json' }),
+app.post(
+  "/api/webhooks/fishjam",
+  express.raw({ type: "application/json" }),
   verifyWebhookSignature,
   (req, res) => {
     const event = req.body;
-    
+
     switch (event.type) {
-      case 'peer_connected':
+      case "peer_connected":
         handlePeerConnected(event.data);
         break;
-      case 'peer_disconnected':
+      case "peer_disconnected":
         handlePeerDisconnected(event.data);
         break;
-      case 'room_empty':
+      case "room_empty":
         handleRoomEmpty(event.data);
         break;
       default:
-        console.log('Unhandled event type:', event.type);
+        console.log("Unhandled event type:", event.type);
     }
-    
+
     res.status(200).json({ received: true });
-  }
+  },
 );
 ```
 
 ### Create rooms with webhooks
 
 ```typescript
-const createRoomWithWebhooks = async (roomName, roomType = 'full-feature') => {
+const createRoomWithWebhooks = async (roomName, roomType = "conference") => {
   const room = await fishjamClient.createRoom({
     roomType,
-    webhookUrl: `${process.env.BASE_URL}/api/webhooks/fishjam`
+    webhookUrl: `${process.env.BASE_URL}/api/webhooks/fishjam`,
   });
-  
+
   return room;
 };
 ```
@@ -257,40 +258,39 @@ const createRoomWithWebhooks = async (roomName, roomType = 'full-feature') => {
 ### Structured logging
 
 ```typescript
-import winston from 'winston';
+import winston from "winston";
 
 const logger = winston.createLogger({
-  level: 'info',
+  level: "info",
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.errors({ stack: true }),
-    winston.format.json()
+    winston.format.json(),
   ),
   transports: [
-    new winston.transports.File({ filename: 'error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'combined.log' })
-  ]
+    new winston.transports.File({ filename: "error.log", level: "error" }),
+    new winston.transports.File({ filename: "combined.log" }),
+  ],
 });
 
 // Use in your endpoints
-app.post('/api/join-room', authenticateUser, async (req, res) => {
+app.post("/api/join-room", authenticateUser, async (req, res) => {
   try {
     // ... room joining logic
-    
-    logger.info('User joined room', {
+
+    logger.info("User joined room", {
       userId: req.user.id,
       roomName: req.body.roomName,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-    
   } catch (error) {
-    logger.error('Room join failed', {
+    logger.error("Room join failed", {
       userId: req.user?.id,
       error: error.message,
-      stack: error.stack
+      stack: error.stack,
     });
-    
-    res.status(500).json({ error: 'Failed to join room' });
+
+    res.status(500).json({ error: "Failed to join room" });
   }
 });
 ```
@@ -298,23 +298,23 @@ app.post('/api/join-room', authenticateUser, async (req, res) => {
 ### Health checks
 
 ```typescript
-app.get('/health', async (req, res) => {
+app.get("/health", async (req, res) => {
   try {
     // Check Fishjam connectivity
     const rooms = await fishjamClient.getRooms();
-    
+
     res.json({
-      status: 'healthy',
+      status: "healthy",
       timestamp: new Date().toISOString(),
       services: {
-        fishjam: 'connected',
-        database: 'connected' // Add your DB check
-      }
+        fishjam: "connected",
+        database: "connected", // Add your DB check
+      },
     });
   } catch (error) {
     res.status(503).json({
-      status: 'unhealthy',
-      error: error.message
+      status: "unhealthy",
+      error: error.message,
     });
   }
 });
@@ -325,18 +325,18 @@ app.get('/health', async (req, res) => {
 ### SSL/TLS setup
 
 ```typescript
-import https from 'https';
-import fs from 'fs';
+import https from "https";
+import fs from "fs";
 
 // For production, use proper SSL certificates
 const options = {
-  key: fs.readFileSync('path/to/private-key.pem'),
-  cert: fs.readFileSync('path/to/certificate.pem')
+  key: fs.readFileSync("path/to/private-key.pem"),
+  cert: fs.readFileSync("path/to/certificate.pem"),
 };
 
 const server = https.createServer(options, app);
 server.listen(443, () => {
-  console.log('HTTPS Server running on port 443');
+  console.log("HTTPS Server running on port 443");
 });
 ```
 
@@ -347,16 +347,16 @@ const config = {
   development: {
     fishjamUrl: process.env.FISHJAM_URL_DEV,
     managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN_DEV,
-    baseUrl: 'http://localhost:3000'
+    baseUrl: "http://localhost:3000",
   },
   production: {
     fishjamUrl: process.env.FISHJAM_URL_PROD,
     managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN_PROD,
-    baseUrl: 'https://yourdomain.com'
-  }
+    baseUrl: "https://yourdomain.com",
+  },
 };
 
-const currentConfig = config[process.env.NODE_ENV || 'development'];
+const currentConfig = config[process.env.NODE_ENV || "development"];
 ```
 
 ## Step 7: Deploy and monitor
@@ -376,6 +376,7 @@ const currentConfig = config[process.env.NODE_ENV || 'development'];
 ### Production monitoring
 
 Set up monitoring for:
+
 - **API response times**: Track join-room endpoint performance
 - **Error rates**: Monitor failed room creations
 - **Fishjam connectivity**: Ensure media server is reachable
@@ -385,31 +386,31 @@ Set up monitoring for:
 ### Example monitoring with Prometheus
 
 ```typescript
-import prometheus from 'prom-client';
+import prometheus from "prom-client";
 
 // Metrics
 const roomJoinCounter = new prometheus.Counter({
-  name: 'fishjam_room_joins_total',
-  help: 'Total number of room join attempts',
-  labelNames: ['status']
+  name: "fishjam_room_joins_total",
+  help: "Total number of room join attempts",
+  labelNames: ["status"],
 });
 
 const roomJoinDuration = new prometheus.Histogram({
-  name: 'fishjam_room_join_duration_seconds',
-  help: 'Duration of room join operations'
+  name: "fishjam_room_join_duration_seconds",
+  help: "Duration of room join operations",
 });
 
 // Use in your endpoint
-app.post('/api/join-room', authenticateUser, async (req, res) => {
+app.post("/api/join-room", authenticateUser, async (req, res) => {
   const timer = roomJoinDuration.startTimer();
-  
+
   try {
     // ... room joining logic
-    roomJoinCounter.inc({ status: 'success' });
+    roomJoinCounter.inc({ status: "success" });
     res.json({ peerToken, fishjamUrl });
   } catch (error) {
-    roomJoinCounter.inc({ status: 'error' });
-    res.status(500).json({ error: 'Failed to join room' });
+    roomJoinCounter.inc({ status: "error" });
+    res.status(500).json({ error: "Failed to join room" });
   } finally {
     timer();
   }
@@ -425,17 +426,17 @@ app.post('/api/join-room', authenticateUser, async (req, res) => {
 ```typescript
 // Client-side token refresh
 const refreshRoomAccess = async () => {
-  const response = await fetch('/api/refresh-room-access', {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${authToken}` }
+  const response = await fetch("/api/refresh-room-access", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${authToken}` },
   });
-  
+
   if (response.ok) {
     const { peerToken } = await response.json();
     return peerToken;
   }
-  
-  throw new Error('Failed to refresh room access');
+
+  throw new Error("Failed to refresh room access");
 };
 ```
 
@@ -450,13 +451,13 @@ const getOrCreateRoom = async (roomName) => {
   if (roomCache.has(roomName)) {
     return roomCache.get(roomName);
   }
-  
+
   const room = await fishjamClient.createRoom();
   roomCache.set(roomName, room);
-  
+
   // Cache cleanup after room is empty
   setTimeout(() => roomCache.delete(roomName), 5 * 60 * 1000);
-  
+
   return room;
 };
 ```
@@ -471,9 +472,11 @@ After production deployment:
 - Review and update security practices regularly
 
 For scaling considerations:
+
 - [Understanding Fishjam Architecture](/explanation/architecture)
 - [Security best practices](/explanation/security-tokens)
 
 For specific backend frameworks:
+
 - [FastAPI example](/how-to/backend/fastapi-example)
-- [Fastify example](/how-to/backend/fastify-example) 
+- [Fastify example](/how-to/backend/fastify-example)

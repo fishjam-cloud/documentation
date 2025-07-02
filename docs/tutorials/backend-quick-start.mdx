@@ -7,7 +7,7 @@ import TabItem from "@theme/TabItem";
 
 # Tutorial: Backend Quick Start
 
-**Tutorial** - *Learn to build a backend for your Fishjam app*
+**Tutorial** - _Learn to build a backend for your Fishjam app_
 
 This tutorial will guide you through setting up a backend server that can create rooms and manage peers for your Fishjam application.  
 By the end, you'll have a working backend and understand how to integrate it with your client apps.
@@ -170,10 +170,10 @@ Create a peer and get a token for your client app:
     def add_peer(room_id: str, peer_name: str):
         options = PeerOptions(metadata={"name": peer_name})
         peer, peer_token = fishjam_client.create_peer(room_id, options=options)
-        
+
         print(f'Peer created: {peer.id}')
         print(f'Peer token: {peer_token}')
-        
+
         return peer, peer_token
     ```
 
@@ -189,17 +189,23 @@ Build a simple HTTP endpoint that your client apps can call:
   
     ```ts
     import express from 'express';
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 
     const app = express();
     app.use(express.json());
 
+    const fishjamClient = new FishjamClient({
+      fishjamUrl: process.env.FISHJAM_URL!,
+      managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN!
+    });
+
     app.post('/join-room', async (req, res) => {
       try {
         const { roomName, peerName } = req.body;
-        
+
         // Create room
         const room = await fishjamClient.createRoom();
-        
+
         // Add peer
         const { peer, peerToken } = await fishjamClient.createPeer(room.id, {
           metadata: { name: peerName },
@@ -222,13 +228,20 @@ Build a simple HTTP endpoint that your client apps can call:
 
   </TabItem>
 
-  <TabItem value="python" label="Python (FastAPI)">
+    <TabItem value="python" label="Python (FastAPI)">
 
     ```python
+    import os
     from fastapi import FastAPI, HTTPException
     from pydantic import BaseModel
+    from fishjam import FishjamClient, PeerOptions
 
     app = FastAPI()
+
+    fishjam_client = FishjamClient(
+        os.environ["FISHJAM_URL"],
+        os.environ["FISHJAM_MANAGEMENT_TOKEN"]
+    )
 
     class JoinRoomRequest(BaseModel):
         room_name: str
@@ -239,7 +252,7 @@ Build a simple HTTP endpoint that your client apps can call:
         try:
             # Create room
             room = fishjam_client.create_room()
-            
+
             # Add peer
             options = PeerOptions(metadata={"name": request.peer_name})
             peer, peer_token = fishjam_client.create_peer(room.id, options=options)
@@ -267,6 +280,7 @@ curl -X POST http://localhost:3000/join-room \
 ```
 
 You should receive a response with:
+
 - `roomId` - The ID of the created room
 - `peerToken` - Token for the client to join the room
 - `fishjamUrl` - URL for the client to connect to
@@ -293,7 +307,7 @@ Here's a complete working backend:
     app.post('/join-room', async (req, res) => {
       try {
         const { roomName, peerName } = req.body;
-        
+
         const room = await fishjamClient.createRoom();
         const { peer, peerToken } = await fishjamClient.createPeer(room.id, {
           metadata: { name: peerName },
@@ -373,4 +387,4 @@ Now that you have a working backend, explore these guides:
 Or learn more about Fishjam concepts:
 
 - [Understanding security and tokens](/explanation/security-tokens)
-- [Room types explained](/explanation/room-types) 
+- [Room types explained](/explanation/room-types)
