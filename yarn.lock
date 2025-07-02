@@ -4345,22 +4345,22 @@ __metadata:
 
 "@fishjam-cloud/js-server-sdk@file:./packages/js-server-sdk/packages/js-server-sdk/package.tgz::locator=my-website%40workspace%3A.":
   version: 0.17.1
-  resolution: "@fishjam-cloud/js-server-sdk@file:./packages/js-server-sdk/packages/js-server-sdk/package.tgz#./packages/js-server-sdk/packages/js-server-sdk/package.tgz::hash=255750&locator=my-website%40workspace%3A."
+  resolution: "@fishjam-cloud/js-server-sdk@file:./packages/js-server-sdk/packages/js-server-sdk/package.tgz#./packages/js-server-sdk/packages/js-server-sdk/package.tgz::hash=22002e&locator=my-website%40workspace%3A."
   dependencies:
     axios: "npm:^1.7.9"
     websocket: "npm:^1.0.35"
-  checksum: 10c0/f8ec3bf48029541f1af0d49efb3d5f19c27ccb1aabc04abeee724ae3068ee41a1eb1cab516f6862f0e660492e3e20ff6bfcc062bd6d257efcac5968f285f3840
+  checksum: 10c0/415d8bd7cf28a099bfb18bea1c738270cad4aa547c487302cd74989cb32292808d3da12813879adc3a2231c223509d1fbfc38f3e682dfad72ac01bef2a31decf
   languageName: node
   linkType: hard
 
 "@fishjam-cloud/react-client@file:./packages/web-client-sdk/packages/react-client/package.tgz::locator=my-website%40workspace%3A.":
   version: 0.18.0
-  resolution: "@fishjam-cloud/react-client@file:./packages/web-client-sdk/packages/react-client/package.tgz#./packages/web-client-sdk/packages/react-client/package.tgz::hash=c6f0dc&locator=my-website%40workspace%3A."
+  resolution: "@fishjam-cloud/react-client@file:./packages/web-client-sdk/packages/react-client/package.tgz#./packages/web-client-sdk/packages/react-client/package.tgz::hash=537490&locator=my-website%40workspace%3A."
   dependencies:
     "@fishjam-cloud/ts-client": "npm:0.18.0"
     events: "npm:3.3.0"
     lodash.isequal: "npm:4.5.0"
-  checksum: 10c0/e9b44ad65e8e9b780c32ca22ed7fd1017df22eb2742e1f45fde22e6d83abd949ddbc83746887b7b68362ef6c4328e6d65623d7853c0e46055105faaa242a2e76
+  checksum: 10c0/7179029ed873d10d38c3cd338eedb378c26be11d99b2ad9fb0a80ccf71efe6d59a75f516f7226d12a079f286dad06947e745b396da72c44bb3a72f7c57887eed
   languageName: node
   linkType: hard
 

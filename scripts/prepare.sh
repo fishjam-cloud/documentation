@@ -15,12 +15,28 @@ yarn && yarn build
 
 cd $ROOTDIR
 
+cd packages/web-client-sdk/packages/react-client/
+yarn pack
+
+cd $ROOTDIR
+
 cd packages/mobile-client-sdk/
-yarn
+yarn && yarn build
+
+cd $ROOTDIR
+
+
+cd packages/mobile-client-sdk/packages/react-native-client/
+yarn pack
 
 cd $ROOTDIR
 
 cd packages/js-server-sdk/
 yarn && yarn build
+
+cd $ROOTDIR
+
+cd packages/js-server-sdk/packages/js-server-sdk/
+yarn pack
 
 printf "DONE\n"
