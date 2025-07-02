@@ -7,134 +7,58 @@ import { items } from "@site/src/content/cardItems";
 
 # Welcome to Fishjam
 
-Welcome to the Fishjam documentation! Build real-time video and audio streaming applications with confidence using our organized, developer-friendly guides.
+<p style={{ fontSize: "1.2rem" }}>
+Welcome to the Fishjam documentation!
 
-## New to Fishjam? Start here 🚀
+Fishjam is a multimedia streaming toolkit that allows you to build real-time
+video and audio streaming applications using WebRTC. We provide the
+infrastructure, media server, and client SDKs so you can focus on building
+your apps.
 
-If you're just getting started, follow our **tutorials** to build your first application:
+</p>
 
-<QuickNavigation
-  items={items.filter(
-    (item) =>
-      item.title.toLowerCase().includes("tutorial") ||
-      item.title.toLowerCase().includes("start"),
-  )}
-/>
+<QuickNavigation items={items} />
 
-### Quick Start Paths
+## Tutorials
 
-**📱 Mobile Developer?** → [React Native Tutorial](/tutorials/react-native-quick-start)  
-**🌐 Web Developer?** → [React Tutorial](/tutorials/react-quick-start)  
-**⚙️ Backend Developer?** → [Backend Tutorial](/tutorials/backend-quick-start)
+Learning-oriented lessons that take you through a series of steps to complete a project. Most useful when you want to get started with Fishjam.
 
-## How This Documentation is Organized
+- React Native Quick Start
+- React Quick Start
+- Backend Quick Start
 
-Our documentation follows the [Diátaxis framework](https://diataxis.fr/) to help you find exactly what you need:
+[See all 3](/tutorials)
 
-### 📚 **Tutorials** - _Learn by building_
+## How-to Guides
 
-Step-by-step guides that teach you the fundamentals by building working applications.
+Practical step-by-step guides to help you achieve a specific goal. Most useful when you're trying to get something done.
 
-- [React Native Quick Start](/tutorials/react-native-quick-start)
-- [React Quick Start](/tutorials/react-quick-start)
-- [Backend Quick Start](/tutorials/backend-quick-start)
+- Installation and Setup
+- Custom Video Sources
+- Production Deployment
 
-### 🛠️ **How-to Guides** - _Solve specific problems_
+[See all 26](/how-to)
 
-Goal-oriented guides that show you how to solve real problems and implement features.
+## Reference
 
-- **React Native**: [Installation](/how-to/react-native/installation), [Screen Sharing](/how-to/react-native/screensharing), [Background Streaming](/how-to/react-native/background-streaming)
-- **React/Web**: [Managing Devices](/how-to/react/managing-devices), [Livestreaming](/how-to/react/livestreaming), [Custom Sources](/how-to/react/custom-sources)
-- **Features**: [Audio-only Calls](/how-to/features/audio-only-calls), [Room Manager Testing](/how-to/features/room-manager-testing)
-- **Backend**: [Production Deployment](/how-to/backend/production-deployment), [Server Setup](/how-to/backend/server-setup)
+Nitty-gritty technical descriptions of how Fishjam works. Most useful when you need detailed information about Fishjam's APIs.
 
-### 📖 **Reference** - _Look up specific information_
+- React Native SDK API
+- React/Web SDK API
+- Server SDK API
 
-Technical reference for APIs, parameters, and detailed specifications.
+[See all 4](/reference)
 
-- [React Native SDK API](/api/mobile)
-- [React/Web SDK API](/api/web)
-- [Server SDK API](/api/server)
-- [Glossary](/reference/glossary)
+## Explanation
 
-### 💡 **Explanation** - _Understand the concepts_
+Big-picture explanations of higher-level Fishjam concepts. Most useful for building understanding of a particular topic.
 
-Background information that explains how Fishjam works and why it's designed this way.
+- What is Fishjam?
+- Architecture Overview
+- Core Concepts
 
-- [What is Fishjam?](/explanation/what-is-fishjam)
-- [Architecture](/explanation/architecture)
-- [Core Concepts](/explanation/core-concepts)
-- [Room Types](/explanation/room-types)
-- [Security & Tokens](/explanation/security-tokens)
-
-## Try Fishjam Right Now
-
-Want to see Fishjam in action immediately?
-
-- **Live Demo**: Try our [Videoroom app](https://room.fishjam.io/)
-- **Example Apps**: Check out [Fishjam Chat examples](https://github.com/fishjam-cloud/mobile-client-sdk/tree/main/examples/fishjam-chat)
-
-## Get Your Development Environment Ready
-
-1. **Create account**: [Sign up for Fishjam](https://fishjam.io/app)
-2. **Get Sandbox access**: Automatic Sandbox instance with Room Manager
-3. **Copy Room Manager URL**: From your developer panel
-4. **Pick your platform**: Choose React Native, React, or backend first
-
-## Common First Questions
-
-### "Which SDK should I use?"
-
-- **Building mobile apps?** → React Native SDK
-- **Building web apps?** → React/Web SDK
-- **Building backends?** → Node.js or Python Server SDK
-
-### "Do I need my own backend?"
-
-- **For testing**: No! Use [Room Manager](/how-to/features/room-manager-testing)
-- **For production**: Yes, see [Backend Tutorial](/tutorials/backend-quick-start)
-
-### "What room type do I need?"
-
-- **Video calls/meetings**: `full-feature` rooms
-- **Voice-only calls**: `audio-only` rooms (75% cheaper!)
-- **Livestreaming/webinars**: `livestream` rooms
-
-Learn more in [Room Types Explained](/explanation/room-types).
-
-### "Is Fishjam secure?"
-
-Yes! Fishjam uses a secure token-based system. Learn about [Security & Tokens](/explanation/security-tokens).
-
-## Development vs Production
-
-### 🧪 **Development Phase**
-
-- Use [Room Manager](/how-to/features/room-manager-testing) for quick testing
-- No backend setup required initially
-- Focus on client-side features first
-
-### 🚀 **Production Phase**
-
-- Set up your own backend with [Server SDKs](/tutorials/backend-quick-start)
-- Implement proper authentication
-- Follow [production deployment guide](/how-to/backend/production-deployment)
-
-## Need Help?
-
-- **Can't find what you're looking for?** Use the search bar above
-- **Want to contribute?** Check our GitHub repositories
-- **Need support?** Contact us through the developer panel
-
-## What's New in This Documentation
-
-We've restructured our docs to make them more developer-friendly:
-
-- ✨ **Clear learning paths**: Tutorials get you building quickly
-- 🎯 **Problem-focused guides**: Find solutions to specific challenges
-- 📚 **Conceptual explanations**: Understand how and why Fishjam works
-- 🔍 **Easy reference**: Quick lookup for APIs and specifications
+[See all 6](/explanation)
 
 ---
 
-**Ready to build?** Start with a [tutorial](/tutorials/react-native-quick-start) or explore [what Fishjam can do](/explanation/what-is-fishjam).
+**Looking for live examples?** Check out our [Fishjam Chat demo](https://room.fishjam.io/) →
