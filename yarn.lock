@@ -3059,9 +3059,9 @@ __metadata:
   linkType: hard
 
 "@bufbuild/protobuf@npm:^2.2.3":
-  version: 2.5.2
-  resolution: "@bufbuild/protobuf@npm:2.5.2"
-  checksum: 10c0/30f0ede04b5318eda502759044329f44af27e0bebd9853d7d9baf5bcb4f4b17f813eb8904d98718d991bd56d33565ed18f8c9c65067626c3d4e55a4e039fe9b6
+  version: 2.6.0
+  resolution: "@bufbuild/protobuf@npm:2.6.0"
+  checksum: 10c0/94c6fd63266a78135e3a82cb054dcde66760909948932152069bef3bb68335877b213d80c6983bb609b15f2ea0eb5912621eebd5bd4a98dbb940136ff5161b30
   languageName: node
   linkType: hard
 
@@ -4343,40 +4343,40 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fishjam-cloud/js-server-sdk@npm:^0.17.1":
+"@fishjam-cloud/js-server-sdk@file:./packages/js-server-sdk/packages/js-server-sdk/package.tgz::locator=my-website%40workspace%3A.":
   version: 0.17.1
-  resolution: "@fishjam-cloud/js-server-sdk@npm:0.17.1"
+  resolution: "@fishjam-cloud/js-server-sdk@file:./packages/js-server-sdk/packages/js-server-sdk/package.tgz#./packages/js-server-sdk/packages/js-server-sdk/package.tgz::hash=255750&locator=my-website%40workspace%3A."
   dependencies:
     axios: "npm:^1.7.9"
     websocket: "npm:^1.0.35"
-  checksum: 10c0/3c463dbe00cf885b7dc83f91c23c55ddc7b259d0eeb9b64c60e6dc4c6da1e179560fb011e366890ba2de08dda2567b97c193f9977c67e0c2a4298f3e959a5213
+  checksum: 10c0/f8ec3bf48029541f1af0d49efb3d5f19c27ccb1aabc04abeee724ae3068ee41a1eb1cab516f6862f0e660492e3e20ff6bfcc062bd6d257efcac5968f285f3840
   languageName: node
   linkType: hard
 
-"@fishjam-cloud/react-client@npm:^0.18.0":
+"@fishjam-cloud/react-client@file:./packages/web-client-sdk/packages/react-client/package.tgz::locator=my-website%40workspace%3A.":
   version: 0.18.0
-  resolution: "@fishjam-cloud/react-client@npm:0.18.0"
+  resolution: "@fishjam-cloud/react-client@file:./packages/web-client-sdk/packages/react-client/package.tgz#./packages/web-client-sdk/packages/react-client/package.tgz::hash=c6f0dc&locator=my-website%40workspace%3A."
   dependencies:
     "@fishjam-cloud/ts-client": "npm:0.18.0"
     events: "npm:3.3.0"
     lodash.isequal: "npm:4.5.0"
-  checksum: 10c0/31e887f198985c659bf0b70dd4ca05e3dcb798556a61bbdaf224f4b5ae373ab68ef0f6124e1300b5273dbdabb523a4bd10e0feaa2441bbb35676d69ba4817073
+  checksum: 10c0/e9b44ad65e8e9b780c32ca22ed7fd1017df22eb2742e1f45fde22e6d83abd949ddbc83746887b7b68362ef6c4328e6d65623d7853c0e46055105faaa242a2e76
   languageName: node
   linkType: hard
 
-"@fishjam-cloud/react-native-client@npm:^0.18.1":
+"@fishjam-cloud/react-native-client@file:./packages/mobile-client-sdk/packages/react-native-client/package.tgz::locator=my-website%40workspace%3A.":
   version: 0.18.1
-  resolution: "@fishjam-cloud/react-native-client@npm:0.18.1"
+  resolution: "@fishjam-cloud/react-native-client@file:./packages/mobile-client-sdk/packages/react-native-client/package.tgz#./packages/mobile-client-sdk/packages/react-native-client/package.tgz::hash=42bcb3&locator=my-website%40workspace%3A."
   dependencies:
     promise-fs: "npm:^2.1.1"
     protobufjs: "npm:^7.4.0"
-    react-native-whip-whep: "npm:0.2.1"
+    react-native-whip-whep: "npm:0.2.3"
     zod: "npm:^3.24.2"
   peerDependencies:
     expo: "*"
     react: "*"
     react-native: "*"
-  checksum: 10c0/b7ae7bd09e41baf20bd6aa0f926d59d102abff0c394cb095bc79fef5a5fa50daf395ac796cba1abb737bd1290bdd2e6e570ea2165bd65099cc6b5c5d296f7c66
+  checksum: 10c0/c7e5f25e5ac6ceb6246d9d580119f62bf42a55a5c5b7e7e7bcde1d9d6c3e527e0883370c058de682026c4b4b2e72d80aa41332c56f2693cfd5e93229c47d372f
   languageName: node
   linkType: hard
 
@@ -13833,9 +13833,9 @@ __metadata:
     "@docusaurus/tsconfig": "npm:^3.8.1"
     "@docusaurus/types": "npm:^3.8.1"
     "@fastify/env": "npm:^5.0.2"
-    "@fishjam-cloud/js-server-sdk": "npm:^0.17.1"
-    "@fishjam-cloud/react-client": "npm:^0.18.0"
-    "@fishjam-cloud/react-native-client": "npm:^0.18.1"
+    "@fishjam-cloud/js-server-sdk": "file:./packages/js-server-sdk/packages/js-server-sdk/package.tgz"
+    "@fishjam-cloud/react-client": "file:./packages/web-client-sdk/packages/react-client/package.tgz"
+    "@fishjam-cloud/react-native-client": "file:./packages/mobile-client-sdk/packages/react-native-client/package.tgz"
     "@mdx-js/react": "npm:^3.1.0"
     "@shikijs/rehype": "npm:^3.6.0"
     "@shikijs/transformers": "npm:^3.6.0"
@@ -16004,14 +16004,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-whip-whep@npm:0.2.1":
-  version: 0.2.1
-  resolution: "react-native-whip-whep@npm:0.2.1"
+"react-native-whip-whep@npm:0.2.3":
+  version: 0.2.3
+  resolution: "react-native-whip-whep@npm:0.2.3"
   peerDependencies:
     expo: "*"
     react: "*"
     react-native: "*"
-  checksum: 10c0/c8873b299e736ec601cb4e12093e907277ef170570b7591e3c530f93aca8f9da182b99fc066ecbd17bfbfb5ae2e6b6758e7c6b3b2eb009a6781099562f902554
+  checksum: 10c0/7c6952006ecd4e8f44a8dd756cfc22fb8934bb67829bb2e151a7481d678c42323f0a1734565e656f6c3d398551ca92340743d1bfc3db955b5466bff38fc0c51d
   languageName: node
   linkType: hard
 
