@@ -19,9 +19,9 @@ Before you begin, ensure you have:
 - **React Native project** set up with Expo or bare React Native
 - **Fishjam SDK** installed: `npm install @fishjam-cloud/react-native-client`
 - **A room of `livestream` type** created in Fishjam
-- **Camera and microphone permissions** [configured](/react-native/installation#step-2-configure-app-permissions)
+- **Camera and microphone permissions** [configured](/how-to/react-native/installation#step-2-configure-app-permissions)
 
-See the [livestreaming overview](/livestreaming) for more information about Fishjam's livestreaming in general.
+See the [livestreaming overview](/how-to/features/livestreaming) for more information about Fishjam's livestreaming in general.
 
 ## 🏗️ Architecture Overview
 
@@ -55,12 +55,12 @@ Before you start broadcasting, you need:
 
 - Camera and microphone permissions configured
 - A room of `livestream` type
-- A [peer token](/glossary#peer-token) for that room
+- A [peer token](/explanation/glossary#peer-token) for that room
 
 ### Setup Steps
 
-1. **Join the room** using the [connection guide](/react-native/connecting)
-2. **Start streaming** following the [streaming guide](/react-native/start-streaming)
+1. **Join the room** using the [connection guide](/how-to/react-native/connecting)
+2. **Start streaming** following the [streaming guide](/how-to/react-native/start-streaming)
 
 :::note
 Livestreaming rooms accept only one video track and one audio track. Fishjam ignores additional tracks to maintain broadcast quality.
@@ -73,7 +73,7 @@ Livestreaming rooms accept only one video track and one audio track. Fishjam ign
 To receive a stream, you need:
 
 - An active streamer in a livestream room
-- A [viewer token](/livestreaming) for that room
+- A [viewer token](/how-to/features/livestreaming) for that room
 
 ### Setup Steps
 
@@ -188,7 +188,7 @@ function LivestreamPlayer() {
 These examples show complete implementations for both streaming and viewing.
 
 :::info
-This guide assumes you completed either the [Quick Setup](/react-native/quick-setup) or [Installation](/react-native/installation) guide.
+This guide assumes you completed either the [Quick Setup](/tutorials/react-native-quick-start) or [Installation](/how-to/react-native/installation) guide.
 :::
 
 ### Required Permissions
@@ -326,7 +326,7 @@ async function getViewerToken(roomName: string) {
 
 ## 📚 Additional Resources
 
-- [Livestreaming Overview](/livestreaming) - Learn about Fishjam's livestreaming architecture
-- [Connection Guide](/react-native/connecting) - Detailed connection setup
-- [Streaming Guide](/react-native/start-streaming) - Advanced streaming configuration
+- [Livestreaming Overview](/how-to/features/livestreaming) - Learn about Fishjam's livestreaming architecture
+- [Connection Guide](/how-to/react-native/connecting) - Detailed connection setup
+- [Streaming Guide](/how-to/react-native/start-streaming) - Advanced streaming configuration
 - [API Reference](/api/mobile/functions/useLivestream) - Complete API documentation

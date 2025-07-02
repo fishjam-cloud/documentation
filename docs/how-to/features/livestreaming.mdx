@@ -13,7 +13,7 @@ If your case involves streaming live audio and/or video from one source to many 
 
 ### Streamer
 
-First, you need to create a room with the livestream type using our [Server SDKs](/production/server). If you are using our sandbox, the [Room Manager](/room-manager) also allows you to create such a room. As the streaming is one-to-many, you can have only one streaming participant in that room.
+First, you need to create a room with the livestream type using our [Server SDKs](/how-to/backend/server-setup). If you are using our sandbox, the [Room Manager](/how-to/features/room-manager-testing) also allows you to create such a room. As the streaming is one-to-many, you can have only one streaming participant in that room.
 
 #### Using Room Manager
 
@@ -48,7 +48,7 @@ https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager?roomName=foo&p
   </TabItem>
  </Tabs>
 
-Now, you can connect to the room and start streaming as described in our [React Native](/react-native/connecting) and [React](/react/connecting) docs.
+Now, you can connect to the room and start streaming as described in our [React Native](/how-to/react-native/connecting) and [React](/how-to/react/connecting) docs.
 
 :::note
 Livestreaming scenario allows only one video and one audio track to be sent at a time.  
@@ -57,7 +57,7 @@ Livestreaming scenario allows only one video and one audio track to be sent at a
 
 ### Viewers
 
-To view the streamed content, you need to obtain a viewer token that can be generated using [Server SDKs](/production/server). If you are using our sandbox, the [Room Manager](/room-manager) also allows you to create such a token.
+To view the streamed content, you need to obtain a viewer token that can be generated using [Server SDKs](/how-to/backend/server-setup). If you are using our sandbox, the [Room Manager](/how-to/features/room-manager-testing) also allows you to create such a token.
 
 #### Using Room Manager
 
@@ -85,7 +85,7 @@ https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager/<ROOM_NAME>/li
   </TabItem>
  </Tabs>
 
-Now you can connect the viewer to the livestream as described in our React Native and [React](/react/livestreaming) docs.
+Now you can connect the viewer to the livestream as described in our React Native and [React](/how-to/react/livestreaming) docs.
 
 :::info
 Viewers connect using [WHEP](https://blog.swmansion.com/introducing-react-native-whip-whep-ac9e5588d4da) standard, allowing the use of any player that supports the WHEP standard.

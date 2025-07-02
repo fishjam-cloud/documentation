@@ -59,6 +59,9 @@ import { useCallback } from "react";
 import { Button } from "react-native";
 import { useCamera, useConnection } from "@fishjam-cloud/react-native-client";
 
+// Check https://fishjam.io/app/ for your Room Manager ID
+const ROOM_MANAGER_ID = "YOUR_ROOM_MANAGER_ID";
+
 export function StartStreamingButton({
   roomName,
   peerName,
@@ -150,6 +153,8 @@ type RoomData = {
   peerToken: string;
 };
 
+// Check https://fishjam.io/app/ for your Room Manager ID
+const ROOM_MANAGER_ID = "YOUR_ROOM_MANAGER_ID";
 const roomName = "testRoom";
 const peerName = `testUser_${(Math.random() * 100).toFixed()}`;
 

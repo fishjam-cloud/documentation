@@ -32,4 +32,4 @@ The URL to your Fishjam instance. It is used by your backend server to add peers
 
 ### Room Manager
 
-Our test app is available **only** in the Sandbox environment. It allows you to test Fishjam without needing to add room creation functionality to your backend. You can find more details [here](/room-manager).
+Our test app is available **only** in the Sandbox environment. It allows you to test Fishjam without needing to add room creation functionality to your backend. You can find more details [here](/how-to/features/room-manager-testing).

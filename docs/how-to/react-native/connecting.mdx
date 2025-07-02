@@ -19,7 +19,7 @@ your Room).
   <TabItem value="sandbox" label="Sandbox App">
 
 Once you get your account on [Fishjam](https://fishjam.io), you will have access to the Sandbox App. This app comes
-with a pre-configured test service called [Room Manager](/room-manager). This is basically a service that will create a Room, add your app as
+with a pre-configured test service called [Room Manager](/how-to/features/room-manager-testing). This is basically a service that will create a Room, add your app as
 the Room's Peer, and return the token required to use that Room.
 
 To use that, simply call `fetch`:
@@ -36,7 +36,7 @@ const { fishjamUrl, peerToken } = await response.json();
   <TabItem value="production" label="Production App">
 
 For the production app, you need to implement your own backend service that will provide the user with a **Peer Token**. To do that,
-follow our [server setup instructions](/production/server).
+follow our [server setup instructions](/how-to/backend/server-setup).
 
   </TabItem>
 </Tabs>
