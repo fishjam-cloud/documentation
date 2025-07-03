@@ -11,6 +11,10 @@ jobs:
           submodules: "recursive"
       - name: init and update submodules
         run: git submodule update --init --recursive
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
       - name: Use corepack
         run: corepack enable
       - name: Run prepare
