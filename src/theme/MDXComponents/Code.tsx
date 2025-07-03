@@ -1,7 +1,8 @@
 import type { ComponentProps } from "react";
-import React from "react";
+import React, { useState, useRef } from "react";
 import CodeInline from "@theme/CodeInline";
 import type { Props } from "@theme/MDXComponents/Code";
+import styles from "./Code.module.css";
 
 function shouldBeInline(props: Props) {
   return (
@@ -15,7 +16,37 @@ function shouldBeInline(props: Props) {
 }
 
 function CodeBlock(props: ComponentProps<"code">): JSX.Element {
-  return <code {...props} />;
+  const [copied, setCopied] = useState(false);
+  const codeRef = useRef<HTMLElement>(null);
+
+  const copyToClipboard = () => {
+    if (!codeRef.current) return;
+
+    const codeContent = codeRef.current.textContent || "";
+    navigator.clipboard
+      .writeText(codeContent)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch((error) => {
+        console.error("Failed to copy code to clipboard:", error);
+      });
+  };
+
+  return (
+    <div className={styles.codeBlockContainer}>
+      <button
+        onClick={copyToClipboard}
+        className={styles.copyButton}
+        aria-label="Copy code to clipboard"
+        title="Copy code to clipboard"
+      >
+        {copied ? "Copied!" : "Copy"}
+      </button>
+      <code ref={codeRef} {...props} />
+    </div>
+  );
 }
 
 export default function MDXCode(props): JSX.Element {
