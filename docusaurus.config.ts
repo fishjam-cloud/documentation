@@ -10,8 +10,6 @@ import {
   transformerNotationFocus,
 } from "@shikijs/transformers";
 
-import { transformerTwoslash } from "@shikijs/twoslash";
-
 const rehypeShikiPlugin = [
   rehypeShiki,
   {
@@ -20,7 +18,6 @@ const rehypeShikiPlugin = [
     },
     langs: Object.keys(bundledLanguages) as BundledLanguage[],
     transformers: [
-      transformerTwoslash(),
       transformerMetaHighlight(),
       transformerNotationDiff(),
       transformerNotationHighlight(),

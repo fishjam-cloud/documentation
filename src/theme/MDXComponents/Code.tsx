@@ -1,4 +1,4 @@
-import type { ComponentProps, ReactNode } from "react";
+import type { ComponentProps } from "react";
 import React from "react";
 import CodeInline from "@theme/CodeInline";
 import type { Props } from "@theme/MDXComponents/Code";
@@ -18,10 +18,10 @@ function CodeBlock(props: ComponentProps<"code">): JSX.Element {
   return <code {...props} />;
 }
 
-export default function MDXCode(props: Props): ReactNode {
+export default function MDXCode(props): JSX.Element {
   return shouldBeInline(props) ? (
     <CodeInline {...props} />
   ) : (
-    <CodeBlock {...(props as ComponentProps<typeof CodeBlock>)} />
+    <CodeBlock {...props} />
   );
 }
