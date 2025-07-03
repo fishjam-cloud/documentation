@@ -14,19 +14,22 @@ Use the [`useConnection`](/api/web/functions/useConnection) hook to get
 the [`joinRoom`](/api/web/functions/useConnection#joinroom) function.
 
 ```tsx
-// @errors: 2304
+const FISHJAM_URL = "some-fishjam-url";
+const PEER_TOKEN = "some-peer-token";
+// ---cut-before---
 import { useConnection } from "@fishjam-cloud/react-client";
 import React, { useCallback } from "react";
+
 
 export function JoinRoomButton() {
   const { joinRoom } = useConnection(); // [!code highlight]
 
   const onJoinRoomPress = useCallback(async () => {
+    // [!code highlight:4]
     await joinRoom({
-      // [!code highlight]
-      url: FISHJAM_URL, // [!code highlight]
-      peerToken: PEER_TOKEN, // [!code highlight]
-    }); // [!code highlight]
+      url: FISHJAM_URL,
+      peerToken: PEER_TOKEN,
+    });
   }, [joinRoom]);
 
   return <button onClick={onJoinRoomPress}>Join room</button>;
@@ -43,8 +46,7 @@ import { useConnection } from "@fishjam-cloud/react-client";
 import React, { useCallback } from "react";
 
 export function LeaveRoomButton() {
-  // highlight-next-line
-  const { leaveRoom } = useConnection();
+  const { leaveRoom } = useConnection(); // [!code highlight]
 
   return <button onClick={leaveRoom}>Leave room</button>;
 }

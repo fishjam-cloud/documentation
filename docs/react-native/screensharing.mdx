@@ -175,12 +175,10 @@ import { Button } from "react-native";
 import { useScreenShare } from "@fishjam-cloud/react-native-client";
 
 export function ScreenShareButton() {
-  // highlight-next-line
-  const { toggleScreenShare, isScreenShareOn } = useScreenShare();
+  const { toggleScreenShare, isScreenShareOn } = useScreenShare(); // [!code highlight]
 
   const onPressToggle = useCallback(
-    // highlight-next-line
-    () => toggleScreenShare(),
+    () => toggleScreenShare(), // [!code highlight]
     [toggleScreenShare],
   );
 

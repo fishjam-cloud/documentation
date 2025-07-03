@@ -51,10 +51,7 @@ import { useCamera } from "@fishjam-cloud/react-client";
 export function ExampleCameraPreview() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // highlight-next-line
-  const { activeCamera, selectCamera, cameraStream, cameraDevices } =
-    // highlight-next-line
-    useCamera();
+  const { activeCamera, selectCamera, cameraStream, cameraDevices } = useCamera(); // [!code highlight]
 
   useEffect(() => {
     if (!videoRef.current) return;
@@ -71,8 +68,7 @@ export function ExampleCameraPreview() {
           </option>
         ))}
       </select>
-      // highlight-next-line
-      {cameraStream && <video ref={videoRef} autoPlay />}
+      {cameraStream && <video ref={videoRef} autoPlay />} // [!code highlight]
     </div>
   );
 }

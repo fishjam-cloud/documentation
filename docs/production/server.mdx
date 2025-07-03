@@ -56,7 +56,10 @@ They are required to proceed. Now, we are ready to dive into the code.
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    // @errors: 2322
+    process.env.FISHJAM_URL = "https://fishjam.io";
+    process.env.FISHJAM_MANAGEMENT_TOKEN = "bbb";
+    // ---cut---
+
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 
     const fishjamUrl = process.env.FISHJAM_URL;
@@ -90,7 +93,13 @@ Create a room to get the `roomId` and be able to start adding peers.
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    // @errors: 2304
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+    const fishjamClient = new FishjamClient({
+
+        fishjamUrl: "https://fishjam.io",
+        managementToken: "bbb",
+    });
+    // ---cut---
     const createdRoom = await fishjamClient.createRoom();
 
     const theSameRoom = await fishjamClient.getRoom(createdRoom.id);
@@ -127,7 +136,13 @@ At any time you can terminate user's access by deleting the peer.
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    // @errors: 2304
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+    const fishjamClient = new FishjamClient({
+        fishjamUrl: "https://fishjam.io",
+        managementToken: "bbb",
+    });
+    const created_room = await fishjamClient.createRoom();
+    // ---cut---
     const { peer, peerToken } = await fishjamClient.createPeer(created_room.id);
 
     await fishjamClient.deletePeer(created_room.id, peer.id);
@@ -156,8 +171,14 @@ or [web SDK](/react/metadata). This metadata can be only set when creating the p
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    // @errors: 2304
-    const { peer, peerToken } = await fishjamClient.createPeer(roomId, {
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+    const fishjamClient = new FishjamClient({
+        fishjamUrl: "https://fishjam.io",
+        managementToken: "bbb",
+    });
+    const created_room = await fishjamClient.createRoom();
+    // ---cut---
+    const { peer, peerToken } = await fishjamClient.createPeer(created_room.id, {
       metadata: { realName: 'Keanu Reeves' },
     });
     ```
@@ -190,7 +211,13 @@ Simply pass the your webhook url as a `webhookUrl` parameter when creating a roo
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    // @errors: 2304
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamClient = new FishjamClient({
+        fishjamUrl: "https://fishjam.io",
+        managementToken: "bbb",
+    });
+    // ---cut---
     const webhookUrl = "https://example.com/";
     await fishjamClient.createRoom({ webhookUrl });
     ```
@@ -220,7 +247,9 @@ It sets up a websocket connection with a Fishjam instance and provides a simple 
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    // @errors: 18004
+    const fishjamUrl = "https://fishjam.io";
+    const managementToken = "bbb";
+    // ---cut---
     import { FishjamWSNotifier } from '@fishjam-cloud/js-server-sdk';
 
     const onClose = console.log;

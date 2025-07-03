@@ -27,12 +27,10 @@ import {
 } from "@fishjam-cloud/react-native-client";
 
 export function ViewPreview() {
-  // highlight-next-line
-  const { prepareCamera } = useCamera();
+  const { prepareCamera } = useCamera(); // [!code highlight]
 
   useEffect(() => {
-    // highlight-next-line
-    prepareCamera({ cameraEnabled: true });
+    prepareCamera({ cameraEnabled: true }); // [!code highlight]
   }, [prepareCamera]);
 
   return <VideoPreviewView />;
@@ -52,8 +50,7 @@ import { Button } from "react-native";
 import { useCamera } from "@fishjam-cloud/react-native-client";
 
 export function FlipButton() {
-  // highlight-next-line
-  const { cameras, switchCamera, currentCamera } = useCamera();
+  const { cameras, switchCamera, currentCamera } = useCamera(); // [!code highlight]
 
   const onPressFlipCamera = useCallback(() => {
     // find first camera facing opposite direction than current camera
@@ -61,8 +58,7 @@ export function FlipButton() {
       (camera) => camera.facingDirection !== currentCamera?.facingDirection,
     );
     if (otherCamera) {
-      // highlight-next-line
-      switchCamera(otherCamera.id);
+      switchCamera(otherCamera.id); // [!code highlight]
     }
   }, [cameras, currentCamera?.facingDirection, switchCamera]);
 
@@ -80,13 +76,11 @@ import React from "react";
 import { useCamera } from "@fishjam-cloud/react-native-client";
 
 export function ToggleCameraButton() {
-  // highlight-next-line
-  const { isCameraOn, toggleCamera } = useCamera();
+  const { isCameraOn, toggleCamera } = useCamera(); // [!code highlight]
 
   return (
     <Button
-      // highlight-next-line
-      onPress={toggleCamera}
+      onPress={toggleCamera} // [!code highlight]
       title={isCameraOn ? "Disable camera" : "Enable camera"}
     />
   );
@@ -103,13 +97,11 @@ import React from "react";
 import { useMicrophone } from "@fishjam-cloud/react-native-client";
 
 export function ToggleMicrophoneButton() {
-  // highlight-next-line
-  const { isMicrophoneOn, toggleMicrophone } = useMicrophone();
+  const { isMicrophoneOn, toggleMicrophone } = useMicrophone(); // [!code highlight]
 
   return (
     <Button
-      // highlight-next-line
-      onPress={toggleMicrophone}
+      onPress={toggleMicrophone} // [!code highlight]
       title={isMicrophoneOn ? "Disable microphone" : "Enable microphone"}
     />
   );

@@ -27,12 +27,11 @@ To create a custom source, you only need to do two things:
 #### Usage Example
 
 ```tsx
-// @errors: 1109
 import React, { useEffect } from "react";
 import { useCustomSource } from "@fishjam-cloud/react-client";
 
 export function CameraControl() {
-  const stream: MediaStream = ...;
+  const stream: MediaStream | null = null; // Replace with your MediaStream object
   const { setStream } = useCustomSource("my-custom-source");
 
   useEffect(() => {
@@ -55,7 +54,8 @@ If you wish to remove a custom source, then you should call the [`setStream`](/a
 #### Usage Example
 
 ```tsx
-// @errors: 2304
+import { useCustomSource } from "@fishjam-cloud/react-client";
+// ---cut---
 const { setStream } = useCustomSource("my-custom-source");
 // ...
 await setStream(null);
@@ -103,14 +103,24 @@ If you want to see a full example React app which uses Fishjam with Smelter, the
 :::
 
 ```tsx
-// @errors: 2304
 import React from "react";
-const { stream } = await smelter.registerOutput("example-output", <View />, {
+import Smelter, { setWasmBundleUrl } from "@swmansion/smelter-web-wasm"
+import { View } from "@swmansion/smelter";
+
+setWasmBundleUrl('/assets/smelter.wasm');
+
+async function run() {
+  const smelter = new Smelter({ framerate: 30 });
+  const { stream } = await smelter.registerOutput("example-output", <View />, {
   type: "stream",
   video: {
     resolution: { width: 1920, height: 1080 },
   },
 });
+  await smelter.init();
+}
+
+
 ```
 
 ### Video/Audio HTML tag
@@ -123,7 +133,6 @@ If you have a `<video>` or `<audio>` element, then you need to call their [`capt
   <TabItem value="video" label="Video">
 
     ```tsx
-    // @errors: 1003 2339
     import React, { useCallback, useState } from "react";
 
     export function CanvasExample() {
@@ -131,12 +140,12 @@ If you have a `<video>` or `<audio>` element, then you need to call their [`capt
 
       const streamFromVideo = useCallback((video: HTMLVideoElement | null) => {
         if (!video) return;
-        setStream(video.captureStream());
+        setStream((video as HTMLVideoElement & { captureStream(): MediaStream }).captureStream());
       }, []);
 
       // use stream as desired
 
-      return <video ref={streamFromVideo} ... />;
+      return <video ref={streamFromVideo} /* ... */ />;
     }
     ```
 
@@ -145,7 +154,6 @@ If you have a `<video>` or `<audio>` element, then you need to call their [`capt
   <TabItem value="audio" label="Audio">
 
     ```tsx
-    // @errors: 1003 2339
     import React, { useCallback, useState } from "react";
 
     export function CanvasExample() {
@@ -153,12 +161,12 @@ If you have a `<video>` or `<audio>` element, then you need to call their [`capt
 
       const streamFromAudio = useCallback((audio: HTMLAudioElement | null) => {
         if (!audio) return;
-        setStream(audio.captureStream());
+        setStream((audio as HTMLAudioElement & { captureStream(): MediaStream }).captureStream());
       }, []);
 
       // use stream as desired
 
-      return <audio ref={streamFromAudio} ... />;
+      return <audio ref={streamFromAudio} /* ... */ />;
     }
     ```
 

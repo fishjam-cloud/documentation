@@ -49,20 +49,24 @@ This will provide types of FishjamClient wherever you access `fastify.fishjam` i
 Then, declare the plugin by invoking the `fp` function with the setup function with as an argument.
 
 ```ts title='fishjamPlugin.ts'
-// @errors: 2339
+
 import fastifyPlugin from "fastify-plugin";
 import { FishjamClient } from "@fishjam-cloud/js-server-sdk";
 
 declare module "fastify" {
   interface FastifyInstance {
     fishjam: FishjamClient;
+    config: {
+      FISHJAM_URL: string;
+      FISHJAM_MANAGEMENT_TOKEN: string;
+    };
   }
 }
 
 export const fishjamPlugin = fastifyPlugin((fastify) => {
   const fishjamClient = new FishjamClient({
     fishjamUrl: fastify.config.FISHJAM_URL,
-    managementToken: fastify.config.FISHJAM_SERVER_TOKEN,
+    managementToken: fastify.config.FISHJAM_MANAGEMENT_TOKEN,
   });
 
   fastify.decorate("fishjam", fishjamClient);
@@ -72,14 +76,33 @@ export const fishjamPlugin = fastifyPlugin((fastify) => {
 Now, after registering the plugin, we will be able to use Fishjam client by accessing the `fastify.fishjam` property.
 
 ```ts title='main.ts'
-// @errors: 2307 2339
-import Fastify from "fastify";
-import fastifyEnv from "@fastify/env";
 
-import { fishjamPlugin } from "./fishjamPlugin";
+import fastifyPlugin from "fastify-plugin";
+import { FishjamClient } from "@fishjam-cloud/js-server-sdk";
+import Fastify from "fastify";
+
+declare module "fastify" {
+  interface FastifyInstance {
+    fishjam: FishjamClient;
+    config: {
+      FISHJAM_URL: string;
+      FISHJAM_MANAGEMENT_TOKEN: string;
+    };
+  }
+}
+
+export const fishjamPlugin = fastifyPlugin((fastify) => {
+  const fishjamClient = new FishjamClient({
+    fishjamUrl: fastify.config.FISHJAM_URL,
+    managementToken: fastify.config.FISHJAM_MANAGEMENT_TOKEN,
+  });
+
+  fastify.decorate("fishjam", fishjamClient);
+});
 
 const fastify = Fastify();
-// ... skipping env loading code for convenience
+
+// ---cut---
 await fastify.register(fishjamPlugin);
 
 fastify.get("/rooms", () => fastify.fishjam.getAllRooms());
@@ -99,6 +122,7 @@ To receive and parse the Fishjam protobuf messages, add a content type parser to
 Then, you will be able to access the parsed message at `request.Body`.
 
 ```ts title='main.ts'
+
 import Fastify, { FastifyRequest } from "fastify";
 import { ServerMessage } from "@fishjam-cloud/js-server-sdk/proto";
 
@@ -125,7 +149,32 @@ Let's create another plugin in `fishjamNotifierPlugin.ts` file.
 In this case, we don't need to extend the Fastify instance type, because the plugin doesn't decorate the Fastify instance with any properties. It will work in the background.
 
 ```ts title='fishjamNotifierPlugin.ts'
-// @errors: 2339
+import fastifyPlugin from "fastify-plugin";
+import { FishjamClient } from "@fishjam-cloud/js-server-sdk";
+import Fastify from "fastify";
+
+declare module "fastify" {
+  interface FastifyInstance {
+    fishjam: FishjamClient;
+    config: {
+      FISHJAM_URL: string;
+      FISHJAM_MANAGEMENT_TOKEN: string;
+    };
+  }
+}
+
+export const fishjamPlugin = fastifyPlugin((fastify) => {
+  const fishjamClient = new FishjamClient({
+    fishjamUrl: fastify.config.FISHJAM_URL,
+    managementToken: fastify.config.FISHJAM_MANAGEMENT_TOKEN,
+  });
+
+  fastify.decorate("fishjam", fishjamClient);
+});
+
+const fastify = Fastify();
+
+// ---cut---
 import { type FastifyInstance } from "fastify";
 import fp from "fastify-plugin";
 import { FishjamWSNotifier } from "@fishjam-cloud/js-server-sdk";
@@ -153,15 +202,42 @@ export const fishjamNotifierPlugin = fp((fastify) => {
 Don't forget to register your plugin.
 
 ```ts title='main.ts'
-// @errors: 2307
+import fastifyPlugin from "fastify-plugin";
+import { FishjamClient } from "@fishjam-cloud/js-server-sdk";
 import Fastify from "fastify";
-import fastifyEnv from "@fastify/env";
+import { FishjamWSNotifier } from "@fishjam-cloud/js-server-sdk";
 
-import { fishjamPlugin } from "./fishjamPlugin";
-import { fishjamNotifierPlugin } from "./fishjamNotifierPlugin";
+declare module "fastify" {
+  interface FastifyInstance {
+    fishjam: FishjamClient;
+    config: {
+      FISHJAM_URL: string;
+      FISHJAM_MANAGEMENT_TOKEN: string;
+    };
+  }
+}
+
+export const fishjamPlugin = fastifyPlugin((fastify) => {
+  const fishjamClient = new FishjamClient({
+    fishjamUrl: "aaa",
+    managementToken: "bbb",
+  });
+
+  fastify.decorate("fishjam", fishjamClient);
+});
 
 const fastify = Fastify();
-// ...
+
+const fishjamNotifierPlugin = fastifyPlugin((fastify) => {
+  const fishjamNotifier = new FishjamWSNotifier(
+    { fishjamUrl: "aaa", managementToken: "bbb" },
+    (err) => fastify.log.error(err),
+    () => fastify.log.info("Websocket connection to Fishjam closed"),
+    () => fastify.log.error("Failed to connect Fishjam notifier"),
+  );
+});
+// ---cut---
+
 await fastify.register(fishjamPlugin);
 await fastify.register(fishjamNotifierPlugin);
 ```

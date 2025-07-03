@@ -11,8 +11,25 @@ They contain all the tracks of other peers and all the tracks of the local user,
 ### Example of playing other peers' available media
 
 ```tsx
-// @errors: 2552 2304
+class VideoRenderer extends React.Component<{
+  stream?: MediaStream | null;
+}> {
+  render() {
+    return <video autoPlay playsInline />;
+  }
+}
+
+class AudioPlayer extends React.Component<{
+  stream?: MediaStream | null;
+}> {
+  render() {
+    return <audio autoPlay />;
+  }
+}
+
+// ---cut---
 import React from "react";
+// import { VideoRenderer, AudioPlayer } from "...";
 import { usePeers } from "@fishjam-cloud/react-client";
 
 export function Component() {
