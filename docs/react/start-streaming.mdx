@@ -51,7 +51,8 @@ import { useCamera } from "@fishjam-cloud/react-client";
 export function ExampleCameraPreview() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const { activeCamera, selectCamera, cameraStream, cameraDevices } = useCamera(); // [!code highlight]
+  const { activeCamera, selectCamera, cameraStream, cameraDevices } =
+    useCamera(); // [!code highlight]
 
   useEffect(() => {
     if (!videoRef.current) return;

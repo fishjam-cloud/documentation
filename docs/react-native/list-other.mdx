@@ -20,8 +20,9 @@ import {
 export function ShowAllPeers() {
   const { remotePeers, localPeer } = usePeers(); // [!code highlight]
 
-  const videoTracks = remotePeers.flatMap((peer) =>
-    peer.tracks.filter((track) => track.type === "Video" && track.isActive), // [!code highlight]
+  const videoTracks = remotePeers.flatMap(
+    (peer) =>
+      peer.tracks.filter((track) => track.type === "Video" && track.isActive), // [!code highlight]
   );
   const localTrack = localPeer?.tracks.find((t) => t.type === "Video"); // [!code highlight]
 

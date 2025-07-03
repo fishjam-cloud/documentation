@@ -18,7 +18,6 @@ npm install @fishjam-cloud/react-client
 Wrap your app in our [`FishjamProvider`](/api/web/functions/FishjamProvider) component.
 
 ```tsx
-
 class App extends React.Component {
   render() {
     return <div></div>;
@@ -33,9 +32,12 @@ import { FishjamProvider } from "@fishjam-cloud/react-client";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <FishjamProvider> // [!code highlight]
+    <FishjamProvider>
+      {" "}
+      // [!code highlight]
       <App />
-    </FishjamProvider> // [!code highlight]
+    </FishjamProvider>{" "}
+    // [!code highlight]
   </React.StrictMode>,
 );
 ```

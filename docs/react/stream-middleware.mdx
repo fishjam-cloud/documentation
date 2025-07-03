@@ -40,8 +40,7 @@ class BlurProcessor {
     return stream.getVideoTracks()[0];
   }
 
-  destroy() {
-  }
+  destroy() {}
 }
 
 // ---cut---
@@ -49,13 +48,13 @@ import React, { useCallback, useEffect, useRef } from "react";
 import type { TrackMiddleware } from "@fishjam-cloud/react-client";
 import { useCamera } from "@fishjam-cloud/react-client";
 // Adjust import based on actual implementation
-// import { BlurProcessor } from "path-to-blur-processor"; 
+// import { BlurProcessor } from "path-to-blur-processor";
 
 export function CameraWithBlurEffect() {
   const videoRef = useRef<HTMLVideoElement>(null);
-
-  const { cameraStream, currentCameraMiddleware, setCameraTrackMiddleware } = // [!code highlight]
-    useCamera(); // [!code highlight]
+  // [!code highlight:2]
+  const { cameraStream, currentCameraMiddleware, setCameraTrackMiddleware } =
+    useCamera();
 
   useEffect(() => {
     if (!videoRef.current) return;

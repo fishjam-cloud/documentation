@@ -104,23 +104,21 @@ If you want to see a full example React app which uses Fishjam with Smelter, the
 
 ```tsx
 import React from "react";
-import Smelter, { setWasmBundleUrl } from "@swmansion/smelter-web-wasm"
+import Smelter, { setWasmBundleUrl } from "@swmansion/smelter-web-wasm";
 import { View } from "@swmansion/smelter";
 
-setWasmBundleUrl('/assets/smelter.wasm');
+setWasmBundleUrl("/assets/smelter.wasm");
 
 async function run() {
   const smelter = new Smelter({ framerate: 30 });
   const { stream } = await smelter.registerOutput("example-output", <View />, {
-  type: "stream",
-  video: {
-    resolution: { width: 1920, height: 1080 },
-  },
-});
+    type: "stream",
+    video: {
+      resolution: { width: 1920, height: 1080 },
+    },
+  });
   await smelter.init();
 }
-
-
 ```
 
 ### Video/Audio HTML tag
