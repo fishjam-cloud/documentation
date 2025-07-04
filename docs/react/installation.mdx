@@ -31,10 +31,11 @@ import ReactDOM from "react-dom/client";
 import { FishjamProvider } from "@fishjam-cloud/react-client";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
+  // [!code highlight:5]
   <React.StrictMode>
-    <FishjamProvider> // [!code highlight]
+    <FishjamProvider>
       <App />
-    </FishjamProvider> // [!code highlight]
+    </FishjamProvider>
   </React.StrictMode>,
 );
 ```
