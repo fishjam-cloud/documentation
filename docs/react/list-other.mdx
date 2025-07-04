@@ -11,12 +11,11 @@ They contain all the tracks of other peers and all the tracks of the local user,
 ### Example of playing other peers' available media
 
 ```tsx
-
 import React, { FC } from "react";
 
-const VideoRenderer: FC<{ stream?: MediaStream | null }> = (_) => <video/>;
+const VideoRenderer: FC<{ stream?: MediaStream | null }> = (_) => <video />;
 
-const AudioPlayer: FC<{ stream?: MediaStream | null }> = (_) => <audio/>;
+const AudioPlayer: FC<{ stream?: MediaStream | null }> = (_) => <audio />;
 
 // ---cut---
 import { usePeers } from "@fishjam-cloud/react-client";
@@ -28,8 +27,8 @@ export function Component() {
     <ul>
       {remotePeers.map(({ id, cameraTrack, microphoneTrack }) => (
         <li key={id}>
-          <VideoRenderer stream={cameraTrack?.stream} /> // remember to import your VideoRenderer component
-
+          <VideoRenderer stream={cameraTrack?.stream} /> // remember to import
+          your VideoRenderer component
           <AudioPlayer stream={microphoneTrack?.stream} />
         </li>
       ))}
