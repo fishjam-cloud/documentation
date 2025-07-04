@@ -30,16 +30,12 @@ To create a custom source, you only need to do two things:
 import React, { useEffect } from "react";
 import { useCustomSource } from "@fishjam-cloud/react-client";
 
-export function CameraControl() {
-  const stream: MediaStream | null = null; // Replace with your MediaStream object
-  const { setStream } = useCustomSource("my-custom-source");
+const stream: MediaStream | null = null; // Replace with your MediaStream object
+const { setStream } = useCustomSource("my-custom-source");
 
-  useEffect(() => {
-    setStream(stream);
-  }, [stream, setStream]);
-
-  // ...
-}
+useEffect(() => {
+  setStream(stream);
+}, [stream, setStream]);
 ```
 
 ### Using a created custom source
@@ -133,12 +129,19 @@ If you have a `<video>` or `<audio>` element, then you need to call their [`capt
     ```tsx
     import React, { useCallback, useState } from "react";
 
+    const hasCaptureStream = (video: HTMLVideoElement): video is HTMLVideoElement & { captureStream: () => MediaStream } => "captureStream" in video && typeof video.captureStream === "function";
+
     export function CanvasExample() {
       const [stream, setStream] = useState<MediaStream>();
 
       const streamFromVideo = useCallback((video: HTMLVideoElement | null) => {
         if (!video) return;
-        setStream((video as HTMLVideoElement & { captureStream(): MediaStream }).captureStream());
+        if(!hasCaptureStream(video)) {
+          console.warn("captureStream is not supported on this browser");
+          return;
+        }
+
+        setStream(video.captureStream());
       }, []);
 
       // use stream as desired
