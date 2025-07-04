@@ -94,6 +94,7 @@ You can control when and how permissions are requested by passing an `options` o
 By default, `get` is called automatically (auto fetch is `true`), and `request` is not (auto request is `false`). You can change this behavior:
 
 ```tsx
+import { useCameraPermissions } from "@fishjam-cloud/react-native-client";
 // Do not auto-fetch permission status, enable auto-request
 const [permission, requestPermission] = useCameraPermissions({
   get: false, // disables auto-fetch

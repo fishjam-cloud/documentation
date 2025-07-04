@@ -27,18 +27,15 @@ To create a custom source, you only need to do two things:
 #### Usage Example
 
 ```tsx
+import React, { useEffect } from "react";
 import { useCustomSource } from "@fishjam-cloud/react-client";
 
-export function CameraControl() {
-  const stream: MediaStream = ...
-  const { setStream } = useCustomSource("my-custom-source");
+const stream: MediaStream | null = null; // Replace with your MediaStream object
+const { setStream } = useCustomSource("my-custom-source");
 
-  useEffect(() => {
-    setStream(stream);
-  }, [stream, setStream]);
-
-  ...
-}
+useEffect(() => {
+  setStream(stream);
+}, [stream, setStream]);
 ```
 
 ### Using a created custom source
@@ -53,8 +50,10 @@ If you wish to remove a custom source, then you should call the [`setStream`](/a
 #### Usage Example
 
 ```tsx
+import { useCustomSource } from "@fishjam-cloud/react-client";
+// ---cut---
 const { setStream } = useCustomSource("my-custom-source");
-...
+// ...
 await setStream(null);
 ```
 
@@ -71,7 +70,7 @@ This is particularly useful if you are using [Three.js](https://threejs.org/) or
 #### Usage Example
 
 ```tsx
-import { useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 
 export function CanvasExample() {
   const [canvasStream, setCanvasStream] = useState<MediaStream>();
@@ -100,12 +99,22 @@ If you want to see a full example React app which uses Fishjam with Smelter, the
 :::
 
 ```tsx
-const { stream } = await smelter.registerOutput("example-output", <View />, {
-  type: "stream",
-  video: {
-    resolution: { width: 1920, height: 1080 },
-  },
-});
+import React from "react";
+import Smelter, { setWasmBundleUrl } from "@swmansion/smelter-web-wasm";
+import { View } from "@swmansion/smelter";
+
+setWasmBundleUrl("/assets/smelter.wasm");
+
+async function run() {
+  const smelter = new Smelter({ framerate: 30 });
+  const { stream } = await smelter.registerOutput("example-output", <View />, {
+    type: "stream",
+    video: {
+      resolution: { width: 1920, height: 1080 },
+    },
+  });
+  await smelter.init();
+}
 ```
 
 ### Video/Audio HTML tag
@@ -118,19 +127,26 @@ If you have a `<video>` or `<audio>` element, then you need to call their [`capt
   <TabItem value="video" label="Video">
 
     ```tsx
-    import { useCallback, useState } from "react";
+    import React, { useCallback, useState } from "react";
+
+    const hasCaptureStream = (video: HTMLVideoElement): video is HTMLVideoElement & { captureStream: () => MediaStream } => "captureStream" in video && typeof video.captureStream === "function";
 
     export function CanvasExample() {
       const [stream, setStream] = useState<MediaStream>();
 
       const streamFromVideo = useCallback((video: HTMLVideoElement | null) => {
         if (!video) return;
+        if(!hasCaptureStream(video)) {
+          console.warn("captureStream is not supported on this browser");
+          return;
+        }
+
         setStream(video.captureStream());
       }, []);
 
       // use stream as desired
 
-      return <video ref={streamFromVideo} ... />;
+      return <video ref={streamFromVideo} /* ... */ />;
     }
     ```
 
@@ -139,19 +155,19 @@ If you have a `<video>` or `<audio>` element, then you need to call their [`capt
   <TabItem value="audio" label="Audio">
 
     ```tsx
-    import { useCallback, useState } from "react";
+    import React, { useCallback, useState } from "react";
 
     export function CanvasExample() {
       const [stream, setStream] = useState<MediaStream>();
 
       const streamFromAudio = useCallback((audio: HTMLAudioElement | null) => {
         if (!audio) return;
-        setStream(audio.captureStream());
+        setStream((audio as HTMLAudioElement & { captureStream(): MediaStream }).captureStream());
       }, []);
 
       // use stream as desired
 
-      return <audio ref={streamFromAudio} ... />;
+      return <audio ref={streamFromAudio} /* ... */ />;
     }
     ```
 

@@ -10,6 +10,7 @@ other peers, together with the tracks that they are streaming.
 ### Example code that show all videos
 
 ```tsx
+import React from "react";
 import { View } from "react-native";
 import {
   usePeers,
@@ -17,15 +18,13 @@ import {
 } from "@fishjam-cloud/react-native-client";
 
 export function ShowAllPeers() {
-  // highlight-next-line
-  const { remotePeers, localPeer } = usePeers();
+  const { remotePeers, localPeer } = usePeers(); // [!code highlight]
 
-  const videoTracks = remotePeers.flatMap((peer) =>
-    // highlight-next-line
-    peer.tracks.filter((track) => track.type === "Video" && track.isActive),
+  const videoTracks = remotePeers.flatMap(
+    (peer) =>
+      peer.tracks.filter((track) => track.type === "Video" && track.isActive), // [!code highlight]
   );
-  // highlight-next-line
-  const localTrack = localPeer?.tracks.find((t) => t.type === "Video");
+  const localTrack = localPeer?.tracks.find((t) => t.type === "Video"); // [!code highlight]
 
   return (
     <View>

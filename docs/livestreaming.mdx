@@ -29,6 +29,12 @@ https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager?roomName=foo&p
   <TabItem value="ts" label="Typescript">
   
     ```ts
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+    const fishjamClient = new FishjamClient({
+        fishjamUrl: "aaa",
+        managementToken: "bbb",
+    });
+    // ---cut---
     const createdRoom = await fishjamClient.createRoom({ roomType: 'livestream' });
 
     const peer = await fishjamClient.createPeer(createdRoom.id)
@@ -71,6 +77,14 @@ https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager/<ROOM_NAME>/li
   <TabItem value="ts" label="Typescript">
   
     ```ts
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk'; 
+    const fishjamClient = new FishjamClient({
+        fishjamUrl: "aaa",
+        managementToken: "bbb",
+    });
+    const room = await fishjamClient.createRoom({ roomType: 'livestream' });
+    // ---cut---
+
     const viewerToken = await fishjamClient.createLivestreamViewerToken(room.id)
     ```
 
