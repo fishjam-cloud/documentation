@@ -63,7 +63,8 @@ export function CameraWithBlurEffect() {
   const blurMiddleware: TrackMiddleware = useCallback(
     (track: MediaStreamTrack) => {
       const streamToBlur = new MediaStream([track]);
-      // import BlurProcessor from your implementation
+      // BlurProcessor is just an example,
+      // process the stream however you need
       const blurProcessor = new BlurProcessor(streamToBlur);
 
       return {
