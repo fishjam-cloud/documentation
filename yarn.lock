@@ -6446,6 +6446,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@shikijs/core@npm:3.7.0":
+  version: 3.7.0
+  resolution: "@shikijs/core@npm:3.7.0"
+  dependencies:
+    "@shikijs/types": "npm:3.7.0"
+    "@shikijs/vscode-textmate": "npm:^10.0.2"
+    "@types/hast": "npm:^3.0.4"
+    hast-util-to-html: "npm:^9.0.5"
+  checksum: 10c0/885c9d00712d350ab0aac0d239b26d8ba045f075abbaee5eda33c4a39fe841a1a2b0ca34391a3704cde0edcf1468ca583bea25fcbd37b7b8d6189b7afcf2a55d
+  languageName: node
+  linkType: hard
+
 "@shikijs/engine-javascript@npm:3.6.0":
   version: 3.6.0
   resolution: "@shikijs/engine-javascript@npm:3.6.0"
@@ -6454,6 +6466,17 @@ __metadata:
     "@shikijs/vscode-textmate": "npm:^10.0.2"
     oniguruma-to-es: "npm:^4.3.3"
   checksum: 10c0/30a455f58ded393c6a8de22d090b64aeab06c0a063e71fccedc05de91900fa4bb691ffcaaf5d3799cf8a040849fe71685d3f1f3b29764e34111fd425310b924a
+  languageName: node
+  linkType: hard
+
+"@shikijs/engine-javascript@npm:3.7.0":
+  version: 3.7.0
+  resolution: "@shikijs/engine-javascript@npm:3.7.0"
+  dependencies:
+    "@shikijs/types": "npm:3.7.0"
+    "@shikijs/vscode-textmate": "npm:^10.0.2"
+    oniguruma-to-es: "npm:^4.3.3"
+  checksum: 10c0/ac792fe99a2007ab076856d32d4934e191d3b03f8bd416e96f461821580c223da73de8abc199e5eceb8b56fd47e992824b2571270e7c3d55efa6b9a6d87fec80
   languageName: node
   linkType: hard
 
@@ -6467,7 +6490,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shikijs/engine-oniguruma@npm:^3.7.0":
+"@shikijs/engine-oniguruma@npm:3.7.0, @shikijs/engine-oniguruma@npm:^3.7.0":
   version: 3.7.0
   resolution: "@shikijs/engine-oniguruma@npm:3.7.0"
   dependencies:
@@ -6486,7 +6509,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shikijs/langs@npm:^3.7.0":
+"@shikijs/langs@npm:3.7.0, @shikijs/langs@npm:^3.7.0":
   version: 3.7.0
   resolution: "@shikijs/langs@npm:3.7.0"
   dependencies:
@@ -6495,17 +6518,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shikijs/rehype@npm:^3.6.0":
-  version: 3.6.0
-  resolution: "@shikijs/rehype@npm:3.6.0"
+"@shikijs/rehype@npm:^3.7.0":
+  version: 3.7.0
+  resolution: "@shikijs/rehype@npm:3.7.0"
   dependencies:
-    "@shikijs/types": "npm:3.6.0"
+    "@shikijs/types": "npm:3.7.0"
     "@types/hast": "npm:^3.0.4"
     hast-util-to-string: "npm:^3.0.1"
-    shiki: "npm:3.6.0"
+    shiki: "npm:3.7.0"
     unified: "npm:^11.0.5"
     unist-util-visit: "npm:^5.0.0"
-  checksum: 10c0/c31f77c0942d81ad42df0504f3cf653eacc3aaf0a37b6cf927a9b6009e47b8a3c3959581f36e5b2f139608b8f57d49ed974c8bec8b377fb680a4c5d629c47a4b
+  checksum: 10c0/89e02850535cfc3bb54ad3b429d73935b9b74018419b207e576e1c7dbb10c0ab0cf107377bff8f45aeaa938e07521f2dc0823060dc0e7f9d24501eecc13cec54
   languageName: node
   linkType: hard
 
@@ -6518,7 +6541,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shikijs/themes@npm:^3.7.0":
+"@shikijs/themes@npm:3.7.0, @shikijs/themes@npm:^3.7.0":
   version: 3.7.0
   resolution: "@shikijs/themes@npm:3.7.0"
   dependencies:
@@ -15614,7 +15637,7 @@ __metadata:
     "@fishjam-cloud/react-client": "link:./packages/web-client-sdk/packages/react-client"
     "@fishjam-cloud/react-native-client": "link:./packages/mobile-client-sdk/packages/react-native-client"
     "@mdx-js/react": "npm:^3.1.0"
-    "@shikijs/rehype": "npm:^3.6.0"
+    "@shikijs/rehype": "npm:^3.7.0"
     "@shikijs/transformers": "npm:^3.6.0"
     "@shikijs/twoslash": "npm:^3.6.0"
     "@swmansion/smelter": "npm:^0.2.1"
@@ -19283,7 +19306,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shiki@npm:3.6.0, shiki@npm:^3.6.0":
+"shiki@npm:3.7.0":
+  version: 3.7.0
+  resolution: "shiki@npm:3.7.0"
+  dependencies:
+    "@shikijs/core": "npm:3.7.0"
+    "@shikijs/engine-javascript": "npm:3.7.0"
+    "@shikijs/engine-oniguruma": "npm:3.7.0"
+    "@shikijs/langs": "npm:3.7.0"
+    "@shikijs/themes": "npm:3.7.0"
+    "@shikijs/types": "npm:3.7.0"
+    "@shikijs/vscode-textmate": "npm:^10.0.2"
+    "@types/hast": "npm:^3.0.4"
+  checksum: 10c0/a458d06cc0487da5916e10ab9daaf314e3c3c92024664c545bcacb58fad9bd3aa18cde90a200afe4f6632a2487014def57eb6f10f38ab6269e90f3420b724105
+  languageName: node
+  linkType: hard
+
+"shiki@npm:^3.6.0":
   version: 3.6.0
   resolution: "shiki@npm:3.6.0"
   dependencies:
