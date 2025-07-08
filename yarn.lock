@@ -6446,6 +6446,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@shikijs/core@npm:3.7.0":
+  version: 3.7.0
+  resolution: "@shikijs/core@npm:3.7.0"
+  dependencies:
+    "@shikijs/types": "npm:3.7.0"
+    "@shikijs/vscode-textmate": "npm:^10.0.2"
+    "@types/hast": "npm:^3.0.4"
+    hast-util-to-html: "npm:^9.0.5"
+  checksum: 10c0/885c9d00712d350ab0aac0d239b26d8ba045f075abbaee5eda33c4a39fe841a1a2b0ca34391a3704cde0edcf1468ca583bea25fcbd37b7b8d6189b7afcf2a55d
+  languageName: node
+  linkType: hard
+
 "@shikijs/engine-javascript@npm:3.6.0":
   version: 3.6.0
   resolution: "@shikijs/engine-javascript@npm:3.6.0"
@@ -6527,13 +6539,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shikijs/transformers@npm:^3.6.0":
-  version: 3.6.0
-  resolution: "@shikijs/transformers@npm:3.6.0"
+"@shikijs/transformers@npm:^3.7.0":
+  version: 3.7.0
+  resolution: "@shikijs/transformers@npm:3.7.0"
   dependencies:
-    "@shikijs/core": "npm:3.6.0"
-    "@shikijs/types": "npm:3.6.0"
-  checksum: 10c0/c08d65bffe2c484ce2e6b0b3016379833fa79d53e22fdfa575c10d0b6c3a35580742a2e9ef2032288178d87c99505544f62bde01434d79c87f0ff9b2c4f03fb6
+    "@shikijs/core": "npm:3.7.0"
+    "@shikijs/types": "npm:3.7.0"
+  checksum: 10c0/ed875bba8c6354be35a86c9a9c4d8b5254b75713372434082cdfad0bce3d6527ba907bf0b46f441fe98cc4ffea3ee35cfa6e3707899fabe87cf3e797280ff6c6
   languageName: node
   linkType: hard
 
@@ -15615,7 +15627,7 @@ __metadata:
     "@fishjam-cloud/react-native-client": "link:./packages/mobile-client-sdk/packages/react-native-client"
     "@mdx-js/react": "npm:^3.1.0"
     "@shikijs/rehype": "npm:^3.6.0"
-    "@shikijs/transformers": "npm:^3.6.0"
+    "@shikijs/transformers": "npm:^3.7.0"
     "@shikijs/twoslash": "npm:^3.6.0"
     "@swmansion/smelter": "npm:^0.2.1"
     "@swmansion/smelter-web-wasm": "npm:^0.2.1"
