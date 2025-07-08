@@ -31,7 +31,8 @@ Any additional tracks will be ignored and will not be available to the viewers.
 Fishjam SDK provides the [`useLivestream`](/api/web/functions/useLivestream) hook to receive the broadcasted stream.
 The [`useLivestream`](/api/web/functions/useLivestream) hook will provide a [MediaStream](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream) object once the connection with Fishjam is established.
 
-```ts
+```tsx
+import React, { useEffect, useRef } from "react";
 import { useLivestream } from "@fishjam-cloud/react-client";
 
 interface LivestreamProps {
@@ -51,10 +52,7 @@ export function Livestream({ viewerToken }: LivestreamProps) {
   }, [stream]);
 
   useEffect(() => {
-    connect({
-      url: FISHJAM_LIVESTREAM_URL,
-      token: viewerToken,
-    });
+    connect(FISHJAM_LIVESTREAM_URL, viewerToken);
 
     return () => {
       disconnect();
@@ -64,6 +62,6 @@ export function Livestream({ viewerToken }: LivestreamProps) {
   // stream is null until the connection is established
   if (!stream) return null;
 
-  return <video ref={videoRef} autoPlay />
+  return <video ref={videoRef} autoPlay />;
 }
 ```

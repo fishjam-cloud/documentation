@@ -14,7 +14,10 @@ import ReadingMetadata from "../_common/metadata/reading.mdx";
 <JoiningRoom>
 
 ```tsx
-import { useCallback } from "react";
+const FISHJAM_URL = "some-fishjam-url";
+const PEER_TOKEN = "some-peer-token";
+// ---cut---
+import React, { useCallback } from "react";
 import { Button } from "react-native";
 import { useConnection } from "@fishjam-cloud/react-native-client";
 
@@ -29,8 +32,7 @@ export function JoinRoomButton() {
     await joinRoom<PeerMetadata>({
       url: FISHJAM_URL,
       peerToken: PEER_TOKEN,
-      // highlight-next-line
-      peerMetadata: { displayName: "John Wick" },
+      peerMetadata: { displayName: "John Wick" }, // [!code highlight]
     });
   }, [joinRoom]);
 
@@ -43,7 +45,7 @@ export function JoinRoomButton() {
 <UpdatingMetadata>
 
 ```tsx
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import { Button } from "react-native";
 import { useUpdatePeerMetadata } from "@fishjam-cloud/react-native-client";
 
@@ -52,12 +54,10 @@ type PeerMetadata = {
 };
 
 export function UpdateNameButton() {
-  // highlight-next-line
-  const { updatePeerMetadata } = useUpdatePeerMetadata<PeerMetadata>();
+  const { updatePeerMetadata } = useUpdatePeerMetadata<PeerMetadata>(); // [!code highlight]
 
   const onPressUpdateName = useCallback(async () => {
-    // highlight-next-line
-    await updatePeerMetadata({ displayName: "Thomas A. Anderson" });
+    await updatePeerMetadata({ displayName: "Thomas A. Anderson" }); // [!code highlight]
   }, [updatePeerMetadata]);
 
   return <Button onPress={onPressUpdateName} title="Change name" />;
@@ -69,6 +69,7 @@ export function UpdateNameButton() {
 <ReadingMetadata>
 
 ```tsx
+import React from "react";
 import { Text, View } from "react-native";
 import { usePeers } from "@fishjam-cloud/react-native-client";
 
@@ -76,19 +77,21 @@ type PeerMetadata = {
   displayName: string;
 };
 
+type ServerMetadata = {
+  realName: string;
+};
+
 export function ListAllNames() {
-  // highlight-next-line
-  const { remotePeers } = usePeers<PeerMetadata>();
+  const { remotePeers } = usePeers<PeerMetadata, ServerMetadata>(); // [!code highlight]
 
   return (
     <View>
       {remotePeers.map((peer) => (
-        // highlight-start
-        <Text>
-          Display name: {peer.metadata.peer.displayName}
-          Real name: {peer.metadata.server.realName}
+        // [!code highlight:4]
+        <Text key={peer.id}>
+          Display name: {peer.metadata.peer?.displayName || "Unknown"}
+          Real name: {peer.metadata.server?.realName || "Unknown"}
         </Text>
-        // highlight-end
       ))}
     </View>
   );

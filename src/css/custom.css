@@ -46,3 +46,5 @@ html[data-theme="light"] header.heroBanner_src-pages-index-module {
   border-radius: var(--ifm-global-radius);
   background-color: white;
 }
+
+@import url("./_shiki.css");

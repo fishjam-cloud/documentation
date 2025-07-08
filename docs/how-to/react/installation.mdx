@@ -18,16 +18,23 @@ npm install @fishjam-cloud/react-client
 Wrap your app in our [`FishjamProvider`](/api/web/functions/FishjamProvider) component.
 
 ```tsx
+class App extends React.Component {
+  render() {
+    return <div></div>;
+  }
+}
+
+// ---cut---
 import React from "react";
 import ReactDOM from "react-dom/client";
+// import App from "./App";
 import { FishjamProvider } from "@fishjam-cloud/react-client";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
+  // [!code highlight:5]
   <React.StrictMode>
-    // highlight-next-line
     <FishjamProvider>
       <App />
-      // highlight-next-line
     </FishjamProvider>
   </React.StrictMode>,
 );
