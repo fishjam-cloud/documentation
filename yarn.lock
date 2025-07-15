@@ -6446,6 +6446,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@shikijs/core@npm:3.8.0":
+  version: 3.8.0
+  resolution: "@shikijs/core@npm:3.8.0"
+  dependencies:
+    "@shikijs/types": "npm:3.8.0"
+    "@shikijs/vscode-textmate": "npm:^10.0.2"
+    "@types/hast": "npm:^3.0.4"
+    hast-util-to-html: "npm:^9.0.5"
+  checksum: 10c0/a955c889eeabea0056a5dd30370b414eaae8edd96ae7f82d5b534776997f01192b6e8141a15916669d5b4c976ff14ee545b9a1328afefa6da268d1db591d7917
+  languageName: node
+  linkType: hard
+
 "@shikijs/engine-javascript@npm:3.6.0":
   version: 3.6.0
   resolution: "@shikijs/engine-javascript@npm:3.6.0"
@@ -6537,16 +6549,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shikijs/twoslash@npm:^3.6.0":
-  version: 3.6.0
-  resolution: "@shikijs/twoslash@npm:3.6.0"
+"@shikijs/twoslash@npm:^3.8.0":
+  version: 3.8.0
+  resolution: "@shikijs/twoslash@npm:3.8.0"
   dependencies:
-    "@shikijs/core": "npm:3.6.0"
-    "@shikijs/types": "npm:3.6.0"
-    twoslash: "npm:^0.3.1"
+    "@shikijs/core": "npm:3.8.0"
+    "@shikijs/types": "npm:3.8.0"
+    twoslash: "npm:^0.3.2"
   peerDependencies:
     typescript: ">=5.5.0"
-  checksum: 10c0/bdb447b1d657557d7f6f89d82fb70c9b47ae74ae864e34f51a231bc7b096320ad2cf6efd1217ad03e5deac14315f9e7fcc24ea872c962699176df229c9c38606
+  checksum: 10c0/e1466da5675063a38b873881555de77b5346a93faafe7eb44ff0c297e9210c4fbccda88d0519bbfc602b3e841e2e94d5aa5609b8596c8a4b9791000961f21c6e
   languageName: node
   linkType: hard
 
@@ -6567,6 +6579,16 @@ __metadata:
     "@shikijs/vscode-textmate": "npm:^10.0.2"
     "@types/hast": "npm:^3.0.4"
   checksum: 10c0/d7c4fcca358c0585602090e2b4ed0a3f6742b55bea340030c115cb7aa643eac79836baa095517a538d695415458bb48c08b7be7f3c8d1cf1c1c7749a58913a3f
+  languageName: node
+  linkType: hard
+
+"@shikijs/types@npm:3.8.0":
+  version: 3.8.0
+  resolution: "@shikijs/types@npm:3.8.0"
+  dependencies:
+    "@shikijs/vscode-textmate": "npm:^10.0.2"
+    "@types/hast": "npm:^3.0.4"
+  checksum: 10c0/1a27a971335b39c7b0d8902dfe076a5e57b00fe6ef7ddb9be54606ae627a36cf1a82bc9fad72c895681ba9f9b706eccfbedc2633ba5a751eca4b3208bc2edca6
   languageName: node
   linkType: hard
 
@@ -15616,7 +15638,7 @@ __metadata:
     "@mdx-js/react": "npm:^3.1.0"
     "@shikijs/rehype": "npm:^3.6.0"
     "@shikijs/transformers": "npm:^3.6.0"
-    "@shikijs/twoslash": "npm:^3.6.0"
+    "@shikijs/twoslash": "npm:^3.8.0"
     "@swmansion/smelter": "npm:^0.2.1"
     "@swmansion/smelter-web-wasm": "npm:^0.2.1"
     "@types/react": "npm:^19.1.8"
@@ -20240,22 +20262,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"twoslash-protocol@npm:0.3.1":
-  version: 0.3.1
-  resolution: "twoslash-protocol@npm:0.3.1"
-  checksum: 10c0/626dc624448033c52a0231fcfb751677c9a11a70fa39728177bd7f6fb90134ee5807d3553d0fb3c89cae2a68baf8f54d6013f64487b5ac3ea9b6c43c8b2c9d39
+"twoslash-protocol@npm:0.3.2":
+  version: 0.3.2
+  resolution: "twoslash-protocol@npm:0.3.2"
+  checksum: 10c0/875a1c0d235dfad77d8cf489d26d7f23d22df1b2cc103fe2751a9ffa96fca0f8002bc3cbded0883509355757f0619edc4e204fa34c3dc70a0f8725e80aafefe7
   languageName: node
   linkType: hard
 
-"twoslash@npm:^0.3.1":
-  version: 0.3.1
-  resolution: "twoslash@npm:0.3.1"
+"twoslash@npm:^0.3.2":
+  version: 0.3.2
+  resolution: "twoslash@npm:0.3.2"
   dependencies:
     "@typescript/vfs": "npm:^1.6.1"
-    twoslash-protocol: "npm:0.3.1"
+    twoslash-protocol: "npm:0.3.2"
   peerDependencies:
     typescript: ^5.5.0
-  checksum: 10c0/30f924cfb3043b1aa3cb0b1fbda9d25f8b74c1e82adb0cd66e991b1e5872e8648ede5f77fad06b91389e16788c25126b2f5c294c39e618587743ebf7160573cc
+  checksum: 10c0/685a1e311e242746cd7a21a1345e71204955893b963adeecc0497f71d1817fb4b55f012a87a3a9dc6215da910bca907e6e79ca656ad258cca276ec670fdee0e9
   languageName: node
   linkType: hard
 
