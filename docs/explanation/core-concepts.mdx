@@ -17,7 +17,7 @@ A **room** is a logical container that groups participants together for multimed
 ### Room Characteristics
 
 - **Unique identity**: Each room has a unique ID
-- **Type-specific**: Room type (full-feature, audio-only, livestream) is set at creation
+- **Type-specific**: Room type (full_feature, audio_only, livestream) is set at creation
 - **Isolated**: Participants in different rooms cannot interact
 - **Temporary**: Rooms exist only while needed, can be deleted when empty
 
@@ -90,6 +90,12 @@ A **track** represents a single stream of media data - either audio or video. Ea
 #### Usage
 
 ```typescript
+import { FishjamClient } from "@fishjam-cloud/js-server-sdk";
+const fishjamUrl = "";
+process.env.MANAGEMENT_TOKEN = "";
+
+// ---cut---
+
 const fishjamClient = new FishjamClient({
   fishjamUrl,
   managementToken: process.env.MANAGEMENT_TOKEN,
@@ -110,6 +116,19 @@ const fishjamClient = new FishjamClient({
 #### Generation
 
 ```typescript
+import { FishjamClient, RoomId } from "@fishjam-cloud/js-server-sdk";
+
+const fishjamUrl = "";
+const roomId = "" as unknown as RoomId;
+const response = { json: (_: any) => {} };
+
+const fishjamClient = new FishjamClient({
+  fishjamUrl,
+  managementToken: "",
+});
+
+// ---cut---
+
 // Backend generates peer token
 const { peer, peerToken } = await fishjamClient.createPeer(roomId, {
   metadata: { name: "John Doe" },
@@ -122,6 +141,12 @@ response.json({ peerToken, fishjamUrl });
 #### Usage
 
 ```typescript
+import { useConnection } from "@fishjam-cloud/react-client";
+const fishjamUrl = "";
+const peerToken = "";
+// ---cut---
+const { joinRoom } = useConnection();
+
 // Client uses peer token to connect
 await joinRoom({ url: fishjamUrl, peerToken });
 ```
@@ -141,6 +166,19 @@ await joinRoom({ url: fishjamUrl, peerToken });
 ### Example
 
 ```typescript
+import { FishjamClient, RoomId } from "@fishjam-cloud/js-server-sdk";
+
+const fishjamUrl = "";
+
+const fishjamClient = new FishjamClient({
+  fishjamUrl,
+  managementToken: "",
+});
+
+const roomId = "" as unknown as RoomId;
+
+// ---cut---
+
 // Backend sets metadata when creating peer
 const { peer, peerToken } = await fishjamClient.createPeer(roomId, {
   metadata: {
@@ -153,10 +191,15 @@ const { peer, peerToken } = await fishjamClient.createPeer(roomId, {
 ```
 
 ```typescript
+import { usePeers } from "@fishjam-cloud/react-client";
+
+// ---cut---
+
 // Clients can read metadata of all peers
 const { remotePeers } = usePeers();
+
 remotePeers.forEach((peer) => {
-  console.log(peer.metadata.name); // "Alice Johnson"
+  console.log(peer.metadata); // {name: "Alice Johnson"}
 });
 ```
 
@@ -220,8 +263,18 @@ Here's a complete example of how these concepts work together:
 ### 1. Room Setup (Backend)
 
 ```typescript
+import { FishjamClient } from "@fishjam-cloud/js-server-sdk";
+
+const fishjamUrl = "";
+const fishjamClient = new FishjamClient({
+  fishjamUrl,
+  managementToken: "",
+});
+
+// ---cut---
+
 // Create room
-const room = await fishjamClient.createRoom({ roomType: "full-feature" });
+const room = await fishjamClient.createRoom({ roomType: "full_feature" });
 
 // Add peer for Alice
 const { peer: alicePeer, peerToken: aliceToken } =
@@ -241,6 +294,16 @@ const { peer: bobPeer, peerToken: bobToken } = await fishjamClient.createPeer(
 ### 2. Client Connection
 
 ```typescript
+import { useConnection } from "@fishjam-cloud/react-client";
+
+const fishjamUrl = "";
+const peerToken = "";
+const aliceToken = "";
+const bobToken = "";
+const { joinRoom } = useConnection();
+
+// ---cut---
+
 // Alice's client connects
 await joinRoom({ url: fishjamUrl, peerToken: aliceToken });
 
