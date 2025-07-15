@@ -75,15 +75,21 @@ The Room Manager returns a JSON response with connection details:
 ### React Native example:
 
 ```tsx
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Text } from "react-native";
 import { FishjamRoom } from "@fishjam-cloud/react-native-client";
 
 const roomName = "testRoom";
 const peerName = `user_${Date.now()}`;
 const YOUR_APP_UUID = "your-app-uuid-here";
 
+// ---cut---
+
 export default function TestScreen() {
-  const [roomData, setRoomData] = useState(null);
+  const [roomData, setRoomData] = useState<{
+    url: string;
+    peerToken: string;
+  } | null>(null);
 
   useEffect(() => {
     const fetchRoomData = async () => {
@@ -114,10 +120,12 @@ export default function TestScreen() {
 ### React/Web example:
 
 ```tsx
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { FishjamProvider, useConnection } from "@fishjam-cloud/react-client";
 
 const YOUR_APP_UUID = "your-app-uuid-here";
+
+// ---cut---
 
 function VideoCallComponent() {
   const { joinRoom } = useConnection();
@@ -161,13 +169,13 @@ export default function App() {
 
 ### Testing audio-only rooms:
 
-```typescript
+```
 const audioOnlyUrl = `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=audioTest&peerName=user1&roomType=audio-only`;
 ```
 
 ### Testing livestream rooms:
 
-```typescript
+```
 // For the broadcaster
 const broadcasterUrl = `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=liveStream&peerName=broadcaster&roomType=livestream`;
 
@@ -179,7 +187,7 @@ const viewerTokenUrl = `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-
 
 To test with multiple participants, create multiple peer tokens with different peer names:
 
-```typescript
+```
 // First peer
 const peer1Response = await fetch(
   `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=multiTest&peerName=alice`,
@@ -205,13 +213,15 @@ const peerName = `user_${Date.now()}`;
 ### Pattern 2: Consistent naming for repeated tests
 
 ```typescript
+//@errors: 2451
 const roomName = "development-room";
-const peerName = `developer_${userIndex}`;
+const peerName = `developer_1`;
 ```
 
 ### Pattern 3: Feature-specific room names
 
 ```typescript
+//@errors: 2451
 const roomName = `screenshare-test-${Date.now()}`;
 const roomName = `audio-only-test`;
 const roomName = `livestream-demo`;

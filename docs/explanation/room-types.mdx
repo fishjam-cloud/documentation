@@ -178,6 +178,13 @@ For development, you can create any room type using [Room Manager](/how-to/featu
 For production, room types are specified when creating rooms via [Server SDKs](/how-to/backend/server-setup):
 
 ```typescript
+import { FishjamClient } from "@fishjam-cloud/js-server-sdk";
+const fishjamUrl = "";
+const managementToken = "";
+const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
+
+// ---cut---
+
 // Full-feature room (default)
 const fullRoom = await fishjamClient.createRoom();
 

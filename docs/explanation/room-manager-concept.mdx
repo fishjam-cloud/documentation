@@ -135,20 +135,31 @@ https://fishjam.io/api/v1/connect/YOUR_ID/room-manager?roomName=secret&peerName=
 Room Manager is essentially a simplified application built using Fishjam Server SDKs:
 
 ```typescript
+import { FishjamClient } from "@fishjam-cloud/js-server-sdk";
+import express from "express";
+const fishjamUrl = "";
+const managementToken = "";
+const app = express();
+
+// ---cut---
+
 // What Room Manager does internally (simplified)
 const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
 
-app.get("/room-manager", async (req, res) => {
-  const { roomName, peerName, roomType } = req.query;
+app.get(
+  "/room-manager",
+  async (req: express.Request, res: express.Response) => {
+    const { roomName, peerName, roomType } = req.query;
 
-  // Create or get room
-  const room = await fishjamClient.createRoom({ roomType });
+    // Create or get room
+    const room = await fishjamClient.createRoom({ roomType: "conference" });
 
-  // Create peer
-  const { peer, peerToken } = await fishjamClient.createPeer(room.id);
+    // Create peer
+    const { peer, peerToken } = await fishjamClient.createPeer(room.id);
 
-  res.json({ peerToken, url: fishjamUrl });
-});
+    res.json({ peerToken, url: fishjamUrl });
+  },
+);
 ```
 
 This shows you exactly what your production backend needs to do, just with proper authentication and error handling.

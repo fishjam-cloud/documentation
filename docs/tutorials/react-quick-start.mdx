@@ -45,6 +45,10 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { FishjamProvider } from "@fishjam-cloud/react-client";
 
+const App = {} as any;
+
+// ---cut---
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <FishjamProvider>
@@ -65,6 +69,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 Create a component that joins a room and starts streaming:
 
 ```tsx
+import React from "react";
+
 import { useConnection, useCamera } from "@fishjam-cloud/react-client";
 
 // Check https://fishjam.io/app/ for your Room Manager ID
@@ -108,6 +114,7 @@ export function JoinRoomButton() {
 Show your own video stream:
 
 ```tsx
+import React from "react";
 import { useEffect, useRef } from "react";
 import { useCamera } from "@fishjam-cloud/react-client";
 
@@ -129,6 +136,7 @@ export function MyVideo() {
 Show video from other peers:
 
 ```tsx
+import React from "react";
 import { useEffect, useRef } from "react";
 import { usePeers } from "@fishjam-cloud/react-client";
 
@@ -165,6 +173,7 @@ export function ParticipantsView() {
 Monitor your connection:
 
 ```tsx
+import React from "react";
 import { useConnection } from "@fishjam-cloud/react-client";
 
 export function ConnectionStatus() {
@@ -179,7 +188,7 @@ export function ConnectionStatus() {
 Here's a complete working app:
 
 ```tsx
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   FishjamProvider,
   useConnection,
@@ -190,6 +199,8 @@ import {
 
 // Check https://fishjam.io/app/ for your Room Manager ID
 const ROOM_MANAGER_ID = "YOUR_ROOM_MANAGER_ID";
+
+// ---cut---
 
 function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
   const videoRef = useRef<HTMLVideoElement>(null);

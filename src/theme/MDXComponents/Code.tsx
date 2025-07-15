@@ -1,4 +1,4 @@
-import type { ComponentProps } from "react";
+import type { ComponentProps, JSX } from "react";
 import React, { useState, useRef } from "react";
 import CodeInline from "@theme/CodeInline";
 import type { Props } from "@theme/MDXComponents/Code";
