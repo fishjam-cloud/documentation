@@ -23,12 +23,10 @@ Check out our [**complete example implementation**](https://github.com/fishjam-c
 There are two main components to implement:
 
 1. **Create a Frame Processor Plugin**:
-
    - This plugin extracts frames from Vision Camera and passes them to the Fishjam SDK.
    - For more details on frame processor plugins, check out the Vision Camera documentation [here](https://react-native-vision-camera.com/docs/guides/frame-processors-plugins-overview).
 
 2. **Create a CustomSource**:
-
    - This component sends the camera frames to Fishjam.
    - Check out the [CustomSource overview](./overview.mdx) to learn more about this concept.
 
@@ -37,7 +35,6 @@ There are two main components to implement:
 The `FrameProcessorPlugin` and `CustomSource` work together to process and transmit video frames from the Vision Camera to the Fishjam SDK. Here's a clearer breakdown of their roles:
 
 1. **FrameProcessorPlugin**:
-
    - Extracts frames from the Vision Camera.
    - Processes each frame and prepares it for transmission.
    - Passes the processed frames to the `CustomSource`.
@@ -106,7 +103,6 @@ public class WebrtcFrameProcessorPlugin: FrameProcessorPlugin {
 ```
 
 3. Register the FrameProcessorPlugin with Vision Camera:
-
    - Follow the [official documentation on registering plugins](https://react-native-vision-camera.com/docs/guides/frame-processors-plugins-ios).
 
 4. Register the CustomSource with Fishjam SDK to create a new track:
@@ -166,7 +162,6 @@ class WebrtcFrameProcessorPlugin(proxy: VisionCameraProxy, options: Map<String, 
 ```
 
 3. Register the FrameProcessorPlugin with Vision Camera:
-
    - Follow the official documentation on registering plugins [here](https://react-native-vision-camera.com/docs/guides/frame-processors-plugins-android).
 
 4. Register the CustomSource with Fishjam SDK to enable creating tracks using the new source:

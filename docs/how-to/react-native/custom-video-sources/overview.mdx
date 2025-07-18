@@ -23,11 +23,9 @@ Check out our [**working example**](https://github.com/fishjam-cloud/mobile-clie
 To create a custom video source, follow these steps:
 
 1. **Implement the CustomSource Interface**:
-
    - On iOS and Android, implement the `CustomSource` interface. This interface provides metadata for the video track and a delegate/consumer to send frames.
 
 1. **Extract and Send Frames**:
-
    - Extract frames from your video source.
    - Pass these frames to the delegate/consumer (`CMSampleBuffer` on iOS and `ImageProxy` on Android).
 
