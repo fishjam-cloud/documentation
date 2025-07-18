@@ -4,7 +4,7 @@ type: explanation
 
 # Room Manager Concept
 
-**Explanation** - _Understanding what Room Manager is and why it exists_
+_Understanding what Room Manager is and why it exists_
 
 Room Manager is a development tool that simplifies getting started with Fishjam by providing a simple backend for testing, eliminating the need to build your own server initially.
 
@@ -39,97 +39,6 @@ Room Manager provides a pre-built backend so you can:
 - **Focus on client-side features** first
 - **Prototype quickly** with minimal infrastructure
 
-## Development vs Production Pattern
-
-### Development Pattern (with Room Manager)
-
-```
-Client App → Room Manager → Fishjam Media Server
-```
-
-- Client directly calls Room Manager API
-- No authentication required
-- Simple URL-based room creation
-- Perfect for prototyping and testing
-
-### Production Pattern (your backend)
-
-```
-Client App → Your Backend → Fishjam Media Server
-```
-
-- Client calls your authenticated API
-- Your backend creates rooms using Server SDKs
-- Proper user authentication and authorization
-- Full control over room lifecycle and permissions
-
-## Why Room Manager is NOT for Production
-
-### Security Limitations
-
-- **No authentication**: Anyone with the URL can create rooms
-- **Shared tokens**: Same room/peer names get identical tokens
-- **Public access**: No user management or access control
-- **Rate limiting**: Only 4 peers can join a room
-
-### Functional Limitations
-
-- **Basic features only**: Limited compared to Server SDKs
-- **No customization**: Fixed behavior and responses
-- **No webhooks**: No event handling capabilities
-- **No advanced room configuration**: Basic room creation only
-
-### Example Security Issue
-
-```
-// Anyone who knows this URL can join:
-https://fishjam.io/api/v1/connect/YOUR_ID/room-manager?roomName=secret&peerName=hacker
-
-// They get the same token as legitimate users:
-{
-  "peerToken": "same-token-for-same-names",
-  "url": "wss://fishjam.io/api/v1/connect/YOUR_ID"
-}
-```
-
-## When to Use Room Manager
-
-### ✅ Good Use Cases
-
-- **Initial learning** and experimentation
-- **Frontend development** before backend is ready
-- **Proof of concepts** and demos
-- **Quick testing** of Fishjam features
-- **Understanding Fishjam concepts** before production planning
-
-### ❌ Avoid for
-
-- **Production applications** of any kind
-- **User-facing demos** with real users
-- **Any scenario requiring security**
-- **Long-term testing environments**
-
-## Transition Strategy
-
-### Phase 1: Learning (Room Manager)
-
-- Use Room Manager to understand Fishjam concepts
-- Build and test your frontend components
-- Experiment with different room types and features
-
-### Phase 2: Development (Room Manager + Planning)
-
-- Continue using Room Manager for frontend development
-- Plan your production backend architecture
-- Design authentication and user management systems
-
-### Phase 3: Production (Your Backend)
-
-- Implement backend using Server SDKs
-- Replace Room Manager calls with your API calls
-- Add proper authentication and security measures
-- Deploy to production environment
-
 ## Relationship to Server SDKs
 
 Room Manager is essentially a simplified application built using Fishjam Server SDKs:
@@ -142,7 +51,6 @@ const managementToken = "";
 const app = express();
 
 // ---cut---
-
 // What Room Manager does internally (simplified)
 const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
 

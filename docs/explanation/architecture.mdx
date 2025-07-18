@@ -4,7 +4,7 @@ type: explanation
 
 # Fishjam Architecture
 
-**Explanation** - _Understanding how Fishjam works under the hood_
+_Understanding how Fishjam works under the hood_
 
 This document explains the technical architecture of Fishjam and how data flows through the system.
 
@@ -100,70 +100,6 @@ sequenceDiagram
 - **Media flow**: Single broadcaster to multiple viewers
 - **Protocols**: Uses WHEP/WHIP standards for viewers/streamers
 - **Scaling**: Optimized for high viewer counts
-
-## Security Architecture
-
-### Token-based Authentication
-
-1. **Management Tokens**: Secure your backend-to-Fishjam communication
-2. **Peer Tokens**: Short-lived tokens for client access to specific rooms
-3. **Token Validation**: All client connections validated by media server
-
-### Network Security
-
-- All media streams are encrypted using WebRTC's built-in encryption
-- HTTPS/WSS connections required
-- No direct peer-to-peer connections (everything routes through Fishjam)
-
-## Scaling and Reliability
-
-### Media Server Scaling
-
-- Automatic scaling based on load
-- Geographic distribution for low latency
-- Redundancy and failover handling
-
-### Client Resilience
-
-- Automatic reconnection handling
-- Network change detection
-- Graceful degradation on poor connections
-
-## Integration Patterns
-
-### Development Pattern (Room Manager)
-
-For development and testing:
-
-```
-Client App <-> Room Manager <-> Fishjam Media Server
-```
-
-### Production Pattern
-
-For production applications:
-
-```
-Client App <-> Your Backend <-> Fishjam Media Server
-```
-
-## Supported Protocols and Standards
-
-### WebRTC Standards
-
-- **DTLS-SRTP**: Secure media transport
-- **ICE/STUN/TURN**: NAT traversal and connectivity
-- **SDP**: Session description and negotiation
-
-### Streaming Protocols
-
-- **WHEP**: WebRTC-HTTP Egress Protocol (for viewers)
-- **WHIP**: WebRTC-HTTP Ingress Protocol (for broadcasters)
-
-### Codecs Supported
-
-- **Video**: H.264, VP8
-- **Audio**: Opus, G.711
 
 ## Next Steps
 
