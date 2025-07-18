@@ -18,7 +18,8 @@
     "yarn.lock",
     "package-lock.json"
   ],
-  "ignoreRegExpList": ["JSXComment"],
+  "ignoreRegExpList": ["JSXComment", "/^\\s*```[\\s\\S]*?^\\s*```/gm"],
+
   "patterns": [
     {
       "name": "JSXComment",
