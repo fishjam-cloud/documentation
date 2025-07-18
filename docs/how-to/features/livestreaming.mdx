@@ -1,0 +1,106 @@
+---
+type: how-to
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Livestreaming
+
+If your case involves streaming live audio and/or video from one source to many viewers with low latency, Fishjam provides the exact tools you need. This scenario is 20% cheaper than videoconferencing.
+
+## How Do I Use It?
+
+### Streamer
+
+First, you need to create a room with the livestream type using our [Server SDKs](/how-to/backend/server-setup). If you are using our sandbox, the [Room Manager](/how-to/features/room-manager-testing) also allows you to create such a room. As the streaming is one-to-many, you can have only one streaming participant in that room.
+
+#### Using Room Manager
+
+You can create a livestream room and obtain a peer token using this URL:
+
+```
+https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager?roomName=foo&peerName=bar&roomType=livestream
+```
+
+#### Using Server SDKs
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+    const fishjamClient = new FishjamClient({
+        fishjamUrl: "aaa",
+        managementToken: "bbb",
+    });
+    // ---cut---
+    const createdRoom = await fishjamClient.createRoom({ roomType: 'livestream' });
+
+    const peer = await fishjamClient.createPeer(createdRoom.id)
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    options = RoomOptions(room_type="livestream")
+    created_room = fishjam_client.create_room(options)
+
+    peer = fishjam_client.create_peer(created_room.id)
+    ```
+
+  </TabItem>
+ </Tabs>
+
+Now, you can connect to the room and start streaming as described in our [React Native](/how-to/react-native/connecting) and [React](/how-to/react/connecting) docs.
+
+:::note
+Livestreaming scenario allows only one video and one audio track to be sent at a time.  
+ Any additional tracks will be ignored and will not be available to the viewers.
+:::
+
+### Viewers
+
+To view the streamed content, you need to obtain a viewer token that can be generated using [Server SDKs](/how-to/backend/server-setup). If you are using our sandbox, the [Room Manager](/how-to/features/room-manager-testing) also allows you to create such a token.
+
+#### Using Room Manager
+
+```
+https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager/<ROOM_NAME>/livestream-viewer-token
+```
+
+#### Using Server SDKs
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk'; 
+    const fishjamClient = new FishjamClient({
+        fishjamUrl: "aaa",
+        managementToken: "bbb",
+    });
+    const room = await fishjamClient.createRoom({ roomType: 'livestream' });
+    // ---cut---
+
+    const viewerToken = await fishjamClient.createLivestreamViewerToken(room.id)
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    viewer_token = fishjam_client.create_livestream_viewer_token(room.id)
+    ```
+
+  </TabItem>
+ </Tabs>
+
+Now you can connect the viewer to the livestream as described in our React Native and [React](/how-to/react/livestreaming) docs.
+
+:::info
+Viewers connect using [WHEP](https://blog.swmansion.com/building-interactive-streaming-apps-webrtc-whip-whep-explained-d38f4825ec90) standard, allowing the use of any player that supports the WHEP standard.
+:::

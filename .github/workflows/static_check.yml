@@ -22,7 +22,7 @@ jobs:
       - name: Install node dependencies
         run: yarn --immutable
       - name: Spellcheck
-        run: yarn spellcheck:report
+        run: yarn spellcheck
       - name: Check formatting
         run: yarn format:check
       - name: Check types

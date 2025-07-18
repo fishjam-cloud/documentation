@@ -1,0 +1,11 @@
+{
+  "label": "Explanation",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "title": "Explanation",
+    "description": "Big-picture explanations of higher-level Fishjam concepts. Most useful for building understanding of a particular topic.",
+    "slug": "/explanation"
+  },
+  "collapsible": false
+}

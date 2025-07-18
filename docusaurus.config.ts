@@ -183,15 +183,15 @@ const config: Config = {
           items: [
             {
               label: "React Native",
-              to: "/category/react-native-integration",
+              to: "/tutorials/react-native-quick-start",
             },
             {
               label: "React",
-              to: "/category/react-integration",
+              to: "/tutorials/react-quick-start",
             },
             {
               label: "Backend",
-              to: "/production/server",
+              to: "/tutorials/backend-quick-start",
             },
           ],
         },

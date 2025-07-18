@@ -9,7 +9,7 @@ export default function QuickNavigation(props: { items: CardItem[] }) {
   return (
     <section className="row">
       {props.items.map((item, index) => (
-        <article key={index} className="col col--6 margin-bottom--lg">
+        <article key={index} className="col col--6 margin-top--sm">
           <Link
             className={clsx("card padding--lg", styles.cardContainer)}
             href={item.href}
