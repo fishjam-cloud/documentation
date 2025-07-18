@@ -91,15 +91,7 @@ export function JoinRoomButton() {
     const { url, peerToken } = await response.json();
 
     // Start camera by selecting the first available camera
-    const cameraDevices = navigator.mediaDevices
-      .enumerateDevices()
-      .then((devices) =>
-        devices.filter((device) => device.kind === "videoinput"),
-      );
-    const firstCamera = (await cameraDevices)[0];
-    if (firstCamera) {
-      await selectCamera(firstCamera.deviceId);
-    }
+    await initializeDevices({  audio: false }); // or just initializeDevices(); if you want both camera and mic
 
     // Join the room
     await joinRoom({ url, peerToken });
