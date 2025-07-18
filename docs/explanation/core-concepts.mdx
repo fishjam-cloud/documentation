@@ -36,7 +36,7 @@ A **peer** represents a single participant in a room. Each peer corresponds to o
 
 ### Peer Characteristics
 
-- **Unique within room**: Each peer has a unique ID within their room
+- **Room-scoped identity**: Each peer belongs to a specific room and has a unique ID within that room
 - **Associated metadata**: Custom data attached when creating the peer
 - **Track ownership**: Peers own the tracks (audio/video streams) they send
 - **State management**: Connection status, track states
@@ -78,14 +78,12 @@ A **track** represents a single stream of media data - either audio or video. Ea
 
 ### Management Tokens
 
-**Management tokens** are long-lived credentials that authorize your backend to control Fishjam resources.
+**Management tokens** is a long-lived credential that authorize your backend to control Fishjam resources. You can retrieve your management tokens from the Fishjam Cloud Dashboard.
 
 #### Characteristics
 
 - **Backend-only**: Never expose to client applications
-- **Long-lived**: Remain valid until regenerated
 - **Full access**: Can create/delete rooms and peers
-- **Environment-specific**: Different tokens for sandbox vs production
 
 #### Usage
 
@@ -155,7 +153,12 @@ await joinRoom({ url: fishjamUrl, peerToken });
 
 ### What is Metadata?
 
-**Metadata** is custom data associated with peers that other participants can read. It's set when creating a peer and cannot be changed afterward.
+**Metadata** is custom data associated with peers that other participants can read. There are two types of metadata in Fishjam:
+
+- **Server-side metadata**: Set when creating a peer on the backend (using the Server SDK). This metadata is safe, immutable, and securely bound to a specific peer token. Other participants can read this data.
+- **Client-side metadata**: Set by the client when connecting with a peer token. This metadata is considered "unsafe" because it is controlled by the client and can be modified at any time.
+
+Use server-side metadata for any information that must be trusted or used for permissions, and client-side metadata for transient or user-controlled data.
 
 ### Use Cases
 

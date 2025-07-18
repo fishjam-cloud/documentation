@@ -71,7 +71,11 @@ Create a component that joins a room and starts streaming:
 ```tsx
 import React from "react";
 
-import { useConnection, useCamera } from "@fishjam-cloud/react-client";
+import {
+  useConnection,
+  useCamera,
+  useInitializeDevices,
+} from "@fishjam-cloud/react-client";
 
 // Check https://fishjam.io/app/ for your Room Manager ID
 const ROOM_MANAGER_ID = "YOUR_ROOM_MANAGER_ID";
@@ -79,6 +83,7 @@ const ROOM_MANAGER_ID = "YOUR_ROOM_MANAGER_ID";
 export function JoinRoomButton() {
   const { joinRoom } = useConnection();
   const { selectCamera } = useCamera();
+  const { initializeDevices } = useInitializeDevices();
 
   const handleJoinRoom = async () => {
     const roomName = "testRoom";
@@ -91,7 +96,7 @@ export function JoinRoomButton() {
     const { url, peerToken } = await response.json();
 
     // Start camera by selecting the first available camera
-    await initializeDevices({  audio: false }); // or just initializeDevices(); if you want both camera and mic
+    await initializeDevices({ enableAudio: false }); // or just initializeDevices(); if you want both camera and mic
 
     // Join the room
     await joinRoom({ url, peerToken });

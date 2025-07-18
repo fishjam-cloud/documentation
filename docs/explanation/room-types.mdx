@@ -21,15 +21,6 @@ Full-feature rooms are the default room type designed for multi-participant vide
 - **Rich features**: Screen sharing, multiple video tracks, audio controls
 - **Flexible track management**: Participants can add/remove tracks dynamically
 
-### Architecture
-
-Full-feature rooms use a Selective Forwarding Unit (SFU) architecture:
-
-- Each participant sends their media to Fishjam Media Server
-- Server selectively forwards streams to other participants
-- Efficient bandwidth usage compared to mesh networking
-- Quality adaptation based on network conditions
-
 ### Best Use Cases
 
 - **Video conferencing applications** (Zoom-like experiences)
@@ -53,13 +44,6 @@ Audio-only rooms are optimized specifically for voice communication, removing vi
 - **Optimized bandwidth**: Reduced network usage
 - **Better performance**: Lower CPU and battery usage
 - **Higher capacity**: Support for more simultaneous participants
-
-### Architecture
-
-- Similar to full-feature rooms but audio-only routing
-- Optimized audio processing and codec selection
-- Reduced server resources per participant
-- Enhanced audio quality algorithms
 
 ### Best Use Cases
 
@@ -96,14 +80,6 @@ Livestream rooms are designed for one-to-many broadcasting scenarios where a sin
 - **Many viewers**: Unlimited viewers can watch
 - **Optimized for scale**: Efficient distribution architecture
 - **Low latency**: Optimized for real-time broadcasting
-- **WHEP compatibility**: Standards-based viewer connections
-
-### Architecture
-
-- **Broadcaster**: Sends video/audio using standard Fishjam client SDKs
-- **Viewers**: Connect using WHEP (WebRTC-HTTP Egress Protocol)
-- **Media distribution**: Optimized server-side distribution
-- **Geographic distribution**: Edge servers for global reach
 
 ### Broadcasting Limitations
 
@@ -115,7 +91,6 @@ Livestream rooms are designed for one-to-many broadcasting scenarios where a sin
 
 - **Token-based access**: Viewers need special viewer tokens
 - **Standard compatibility**: Any WHEP-compatible player works
-- **Automatic quality**: Adaptive streaming based on viewer connection
 
 ### Best Use Cases
 
@@ -170,30 +145,6 @@ Room types are set at creation time and cannot be changed:
 - Each room has a fixed type for its entire lifecycle
 - To change types, create a new room
 - Plan your room type choice carefully
-
-### Development vs Production
-
-For development, you can create any room type using [Room Manager](/how-to/features/room-manager-testing).
-
-For production, room types are specified when creating rooms via [Server SDKs](/how-to/backend/server-setup):
-
-```typescript
-import { FishjamClient } from "@fishjam-cloud/js-server-sdk";
-const fishjamUrl = "";
-const managementToken = "";
-const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
-
-// ---cut---
-
-// Full-feature room (default)
-const fullRoom = await fishjamClient.createRoom();
-
-// Audio-only room
-const audioRoom = await fishjamClient.createRoom({ roomType: "audio_only" });
-
-// Livestream room
-const liveRoom = await fishjamClient.createRoom({ roomType: "livestream" });
-```
 
 ## Next Steps
 
