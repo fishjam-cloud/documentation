@@ -50,8 +50,8 @@ Client applications (React Native, React/Web) use Fishjam Client SDKs to:
 
 ```mermaid
 sequenceDiagram
-    participant BE as Your Backend
     participant FM as Fishjam Media Server
+    participant BE as Your Backend
     participant Client as Client App
 
     Client->>BE: Request to join room
@@ -83,7 +83,7 @@ sequenceDiagram
 ### Full-feature Rooms
 
 - **Purpose**: Multi-participant video conferencing
-- **Media flow**: Peer-to-peer through media server (SFU architecture)
+- **Media flow**: Peer-to-peer through media server
 - **Scaling**: Supports many participants efficiently
 - **Features**: Screen sharing, multiple video tracks, audio controls
 

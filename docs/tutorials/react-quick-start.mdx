@@ -109,29 +109,7 @@ export function JoinRoomButton() {
 }
 ```
 
-## Step 3: Display your video
-
-Show your own video stream:
-
-```tsx
-import React from "react";
-import { useEffect, useRef } from "react";
-import { useCamera } from "@fishjam-cloud/react-client";
-
-export function MyVideo() {
-  const { cameraStream } = useCamera();
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    if (!videoRef.current) return;
-    videoRef.current.srcObject = cameraStream ?? null;
-  }, [cameraStream]);
-
-  return <video ref={videoRef} autoPlay muted playsInline />;
-}
-```
-
-## Step 4: Display other participants
+## Step 3: Display other participants
 
 Show video from other peers:
 
@@ -165,6 +143,29 @@ export function ParticipantsView() {
       ))}
     </div>
   );
+}
+```
+
+## Step 4: Display your video
+
+Show your own video stream:
+
+```tsx
+const VideoPlayer = ({
+  stream,
+}: {
+  stream: MediaStream | null | undefined;
+}) => {
+  return null;
+};
+// ---cut---
+
+import React from "react";
+import { useCamera } from "@fishjam-cloud/react-client";
+
+export function MyVideo() {
+  const { cameraStream } = useCamera();
+  return <VideoPlayer stream={cameraStream} />;
 }
 ```
 
@@ -215,7 +216,7 @@ function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
 
 function VideoCall() {
   const { joinRoom, peerStatus } = useConnection();
-  const { selectCamera, cameraStream } = useCamera();
+  const { cameraStream } = useCamera();
   const { remotePeers } = usePeers();
   const { initializeDevices } = useInitializeDevices();
   const [isJoined, setIsJoined] = useState(false);

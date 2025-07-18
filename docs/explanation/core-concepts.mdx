@@ -203,24 +203,6 @@ remotePeers.forEach((peer) => {
 });
 ```
 
-## Media Flow Architecture
-
-### Client-Server-Client Pattern
-
-Fishjam uses a **Selective Forwarding Unit (SFU)** architecture:
-
-1. **Upload**: Each peer sends their media to Fishjam servers
-2. **Processing**: Server processes, adapts quality, applies policies
-3. **Distribution**: Server forwards media to other peers in the room
-4. **Download**: Each peer receives media from other participants
-
-### Benefits of SFU Architecture
-
-- **Bandwidth efficiency**: Each client uploads once, server handles distribution
-- **Quality adaptation**: Server can adjust quality per recipient
-- **Selective forwarding**: Server can choose which streams to forward
-- **Scalability**: Adding participants doesn't exponentially increase bandwidth
-
 ## Connection States
 
 ### Peer Connection States
