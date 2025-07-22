@@ -5,9 +5,9 @@ type: how-to
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
-# How to Use Room Manager for Testing
+# Testing with Room Manager
 
-**How-to Guide** - _Use Room Manager to test your Fishjam integration without a backend_
+**How-to Guide** - _Use Room Manager to test your Fishjam integration quickly without a backend_
 
 Room Manager is a development tool that lets you create rooms and peers for testing without setting up your own backend server. This guide shows you how to use it effectively.
 
@@ -36,7 +36,7 @@ Room Manager is a development tool that lets you create rooms and peers for test
 The Room Manager API uses simple GET requests. Add query parameters to create rooms and peers:
 
 ```
-https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=foo&peerName=bar&roomType=full-feature
+https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=foo&peerName=bar&roomType=conference
 ```
 
 ### Required parameters:
@@ -46,11 +46,11 @@ https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=foo&pee
 
 ### Optional parameters:
 
-- `roomType` - Type of room to create (defaults to `full-feature`)
+- `roomType` - Type of room to create (defaults to `conference`)
 
 ### Room types available:
 
-- `full-feature` - For video/audio conferencing (default)
+- `conference` - For video/audio conferencing (default)
 - `audio-only` - For audio-only conferencing
 - `livestream` - For one-to-many video/audio streaming
 
@@ -100,7 +100,7 @@ Below are examples on how to use the tokens from room manager in your frontend a
         const fetchRoomData = async () => {
           try {
             const response = await fetch(
-              `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=${roomName}&peerName=${peerName}&roomType=full-feature`,
+              `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=${roomName}&peerName=${peerName}&roomType=conference`,
             );
             const data = await response.json();
             setRoomData(data);

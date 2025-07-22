@@ -1,5 +1,6 @@
 ---
 type: explanation
+sidebar_position: 3
 ---
 
 # Room Types Explained
@@ -8,11 +9,11 @@ _Understanding different types of rooms and when to use them_
 
 Fishjam provides three distinct room types, each optimized for different use cases and scenarios. Understanding these room types helps you choose the right approach for your application.
 
-## Full-feature Rooms (Default)
+## Conference Rooms (Default)
 
-### What are Full-feature Rooms?
+### What are Conference Rooms?
 
-Full-feature rooms are the default room type designed for multi-participant video conferencing scenarios. They support all Fishjam features and provide the most flexibility.
+Conference rooms are the default room type designed for multi-participant video conferencing scenarios. They support all Fishjam features and provide the most flexibility.
 
 ### Key Characteristics
 
@@ -30,7 +31,7 @@ Full-feature rooms are the default room type designed for multi-participant vide
 
 ### Cost Considerations
 
-Full-feature rooms are priced based on total connection time of all peers.
+Conference rooms are priced based on total connection time of all peers.
 
 ## Audio-only Rooms
 
@@ -54,9 +55,9 @@ Audio-only rooms are optimized specifically for voice communication, removing vi
 
 ### Cost Benefits
 
-Audio-only rooms come at a **75% discount** compared to full-feature rooms:
+Audio-only rooms come at a **75% discount** compared to conference rooms:
 
-- 2 peers for 30 minutes = 60 minutes total time in full-feature room
+- 2 peers for 30 minutes = 60 minutes total time in conference room
 - Same scenario in audio-only room = 15 minutes equivalent cost
 
 ### Video Behavior in Audio-only Rooms
@@ -102,39 +103,39 @@ Livestream rooms are designed for one-to-many broadcasting scenarios where a sin
 
 ### Cost Benefits
 
-Livestream rooms are **cheaper** than full-feature rooms for equivalent usage, because there is only one broadcaster.
+Livestream rooms are **cheaper** than conference rooms for equivalent usage, because there is only one broadcaster.
 
 ## Choosing the Right Room Type
 
 ### Decision Matrix
 
-| Use Case                            | Room Type    | Why                                      |
-| ----------------------------------- | ------------ | ---------------------------------------- |
-| Video meetings with 2-10 people     | Full-feature | Bidirectional video, screen sharing      |
-| Large video conference (10+ people) | Full-feature | Multi-participant support                |
-| Voice-only meetings                 | Audio-only   | Cost savings, better performance         |
-| Podcast recording                   | Audio-only   | Audio focus, multiple participants       |
-| Webinar (1 presenter, many viewers) | Livestream   | One-to-many, cost effective              |
-| Live event streaming                | Livestream   | Scalable viewing, optimized distribution |
-| Interactive workshop                | Full-feature | Participant engagement, screen sharing   |
+| Use Case                            | Room Type  | Why                                      |
+| ----------------------------------- | ---------- | ---------------------------------------- |
+| Video meetings with 2-10 people     | Conference | Bidirectional video, screen sharing      |
+| Large video conference (10+ people) | Conference | Multi-participant support                |
+| Voice-only meetings                 | Audio-only | Cost savings, better performance         |
+| Podcast recording                   | Audio-only | Audio focus, multiple participants       |
+| Webinar (1 presenter, many viewers) | Livestream | One-to-many, cost effective              |
+| Live event streaming                | Livestream | Scalable viewing, optimized distribution |
+| Interactive workshop                | Conference | Participant engagement, screen sharing   |
 
 ### Performance Considerations
 
 #### Network Bandwidth
 
-- **Full-feature**: Highest bandwidth usage
+- **Conference**: Highest bandwidth usage
 - **Audio-only**: Lowest bandwidth usage
 - **Livestream**: Moderate for broadcaster, low for viewers
 
 #### Server Resources
 
-- **Full-feature**: Highest server resource usage
+- **Conference**: Highest server resource usage
 - **Audio-only**: Lowest server resource usage
 - **Livestream**: Optimized for many viewers
 
 #### Client Performance
 
-- **Full-feature**: Higher CPU/battery usage
+- **Conference**: Higher CPU/battery usage
 - **Audio-only**: Lowest resource usage
 - **Livestream**: Low for viewers, normal for broadcaster
 

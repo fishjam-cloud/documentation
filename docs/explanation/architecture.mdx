@@ -1,5 +1,6 @@
 ---
 type: explanation
+sidebar_position: 2
 ---
 
 # Fishjam Architecture
@@ -31,7 +32,7 @@ The Fishjam Media Server is the core infrastructure component that:
 
 - Routes audio and video streams between participants
 - Handles WebRTC negotiations and connections
-- Manages different room types (full-feature, audio-only, livestream)
+- Manages different room types (conference, audio-only, livestream)
 - Processes and transcodes media when needed
 - Enforces security policies and token validation
 
@@ -80,7 +81,7 @@ sequenceDiagram
 
 ## Room Types and Architecture
 
-### Full-feature Rooms
+### Conference Rooms
 
 - **Purpose**: Multi-participant video conferencing
 - **Media flow**: Peer-to-peer through media server
@@ -92,7 +93,7 @@ sequenceDiagram
 - **Purpose**: Voice-only communication
 - **Media flow**: Audio-only routing with optimized bandwidth
 - **Scaling**: Highly efficient, supports more participants
-- **Cost**: 75% cheaper than full-feature rooms
+- **Cost**: 75% cheaper than conference rooms
 
 ### Livestream Rooms
 
