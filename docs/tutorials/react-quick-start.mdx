@@ -49,7 +49,6 @@ import { FishjamProvider } from "@fishjam-cloud/react-client";
 const App = {} as any;
 
 // ---cut---
-
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <FishjamProvider>
@@ -157,7 +156,6 @@ const VideoPlayer = ({
   return null;
 };
 // ---cut---
-
 import React from "react";
 import { useCamera } from "@fishjam-cloud/react-client";
 
@@ -200,7 +198,6 @@ import {
 const ROOM_MANAGER_ID = "YOUR_ROOM_MANAGER_ID";
 
 // ---cut---
-
 function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
   const videoRef = useRef<HTMLVideoElement>(null);
 

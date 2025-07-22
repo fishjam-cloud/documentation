@@ -233,8 +233,8 @@ const fishjamNotifierPlugin = fastifyPlugin((fastify) => {
     () => fastify.log.error("Failed to connect Fishjam notifier"),
   );
 });
-// ---cut---
 
+// ---cut---
 await fastify.register(fishjamPlugin);
 await fastify.register(fishjamNotifierPlugin);
 ```

@@ -58,10 +58,9 @@ import React, { useCallback } from "react";
 import { Button } from "react-native";
 import { useCamera, useConnection } from "@fishjam-cloud/react-native-client";
 
-// Check https://fishjam.io/app/ for your Room Manager ID
-const ROOM_MANAGER_ID = "YOUR_ROOM_MANAGER_ID";
-
 // ---cut---
+// Check https://fishjam.io/app for your Room Manager ID
+const ROOM_MANAGER_ID = "YOUR_ROOM_MANAGER_ID";
 
 export function StartStreamingButton({
   roomName,
@@ -105,7 +104,6 @@ import { Text } from "react-native";
 import { useConnection } from "@fishjam-cloud/react-native-client";
 
 // ---cut---
-
 export function ConnectionStatus() {
   const { peerStatus } = useConnection();
 
@@ -126,7 +124,6 @@ import {
 import { View } from "react-native";
 
 // ---cut---
-
 export function ParticipantsView() {
   const { remotePeers } = usePeers();
 
@@ -164,10 +161,9 @@ type RoomData = {
 // Check https://fishjam.io/app/ for your Room Manager ID
 const ROOM_MANAGER_ID = "YOUR_ROOM_MANAGER_ID";
 const roomName = "testRoom";
-const peerName = `testUser_${(Math.random() * 100).toFixed()}`;
+const peerName = "testUser";
 
 // ---cut---
-
 export default function HomeScreen() {
   const [roomData, setRoomData] = useState<RoomData | null>(null);
 

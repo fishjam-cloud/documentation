@@ -197,7 +197,6 @@ Create your first room:
     const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
     
     // ---cut---
-    
     async function createRoom() {
       const room = await fishjamClient.createRoom();
       console.log('Room created:', room.id);
@@ -233,7 +232,6 @@ Create a peer and get a token for your client app:
     const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
     
     // ---cut---
-    
     async function addPeer(roomId: RoomId, peerName: string) {
       const { peer, peerToken } = await fishjamClient.createPeer(roomId, {
         metadata: { name: peerName },
