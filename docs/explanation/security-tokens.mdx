@@ -25,28 +25,18 @@ Management tokens provide your backend server with administrative access to Fish
 
 ### Characteristics
 
-- **Long-lived**: Remain valid until manually regenerated
-- **High privilege**: Can perform any operation on your Fishjam instance
-- **Backend-only**: Never send to client applications
-- **Environment-specific**: Different tokens for sandbox and production
+- **Long-lived**: Management tokens remain valid until manually regenerated
+- **High privilege**: Management tokens allow performing administrative operations.
+- **Backend-only**: Management tokens should never be sent to client applications.
+- **Environment-specific**: There are different tokens for sandbox and production.
 
 ### What Management Tokens Can Do
 
-```typescript
-import { FishjamClient, PeerId, RoomId } from "@fishjam-cloud/js-server-sdk";
-const fishjamUrl = "";
-const managementToken = "";
-const roomId = "" as unknown as RoomId;
-const peerId = "" as unknown as PeerId;
-// ---cut---
-const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
+Management tokens give permission to:
 
-// Full administrative access:
-await fishjamClient.createRoom(); // Create rooms
-await fishjamClient.deleteRoom(roomId); // Delete rooms
-await fishjamClient.createPeer(roomId); // Add peers
-await fishjamClient.deletePeer(roomId, peerId); // Remove peers
-```
+- Create and manage rooms and peers
+- Setup [webhooks](/how-to/backend/server-setup#webhooks)
+- Set [immutable peer metadata](/how-to/backend/server-setup#metadata)
 
 ## Peer Tokens
 
@@ -56,27 +46,23 @@ Peer tokens provide client applications with limited, time-bound access to join 
 
 ### Characteristics
 
-- **Short-lived**: Expire after a reasonable time period
-- **Scope-limited**: Access to one specific room only
-- **Client-safe**: Safe to send to frontend applications
-- **Single-use concept**: Tied to one peer identity
+- **Short-lived**: Peer tokens expire 24h after creation.
+- **Scope-limited**: Peer tokens give access to one specific room as one specific peer only.
+- **Client-safe**: Peer tokens are safe to send to frontend applications.
 
 ### What Peer Tokens Can Do
 
-Peer tokens allow clients to:
+Peer tokens give permission to:
 
 - Connect to the specific room they were issued for
-- Send and receive media streams within that room
-- Access peer metadata and room state
 - Participate in room activities (audio/video/screen sharing)
+- Access peer metadata and room state
 
 ### What Peer Tokens Cannot Do
 
 - Create or delete rooms
-- Add or remove other peers
-- Access different rooms
-- Perform administrative operations
-- Access management functions
+- Access multiple rooms
+- Add or remove peers
 
 ### Generation Process
 

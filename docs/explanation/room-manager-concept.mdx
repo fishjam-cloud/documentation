@@ -2,49 +2,52 @@
 type: explanation
 ---
 
-# Room Manager Concept
+# What is Room Manager?
 
 _Understanding what Room Manager is and why it exists_
 
 Room Manager is a development tool that simplifies getting started with Fishjam by providing a simple backend for testing, eliminating the need to build your own server initially.
 
-## What is Room Manager?
+## What can Room Manager do?
 
-Room Manager is an HTTP server that comes with Fishjam's Sandbox environment. It provides basic room creation and peer management functionality without requiring you to set up your own backend infrastructure.
+Room Manager is an HTTP server that comes with Fishjam's Sandbox environment.
+It provides basic room creation and peer management functionality without requiring you to set up your own backend infrastructure.
 
 ### Key Characteristics
 
+- **Batteries-included**: No extra setup required to start using room manager.
 - **Development-focused**: Designed for initial development and testing
 - **No authentication**: Simplified access for quick prototyping
-- **HTTP-based**: Simple REST API for room and peer management
 - **Sandbox-only**: Only available in Sandbox environments
 
 ## The Problem Room Manager Solves
 
-When starting with Fishjam development, you typically need:
+When starting with videoconferencing or livestreaming development, you typically need:
 
-1. **Backend server** to create rooms
-2. **Authentication system** to manage users
+1. A **Backend server** to create rooms
+2. An **Authentication system** to manage users
 3. **Token management** for secure peer access
 4. **API endpoints** for your frontend to call
 
-This creates a chicken-and-egg problem: to test your frontend, you need a backend, but you might want to focus on frontend development first.
+This creates a chicken-and-egg problem: to test your frontend, you need a backend, but you during prototyping you want to focus on frontend development first.
 
 ## Room Manager's Solution
 
-Room Manager provides a pre-built backend so you can:
+Room Manager provides a ready-to-use backend so you can:
 
-- **Start frontend development immediately**
-- **Test Fishjam integration** without backend setup
-- **Focus on client-side features** first
+- **Focus on user-facing features** first
 - **Prototype quickly** with minimal infrastructure
+- **Test Fishjam integration** without a backend setup
 
 ## Relationship to Server SDKs
 
-Room Manager is essentially a simplified application built using Fishjam Server SDKs:
+Room Manager is essentially a simplified application built using the Fishjam Server SDKs:
 
 ```typescript
-import { FishjamClient } from "@fishjam-cloud/js-server-sdk";
+import {
+  FishjamClient,
+  RoomConfigRoomTypeEnum,
+} from "@fishjam-cloud/js-server-sdk";
 import express from "express";
 const fishjamUrl = "";
 const managementToken = "";
@@ -60,9 +63,11 @@ app.get(
     const { roomName, peerName, roomType } = req.query;
 
     // Create or get room
-    const room = await fishjamClient.createRoom({ roomType: "conference" });
+    const room = await fishjamClient.createRoom({
+      roomType: roomType as RoomConfigRoomTypeEnum,
+    });
 
-    // Create peer
+    // Create or get peer
     const { peer, peerToken } = await fishjamClient.createPeer(room.id);
 
     res.json({ peerToken, url: fishjamUrl });
@@ -72,7 +77,7 @@ app.get(
 
 This shows you exactly what your production backend needs to do, just with proper authentication and error handling.
 
-## Next Steps
+## See also
 
 To understand how to use Room Manager for development:
 
