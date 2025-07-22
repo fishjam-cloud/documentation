@@ -73,16 +73,16 @@ If you attempt to add video to an audio-only room:
 
 ### What are Livestream Rooms?
 
-Livestream rooms are designed for one-to-many broadcasting scenarios where a single broadcaster streams to multiple viewers.
+Livestream rooms are designed for one-to-many livestreaming scenarios where a single streamer streams to multiple viewers.
 
 ### Key Characteristics
 
-- **One broadcaster**: Only one peer can send media
-- **Many viewers**: Unlimited viewers can watch
+- **One sender**: Only one streamer can send media
+- **Many recceivers**: Unlimited viewers can watch
 - **Optimized for scale**: Efficient distribution architecture
-- **Low latency**: Optimized for real-time broadcasting
+- **Low latency**: Optimized for real-time and interactive livestreaming
 
-### Broadcasting Limitations
+### Livestreaming Limitations
 
 - **Single video track**: Only one video stream allowed
 - **Single audio track**: Only one audio stream allowed
@@ -90,34 +90,31 @@ Livestream rooms are designed for one-to-many broadcasting scenarios where a sin
 
 ### Viewer Experience
 
-- **Token-based access**: Viewers need special viewer tokens
-- **Standard compatibility**: Any WHEP-compatible player works
+- **Configurable access**: Livestreams can either be public, where anyone with the stream's ID can join, or private, where every viewer needs a token
+- **Standard compatibility**: Any [WHEP](https://blog.swmansion.com/building-interactive-streaming-apps-webrtc-whip-whep-explained-d38f4825ec90)-compatible player works
 
 ### Best Use Cases
 
 - **Live events** and webinars
 - **Streaming platforms** and content distribution
-- **Corporate broadcasts** and announcements
-- **Educational content** delivery
+- **Corporate livestreams** and announcements
 - **Sports and entertainment** streaming
 
 ### Cost Benefits
 
-Livestream rooms are **cheaper** than conference rooms for equivalent usage, because there is only one broadcaster.
+Livestream rooms are **cheaper** than conference rooms for equivalent usage, because there is only one streamer.
 
 ## Choosing the Right Room Type
 
 ### Decision Matrix
 
-| Use Case                            | Room Type  | Why                                      |
-| ----------------------------------- | ---------- | ---------------------------------------- |
-| Video meetings with 2-10 people     | Conference | Bidirectional video, screen sharing      |
-| Large video conference (10+ people) | Conference | Multi-participant support                |
-| Voice-only meetings                 | Audio-only | Cost savings, better performance         |
-| Podcast recording                   | Audio-only | Audio focus, multiple participants       |
-| Webinar (1 presenter, many viewers) | Livestream | One-to-many, cost effective              |
-| Live event streaming                | Livestream | Scalable viewing, optimized distribution |
-| Interactive workshop                | Conference | Participant engagement, screen sharing   |
+| Use Case                            | Room Type  | Why                                         |
+| ----------------------------------- | ---------- | ------------------------------------------- |
+| Classic video meetings              | Conference | Multiple video sources                      |
+| Voice-only meetings                 | Audio-only | Cheapest and most performant option         |
+| Podcasts                            | Audio-only | Cheapest and most performant option         |
+| Webinar (1 presenter, many viewers) | Livestream | Highly scalable and cheaper than conference |
+| Interactive workshop                | Conference | Multiple video sources                      |
 
 ### Performance Considerations
 
@@ -125,7 +122,7 @@ Livestream rooms are **cheaper** than conference rooms for equivalent usage, bec
 
 - **Conference**: Highest bandwidth usage
 - **Audio-only**: Lowest bandwidth usage
-- **Livestream**: Moderate for broadcaster, low for viewers
+- **Livestream**: Moderate for streamer, low for viewers
 
 #### Server Resources
 
@@ -137,15 +134,14 @@ Livestream rooms are **cheaper** than conference rooms for equivalent usage, bec
 
 - **Conference**: Higher CPU/battery usage
 - **Audio-only**: Lowest resource usage
-- **Livestream**: Low for viewers, normal for broadcaster
+- **Livestream**: Low for viewers, normal for streamer
 
 ### Migration Between Room Types
 
 Room types are set at creation time and cannot be changed:
 
 - Each room has a fixed type for its entire lifecycle
-- To change types, create a new room
-- Plan your room type choice carefully
+- To change types, you must create a new room
 
 ## Next Steps
 

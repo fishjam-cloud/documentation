@@ -10,7 +10,8 @@ import ConfigurePermissions from "./_components/configure-permissions.mdx";
 
 # Livestreaming
 
-This guide shows you how to implement livestreaming in React Native using Fishjam. You'll learn how to broadcast video streams and receive them in your app.
+This guide shows you how to implement livestreaming in React Native using Fishjam.
+You'll learn how to publish video streams and receive them in your app.
 
 ## 📋 Prerequisites
 
@@ -25,7 +26,7 @@ See the [livestreaming overview](/how-to/features/livestreaming) for more inform
 
 ## 🏗️ Architecture Overview
 
-Fishjam livestreaming follows a **one-to-many** broadcasting model:
+Fishjam livestreaming follows a **one-to-many** model:
 
 ```mermaid
 graph LR
@@ -43,15 +44,15 @@ graph LR
 
 **Key characteristics:**
 
-- **One streamer** per room (broadcasts video/audio)
+- **One streamer** per room (streams video/audio)
 - **Unlimited viewers** per room (receive the stream)
 - **Single video track** and **single audio track** per stream
 
-## 📱 Broadcasting a Stream
+## 📱 Publishing a Stream
 
 ### Prerequisites
 
-Before you start broadcasting, you need:
+Before you start livestreaming, you need:
 
 - Camera and microphone permissions configured
 - A room of `livestream` type
@@ -63,7 +64,7 @@ Before you start broadcasting, you need:
 2. **Start streaming** following the [streaming guide](/how-to/react-native/start-streaming)
 
 :::note
-Livestreaming rooms accept only one video track and one audio track. Fishjam ignores additional tracks to maintain broadcast quality.
+Livestreaming rooms accept only one video track and one audio track. Fishjam ignores additional tracks to maintain video quality.
 :::
 
 ## 📺 Receiving a Stream
