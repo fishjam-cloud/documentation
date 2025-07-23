@@ -38,7 +38,7 @@ The Fishjam Media Server is the core infrastructure component that:
 
 ### 3. Client Applications
 
-Client applications (React Native, React/Web) use Fishjam Client SDKs to:
+Client applications (React Native, React) use Fishjam Client SDKs to:
 
 - Connect to rooms using peer tokens
 - Send and receive audio/video streams
@@ -85,7 +85,6 @@ sequenceDiagram
 
 - **Purpose**: Multi-participant video conferencing
 - **Media flow**: Peer-to-peer through media server
-- **Scaling**: Supports many participants efficiently
 - **Features**: Screen sharing, multiple video tracks, audio controls
 
 ### Audio-only Rooms
@@ -101,6 +100,7 @@ sequenceDiagram
 - **Media flow**: Single streamer sends media to multiple viewers
 - **Protocols**: Uses [WHEP/WHIP](https://blog.swmansion.com/building-interactive-streaming-apps-webrtc-whip-whep-explained-d38f4825ec90) standards for viewers/streamers
 - **Scaling**: Optimized for high viewer counts
+- **Cost**: 20% cheaper than conference rooms
 
 ## Next Steps
 
