@@ -7,7 +7,8 @@ sidebar_position: 3
 
 _Understanding different types of rooms and when to use them_
 
-Fishjam provides three distinct room types, each optimized for different use cases and scenarios. Understanding these room types helps you choose the right approach for your application.
+Fishjam provides three distinct room types, each optimized for different use cases and scenarios.
+Understanding these room types helps you choose the right approach for your application.
 
 ## Conference Rooms (Default)
 
@@ -77,7 +78,6 @@ Livestream rooms are designed for one-to-many livestreaming scenarios where a si
 - **One sender**: Only one streamer can send media
 - **Many receivers**: Unlimited viewers can watch
 - **Optimized for scale**: Efficient distribution architecture
-- **Low latency**: Optimized for real-time and interactive livestreaming
 
 ### Livestreaming Limitations
 
@@ -92,53 +92,26 @@ Livestream rooms are designed for one-to-many livestreaming scenarios where a si
 
 ### Best Use Cases
 
-- **Live events** and webinars
+- **Live events**
 - **Streaming platforms** and content distribution
 - **Corporate livestreams** and announcements
 - **Sports and entertainment** streaming
 
 ### Cost Benefits
 
-Livestream rooms are **cheaper** than conference rooms for equivalent usage, because there is only one streamer.
+Livestream rooms are **20% cheaper** than conference rooms for equivalent usage.
 
 ## Choosing the Right Room Type
 
 ### Decision Matrix
 
-| Use Case                            | Room Type  | Why                                         |
-| ----------------------------------- | ---------- | ------------------------------------------- |
-| Classic video meetings              | Conference | Multiple video sources                      |
-| Voice-only meetings                 | Audio-only | Cheapest and most performant option         |
-| Podcasts                            | Audio-only | Cheapest and most performant option         |
-| Webinar (1 presenter, many viewers) | Livestream | Highly scalable and cheaper than conference |
-| Interactive workshop                | Conference | Multiple video sources                      |
-
-### Performance Considerations
-
-#### Network Bandwidth
-
-- **Conference**: Highest bandwidth usage
-- **Audio-only**: Lowest bandwidth usage
-- **Livestream**: Moderate for streamer, low for viewers
-
-#### Server Resources
-
-- **Conference**: Highest server resource usage
-- **Audio-only**: Lowest server resource usage
-- **Livestream**: Optimized for many viewers
-
-#### Client Performance
-
-- **Conference**: Higher CPU/battery usage
-- **Audio-only**: Lowest resource usage
-- **Livestream**: Low for viewers, normal for streamer
-
-### Migration Between Room Types
-
-Room types are set at creation time and cannot be changed:
-
-- Each room has a fixed type for its entire lifecycle
-- To change types, you must create a new room
+| Use Case               | Room Type  | Why                                         |
+| ---------------------- | ---------- | ------------------------------------------- |
+| Classic video meetings | Conference | Multiple video sources                      |
+| Voice-only meetings    | Audio-only | Cheapest and most performant option         |
+| Live Podcasts          | Audio-only | Cheapest and most performant option         |
+| Sport streaming        | Livestream | Highly scalable and cheaper than conference |
+| Interactive workshop   | Conference | Multiple video sources                      |
 
 ## Next Steps
 

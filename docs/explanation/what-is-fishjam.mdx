@@ -5,9 +5,10 @@ sidebar_position: 0
 
 # What is Fishjam?
 
-_Understanding the concept and purpose of Fishjam_
+_Understanding the role and purpose of Fishjam_
 
-Fishjam is a multimedia streaming toolkit that allows you to build real-time video and audio streaming applications using [WebRTC](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API).
+Fishjam is a multimedia streaming toolkit that allows you to build real-time video and audio streaming applications.
+It uses [WebRTC](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API) under the hood to ensure sub-second (in most cases **less than 300ms**) latency.
 We provide the infrastructure, media server, and client SDKs so you can focus on building your apps.
 
 **No WebRTC knowledge is required!**
@@ -28,13 +29,13 @@ Fishjam abstracts away this complexity, providing a simple API and managed infra
 
 Fishjam consists of several components that work together to provide a seamless multimedia streaming experience:
 
-| Component            | Description                                                                                             |
-| -------------------- | ------------------------------------------------------------------------------------------------------- |
-| Developer panel      | Developer panel for setting up your own Fishjam Media Server.                                           |
-| Fishjam Media Server | A media server that will route your multimedia traffic. We host and manage it for you.                  |
-| Fishjam Client SDKs  | Toolkit used for multimedia integration on endpoint devices.                                            |
-| Fishjam Server SDKs  | Toolkit for integrating your backend with Fishjam. We support Python and NodeJS as well as REST API.    |
-| Room Manager         | Simple backend for creating test rooms. You can test Fishjam without having to set up your own backend. |
+| Component             | Description                                                                                             |
+| --------------------- | ------------------------------------------------------------------------------------------------------- |
+| Developer panel       | Developer panel for setting up your own Fishjam Media Server.                                           |
+| Fishjam Media Servers | Media servers route your multimedia traffic. We host and manage them for you.                           |
+| Fishjam Client SDKs   | Toolkit used for multimedia integration on endpoint devices.                                            |
+| Fishjam Server SDKs   | Toolkit for integrating your backend with Fishjam. We currently support Python and NodeJS.              |
+| Room Manager          | Simple backend for creating test rooms. You can test Fishjam without having to set up your own backend. |
 
 ## Use Cases
 
@@ -42,7 +43,7 @@ Fishjam is ideal for:
 
 ### Video Conferencing
 
-Build Zoom-like applications with multiple participants in rooms, screen sharing, and audio/video controls.
+Build videoconferencing applications with multiple participants in rooms, screen sharing, and audio/video.
 
 ### Livestreaming
 
