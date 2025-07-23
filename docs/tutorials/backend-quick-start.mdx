@@ -1,0 +1,563 @@
+---
+type: tutorial
+sidebar_position: 2
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Tutorial: Backend Quick Start
+
+**Tutorial** - _Learn to build a backend for your Fishjam app_
+
+This tutorial will guide you through setting up a backend server that can create rooms and manage peers for your Fishjam application.  
+By the end, you'll have a working backend and understand how to integrate it with your client apps.
+
+## Choose your language
+
+Select your preferred backend language and all code examples will be shown for that language:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Node.js / TypeScript">
+    
+    We'll use **Node.js with TypeScript** and the `@fishjam-cloud/js-server-sdk` package.
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    We'll use **Python** and the `fishjam-server-sdk` package.
+
+  </TabItem>
+</Tabs>
+
+## What you'll build
+
+A simple backend server that can create rooms, add peers, and generate tokens for client apps.
+
+## What you'll learn
+
+- How to install and set up a Fishjam server SDK
+- How to create and manage rooms
+- How to create peers and generate tokens
+- How to listen for Fishjam events
+
+## Prerequisites
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Node.js / TypeScript">
+    
+    - Node.js environment set up
+    - Access to [Fishjam Dashboard](https://fishjam.io/app) with your credentials
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    - Python environment set up
+    - Access to [Fishjam Dashboard](https://fishjam.io/app) with your credentials
+
+  </TabItem>
+</Tabs>
+
+## Step 1: Install the SDK
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Node.js / TypeScript">
+  
+    Install the JavaScript server SDK using your preferred package manager:
+
+    <Tabs groupId="js-package-manager">
+      <TabItem value="npm" label="npm">
+
+        ```bash
+        npm install @fishjam-cloud/js-server-sdk
+        ```
+
+      </TabItem>
+
+      <TabItem value="yarn" label="yarn">
+
+        ```bash
+        yarn add @fishjam-cloud/js-server-sdk
+        ```
+
+      </TabItem>
+
+      <TabItem value="pnpm" label="pnpm">
+
+        ```bash
+        pnpm add @fishjam-cloud/js-server-sdk
+        ```
+
+      </TabItem>
+    </Tabs>
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    Install the Python server SDK using your preferred package manager:
+
+    <Tabs groupId="python-package-manager">
+      <TabItem value="pip" label="pip">
+
+        ```bash
+        pip install fishjam-server-sdk
+        ```
+
+      </TabItem>
+
+      <TabItem value="poetry" label="poetry">
+
+        ```bash
+        poetry add fishjam-server-sdk
+        ```
+
+      </TabItem>
+    </Tabs>
+
+  </TabItem>
+</Tabs>
+
+## Step 2: Get your credentials
+
+1. Log in to [Fishjam Dashboard](https://fishjam.io/app)
+2. Navigate to your app
+3. Copy your **Fishjam URL** and **Management Token**
+4. Store them as environment variables:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Node.js / TypeScript">
+    
+    ```bash
+    export FISHJAM_URL="your-fishjam-url"
+    export FISHJAM_MANAGEMENT_TOKEN="your-management-token"
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```bash
+    export FISHJAM_URL="your-fishjam-url"
+    export FISHJAM_MANAGEMENT_TOKEN="your-management-token"
+    ```
+
+  </TabItem>
+</Tabs>
+
+## Step 3: Set up the client
+
+Create your Fishjam client:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Node.js / TypeScript">
+  
+    ```ts
+    process.env.FISHJAM_URL = "";
+    process.env.FISHJAM_MANAGEMENT_TOKEN = "";
+    // ---cut---
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamUrl = process.env.FISHJAM_URL;
+    const managementToken = process.env.FISHJAM_MANAGEMENT_TOKEN;
+
+    const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    import os
+    from fishjam import FishjamClient
+
+    fishjam_url = os.environ["FISHJAM_URL"]
+    management_token = os.environ["FISHJAM_MANAGEMENT_TOKEN"]
+
+    fishjam_client = FishjamClient(fishjam_url, management_token)
+    ```
+
+  </TabItem>
+</Tabs>
+
+## Step 4: Create a room
+
+Create your first room:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Node.js / TypeScript">
+  
+    ```ts
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+    const fishjamUrl = "";
+    const managementToken = "";
+    const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
+    
+    // ---cut---
+    async function createRoom() {
+      const room = await fishjamClient.createRoom();
+      console.log('Room created:', room.id);
+      return room;
+    }
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    def create_room():
+        room = fishjam_client.create_room()
+        print(f'Room created: {room.id}')
+        return room
+    ```
+
+  </TabItem>
+</Tabs>
+
+## Step 5: Add a peer to the room
+
+Create a peer and get a token for your client app:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Node.js / TypeScript">
+  
+    ```ts
+    import { FishjamClient, RoomId } from '@fishjam-cloud/js-server-sdk';
+    const fishjamUrl = "";
+    const managementToken = "";
+    const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
+    
+    // ---cut---
+    async function addPeer(roomId: RoomId, peerName: string) {
+      const { peer, peerToken } = await fishjamClient.createPeer(roomId, {
+        metadata: { name: peerName },
+      });
+      
+      console.log('Peer created:', peer.id);
+      console.log('Peer token:', peerToken);
+      
+      return { peer, peerToken };
+    }
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    from fishjam import PeerOptions
+
+    def add_peer(room_id: str, peer_name: str):
+        options = PeerOptions(metadata={"name": peer_name})
+        peer, peer_token = fishjam_client.create_peer(room_id, options=options)
+
+        print(f'Peer created: {peer.id}')
+        print(f'Peer token: {peer_token}')
+
+        return peer, peer_token
+    ```
+
+  </TabItem>
+</Tabs>
+
+## Step 6: Create a simple API endpoint
+
+Build a simple HTTP endpoint that your client apps can call:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Node.js / TypeScript">
+  
+    ```ts
+    process.env.FISHJAM_URL = "";
+    process.env.FISHJAM_MANAGEMENT_TOKEN = "";
+    // ---cut---
+    import express from 'express';
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    const app = express();
+    app.use(express.json());
+
+    const fishjamClient = new FishjamClient({
+      fishjamUrl: process.env.FISHJAM_URL!,
+      managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN!
+    });
+
+    app.post('/join-room', async (req, res) => {
+      try {
+        const { roomName, peerName } = req.body;
+
+        // Create room
+        const room = await fishjamClient.createRoom();
+
+        // Add peer
+        const { peer, peerToken } = await fishjamClient.createPeer(room.id, {
+          metadata: { name: peerName },
+        });
+
+        res.json({
+          roomId: room.id,
+          peerToken,
+          fishjamUrl: process.env.FISHJAM_URL
+        });
+      } catch (error: any) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    app.listen(3000, () => {
+      console.log('Server running on port 3000');
+    });
+    ```
+
+    Don't forget to install Express:
+
+    <Tabs groupId="js-package-manager">
+      <TabItem value="npm" label="npm">
+
+        ```bash
+        npm install express @types/express
+        ```
+
+      </TabItem>
+
+      <TabItem value="yarn" label="yarn">
+
+        ```bash
+        yarn add express @types/express
+        ```
+
+      </TabItem>
+
+      <TabItem value="pnpm" label="pnpm">
+
+        ```bash
+        pnpm add express @types/express
+        ```
+
+      </TabItem>
+    </Tabs>
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    import os
+    from fastapi import FastAPI, HTTPException
+    from pydantic import BaseModel
+    from fishjam import FishjamClient, PeerOptions
+
+    app = FastAPI()
+
+    fishjam_client = FishjamClient(
+        os.environ["FISHJAM_URL"],
+        os.environ["FISHJAM_MANAGEMENT_TOKEN"]
+    )
+
+    class JoinRoomRequest(BaseModel):
+        room_name: str
+        peer_name: str
+
+    @app.post("/join-room")
+    async def join_room(request: JoinRoomRequest):
+        try:
+            # Create room
+            room = fishjam_client.create_room()
+
+            # Add peer
+            options = PeerOptions(metadata={"name": request.peer_name})
+            peer, peer_token = fishjam_client.create_peer(room.id, options=options)
+
+            return {
+                "room_id": room.id,
+                "peer_token": peer_token,
+                "fishjam_url": os.environ["FISHJAM_URL"]
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+    ```
+
+    Don't forget to install FastAPI:
+
+    <Tabs groupId="python-package-manager">
+      <TabItem value="pip" label="pip">
+
+        ```bash
+        pip install fastapi[standard]
+        ```
+
+      </TabItem>
+
+      <TabItem value="poetry" label="poetry">
+
+        ```bash
+        poetry add fastapi[standard]
+        ```
+
+      </TabItem>
+    </Tabs>
+
+  </TabItem>
+</Tabs>
+
+## Step 7: Run your server
+
+Start your backend server:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Node.js / TypeScript">
+  
+    ```bash
+    # If using TypeScript directly
+    npx tsx server.ts
+
+    # Or compile and run
+    npx tsc server.ts && node server.js
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```bash
+    fastapi run --port 3000
+    ```
+
+  </TabItem>
+</Tabs>
+
+## Step 8: Test your backend
+
+Test your endpoint:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Node.js / TypeScript">
+  
+    ```bash
+    curl -X POST http://localhost:3000/join-room \
+      -H "Content-Type: application/json" \
+      -d '{"roomName": "test-room", "peerName": "test-user"}'
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```bash
+    curl -X POST http://localhost:3000/join-room \
+      -H "Content-Type: application/json" \
+      -d '{"room_name": "test-room", "peer_name": "test-user"}'
+    ```
+
+  </TabItem>
+</Tabs>
+
+You should receive a response with:
+
+- `roomId` / `room_id` - The ID of the created room
+- `peerToken` / `peer_token` - Token for the client to join the room
+- `fishjamUrl` / `fishjam_url` - URL for the client to connect to
+
+## Complete example
+
+Here's a complete working backend:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Node.js / TypeScript">
+  
+    ```ts
+    process.env.FISHJAM_URL = "";
+    process.env.FISHJAM_MANAGEMENT_TOKEN = "";
+    // ---cut---
+    import express from 'express';
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    const app = express();
+    app.use(express.json());
+
+    const fishjamClient = new FishjamClient({
+      fishjamUrl: process.env.FISHJAM_URL!,
+      managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN!
+    });
+
+    app.post('/join-room', async (req, res) => {
+      try {
+        const { roomName, peerName } = req.body;
+
+        const room = await fishjamClient.createRoom();
+        const { peer, peerToken } = await fishjamClient.createPeer(room.id, {
+          metadata: { name: peerName },
+        });
+
+        res.json({
+          roomId: room.id,
+          peerToken,
+          fishjamUrl: process.env.FISHJAM_URL
+        });
+      } catch (error: any) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    app.listen(3000, () => {
+      console.log('Fishjam backend running on port 3000');
+    });
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    import os
+    from fastapi import FastAPI, HTTPException
+    from pydantic import BaseModel
+    from fishjam import FishjamClient, PeerOptions
+
+    app = FastAPI()
+
+    fishjam_client = FishjamClient(
+        os.environ["FISHJAM_URL"],
+        os.environ["FISHJAM_MANAGEMENT_TOKEN"]
+    )
+
+    class JoinRoomRequest(BaseModel):
+        room_name: str
+        peer_name: str
+
+    @app.post("/join-room")
+    async def join_room(request: JoinRoomRequest):
+        try:
+            room = fishjam_client.create_room()
+            options = PeerOptions(metadata={"name": request.peer_name})
+            peer, peer_token = fishjam_client.create_peer(room.id, options=options)
+
+            return {
+                "room_id": room.id,
+                "peer_token": peer_token,
+                "fishjam_url": os.environ["FISHJAM_URL"]
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+    ```
+
+  </TabItem>
+</Tabs>
+
+## Next steps
+
+Now that you have a working backend, explore these guides:
+
+- [How to set up a production deployment](/how-to/backend/production-deployment)
+- [How to handle webhooks and events](/how-to/backend/server-setup)
+- [How to implement a FastAPI backend](/how-to/backend/fastapi-example)
+- [How to implement a Fastify backend](/how-to/backend/fastify-example)
+
+Or learn more about Fishjam concepts:
+
+- [Understanding security and tokens](/explanation/security-tokens)
+- [Room types explained](/explanation/room-types)

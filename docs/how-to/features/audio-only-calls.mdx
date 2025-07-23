@@ -1,0 +1,61 @@
+---
+type: how-to
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Audio-only Calls
+
+**How-to Guide** - _Set up voice-only communication with cost savings_
+
+In many use cases, you only need real-time audio, without any video streaming.
+If your use case falls into this category, then you can benefit greatly from using `audio_only` rooms in Fishjam.
+
+## Why Should I Care?
+
+Audio-only rooms are heavily discounted compared to normal rooms.
+As described in more detail on the [pricing page](https://fishjam.io/#pricing), Fishjam rooms are priced based on the total connection time of peers in them.
+Audio-only rooms come at a 75% discount.
+For example, if you have a normal room with 2 peers connected for 30 minutes, then the total cost of the room will be equal to the cost of 60 minutes.
+If the same room were audio-only, then the final cost of the room will only be equal to 15 minutes.
+
+## How Do I Use It?
+
+Using this feature is as easy as setting the `roomType` field to `audio_only` when creating a room using our [Server SDKs](/how-to/backend/server-setup)
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+    const fishjamClient = new FishjamClient({
+        fishjamUrl: "aaa",
+        managementToken: "bbb",
+    });
+    // ---cut---
+    const createdRoom = await fishjamClient.createRoom({ roomType: 'audio_only' });
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    options = RoomOptions(room_type="audio_only")
+    created_room = fishjam_client.create_room(options)
+    ```
+
+  </TabItem>
+ </Tabs>
+
+Now, you can connect peers normally to the room as described in our [React Native](/how-to/react-native/connecting) and [React](/how-to/react/connecting) docs.
+
+:::info
+The React Native and React SDKs will log a warning in the console if any attempt to add video to an audio-only room is made.
+This aims to assist in debugging, as adding video to an audio-only room does nothing and is most likely a mistake.
+:::
+
+### Screen sharing
+
+If you attempt to screen share when connected to an `audio_only` room, then only the audio will actually be sent to the other peers.

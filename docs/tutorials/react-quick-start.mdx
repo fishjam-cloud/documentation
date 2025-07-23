@@ -1,0 +1,284 @@
+---
+type: tutorial
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Tutorial: React/Web Quick Start
+
+**Tutorial** - _Learn the basics by building your first Fishjam web app_
+
+This tutorial will guide you through integrating Fishjam into your React web application step by step.  
+By the end, you'll have a working video streaming web app and understand the core concepts.
+
+## What you'll build
+
+A simple React web app that can join video calls and stream video between participants.
+
+## What you'll learn
+
+- How to install and set up Fishjam for React
+- How to join a room and start streaming
+- How to display video from other participants
+- How to manage media devices
+
+## Prerequisites
+
+- React development environment set up
+- Access to [Fishjam Dashboard](https://fishjam.io/app)
+
+## Step 1: Install and set up
+
+### Install the package
+
+```bash npm2yarn
+npm install @fishjam-cloud/react-client
+```
+
+### Set up Fishjam context
+
+Wrap your app in the `FishjamProvider` component:
+
+```tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { FishjamProvider } from "@fishjam-cloud/react-client";
+
+const App = {} as any;
+
+// ---cut---
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <FishjamProvider>
+      <App />
+    </FishjamProvider>
+  </React.StrictMode>,
+);
+```
+
+### Get your Room Manager URL
+
+1. Log in to [Fishjam Dashboard](https://fishjam.io/app)
+2. Navigate to your Sandbox environment
+3. Copy your Room Manager URL - you'll need this for testing
+
+## Step 2: Join a room and start streaming
+
+Create a component that joins a room and starts streaming:
+
+```tsx
+import React from "react";
+
+import {
+  useConnection,
+  useCamera,
+  useInitializeDevices,
+} from "@fishjam-cloud/react-client";
+
+// Check https://fishjam.io/app/ for your Room Manager ID
+const ROOM_MANAGER_ID = "YOUR_ROOM_MANAGER_ID";
+
+export function JoinRoomButton() {
+  const { joinRoom } = useConnection();
+  const { selectCamera } = useCamera();
+  const { initializeDevices } = useInitializeDevices();
+
+  const handleJoinRoom = async () => {
+    const roomName = "testRoom";
+    const peerName = "testUser";
+
+    // Fetch peer token from Room Manager
+    const response = await fetch(
+      `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
+    );
+    const { url, peerToken } = await response.json();
+
+    // Start camera by selecting the first available camera
+    await initializeDevices({ enableAudio: false }); // or just initializeDevices(); if you want both camera and mic
+
+    // Join the room
+    await joinRoom({ url, peerToken });
+  };
+
+  return <button onClick={handleJoinRoom}>Join Room</button>;
+}
+```
+
+## Step 3: Display other participants
+
+Show video from other peers:
+
+```tsx
+import React from "react";
+import { useEffect, useRef } from "react";
+import { usePeers } from "@fishjam-cloud/react-client";
+
+function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+    videoRef.current.srcObject = stream ?? null;
+  }, [stream]);
+
+  return <video ref={videoRef} autoPlay playsInline />;
+}
+
+export function ParticipantsView() {
+  const { remotePeers } = usePeers();
+
+  return (
+    <div>
+      {remotePeers.map((peer) => (
+        <div key={peer.id}>
+          {peer.cameraTrack?.stream && (
+            <VideoPlayer stream={peer.cameraTrack.stream} />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## Step 4: Display your video
+
+Show your own video stream:
+
+```tsx
+const VideoPlayer = ({
+  stream,
+}: {
+  stream: MediaStream | null | undefined;
+}) => {
+  return null;
+};
+// ---cut---
+import React from "react";
+import { useCamera } from "@fishjam-cloud/react-client";
+
+export function MyVideo() {
+  const { cameraStream } = useCamera();
+  return <VideoPlayer stream={cameraStream} />;
+}
+```
+
+## Step 5: Handle connection status
+
+Monitor your connection:
+
+```tsx
+import React from "react";
+import { useConnection } from "@fishjam-cloud/react-client";
+
+export function ConnectionStatus() {
+  const { peerStatus } = useConnection();
+
+  return <div>Status: {peerStatus}</div>;
+}
+```
+
+## Complete example
+
+Here's a complete working app:
+
+```tsx
+import React, { useEffect, useRef, useState } from "react";
+import {
+  FishjamProvider,
+  useConnection,
+  useCamera,
+  usePeers,
+  useInitializeDevices,
+} from "@fishjam-cloud/react-client";
+
+// Check https://fishjam.io/app/ for your Room Manager ID
+const ROOM_MANAGER_ID = "YOUR_ROOM_MANAGER_ID";
+
+// ---cut---
+function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+    videoRef.current.srcObject = stream ?? null;
+  }, [stream]);
+
+  return <video ref={videoRef} autoPlay playsInline />;
+}
+
+function VideoCall() {
+  const { joinRoom, peerStatus } = useConnection();
+  const { cameraStream } = useCamera();
+  const { remotePeers } = usePeers();
+  const { initializeDevices } = useInitializeDevices();
+  const [isJoined, setIsJoined] = useState(false);
+
+  const handleJoin = async () => {
+    const roomName = "testRoom";
+    const peerName = `user_${Date.now()}`;
+
+    // Initialize devices first
+    await initializeDevices();
+
+    const response = await fetch(
+      `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
+    );
+    const { url, peerToken } = await response.json();
+
+    await joinRoom({ url, peerToken });
+    setIsJoined(true);
+  };
+
+  return (
+    <div>
+      <h1>Fishjam Video Call</h1>
+      <p>Status: {peerStatus}</p>
+
+      {!isJoined && <button onClick={handleJoin}>Join Room</button>}
+
+      {cameraStream && (
+        <div>
+          <h3>Your Video</h3>
+          <VideoPlayer stream={cameraStream} />
+        </div>
+      )}
+
+      <div>
+        <h3>Other Participants</h3>
+        {remotePeers.map((peer) => (
+          <div key={peer.id}>
+            {peer.cameraTrack?.stream && (
+              <VideoPlayer stream={peer.cameraTrack.stream} />
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <FishjamProvider>
+      <VideoCall />
+    </FishjamProvider>
+  );
+}
+```
+
+## Next steps
+
+Now that you have a basic app working, explore these how-to guides:
+
+- [How to manage media devices](/how-to/react/managing-devices)
+- [How to implement livestreaming](/how-to/react/livestreaming)
+- [How to work with stream middleware](/how-to/react/stream-middleware)
+- [How to handle custom sources](/how-to/react/custom-sources)
+
+Or learn more about Fishjam concepts:
+
+- [Understanding Fishjam architecture](/explanation/architecture)
+- [Room types explained](/explanation/room-types)
