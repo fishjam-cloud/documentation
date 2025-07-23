@@ -238,16 +238,6 @@ const roomName = `livestream-demo`;
 
 ## Troubleshooting
 
-### Issue: Same peer name returns same token
-
-**Problem**: Using the same `roomName` and `peerName` combination returns identical tokens.
-
-**Solution**: Use unique peer names for each test:
-
-```typescript
-const peerName = `test_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-```
-
 ### Issue: Room not found errors
 
 **Problem**: Rooms might not persist between requests.
@@ -286,7 +276,7 @@ If you need to reset your Room Manager:
 3. Click **Reset App**
 4. Get your new app UUID
 
-This will invalidate all existing tokens and give you a fresh sandbox environment.
+This will invalidate all existing tokens (including the management token!) and give you a fresh sandbox environment.
 
 ## Next steps
 

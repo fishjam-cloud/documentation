@@ -79,29 +79,6 @@ sequenceDiagram
     FM->>C1: Route stream to other peers
 ```
 
-## Room Types and Architecture
-
-### Conference Rooms
-
-- **Purpose**: Multi-participant video conferencing
-- **Media flow**: Peer-to-peer through media server
-- **Features**: Screen sharing, multiple video tracks, audio controls
-
-### Audio-only Rooms
-
-- **Purpose**: Voice-only communication
-- **Media flow**: Audio-only routing with optimized bandwidth
-- **Scaling**: Highly efficient, supports more participants
-- **Cost**: 75% cheaper than conference rooms
-
-### Livestream Rooms
-
-- **Purpose**: One-to-many livestreaming
-- **Media flow**: Single streamer sends media to multiple viewers
-- **Protocols**: Uses [WHEP/WHIP](https://blog.swmansion.com/building-interactive-streaming-apps-webrtc-whip-whep-explained-d38f4825ec90) standards for viewers/streamers
-- **Scaling**: Optimized for high viewer counts
-- **Cost**: 20% cheaper than conference rooms
-
 ## Next Steps
 
 To understand different room types in detail, see [Room Types Explained](/explanation/room-types).
