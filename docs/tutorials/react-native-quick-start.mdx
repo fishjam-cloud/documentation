@@ -56,7 +56,11 @@ Create a component that joins a room and starts streaming video:
 ```tsx
 import React, { useCallback } from "react";
 import { Button } from "react-native";
-import { useCamera, useConnection } from "@fishjam-cloud/react-native-client";
+import {
+  useCamera,
+  useConnection,
+  useSandbox,
+} from "@fishjam-cloud/react-native-client";
 
 // ---cut---
 // Check https://fishjam.io/app for your Fishjam ID
@@ -150,7 +154,7 @@ Here's a complete working example:
 
 ```tsx
 import React, { useEffect, useState } from "react";
-import { FishjamRoom } from "@fishjam-cloud/react-native-client";
+import { FishjamRoom, useSandbox } from "@fishjam-cloud/react-native-client";
 
 type RoomData = {
   url: string;
@@ -159,6 +163,7 @@ type RoomData = {
 
 // Check https://fishjam.io/app for your Fishjam ID
 const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const fishjamUrl = "...";
 const roomName = "testRoom";
 const peerName = "testUser";
 
@@ -183,7 +188,7 @@ export default function HomeScreen() {
     return null;
   }
 
-  return <FishjamRoom fishjamId={FISHJAM_ID} peerToken={peerToken} />;
+  return <FishjamRoom fishjamUrl={fishjamUrl} peerToken={peerToken} />;
 }
 ```
 
