@@ -6,7 +6,8 @@ sidebar_position: 2
 
 ## Prerequisites
 
-In order to connect, you need a **Peer Token** and the **Fishjam URL**.
+In order to connect, you need to obtain a **Peer Token** to authorize the peer in your room.
+You can get the token using the [Sandbox API](/how-to/features/room-manager-testing) if you're using the Sandbox environment, or implement your own backend service that will provide the user with a **Peer Token**.
 
 ## Connecting
 
@@ -14,7 +15,6 @@ Use the [`useConnection`](/api/web/functions/useConnection) hook to get
 the [`joinRoom`](/api/web/functions/useConnection#joinroom) function.
 
 ```tsx
-const FISHJAM_URL = "some-fishjam-url";
 const PEER_TOKEN = "some-peer-token";
 // ---cut-before---
 import { useConnection } from "@fishjam-cloud/react-client";
@@ -22,13 +22,13 @@ import React, { useCallback } from "react";
 
 export function JoinRoomButton() {
   const { joinRoom } = useConnection(); // [!code highlight]
+  // get the peer token from sandbox or your backend
+  const { getSandboxPeerToken } = useSandbox();
 
   const onJoinRoomPress = useCallback(async () => {
-    // [!code highlight:4]
-    await joinRoom({
-      url: FISHJAM_URL,
-      peerToken: PEER_TOKEN,
-    });
+    // [!code highlight:5]
+    const peerToken = await getSandboxPeerToken("Room", "User");
+    await joinRoom({ peerToken });
   }, [joinRoom]);
 
   return <button onClick={onJoinRoomPress}>Join room</button>;
