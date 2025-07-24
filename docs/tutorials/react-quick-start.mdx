@@ -35,6 +35,12 @@ A simple React web app that can join video calls and stream video between partic
 npm install @fishjam-cloud/react-client
 ```
 
+### Get your Fishjam ID
+
+1. Log in to [Fishjam Dashboard](https://fishjam.io/app)
+2. Navigate to your Sandbox environment
+3. Copy your Fishjam ID
+
 ### Set up Fishjam context
 
 Wrap your app in the `FishjamProvider` component:
@@ -47,20 +53,16 @@ import { FishjamProvider } from "@fishjam-cloud/react-client";
 const App = {} as any;
 
 // ---cut---
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <FishjamProvider>
+    <FishjamProvider fishjamId={FISHJAM_ID}>
       <App />
     </FishjamProvider>
   </React.StrictMode>,
 );
 ```
-
-### Get your Room Manager URL
-
-1. Log in to [Fishjam Dashboard](https://fishjam.io/app)
-2. Navigate to your Sandbox environment
-3. Copy your Room Manager URL - you'll need this for testing
 
 ## Step 2: Join a room and start streaming
 
@@ -73,31 +75,28 @@ import {
   useConnection,
   useCamera,
   useInitializeDevices,
+  useSandbox,
 } from "@fishjam-cloud/react-client";
-
-// Check https://fishjam.io/app/ for your Room Manager ID
-const ROOM_MANAGER_ID = "YOUR_ROOM_MANAGER_ID";
 
 export function JoinRoomButton() {
   const { joinRoom } = useConnection();
   const { selectCamera } = useCamera();
   const { initializeDevices } = useInitializeDevices();
+  const { getSandboxPeerToken } = useSandbox();
 
   const handleJoinRoom = async () => {
     const roomName = "testRoom";
     const peerName = "testUser";
 
-    // Fetch peer token from Room Manager
-    const response = await fetch(
-      `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
-    );
-    const { url, peerToken } = await response.json();
+    // In sandbox environment, you can get the peer token from our sandbox API
+    // In producton environment, you need to get it from your backend
+    const peerToken = await getSandboxPeerToken(roomName, peerName);
 
     // Start camera by selecting the first available camera
     await initializeDevices({ enableAudio: false }); // or just initializeDevices(); if you want both camera and mic
 
     // Join the room
-    await joinRoom({ url, peerToken });
+    await joinRoom({ peerToken });
   };
 
   return <button onClick={handleJoinRoom}>Join Room</button>;
@@ -192,8 +191,8 @@ import {
   useInitializeDevices,
 } from "@fishjam-cloud/react-client";
 
-// Check https://fishjam.io/app/ for your Room Manager ID
-const ROOM_MANAGER_ID = "YOUR_ROOM_MANAGER_ID";
+// Check https://fishjam.io/app/ for your Fishjam ID
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
 
 // ---cut---
 function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
@@ -212,6 +211,8 @@ function VideoCall() {
   const { cameraStream } = useCamera();
   const { remotePeers } = usePeers();
   const { initializeDevices } = useInitializeDevices();
+  const { getSandboxPeerToken } = useSandbox();
+
   const [isJoined, setIsJoined] = useState(false);
 
   const handleJoin = async () => {
@@ -221,12 +222,11 @@ function VideoCall() {
     // Initialize devices first
     await initializeDevices();
 
-    const response = await fetch(
-      `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
-    );
-    const { url, peerToken } = await response.json();
+    // In sandbox environment, you can get the peer token from our sandbox API
+    // In producton environment, you need to get it from your backend
+    const peerToken = await getSandboxPeerToken(roomName, peerName);
 
-    await joinRoom({ url, peerToken });
+    await joinRoom({ peerToken });
     setIsJoined(true);
   };
 
@@ -260,7 +260,7 @@ function VideoCall() {
 
 export default function App() {
   return (
-    <FishjamProvider>
+    <FishjamProvider fishjamId={FISHJAM_ID}>
       <VideoCall />
     </FishjamProvider>
   );
