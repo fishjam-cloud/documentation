@@ -79,7 +79,7 @@ export function StartStreamingButton({
 
   const startStreaming = useCallback(async () => {
     // In sandbox environment, you can get the peer token from our sandbox API
-    // In producton environment, you need to get it from your backend
+    // In production environment, you need to get it from your backend
     const peerToken = await getSandboxPeerToken(roomName, peerName);
 
     // Prepare camera

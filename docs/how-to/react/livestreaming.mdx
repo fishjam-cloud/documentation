@@ -52,7 +52,7 @@ export function Livestream({ viewerToken }: LivestreamProps) {
   }, [stream]);
 
   useEffect(() => {
-    connect({ token: viewerToken }, viewerToken);
+    connect({ token: viewerToken });
 
     return () => {
       disconnect();

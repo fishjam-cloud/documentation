@@ -91,7 +91,7 @@ export function JoinRoomButton() {
     const peerName = "testUser";
 
     // In sandbox environment, you can get the peer token from our sandbox API
-    // In producton environment, you need to get it from your backend
+    // In production environment, you need to get it from your backend
     const peerToken = await getSandboxPeerToken(roomName, peerName);
 
     // Start camera by selecting the first available camera
@@ -226,7 +226,7 @@ function VideoCall() {
     await initializeDevices();
 
     // In sandbox environment, you can get the peer token from our sandbox API
-    // In producton environment, you need to get it from your backend
+    // In production environment, you need to get it from your backend
     const peerToken = await getSandboxPeerToken(roomName, peerName);
 
     await joinRoom({ peerToken });

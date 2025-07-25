@@ -232,7 +232,7 @@ const { getSandboxPeerToken } = useSandbox();
 const peer1Response = await getSandboxPeerToken("multiTest", "alice");
 
 // Second peer
-const peer2Response = await getSandboxPeerToken("multiTest", "alice");
+const peer2Response = await getSandboxPeerToken("multiTest", "bob");
 ```
 
 Both peers will join the same room (`multiTest`) and can communicate with each other.
