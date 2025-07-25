@@ -54,28 +54,30 @@ Remove any Sandbox API dependencies from your client code:
 
 ```typescript
 // @noErrors: 2451
+import { useSandbox } from "@fishjam-cloud/react-client";
 import express from "express";
+
 const authenticateUser = {} as any;
 const app = express();
 
-const ROOM_MANAGER_ID = "";
+const { getSandboxPeerToken } = useSandbox();
+
 const userToken = "";
 const roomName = "";
+const userName = "";
 
 // ---cut---
 // ❌ Remove: Sandbox API calls
-const peerTo = await fetch(
-  `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager?...`,
-);
+const peerToken = await getSandboxPeerToken(roomName, userName);
 
 // ✅ Replace with: Your authenticated API
-const response = await fetch("/api/join-room", {
+const response = await fetch("https://your-backend.com/api/join-room", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
     Authorization: `Bearer ${userToken}`,
   },
-  body: JSON.stringify({ roomName }),
+  body: JSON.stringify({ roomName, userName }),
 });
 ```
 
@@ -260,7 +262,7 @@ However, if you wish to reuse a single peer over multiple days, you can make use
 
 <Tabs groupId="language">
   <TabItem value="ts" label="Node.js / TypeScript">
-    
+
     ```ts
     import { FishjamClient, RoomId, PeerId } from "@fishjam-cloud/js-server-sdk";
     const fishjamClient = new FishjamClient({

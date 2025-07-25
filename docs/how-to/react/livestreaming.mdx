@@ -33,7 +33,7 @@ The [`useLivestream`](/api/web/functions/useLivestream) hook will provide a [Med
 
 ```tsx
 import React, { useEffect, useRef } from "react";
-import { useLivestream } from "@fishjam-cloud/react-client";
+import { useLivestreamViewer } from "@fishjam-cloud/react-client";
 
 interface LivestreamProps {
   viewerToken: string;
@@ -44,7 +44,7 @@ const FISHJAM_LIVESTREAM_URL = "https://fishjam.io/api/v1/live";
 export function Livestream({ viewerToken }: LivestreamProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const { connect, disconnect, stream } = useLivestream();
+  const { connect, disconnect, stream } = useLivestreamViewer();
 
   useEffect(() => {
     if (!videoRef.current) return;
@@ -52,7 +52,7 @@ export function Livestream({ viewerToken }: LivestreamProps) {
   }, [stream]);
 
   useEffect(() => {
-    connect(FISHJAM_LIVESTREAM_URL, viewerToken);
+    connect({ token: viewerToken }, viewerToken);
 
     return () => {
       disconnect();
