@@ -110,10 +110,7 @@ Below are examples on how to use the tokens from Sandbox API in your frontend ap
     const peerName = `user_${Date.now()}`;
     const FISHJAM_ID = "...";
 
-
     const RoomView = (props: {peerToken: string}) => null;
-
-
     // ---cut---
     export default function TestScreen() {
       const [peerToken, setPeerToken] = useState<string | null>(null);
@@ -151,7 +148,6 @@ Below are examples on how to use the tokens from Sandbox API in your frontend ap
     import { FishjamProvider, useConnection, useSandbox } from "@fishjam-cloud/react-client";
 
     const FISHJAM_ID = "your-app-uuid-here";
-
     // ---cut---
     function VideoCallComponent() {
       const { joinRoom, peerStatus } = useConnection();
