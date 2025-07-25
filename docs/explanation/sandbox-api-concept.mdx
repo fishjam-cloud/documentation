@@ -50,22 +50,19 @@ const app = express();
 // What Sandbox API does internally (simplified)
 const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
 
-app.get(
-  "/room-manager",
-  async (req: express.Request, res: express.Response) => {
-    const { roomName, peerName, roomType } = req.query;
+app.get("/", async (req: express.Request, res: express.Response) => {
+  const { roomName, peerName, roomType } = req.query;
 
-    // Create or get room
-    const room = await fishjamClient.createRoom({
-      roomType: roomType as RoomConfigRoomTypeEnum,
-    });
+  // Create or get room
+  const room = await fishjamClient.createRoom({
+    roomType: roomType as RoomConfigRoomTypeEnum,
+  });
 
-    // Create or get peer
-    const { peer, peerToken } = await fishjamClient.createPeer(room.id);
+  // Create or get peer
+  const { peer, peerToken } = await fishjamClient.createPeer(room.id);
 
-    res.json({ peerToken, url: fishjamUrl });
-  },
-);
+  res.json({ peerToken, url: fishjamUrl });
+});
 ```
 
 This shows you exactly what your production backend needs to do, just with proper authentication and error handling.
@@ -74,7 +71,7 @@ This shows you exactly what your production backend needs to do, just with prope
 
 To understand how to use Sandbox API for development:
 
-- [How to use Sandbox API for testing](/how-to/features/room-manager-testing)
+- [How to use Sandbox API for testing](/how-to/features/sandbox-api-testing)
 
 To learn about building your own backend:
 

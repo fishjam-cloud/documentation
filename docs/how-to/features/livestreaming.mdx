@@ -13,9 +13,9 @@ If your case involves streaming live audio and/or video from one source to many 
 
 ### Streamer
 
-First, you need to create a room with the livestream type using our [Server SDKs](/how-to/backend/server-setup). If you are using our sandbox, the [Room Manager](/how-to/features/room-manager-testing) also allows you to create such a room. As the streaming is one-to-many, you can have only one streaming participant in that room.
+First, you need to create a room with the livestream type using our [Server SDKs](/how-to/backend/server-setup). If you are using our sandbox, the [Sandbox API](/how-to/features/sandbox-api-testing) also allows you to create such a room. As the streaming is one-to-many, you can have only one streaming participant in that room.
 
-#### Using Room Manager
+#### Using Sandbox API
 
 You can create a livestream room and obtain a peer token using this URL:
 
@@ -63,9 +63,9 @@ Livestreaming scenario allows only one video and one audio track to be sent at a
 
 ### Viewers
 
-To view the streamed content, you need to obtain a viewer token that can be generated using [Server SDKs](/how-to/backend/server-setup). If you are using our sandbox, the [Room Manager](/how-to/features/room-manager-testing) also allows you to create such a token.
+To view the streamed content, you need to obtain a viewer token that can be generated using [Server SDKs](/how-to/backend/server-setup). If you are using our sandbox, the [Sandbox API](/how-to/features/sandbox-api-testing) also allows you to create such a token.
 
-#### Using Room Manager
+#### Using Sandbox API
 
 ```
 https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager/<ROOM_NAME>/livestream-viewer-token

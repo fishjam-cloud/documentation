@@ -30,6 +30,6 @@ A token that your backend should pass to end clients to allow access to a specif
 
 The URL to your Fishjam instance. It is used by your backend server to add peers to rooms (and create rooms). It is also used by end client apps to join rooms.
 
-### Room Manager
+### Sandbox API
 
 Our test app is available **only** in the Sandbox environment. It allows you to test Fishjam without needing to add room creation functionality to your backend. You can find more details [here](/how-to/features/room-manager-testing).
