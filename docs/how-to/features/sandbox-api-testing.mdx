@@ -34,11 +34,14 @@ The Sandbox API is a development tool that lets you create rooms and peers for t
 <TabItem value="react-native" label="React Native">
 
     ```ts
-    import { useSandbox } from '@fishjam-cloud/react-native-client';
     const FISHJAM_ID = "...";
     const roomName = "testRoom";
     const peerName = "testUser";
     // ---cut---
+    import { useSandbox } from '@fishjam-cloud/react-native-client';
+
+    // ...
+
     const { getSandboxPeerToken } = useSandbox({ fishjamId: FISHJAM_ID });
     const peerToken = await getSandboxPeerToken(roomName, peerName);
     ```
@@ -48,11 +51,14 @@ The Sandbox API is a development tool that lets you create rooms and peers for t
   <TabItem value="react" label="React">
   
     ```ts
-    import { useSandbox } from '@fishjam-cloud/react-client';
     const FISHJAM_ID = "...";
     const roomName = "testRoom";
     const peerName = "testUser";
     // ---cut---
+    import { useSandbox } from '@fishjam-cloud/react-client';
+
+    // ...
+
     const { getSandboxPeerToken } = useSandbox();
     const peerToken = await getSandboxPeerToken(roomName, peerName);
     ```
@@ -104,7 +110,6 @@ Below are examples on how to use tokens from the Sandbox API in your frontend ap
     ```tsx
     import React, { useEffect, useState } from "react";
     import { Text } from "react-native";
-    import { useSandbox } from "@fishjam-cloud/react-native-client";
 
     const roomName = "testRoom";
     const peerName = `user_${Date.now()}`;
@@ -112,6 +117,8 @@ Below are examples on how to use tokens from the Sandbox API in your frontend ap
 
     const RoomView = (props: {peerToken: string}) => null;
     // ---cut---
+    import { useSandbox } from "@fishjam-cloud/react-native-client";
+
     export default function TestScreen() {
       const [peerToken, setPeerToken] = useState<string | null>(null);
       const { getSandboxPeerToken } = useSandbox({ fishjamId: FISHJAM_ID });
@@ -145,10 +152,11 @@ Below are examples on how to use tokens from the Sandbox API in your frontend ap
 
     ```tsx
     import React, { useState, useEffect } from "react";
-    import { FishjamProvider, useConnection, useSandbox } from "@fishjam-cloud/react-client";
 
     const FISHJAM_ID = "your-app-uuid-here";
     // ---cut---
+    import { FishjamProvider, useConnection, useSandbox } from "@fishjam-cloud/react-client";
+
     function VideoCallComponent() {
       const { joinRoom, peerStatus } = useConnection();
       const { getSandboxPeerToken } = useSandbox();
