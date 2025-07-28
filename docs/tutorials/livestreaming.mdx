@@ -139,7 +139,7 @@ We can now start sending media, which we can obtain from the user's camera, scre
   </TabItem>
  </Tabs>
 
-Voilà, we've published a livestream!
+Et voilà, we've published a livestream!
 
 ### Viewer setup
 
@@ -231,6 +231,7 @@ Our backend needs to do three things to be ready for streaming:
 
     // ---cut---
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
     const fishjamClient = new FishjamClient({
         fishjamUrl,
         managementToken,
@@ -257,15 +258,15 @@ Our backend needs to do three things to be ready for streaming:
     );
 
     # 1.
-    room = await fishjam_client.create_room(room_type="livestream");
+    room = await fishjam_client.create_room(room_type="livestream")
     # 2.
-    streamer_token = await fishjam_client.create_livestream_streamer_token(room.id);
+    streamer_token = await fishjam_client.create_livestream_streamer_token(room.id)
     # 3.
-    viewer_token = await fishjam_client.create_livestream_viewer_token(room.id);
+    viewer_token = await fishjam_client.create_livestream_viewer_token(room.id)
     ```
 
   </TabItem>
- </Tabs>
+</Tabs>
 
 Now, you need to supply these generated tokens to your frontend applications (e.g. by exposing a REST endpoint).
 You most likely will want to only supply these tokens to properly authenticate and authorize streamers and viewers before giving them tokens.
