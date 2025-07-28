@@ -133,8 +133,8 @@ You can read about this in detail in [Production Livestreaming with Server SDKs]
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 
     const fishjamClient = new FishjamClient({
-        fishjamUrl,
-        managementToken,
+      fishjamUrl,
+      managementToken,
     });
 
     const room = await fishjamClient.createRoom({ roomType: 'livestream', public: false });
@@ -175,7 +175,7 @@ Authorization: Bearer [VIEWER-TOKEN]
 
 ### Public livestreams
 
-For public livestreams, you don't need a token, however you still need a room of `livestream` type with `public` set to true.
+For public livestreams, you don't need a token, however you still need a room of `livestream` type with the `public` flag enabled.
 
 <Tabs groupId="language">
   <TabItem value="ts" label="Typescript">
@@ -186,8 +186,8 @@ For public livestreams, you don't need a token, however you still need a room of
     const fishjamUrl = "";
     const managementToken = "";
     const fishjamClient = new FishjamClient({
-        fishjamUrl,
-        managementToken,
+      fishjamUrl,
+      managementToken,
     });
 
     // ---cut---
