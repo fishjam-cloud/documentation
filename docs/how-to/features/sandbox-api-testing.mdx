@@ -5,11 +5,11 @@ type: how-to
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
-# Testing with Sandbox API
+# Testing with the Sandbox API
 
 **How-to Guide** - _Use Sandbox API to test your Fishjam integration quickly without a backend_
 
-Sandbox API is a development tool that lets you create rooms and peers for testing without setting up your own backend server. This guide shows you how to use it effectively.
+The Sandbox API is a development tool that lets you create rooms and peers for testing without setting up your own backend server. This guide shows you how to use it effectively.
 
 ## Prerequisites
 
@@ -28,7 +28,7 @@ Sandbox API is a development tool that lets you create rooms and peers for testi
 
 ## Step 2: Create a room and get peer tokens
 
-### Using `useSandbox` hook
+### With the `useSandbox` hook
 
 <Tabs groupId="framework">
 <TabItem value="react-native" label="React Native">
@@ -96,7 +96,7 @@ The Sandbox API returns a JSON response with connection details:
 
 ## Step 4: Use the tokens in your client app
 
-Below are examples on how to use the tokens from Sandbox API in your frontend applications:
+Below are examples on how to use tokens from the Sandbox API in your frontend applications:
 
 <Tabs groupId="platform">
   <TabItem value="react-native" label="React Native">
@@ -280,14 +280,14 @@ const roomName = `livestream-demo`;
 ## Security reminder
 
 :::danger
-**Sandbox API is not safe for production!**
+**The Sandbox API is not safe for production!**
 
 - No authentication required
 - Anyone with your Fishjam ID can join rooms
 - Identical room/peer names get the same tokens
 - No rate limiting or abuse protection
 
-Only use Sandbox API for development and testing.
+Only use the Sandbox API for development and testing.
 :::
 
 ## Resetting your app
@@ -303,10 +303,10 @@ This will invalidate all existing tokens (including the management token!) and g
 
 ## Next steps
 
-Once you've tested your integration with Sandbox API:
+Once you've tested your integration with the Sandbox API:
 
 - [Set up your own backend](/tutorials/backend-quick-start)
-- [Learn more about Sandbox API](/explanation/sandbox-api-concept)
+- [Learn more about the Sandbox API](/explanation/sandbox-api-concept)
 - [Understand security implications](/explanation/security-tokens)
 
 For production deployment:
