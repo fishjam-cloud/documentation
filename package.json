@@ -31,7 +31,7 @@
     "@fishjam-cloud/react-native-client": "link:./packages/mobile-client-sdk/packages/react-native-client",
     "@mdx-js/react": "^3.1.0",
     "@shikijs/rehype": "^3.6.0",
-    "@shikijs/transformers": "^3.6.0",
+    "@shikijs/transformers": "^3.8.1",
     "@swmansion/smelter": "^0.2.1",
     "@swmansion/smelter-web-wasm": "^0.2.1",
     "@types/react": "^19.1.8",
