@@ -11,29 +11,28 @@ This article will guide you through the process of connecting to a Fishjam room.
 
 ## Getting URL and token
 
-In order to connect, you need to retrieve the **Fishjam URL** and **Peer Token** (the token that will authenticate the peer in
+In order to connect, you need to obtain a **Peer Token** (the token that will authenticate the peer in
 your Room).
 
 <Tabs groupId="app-type">
 
   <TabItem value="sandbox" label="Sandbox App">
 
-Once you get your account on [Fishjam](https://fishjam.io), you will have access to the Sandbox App. This app comes
-with a pre-configured test service called [Room Manager](/how-to/features/room-manager-testing). This is basically a service that will create a Room, add your app as
+Once you create your account on [Fishjam](https://fishjam.io), you will have access to the Sandbox environment as part of the Mini Jar plan.
+While using the Sandbox environment, [you can use the Sandbox API](/how-to/features/sandbox-api-testing) to generate peer tokens for testing or development purposes.
+This is basically a service that will create a Room, add your app as
 the Room's Peer, and return the token required to use that Room.
 
-To use that, simply call `fetch`:
-
 ```ts
-const ROOM_MANAGER_ID = "..."; // Check https://fishjam.io/app/ for your Room Manager ID
+import { useSandbox } from "@fishjam-cloud/react-native-client";
+const SANDBOX_FISHJAM_ID = "...";
 const roomName = "room";
 const peerName = "user";
 // ---cut---
-const response = await fetch(
-  `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}room-manager/?roomName=${roomName}&peerName=${peerName}`,
-);
 
-const { fishjamUrl, peerToken } = await response.json();
+// The `useSandbox` hook will work ONLY with the FISHJAM_ID of the Sandbox environment
+const { getSandboxPeerToken } = useSandbox({ fishjamId: SANDBOX_FISHJAM_ID });
+const peerToken = await getSandboxPeerToken(roomName, peerName);
 ```
 
   </TabItem>
@@ -47,35 +46,28 @@ follow our [server setup instructions](/how-to/backend/server-setup).
 
 ## Connecting
 
-In order to connect, call [`joinRoom`](/api/mobile/functions/useConnection#joinroom) method with data from the previous step:
+In order to connect, call [`joinRoom`](/api/mobile/functions/useConnection#joinroom) method with the `peerToken` and the fishjam ID:
 
 ```tsx
 import React, { useCallback } from "react";
 import { Button } from "react-native";
-import { useConnection } from "@fishjam-cloud/react-native-client";
+import { useConnection, useSandbox } from "@fishjam-cloud/react-native-client";
 
-// Check https://fishjam.io/app/ for your Room Manager ID
-const ROOM_MANAGER_ID = "...";
+// Check https://fishjam.io/app/ for your Fishjam ID
+const FISHJAM_ID = "...";
 
 export function JoinRoomButton() {
   const { joinRoom } = useConnection(); // [!code highlight]
+  const { getSandboxPeerToken } = useSandbox({ fishjamId: FISHJAM_ID });
 
   const onPressJoin = useCallback(async () => {
-    const { url, peerToken } = await getRoomDetails("Room", "User");
+    // in production environment, get the peerToken from your backend
+    const peerToken = await getSandboxPeerToken("Room", "User");
 
-    await joinRoom({ url, peerToken }); // [!code highlight]
+    await joinRoom({ fishjamId: FISHJAM_ID, peerToken }); // [!code highlight]
   }, [joinRoom]);
 
   return <Button onPress={onPressJoin} title="Join Room" />;
-}
-
-async function getRoomDetails(roomName: string, peerName: string) {
-  // This will work ONLY for the Sandbox App
-  const response = await fetch(
-    `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
-  );
-  const { fishjamUrl, peerToken } = await response.json();
-  return { url: fishjamUrl, peerToken };
 }
 ```
 

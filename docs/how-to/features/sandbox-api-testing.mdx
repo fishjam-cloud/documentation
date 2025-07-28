@@ -5,50 +5,77 @@ type: how-to
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
-# Testing with Room Manager
+# Testing with the Sandbox API
 
-**How-to Guide** - _Use Room Manager to test your Fishjam integration quickly without a backend_
+**How-to Guide** - _Use Sandbox API to test your Fishjam integration quickly without a backend_
 
-Room Manager is a development tool that lets you create rooms and peers for testing without setting up your own backend server. This guide shows you how to use it effectively.
+The Sandbox API is a development tool that lets you create rooms and peers for testing without setting up your own backend server. This guide shows you how to use it effectively.
 
 ## Prerequisites
 
 - Access to [Fishjam Dashboard](https://fishjam.io/app)
 - A Sandbox environment set up
 
-## Step 1: Get your Room Manager URL
+## Step 1: Get your Fishjam ID
 
 1. Log in to [Fishjam Dashboard](https://fishjam.io/app)
-2. Navigate to your [Sandbox App](https://fishjam.io/app/sandbox)
-3. Copy your **Room Manager URL** - it will look like:
-   ```
-   https://fishjam.io/api/v1/connect/YOUR_APP_UUID/room-manager
-   ```
+2. Navigate to your [Sandbox Environment](https://fishjam.io/app/sandbox)
+3. Copy your **Fishjam ID**
 
 :::note
-`YOUR_APP_UUID` is your unique sandbox identifier. Anyone who knows this ID can join your rooms, so keep it secure during development.
+`FISHJAM_ID` is your unique sandbox identifier. Anyone who knows this ID can join your rooms, so keep it secure during development.
 :::
 
 ## Step 2: Create a room and get peer tokens
 
-### Using HTTP GET requests
+### With the `useSandbox` hook
 
-The Room Manager API uses simple GET requests. Add query parameters to create rooms and peers:
+<Tabs groupId="framework">
+<TabItem value="react-native" label="React Native">
 
-```
-https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=foo&peerName=bar&roomType=conference
-```
+    ```ts
+    const FISHJAM_ID = "...";
+    const roomName = "testRoom";
+    const peerName = "testUser";
+    // ---cut---
+    import { useSandbox } from '@fishjam-cloud/react-native-client';
 
-### Required parameters:
+    // ...
+
+    const { getSandboxPeerToken } = useSandbox({ fishjamId: FISHJAM_ID });
+    const peerToken = await getSandboxPeerToken(roomName, peerName);
+    ```
+
+  </TabItem>
+
+  <TabItem value="react" label="React">
+  
+    ```ts
+    const FISHJAM_ID = "...";
+    const roomName = "testRoom";
+    const peerName = "testUser";
+    // ---cut---
+    import { useSandbox } from '@fishjam-cloud/react-client';
+
+    // ...
+
+    const { getSandboxPeerToken } = useSandbox();
+    const peerToken = await getSandboxPeerToken(roomName, peerName);
+    ```
+
+  </TabItem>
+ </Tabs>
+
+### Required parameters
 
 - `roomName` - Name of the room to create/join
 - `peerName` - Name for the peer joining the room
 
-### Optional parameters:
+### Optional parameters
 
 - `roomType` - Type of room to create (defaults to `conference`)
 
-### Room types available:
+### Room types available
 
 - `conference` - For video/audio conferencing (default)
 - `audio-only` - For audio-only conferencing
@@ -56,7 +83,7 @@ https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=foo&pee
 
 ## Step 3: Handle the response
 
-The Room Manager returns a JSON response with connection details:
+The Sandbox API returns a JSON response with connection details:
 
 ```json
 {
@@ -75,7 +102,7 @@ The Room Manager returns a JSON response with connection details:
 
 ## Step 4: Use the tokens in your client app
 
-Below are examples on how to use the tokens from room manager in your frontend applications:
+Below are examples on how to use tokens from the Sandbox API in your frontend applications:
 
 <Tabs groupId="platform">
   <TabItem value="react-native" label="React Native">
@@ -83,41 +110,38 @@ Below are examples on how to use the tokens from room manager in your frontend a
     ```tsx
     import React, { useEffect, useState } from "react";
     import { Text } from "react-native";
-    import { FishjamRoom } from "@fishjam-cloud/react-native-client";
 
     const roomName = "testRoom";
     const peerName = `user_${Date.now()}`;
-    const YOUR_APP_UUID = "your-app-uuid-here";
+    const FISHJAM_ID = "...";
 
+    const RoomView = (props: {peerToken: string}) => null;
     // ---cut---
+    import { useSandbox } from "@fishjam-cloud/react-native-client";
+
     export default function TestScreen() {
-      const [roomData, setRoomData] = useState<{
-        url: string;
-        peerToken: string;
-      } | null>(null);
+      const [peerToken, setPeerToken] = useState<string | null>(null);
+      const { getSandboxPeerToken } = useSandbox({ fishjamId: FISHJAM_ID });
 
       useEffect(() => {
-        const fetchRoomData = async () => {
+        const fetchPeerToken = async () => {
           try {
-            const response = await fetch(
-              `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=${roomName}&peerName=${peerName}&roomType=conference`,
-            );
-            const data = await response.json();
-            setRoomData(data);
+            const token = await getSandboxPeerToken(roomName, peerName);
+            setPeerToken(token);
           } catch (error) {
             console.error("Failed to create room:", error);
           }
         };
 
-        fetchRoomData();
+        fetchPeerToken();
       }, []);
 
-      if (!roomData) {
+      if (!peerToken) {
         return <Text>Creating room...</Text>;
       }
 
       return (
-        <FishjamRoom fishjamUrl={roomData.url} peerToken={roomData.peerToken} />
+        <RoomView peerToken={peerToken} />
       );
     }
     ```
@@ -128,36 +152,32 @@ Below are examples on how to use the tokens from room manager in your frontend a
 
     ```tsx
     import React, { useState, useEffect } from "react";
-    import { FishjamProvider, useConnection } from "@fishjam-cloud/react-client";
 
-    const YOUR_APP_UUID = "your-app-uuid-here";
-
+    const FISHJAM_ID = "your-app-uuid-here";
     // ---cut---
+    import { FishjamProvider, useConnection, useSandbox } from "@fishjam-cloud/react-client";
+
     function VideoCallComponent() {
-      const { joinRoom } = useConnection();
-      const [isConnected, setIsConnected] = useState(false);
+      const { joinRoom, peerStatus } = useConnection();
+      const { getSandboxPeerToken } = useSandbox();
 
       const handleJoinRoom = async () => {
         const roomName = "testRoom";
         const peerName = `user_${Date.now()}`;
 
         try {
-          const response = await fetch(
-            `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=${roomName}&peerName=${peerName}`,
-          );
-          const { url, peerToken } = await response.json();
-
-          await joinRoom({ url, peerToken });
-          setIsConnected(true);
+          const peerToken = await getSandboxPeerToken(roomName, peerName)
+          await joinRoom({ peerToken });
         } catch (error) {
           console.error("Failed to join room:", error);
         }
       };
 
+      const isConnected = peerStatus === "connected";
+
       return (
         <div>
-          {!isConnected && <button onClick={handleJoinRoom}>Join Room</button>}
-          {isConnected && <p>Connected to room!</p>}
+          {isConnected ? <p>Connected to room!</p> : <button onClick={handleJoinRoom}>Join Room</button>}
         </div>
       );
     }
@@ -176,36 +196,47 @@ Below are examples on how to use the tokens from room manager in your frontend a
 
 ## Step 5: Test different room types
 
-### Testing audio-only rooms:
+### Testing audio-only rooms
 
-```
-const audioOnlyUrl = `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=audioTest&peerName=user1&roomType=audio-only`;
+```ts
+import { useSandbox } from "@fishjam-cloud/react-client";
+const { getSandboxPeerToken } = useSandbox();
+// ---cut---
+const audioOnlyUrl = await getSandboxPeerToken(
+  "audioTest",
+  "user1",
+  "audio_only",
+);
 ```
 
-### Testing livestream rooms:
+### Testing livestream rooms
 
-```
+```ts
+import { useSandbox } from "@fishjam-cloud/react-client";
+const { getSandboxLivestream, getSandboxViewerToken } = useSandbox();
+// ---cut---
+
+const livestreamName = "livestream1";
 // For the streamer
-const streamerUrl = `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=liveStream&peerName=streamer&roomType=livestream`;
+const streamerUrl = await getSandboxLivestream(livestreamName);
 
 // For viewers, you need a viewer token (different endpoint)
-const viewerTokenUrl = `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager/liveStream/livestream-viewer-token`;
+const viewerTokenUrl = await getSandboxViewerToken(livestreamName);
 ```
 
 ## Step 6: Handle multiple peers
 
 To test with multiple participants, create multiple peer tokens with different peer names:
 
-```
+```ts
+import { useSandbox } from "@fishjam-cloud/react-client";
+const { getSandboxPeerToken } = useSandbox();
+// ---cut---
 // First peer
-const peer1Response = await fetch(
-  `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=multiTest&peerName=alice`,
-);
+const peer1Response = await getSandboxPeerToken("multiTest", "alice");
 
 // Second peer
-const peer2Response = await fetch(
-  `https://fishjam.io/api/v1/connect/${YOUR_APP_UUID}/room-manager?roomName=multiTest&peerName=bob`,
-);
+const peer2Response = await getSandboxPeerToken("multiTest", "bob");
 ```
 
 Both peers will join the same room (`multiTest`) and can communicate with each other.
@@ -214,14 +245,14 @@ Both peers will join the same room (`multiTest`) and can communicate with each o
 
 ### Pattern 1: Random room names for isolation
 
-```typescript
+```ts
 const roomName = `test_${Math.random().toString(36).substring(7)}`;
 const peerName = `user_${Date.now()}`;
 ```
 
 ### Pattern 2: Consistent naming for repeated tests
 
-```typescript
+```ts
 // @noErrors: 2451
 const roomName = "development-room";
 const peerName = `developer_1`;
@@ -229,7 +260,7 @@ const peerName = `developer_1`;
 
 ### Pattern 3: Feature-specific room names
 
-```typescript
+```ts
 // @noErrors: 2451
 const roomName = `screenshare-test-${Date.now()}`;
 const roomName = `audio-only-test`;
@@ -246,44 +277,44 @@ const roomName = `livestream-demo`;
 
 ### Issue: Connection failures
 
-**Problem**: Invalid app UUID or network issues.
+**Problem**: Invalid Fishjam ID or network issues.
 
 **Solution**:
 
-1. Verify your app UUID in the Fishjam Dashboard
+1. Verify your Fishjam ID in the Fishjam Dashboard
 2. Check network connectivity
 3. Ensure you're using the sandbox environment
 
 ## Security reminder
 
 :::danger
-**Room Manager is not safe for production!**
+**The Sandbox API is not safe for production!**
 
 - No authentication required
-- Anyone with your app UUID can join rooms
+- Anyone with your Fishjam ID can join rooms
 - Identical room/peer names get the same tokens
 - No rate limiting or abuse protection
 
-Only use Room Manager for development and testing.
+Only use the Sandbox API for development and testing.
 :::
 
 ## Resetting your app
 
-If you need to reset your Room Manager:
+If you need to reset your Sandbox API:
 
 1. Go to [Fishjam Dashboard](https://fishjam.io/app/sandbox)
 2. Click **Settings**
 3. Click **Reset App**
-4. Get your new app UUID
+4. Get your new Fishjam ID
 
 This will invalidate all existing tokens (including the management token!) and give you a fresh sandbox environment.
 
 ## Next steps
 
-Once you've tested your integration with Room Manager:
+Once you've tested your integration with the Sandbox API:
 
 - [Set up your own backend](/tutorials/backend-quick-start)
-- [Learn more about Room Manager](/explanation/room-manager-concept)
+- [Learn more about the Sandbox API](/explanation/sandbox-api-concept)
 - [Understand security implications](/explanation/security-tokens)
 
 For production deployment:

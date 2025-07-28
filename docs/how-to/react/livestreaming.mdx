@@ -28,12 +28,12 @@ Any additional tracks will be ignored and will not be available to the viewers.
 - A peer connected and streaming in a room of `livestream` type
 - A [viewer token](/how-to/features/livestreaming) generated for that room
 
-Fishjam SDK provides the [`useLivestream`](/api/web/functions/useLivestream) hook to receive the broadcasted stream.
-The [`useLivestream`](/api/web/functions/useLivestream) hook will provide a [MediaStream](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream) object once the connection with Fishjam is established.
+Fishjam SDK provides the [`useLivestreamViewer`](/api/web/functions/useLivestreamViewer) hook to receive the broadcasted stream.
+The [`useLivestreamViewer`](/api/web/functions/useLivestreamViewer) hook will provide a [MediaStream](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream) object once the connection with Fishjam is established.
 
 ```tsx
 import React, { useEffect, useRef } from "react";
-import { useLivestream } from "@fishjam-cloud/react-client";
+import { useLivestreamViewer } from "@fishjam-cloud/react-client";
 
 interface LivestreamProps {
   viewerToken: string;
@@ -44,7 +44,7 @@ const FISHJAM_LIVESTREAM_URL = "https://fishjam.io/api/v1/live";
 export function Livestream({ viewerToken }: LivestreamProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const { connect, disconnect, stream } = useLivestream();
+  const { connect, disconnect, stream } = useLivestreamViewer();
 
   useEffect(() => {
     if (!videoRef.current) return;
@@ -52,7 +52,7 @@ export function Livestream({ viewerToken }: LivestreamProps) {
   }, [stream]);
 
   useEffect(() => {
-    connect(FISHJAM_LIVESTREAM_URL, viewerToken);
+    connect({ token: viewerToken });
 
     return () => {
       disconnect();
