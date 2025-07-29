@@ -13,21 +13,21 @@ import TabItem from "@theme/TabItem";
 This explanation only applies to Fishjam rooms with type `livestream`.
 :::
 
-When livestreaming with Fishjam, you have the ability to chose whether your livestream is `private` or `public`.
+When livestreaming with Fishjam, you can chose to make your livestream `private` or `public`.
 By default, created livestreams are `private`, to prevent possible bugs.
 
 <Tabs groupId="language">
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    const fishjamUrl = "";
+    const fishjamId = "";
     const managementToken = "";
 
     // ---cut---
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 
     const fishjamClient = new FishjamClient({
-      fishjamUrl,
+      fishjamId,
       managementToken,
     });
 
@@ -43,7 +43,7 @@ By default, created livestreams are `private`, to prevent possible bugs.
     from fishjam import FishjamClient
 
     fishjam_client = FishjamClient(
-      fishjam_url=fishjam_url,
+      fishjam_id=fishjam_id,
       management_token=management_token,
     );
 
@@ -54,7 +54,7 @@ By default, created livestreams are `private`, to prevent possible bugs.
   </TabItem>
 </Tabs>
 
-The choice you make affects how **viewers** connect to the livestream and has no affect on streamers.
+The choice you make affects how **viewers** connect to the livestream and has no effect on streamers.
 
 ## Private livestreams
 
@@ -71,14 +71,14 @@ Note that for development purposes, you can [use the Sandbox API to generate a v
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    const fishjamUrl = "";
+    const fishjamId = "";
     const managementToken = "";
 
     // ---cut---
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 
     const fishjamClient = new FishjamClient({
-      fishjamUrl,
+      fishjamId,
       managementToken,
     });
 
@@ -95,7 +95,7 @@ Note that for development purposes, you can [use the Sandbox API to generate a v
     from fishjam import FishjamClient
 
     fishjam_client = FishjamClient(
-      fishjam_url=fishjam_url,
+      fishjam_id=fishjam_id,
       management_token=management_token,
     );
 
@@ -119,9 +119,10 @@ Once you've created a viewer token, you can connect to a room using the Fishjam 
     // ---cut---
     import { useLivestreamViewer } from '@fishjam-cloud/react-client';
 
-    const { connect } = useLivestreamViewer();
+    const { connect, stream } = useLivestreamViewer();
 
     await connect({ token: viewerToken });
+    // after connecting stream will be available
     ```
 
   </TabItem>
@@ -158,9 +159,10 @@ Once you've created a room of type `livestream` with the `public` flag enabled, 
     // ---cut---
     import { useLivestreamViewer } from '@fishjam-cloud/react-client';
 
-    const { connect } = useLivestreamViewer();
+    const { connect, stream } = useLivestreamViewer();
 
     await connect({ streamId: roomId });
+    // after connecting stream will be available
     ```
 
   </TabItem>

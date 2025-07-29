@@ -226,14 +226,14 @@ Our backend needs to do three things to be ready for streaming:
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    const fishjamUrl = "";
+    const fishjamId = "";
     const managementToken = "";
 
     // ---cut---
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 
     const fishjamClient = new FishjamClient({
-      fishjamUrl,
+      fishjamId,
       managementToken,
     });
 
@@ -253,7 +253,7 @@ Our backend needs to do three things to be ready for streaming:
     from fishjam import FishjamClient
 
     fishjam_client = FishjamClient(
-      fishjam_url=fishjam_url,
+      fishjam_id=fishjam_id,
       management_token=management_token,
     );
 

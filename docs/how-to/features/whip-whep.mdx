@@ -50,14 +50,14 @@ You can read about this in detail in [Production Livestreaming with Server SDKs]
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    const fishjamUrl = "";
+    const fishjamId = "";
     const managementToken = "";
 
     // ---cut---
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 
     const fishjamClient = new FishjamClient({
-        fishjamUrl,
+        fishjamId,
         managementToken,
     });
 
@@ -73,7 +73,7 @@ You can read about this in detail in [Production Livestreaming with Server SDKs]
     from fishjam import FishjamClient
 
     fishjam_client = FishjamClient(
-      fishjam_url=fishjam_url,
+      fishjam_id=fishjam_id,
       management_token=management_token,
     );
 
@@ -126,14 +126,14 @@ You can read about this in detail in [Production Livestreaming with Server SDKs]
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    const fishjamUrl = "";
+    const fishjamId = "";
     const managementToken = "";
 
     // ---cut---
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 
     const fishjamClient = new FishjamClient({
-      fishjamUrl,
+      fishjamId,
       managementToken,
     });
 
@@ -152,7 +152,7 @@ You can read about this in detail in [Production Livestreaming with Server SDKs]
     from fishjam import FishjamClient
 
     fishjam_client = FishjamClient(
-      fishjam_url=fishjam_url,
+      fishjam_id=fishjam_id,
       management_token=management_token,
     );
 
@@ -183,10 +183,10 @@ For public livestreams, you don't need a token, however you still need a room of
     ```ts
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 
-    const fishjamUrl = "";
+    const fishjamId = "";
     const managementToken = "";
     const fishjamClient = new FishjamClient({
-      fishjamUrl,
+      fishjamId,
       managementToken,
     });
 
