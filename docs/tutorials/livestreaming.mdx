@@ -42,8 +42,7 @@ The easiest way to obtain a sandbox streamer token is by using the Sandbox API i
     const {
       streamerToken,
       room: { id: roomId },
-    } = await getSandboxLivestream("example-room");
-
+    } = await getSandboxLivestream('example-room');
     ```
 
   </TabItem>
@@ -51,6 +50,13 @@ The easiest way to obtain a sandbox streamer token is by using the Sandbox API i
   <TabItem value="react-native" label="React Native">
 
     ```tsx
+    const FISHJAM_ID = '';
+
+    // ---cut---
+    import { useSandbox } from '@fishjam-cloud/react-native-client';
+
+    const { getSandboxLivestream } = useSandbox({ fishjamId: FISHJAM_ID });
+    const { streamerToken } = await getSandboxLivestream('example-room');
     ```
 
   </TabItem>
@@ -66,8 +72,8 @@ We can now start sending media, which we can obtain from the user's camera, scre
       <TabItem value="camera" label="Camera + Mic">
   
         ```tsx
-        const streamerToken = "";
-        const roomId = "";
+        const streamerToken = '';
+        const roomId = '';
 
         // ---cut---
         import {
@@ -100,8 +106,8 @@ We can now start sending media, which we can obtain from the user's camera, scre
       <TabItem value="screen" label="Screen Share">
 
         ```tsx
-        const streamerToken = "";
-        const roomId = "";
+        const streamerToken = '';
+        const roomId = '';
 
         // ---cut---
         import {
@@ -132,9 +138,34 @@ We can now start sending media, which we can obtain from the user's camera, scre
   </TabItem>
 
   <TabItem value="react-native" label="React Native">
+    <Tabs className="smalltabs" groupId="media-source">
+      <TabItem value="camera" label="Camera + Mic">
 
-    ```tsx
-    ```
+        ```tsx
+        import React from 'react';
+
+        const streamerToken = '';
+        const roomId = '';
+
+        // ---cut---
+        import {
+          LivestreamStreamer,
+          useLivestreamStreamer,
+          cameras,
+        } from '@fishjam-cloud/react-native-client';
+
+        const { connect } = useLivestreamStreamer({ camera: cameras[0] });
+
+        // ...
+
+        await connect(streamerToken);
+
+        // Render the livestream
+        <LivestreamStreamer />
+        ```
+
+      </TabItem>
+    </Tabs>
 
   </TabItem>
  </Tabs>
@@ -163,8 +194,7 @@ We obtain a sandbox viewer token using the Sandbox API in the client SDKs:
     import { useSandbox } from '@fishjam-cloud/react-client';
 
     const { getSandboxViewerToken } = useSandbox();
-    const viewerToken = await getSandboxViewerToken("example-room");
-
+    const viewerToken = await getSandboxViewerToken('example-room');
     ```
 
   </TabItem>
@@ -172,6 +202,15 @@ We obtain a sandbox viewer token using the Sandbox API in the client SDKs:
   <TabItem value="react-native" label="React Native">
 
     ```tsx
+    import React from 'react';
+
+    const FISHJAM_ID = '';
+
+    // ---cut---
+    import { useSandbox } from '@fishjam-cloud/react-native-client';
+
+    const { getSandboxViewerToken } = useSandbox({ fishjamId: FISHJAM_ID });
+    const viewerToken = await getSandboxViewerToken('example-room');
     ```
 
   </TabItem>
@@ -185,7 +224,7 @@ We can now begin receiving the stream
   <TabItem value="react" label="React">
   
     ```tsx
-    const viewerToken = "";
+    const viewerToken = '';
 
     // ---cut---
     import { useLivestreamViewer } from '@fishjam-cloud/react-client';
@@ -201,6 +240,22 @@ We can now begin receiving the stream
   <TabItem value="react-native" label="React Native">
 
     ```tsx
+    import React from 'react';
+
+    const viewerToken = '';
+
+    // ---cut---
+    import {
+      LivestreamViewer,
+      useLivestreamViewer,
+    } from '@fishjam-cloud/react-native-client';
+
+    const { connect } = useLivestreamViewer();
+
+    await connect({ token: viewerToken });
+
+    // Render the livestream
+    <LivestreamViewer />
     ```
 
   </TabItem>
@@ -226,8 +281,8 @@ Our backend needs to do three things to be ready for streaming:
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    const fishjamId = "";
-    const managementToken = "";
+    const fishjamId = '';
+    const managementToken = '';
 
     // ---cut---
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
