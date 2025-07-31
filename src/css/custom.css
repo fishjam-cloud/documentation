@@ -47,4 +47,8 @@ html[data-theme="light"] header.heroBanner_src-pages-index-module {
   background-color: white;
 }
 
+.smalltabs {
+  font-size: 0.8rem;
+}
+
 @import url("./_shiki.css");
