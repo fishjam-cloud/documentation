@@ -6,7 +6,7 @@ sidebar_position: 0
 import InstallPackage from "../how-to/react-native/_components/install-package.mdx";
 import ConfigurePermissions from "../how-to/react-native/_components/configure-permissions.mdx";
 
-# Tutorial: React Native Quick Start
+# React Native Quick Start
 
 This tutorial will guide you through integrating Fishjam into your React Native application step by step.  
 By the end, you'll have a working video streaming app and understand the core concepts.
@@ -43,11 +43,11 @@ npx expo prebuild
 
 <ConfigurePermissions />
 
-### Get your Room Manager URL
+### Get your Fishjam ID
 
 1. Log in to [Fishjam Dashboard](https://fishjam.io/app)
 2. Navigate to your Sandbox environment
-3. Copy your Room Manager URL - you'll need this for testing
+3. Copy your Fishjam ID
 
 ## Step 2: Join a room and start streaming
 
@@ -56,11 +56,15 @@ Create a component that joins a room and starts streaming video:
 ```tsx
 import React, { useCallback } from "react";
 import { Button } from "react-native";
-import { useCamera, useConnection } from "@fishjam-cloud/react-native-client";
+import {
+  useCamera,
+  useConnection,
+  useSandbox,
+} from "@fishjam-cloud/react-native-client";
 
 // ---cut---
-// Check https://fishjam.io/app for your Room Manager ID
-const ROOM_MANAGER_ID = "YOUR_ROOM_MANAGER_ID";
+// Check https://fishjam.io/app for your Fishjam ID
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
 
 export function StartStreamingButton({
   roomName,
@@ -71,19 +75,18 @@ export function StartStreamingButton({
 }) {
   const { prepareCamera } = useCamera();
   const { joinRoom } = useConnection();
+  const { getSandboxPeerToken } = useSandbox({ fishjamId: FISHJAM_ID });
 
   const startStreaming = useCallback(async () => {
-    // Fetch peer token from Room Manager
-    const response = await fetch(
-      `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager/?roomName=${roomName}&peerName=${peerName}`,
-    );
-    const { url, peerToken } = await response.json();
+    // In sandbox environment, you can get the peer token from our sandbox API
+    // In production environment, you need to get it from your backend
+    const peerToken = await getSandboxPeerToken(roomName, peerName);
 
     // Prepare camera
     await prepareCamera({ cameraEnabled: true });
 
     // Join the room
-    await joinRoom({ url, peerToken });
+    await joinRoom({ peerToken, fishjamId: FISHJAM_ID });
   }, [joinRoom, prepareCamera, roomName, peerName]);
 
   return <Button title="Start Streaming" onPress={startStreaming} />;
@@ -151,44 +154,41 @@ Here's a complete working example:
 
 ```tsx
 import React, { useEffect, useState } from "react";
-import { FishjamRoom } from "@fishjam-cloud/react-native-client";
+import { FishjamRoom, useSandbox } from "@fishjam-cloud/react-native-client";
 
 type RoomData = {
   url: string;
   peerToken: string;
 };
 
-// Check https://fishjam.io/app/ for your Room Manager ID
-const ROOM_MANAGER_ID = "YOUR_ROOM_MANAGER_ID";
+// Check https://fishjam.io/app for your Fishjam ID
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const fishjamUrl = "...";
 const roomName = "testRoom";
 const peerName = "testUser";
 
 // ---cut---
 export default function HomeScreen() {
-  const [roomData, setRoomData] = useState<RoomData | null>(null);
+  const [peerToken, setPeerToken] = useState<string | null>(null);
+  const { getSandboxPeerToken } = useSandbox({ fishjamId: FISHJAM_ID });
 
   useEffect(() => {
-    const fetchRoomData = async () => {
+    const fetchPeerToken = async () => {
       try {
-        const response = await fetch(
-          `https://fishjam.io/api/v1/connect/${ROOM_MANAGER_ID}/room-manager?roomName=${roomName}&peerName=${peerName}`,
-        );
-        const responseData = await response.json();
-        setRoomData(responseData);
+        const peerToken = await getSandboxPeerToken(roomName, peerName);
+        setPeerToken(peerToken);
       } catch (_) {
-        setRoomData(null);
+        setPeerToken(null);
       }
     };
-    fetchRoomData();
+    fetchPeerToken();
   }, []);
 
-  if (!roomData) {
+  if (!peerToken) {
     return null;
   }
 
-  return (
-    <FishjamRoom fishjamUrl={roomData.url} peerToken={roomData.peerToken} />
-  );
+  return <FishjamRoom fishjamUrl={fishjamUrl} peerToken={peerToken} />;
 }
 ```
 

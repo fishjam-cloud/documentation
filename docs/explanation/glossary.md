@@ -26,10 +26,10 @@ A secret token that should be stored on your backend. It allows you to create ro
 
 A token that your backend should pass to end clients to allow access to a specific room.
 
-### Fishjam URL
+### Fishjam ID
 
-The URL to your Fishjam instance. It is used by your backend server to add peers to rooms (and create rooms). It is also used by end client apps to join rooms.
+The ID of your Fishjam instance. It is used by your backend server to add peers to rooms (and create rooms). It is also used by end client apps to join rooms.
 
-### Room Manager
+### Sandbox API
 
-Our test app is available **only** in the Sandbox environment. It allows you to test Fishjam without needing to add room creation functionality to your backend. You can find more details [here](/how-to/features/room-manager-testing).
+A simple testing API allowing you to test Fishjam features without requiring you to add any functionalities to your backend. As the name suggests, it's available **only** in the Sandbox environment. You can find more details [here](/how-to/features/sandbox-api-testing).
