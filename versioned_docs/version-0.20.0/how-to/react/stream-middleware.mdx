@@ -1,0 +1,98 @@
+---
+sidebar_position: 6
+---
+
+# Stream middleware
+
+Stream middleware in Fishjam allows you to intercept and manipulate media tracks before they are sent to the Fishjam server.
+This feature is powerful for applying effects, custom encodings, or any other transformations to the media stream.
+
+## Overview
+
+Define a [`TrackMiddleware`](/api/web/type-aliases/TrackMiddleware) function which takes a `MediaStreamTrack` and returns an object containing the modified `MediaStreamTrack`
+and an optional `onClear` function, which is called when the middleware needs to be removed or reapplied when a device changes.
+
+### Type definition
+
+```typescript
+export type TrackMiddleware = (
+  track: MediaStreamTrack,
+) => { track: MediaStreamTrack; onClear?: () => void } | null;
+```
+
+### Setting middleware
+
+You can set the middleware for your media tracks using [`setTrackMiddleware`](/api/web/functions/useCamera) method. This method accepts a `TrackMiddleware` or `null` for removing previously set middleware.
+
+### Example: Applying a blur effect
+
+The following example demonstrates how to apply a custom blur effect to the camera track using the [`useCamera`](/api/web/functions/useCamera) hook and middleware.
+
+```tsx
+class BlurProcessor {
+  track: MediaStreamTrack;
+
+  constructor(stream: MediaStream) {
+    this.track = this.applyBlurEffect(stream);
+  }
+
+  private applyBlurEffect(stream: MediaStream): MediaStreamTrack {
+    return stream.getVideoTracks()[0];
+  }
+
+  destroy() {}
+}
+
+// ---cut---
+import React, { useCallback, useEffect, useRef } from "react";
+import type { TrackMiddleware } from "@fishjam-cloud/react-client";
+import { useCamera } from "@fishjam-cloud/react-client";
+
+export function CameraWithBlurEffect() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  // [!code highlight:2]
+  const { cameraStream, currentCameraMiddleware, setCameraTrackMiddleware } =
+    useCamera();
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+    videoRef.current.srcObject = cameraStream ?? null;
+  }, [cameraStream]);
+
+  // Define blur middleware
+  const blurMiddleware: TrackMiddleware = useCallback(
+    (track: MediaStreamTrack) => {
+      const streamToBlur = new MediaStream([track]);
+      // BlurProcessor is just an example,
+      // process the stream however you need
+      const blurProcessor = new BlurProcessor(streamToBlur);
+
+      return {
+        track: blurProcessor.track,
+        onClear: () => blurProcessor.destroy(),
+      };
+    },
+    [],
+  );
+
+  // Check if the current middleware is blur
+  const isBlurEnabled = currentCameraMiddleware === blurMiddleware;
+
+  // Toggle blur effect
+  const toggleBlur = () => {
+    setCameraTrackMiddleware(isBlurEnabled ? null : blurMiddleware); // [!code highlight]
+  };
+
+  return (
+    <>
+      <button onClick={toggleBlur}>
+        {isBlurEnabled ? "Disable Blur" : "Enable Blur"}
+      </button>
+
+      {cameraStream && <video ref={videoRef} autoPlay />}
+    </>
+  );
+}
+```
+
+This example provides a button to toggle the blur effect on and off. The `BlurProcessor` handles the actual processing logic and is assumed to be implemented elsewhere.

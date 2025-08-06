@@ -1,0 +1,130 @@
+---
+type: explanation
+sidebar_position: 3
+---
+
+# Room Types Explained
+
+_Understanding different types of rooms and when to use them_
+
+Fishjam provides three distinct room types, each optimized for different use cases and scenarios.
+Understanding these room types helps you choose the right approach for your application.
+
+## Conference Rooms (Default)
+
+### What are Conference Rooms?
+
+Conference rooms are the default room type designed for multi-participant video conferencing scenarios. They support all Fishjam features and provide the most flexibility.
+
+### Key Characteristics
+
+- **Multi-participant**: Support for many participants simultaneously
+- **Bidirectional media**: All participants can send and receive video/audio
+- **Multiple sources**: Participants can share their camera, screen, microphone and more all at once
+- **Flexible track management**: Participants can add/remove tracks dynamically
+
+### Best Use Cases
+
+- **Video conferencing applications**
+- **Interactive webinars** with participant engagement
+
+### Cost Considerations
+
+Conference rooms are priced based on total connection time of all peers.
+
+## Audio-only Rooms
+
+### What are Audio-only Rooms?
+
+Audio-only rooms are optimized specifically for voice communication, removing video capabilities to improve performance and reduce costs.
+
+### Key Characteristics
+
+- **Voice-only communication**: No video tracks allowed
+- **Cheap pricing**: Audio only rooms cost much less than other room types
+- **Optimized network usage**: Works well in degraded network conditions
+
+### Best Use Cases
+
+- **Audio chat applications**
+- **Podcast recording** with multiple participants
+- **Large-scale audio events** (town halls, announcements)
+
+### Cost Benefits
+
+Audio-only rooms come at a **75% discount** compared to conference rooms:
+
+- 2 peers for 30 minutes = 60 minutes total time in conference room
+- Same scenario in audio-only room = 15 minutes equivalent cost
+
+### Video Behavior in Audio-only Rooms
+
+If you attempt to add video to an audio-only room:
+
+- Video tracks are ignored (not transmitted)
+- SDKs log warnings to help with debugging
+- Only audio from screen sharing is transmitted
+- No errors thrown, graceful degradation
+
+## Livestream Rooms
+
+### What are Livestream Rooms?
+
+Livestream rooms are designed for one-to-many livestreaming scenarios where a single streamer streams to multiple viewers.
+
+### Key Characteristics
+
+- **One sender**: Only one streamer can send media
+- **Many receivers**: Unlimited viewers can watch
+- **Optimized for scale**: Efficient distribution architecture
+
+### Livestreaming Limitations
+
+- **Single video track**: Only one video stream allowed
+- **Single audio track**: Only one audio stream allowed
+- **Additional tracks ignored**: Extra tracks are not forwarded to viewers
+
+### Viewer Experience
+
+- **Configurable access**: Livestreams can either be public, where anyone with the stream's ID can join, or private, where every viewer needs a token
+- **Standard compatibility**: Any [WHEP](https://blog.swmansion.com/building-interactive-streaming-apps-webrtc-whip-whep-explained-d38f4825ec90)-compatible player works
+
+### Best Use Cases
+
+- **Live events**
+- **Streaming platforms** and content distribution
+- **Corporate livestreams** and announcements
+- **Sports and entertainment** streaming
+
+### Cost Benefits
+
+Livestream rooms are **20% cheaper** than conference rooms for equivalent usage.
+
+## Choosing the Right Room Type
+
+### Decision Matrix
+
+| Use Case               | Room Type  | Why                                         |
+| ---------------------- | ---------- | ------------------------------------------- |
+| Classic video meetings | Conference | Multiple video sources                      |
+| Voice-only meetings    | Audio-only | Cheapest and most performant option         |
+| Live Podcasts          | Audio-only | Cheapest and most performant option         |
+| Sport streaming        | Livestream | Highly scalable and cheaper than conference |
+| Interactive workshop   | Conference | Multiple video sources                      |
+
+## Next Steps
+
+To understand how to use each room type:
+
+- [How to implement livestreaming](/tutorials/livestreaming)
+- [How to create audio-only calls](/how-to/features/audio-only-calls)
+
+To learn about the underlying architecture:
+
+- [Fishjam Architecture](/explanation/architecture)
+- [Security & Token Model](/explanation/security-tokens)
+
+Ready to start building? Check our tutorials:
+
+- [React Native Quick Start](/tutorials/react-native-quick-start)
+- [Backend Quick Start](/tutorials/backend-quick-start)

@@ -1,0 +1,122 @@
+---
+type: explanation
+sidebar_position: 4
+---
+
+# Security & Token Model
+
+_Understanding Fishjam's security architecture and token system_
+
+Fishjam uses a token-based security model to ensure secure access control while keeping the developer experience simple.
+
+## Security Architecture Overview
+
+Fishjam's security is built on a **two-tier token system**:
+
+1. **Management Tokens**: For backend-to-Fishjam server communication
+2. **Peer Tokens**: For client-to-Fishjam server communication
+
+This separation ensures that sensitive operations remain on your backend while allowing clients secure, limited access to media streaming.
+
+## Management Tokens
+
+### Purpose
+
+Management tokens provide your backend server with administrative access to Fishjam resources. They allow creating, managing, and deleting rooms and peers.
+
+### Characteristics
+
+- **Long-lived**: Management tokens remain valid until manually regenerated
+- **High privilege**: Management tokens allow performing administrative operations and should only be used in backend applications.
+- **Backend-only**: Management tokens should never be sent to client applications.
+- **Environment-specific**: There are different tokens for sandbox and production.
+
+### What Management Tokens Can Do
+
+Management tokens give permission to:
+
+- Create and manage rooms and peers
+- Setup [webhooks](/how-to/backend/server-setup#webhooks)
+- Set [immutable peer metadata](/how-to/backend/server-setup#metadata)
+
+## Peer Tokens
+
+### Purpose
+
+Peer tokens provide client applications with limited, time-bound access to join a specific room as a specific peer.
+
+### Characteristics
+
+- **Short-lived**: Peer tokens expire 24h after creation.
+- **Scope-limited**: Peer tokens give access to one specific room as one specific peer only.
+- **Client-safe**: Peer tokens are safe to send to frontend applications.
+
+### What Peer Tokens Can Do
+
+Peer tokens give permission to:
+
+- Connect to the specific room they were issued for
+- Participate in room activities (audio/video/screen sharing)
+- Access peer metadata and room state
+
+### What Peer Tokens Cannot Do
+
+- Create or delete rooms
+- Access multiple rooms
+- Add or remove peers
+
+### Generation Process
+
+```typescript
+import { FishjamClient, RoomId } from "@fishjam-cloud/js-server-sdk";
+import express from "express";
+const res = {} as any;
+const fishjamUrl = "";
+const managementToken = "";
+const roomId = "" as unknown as RoomId;
+const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
+
+// ---cut---
+// Backend generates peer token (using management token)
+const { peer, peerToken } = await fishjamClient.createPeer(roomId, {
+  metadata: { name: "John Doe", userId: "user-123" },
+});
+
+// Backend sends peer token to client
+res.json({
+  peerToken, // Client uses this to connect
+  fishjamUrl, // Fishjam server URL
+  roomId, // Room information
+});
+```
+
+### Client Usage
+
+```typescript
+import { useConnection } from "@fishjam-cloud/react-client";
+const joinRoom = {} as any;
+const fishjamUrl = "";
+const peerToken = "";
+
+// ---cut---
+// Client uses peer token to connect (safe to use in frontend)
+await joinRoom({
+  url: fishjamUrl,
+  peerToken: peerToken, // This is safe in client code
+});
+```
+
+## Next Steps
+
+To implement secure authentication:
+
+- [Backend Quick Start Tutorial](/tutorials/backend-quick-start)
+- [How to set up your server](/how-to/backend/server-setup)
+
+To understand the broader architecture:
+
+- [Fishjam Architecture](/explanation/architecture)
+
+To learn about the Sandbox API's security limitations:
+
+- [Understanding the Sandbox API](/explanation/sandbox-api-concept)
