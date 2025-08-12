@@ -51,12 +51,12 @@
     "@docusaurus/module-type-aliases": "^3.8.1",
     "@docusaurus/tsconfig": "^3.8.1",
     "@docusaurus/types": "^3.8.1",
-    "@shikijs/twoslash": "^3.6.0",
-    "cspell": "^9.1.2",
-    "docusaurus-plugin-typedoc": "1.4.0",
+    "@shikijs/twoslash": "^3.9.2",
+    "cspell": "^9.2.0",
+    "docusaurus-plugin-typedoc": "1.4.2",
     "prettier": "^3.5.3",
     "typedoc": "0.28.5",
-    "typedoc-plugin-markdown": "4.7.0",
+    "typedoc-plugin-markdown": "4.8.1",
     "typescript": "~5.8.2"
   },
   "browserslist": {
