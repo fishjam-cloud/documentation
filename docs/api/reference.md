@@ -6,14 +6,13 @@ type: reference
 
 Describes APIs for direct interaction with Fishjam
 
-Fishjam publishes documentation for the Room Manager and Fishjam Server APIs
+Fishjam publishes documentation for the Sandbox API and Fishjam Server APIs
 
-## Room Manager
+## Sandbox API
 
-[Room Manager OpenAPI](https://github.com/fishjam-cloud/documentation/tree/main/static/api/room-manager-openapi.yaml)
+[Sandbox API](https://github.com/fishjam-cloud/documentation/tree/main/static/api/room-manager-openapi.yaml)
 
-Room Manager is a makeshift backend, used by Sandbox Fishjam instances,
-which you can use for prototyping.
+See also: [What is the Sandbox API?](/explanation/sandbox-api-concept)
 
 ## Server
 
