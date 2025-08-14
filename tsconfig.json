@@ -4,8 +4,5 @@
   "compilerOptions": {
     "baseUrl": "."
   },
-  "exclude": [
-    "packages",
-    "api",
-  ]
+  "exclude": ["packages", "api"]
 }
