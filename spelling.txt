@@ -102,3 +102,6 @@ xcworkspace
 Pixi
 pydantic
 uvicorn
+QVGA
+Memberof
+unmutes
