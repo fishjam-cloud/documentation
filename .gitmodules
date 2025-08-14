@@ -10,9 +10,9 @@
 [submodule "api/protos"]
 	path = api/protos
 	url = https://github.com/fishjam-cloud/protos
-[submodule "api/room-manager"]
-	path = api/room-manager
-	url = git@github.com:fishjam-cloud/room-manager.git
 [submodule "api/fishjam-server"]
 	path = api/fishjam-server
 	url = git@github.com:fishjam-cloud/fishjam.git
+[submodule "api/room-manager"]
+	path = api/room-manager
+	url = git@github.com:fishjam-cloud/room-manager.git

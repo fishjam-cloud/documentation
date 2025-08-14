@@ -16,7 +16,8 @@
     ".git/**",
     "*.lock",
     "yarn.lock",
-    "package-lock.json"
+    "package-lock.json",
+    "api/**"
   ],
   "ignoreRegExpList": ["JSXComment", "/^\\s*```[\\s\\S]*?^\\s*```/gm"],
 
