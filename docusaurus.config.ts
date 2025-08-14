@@ -37,24 +37,27 @@ function injectTypeDocSidebar(items) {
       return {
         ...item,
         items: [
-          {
-            type: "category",
-            label: "React Native SDK",
-            link: { type: "doc", id: "api/mobile/index" },
-            items: require("./docs/api/mobile/typedoc-sidebar.cjs"),
-          },
-          {
-            type: "category",
-            label: "React SDK",
-            link: { type: "doc", id: "api/web/index" },
-            items: require("./docs/api/web/typedoc-sidebar.cjs"),
-          },
-          {
-            type: "category",
-            label: "Server SDK for JS",
-            link: { type: "doc", id: "api/server/index" },
-            items: require("./docs/api/server/typedoc-sidebar.cjs"),
-          },
+          ...[
+            {
+              type: "category",
+              label: "React Native SDK",
+              link: { type: "doc", id: "api/mobile/index" },
+              items: require("./docs/api/mobile/typedoc-sidebar.cjs"),
+            },
+            {
+              type: "category",
+              label: "React SDK",
+              link: { type: "doc", id: "api/web/index" },
+              items: require("./docs/api/web/typedoc-sidebar.cjs"),
+            },
+            {
+              type: "category",
+              label: "Server SDK for JS",
+              link: { type: "doc", id: "api/server/index" },
+              items: require("./docs/api/server/typedoc-sidebar.cjs"),
+            },
+          ],
+          ...item.items.filter((element) => element.type == "doc"),
         ],
       };
     }
