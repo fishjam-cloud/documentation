@@ -16,7 +16,7 @@ See also: [What is the Sandbox API?](/explanation/sandbox-api-concept)
 
 ## Server
 
-Fishjam Server provides REST API for managing rooms and peers, and
+Fishjam Server provides a REST API for managing rooms and peers, and
 [Protobufs](https://protobuf.dev) for
 receiving structured live updates from the server.
 The notifications can be configured using Webhook or Websocket.
@@ -31,13 +31,13 @@ The notifications can be configured using Webhook or Websocket.
 
 #### Webhook
 
-When using webhook for receiving notifications, the `webhookUrl` must be passed
-in `RoomConfig` options when creating a room.
+When using webhooks for receiving notifications, the `webhookUrl` must be passed
+in the `RoomConfig` options when creating a room.
 
 The HTTP POST to the `webhookUrl` uses "application/x-protobuf" content type.
 The body is binary data, that represents encoded `ServerMessage`.
 
-See also [server setup documentation](/how-to/backend/server-setup#webhooks)
+For more information see also [server setup documentation](/how-to/backend/server-setup#webhooks)
 
 #### Websocket
 
