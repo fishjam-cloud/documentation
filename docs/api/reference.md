@@ -35,7 +35,7 @@ When using webhook for receiving notifications, the `webhookUrl` must be passed
 in `RoomConfig` options when creating a room.
 
 The HTTP POST to the `webhookUrl` uses "application/x-protobuf" content type.
-The body is binary data, that represents encoded `ServerMessage`. 
+The body is binary data, that represents encoded `ServerMessage`.
 
 See also [server setup documentation](/how-to/backend/server-setup#webhooks)
 
