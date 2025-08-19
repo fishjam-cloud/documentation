@@ -7,3 +7,12 @@
 [submodule "packages/js-server-sdk"]
 	path = packages/js-server-sdk
 	url = https://github.com/fishjam-cloud/js-server-sdk.git
+[submodule "api/protos"]
+	path = api/protos
+	url = https://github.com/fishjam-cloud/protos
+[submodule "api/fishjam-server"]
+	path = api/fishjam-server
+	url = git@github.com:fishjam-cloud/fishjam.git
+[submodule "api/room-manager"]
+	path = api/room-manager
+	url = git@github.com:fishjam-cloud/room-manager.git

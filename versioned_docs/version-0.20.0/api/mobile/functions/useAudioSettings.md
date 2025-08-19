@@ -42,7 +42,7 @@ currently selected output audio device
 > **selectOutputAudioDevice**: (`device`) => `Promise`\<`void`\>
 
 [Android only] selects output audio device.
-For detecting and selecting bluettoth devices make sure you have the BLUETOOTH_CONNECT permission.
+For detecting and selecting bluetooth devices make sure you have the BLUETOOTH_CONNECT permission.
 
 #### Parameters
 
