@@ -14,7 +14,7 @@
     "write-heading-ids": "docusaurus write-heading-ids",
     "prepare": "sh ./scripts/prepare.sh",
     "update-modules": "sh ./scripts/update.sh",
-    "update-api": "sh ./scripts/update_api.sh",
+    "update-api": "sh ./scripts/update_api.sh && yarn format ./static/api",
     "typecheck": "tsc",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
