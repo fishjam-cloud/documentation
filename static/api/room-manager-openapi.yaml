@@ -1,0 +1,235 @@
+openapi: 3.0.0
+info:
+  title: Fishjam Room Manager
+  version: 0.20.0
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+  - url: https://fishjam.io/api/v1/connect/{fishjamId}
+    variables:
+      fishjamId:
+        description: Id of user's Fishjam instance
+        default: ""
+components:
+  schemas:
+    peer:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      required:
+        - id
+        - name
+      description: Describes peer - a member of a conference or a livestream
+    roomType:
+      type: string
+      enum:
+        - conference
+        - livestream
+        - audio_only
+      default: conference
+    room:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          $ref: "#/components/schemas/roomType"
+      required:
+        - id
+        - name
+    conferencePeer:
+      type: object
+      properties:
+        peerToken:
+          type: string
+        peer:
+          $ref: "#/components/schemas/peer"
+        room:
+          $ref: "#/components/schemas/room"
+      required:
+        - peerToken
+        - peer
+        - room
+      example:
+        peerToken: ceB84UdTSaQEbrF
+        peer:
+          id: 681033af-f630-45ea-b060-a15d99f8927c
+          name: Alonzo
+        room:
+          id: 7d2062e9-3c94-44fb-8a4f-4426de3977b5
+          name: ImportantMeeting
+          type: conference
+    livestreamPeer:
+      type: object
+      properties:
+        peerToken:
+          type: string
+        peer:
+          $ref: "#/components/schemas/peer"
+        room:
+          $ref: "#/components/schemas/room"
+      required:
+        - peerToken
+        - peer
+        - room
+      example:
+        peerToken: ceB84UdTSaQEbrF
+        peer:
+          id: 681033af-f630-45ea-b060-a15d99f8927c
+          name: Alonzo
+        room:
+          id: 7d2062e9-3c94-44fb-8a4f-4426de3977b5
+          name: ImportantMeeting
+          type: livestream
+    peerResponse:
+      oneOf:
+        - $ref: "#/components/schemas/conferencePeer"
+        - $ref: "#/components/schemas/livestreamPeer"
+    errorResponse:
+      type: string
+      example: Failed to get peer
+    peerName:
+      type: string
+      minLength: 1
+      maxLength: 50
+    roomName:
+      type: string
+      minLength: 1
+      maxLength: 100
+    visbility:
+      type: string
+      enum:
+        - "true"
+        - "false"
+      default: "false"
+      description: Determines if livestream is public or private
+    viewerToken:
+      type: string
+      description: Token used to authenticate viewer to a livestream
+    streamerTokenResponse:
+      type: object
+      properties:
+        streamerToken:
+          type: string
+        room:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+          required:
+            - id
+            - name
+          description: Token used to authenticate streamer to a livestream
+      required:
+        - streamerToken
+        - room
+  parameters: {}
+paths:
+  /room-manager:
+    get:
+      summary: Get peer for a given room
+      operationId: rooms
+      security: []
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/peerName"
+          required: true
+          name: peerName
+          in: query
+        - schema:
+            $ref: "#/components/schemas/roomName"
+          required: true
+          name: roomName
+          in: query
+        - schema:
+            $ref: "#/components/schemas/roomType"
+          required: false
+          name: roomType
+          in: query
+        - schema:
+            $ref: "#/components/schemas/visbility"
+          required: false
+          description: Determines if livestream is public or private
+          name: public
+          in: query
+      responses:
+        "200":
+          description: Get peer for a given room
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/peerResponse"
+        default:
+          description: Failed to get peer
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /room-manager/{roomName}/livestream-viewer-token:
+    get:
+      summary: Get viewer token for a livestream
+      operationId: viewerToken
+      security: []
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/roomName"
+          required: true
+          name: roomName
+          in: path
+        - schema:
+            $ref: "#/components/schemas/visbility"
+          required: false
+          description: Determines if livestream is public or private
+          name: public
+          in: query
+      responses:
+        "200":
+          description: Get livestream viewer token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/viewerToken"
+        default:
+          description: Failed to get livestream viewer token
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /room-manager/livestream:
+    get:
+      summary: Get streamer token for a livestream
+      operationId: streamerToken
+      security: []
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/roomName"
+          required: true
+          name: roomName
+          in: query
+        - schema:
+            $ref: "#/components/schemas/visbility"
+          required: false
+          description: Determines if livestream is public or private
+          name: public
+          in: query
+      responses:
+        "200":
+          description: Get livestream streamer token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/streamerTokenResponse"
+        default:
+          description: Failed to get livestream streamer token
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/errorResponse"

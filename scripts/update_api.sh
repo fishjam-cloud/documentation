@@ -44,8 +44,8 @@ copy_protos() {
 checkout_submodule fishjam-server
 copy_openapi fishjam-server
 
-# checkout_submodule room-manager
-# copy_openapi room-manager
+checkout_submodule room-manager
+copy_openapi room-manager
 
 checkout_submodule protos
 copy_protos

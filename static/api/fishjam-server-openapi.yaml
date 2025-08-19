@@ -33,7 +33,7 @@ components:
         data:
           properties:
             token:
-              $ref: "#/components/schemas/AuthToken"
+              $ref: '#/components/schemas/AuthToken'
           required:
             - token
           type: object
@@ -55,11 +55,11 @@ components:
           x-struct:
           x-validate:
         properties:
-          $ref: "#/components/schemas/ComponentPropertiesHLS"
+          $ref: '#/components/schemas/ComponentPropertiesHLS'
         tracks:
           description: List of all component's tracks
           items:
-            $ref: "#/components/schemas/Track"
+            $ref: '#/components/schemas/Track'
           type: array
           x-struct:
           x-validate:
@@ -81,11 +81,11 @@ components:
     ComponentOptions:
       description: Component-specific options
       oneOf:
-        - $ref: "#/components/schemas/ComponentOptionsHLS"
-        - $ref: "#/components/schemas/ComponentOptionsRTSP"
-        - $ref: "#/components/schemas/ComponentOptionsFile"
-        - $ref: "#/components/schemas/ComponentOptionsSIP"
-        - $ref: "#/components/schemas/ComponentOptionsRecording"
+        - $ref: '#/components/schemas/ComponentOptionsHLS'
+        - $ref: '#/components/schemas/ComponentOptionsRTSP'
+        - $ref: '#/components/schemas/ComponentOptionsFile'
+        - $ref: '#/components/schemas/ComponentOptionsSIP'
+        - $ref: '#/components/schemas/ComponentOptionsRecording'
       title: ComponentOptions
       type: object
       x-struct: Elixir.FishjamWeb.ApiSpec.Component.Options
@@ -94,7 +94,7 @@ components:
       description: Response containing component details
       properties:
         data:
-          $ref: "#/components/schemas/Component"
+          $ref: '#/components/schemas/Component'
       required:
         - data
       title: ComponentDetailsResponse
@@ -105,7 +105,7 @@ components:
       description: Response containing room details
       properties:
         data:
-          $ref: "#/components/schemas/Room"
+          $ref: '#/components/schemas/Room'
       required:
         - data
       title: RoomDetailsResponse
@@ -124,7 +124,7 @@ components:
               x-struct:
               x-validate:
             room:
-              $ref: "#/components/schemas/Room"
+              $ref: '#/components/schemas/Room'
           required:
             - room
             - fishjam_address
@@ -143,12 +143,12 @@ components:
         components:
           description: List of all components
           items:
-            $ref: "#/components/schemas/Component"
+            $ref: '#/components/schemas/Component'
           type: array
           x-struct:
           x-validate:
         config:
-          $ref: "#/components/schemas/RoomConfig"
+          $ref: '#/components/schemas/RoomConfig'
         id:
           description: Room ID
           example: room-1
@@ -158,7 +158,7 @@ components:
         peers:
           description: List of all peers
           items:
-            $ref: "#/components/schemas/Peer"
+            $ref: '#/components/schemas/Peer'
           type: array
           x-struct:
           x-validate:
@@ -271,11 +271,11 @@ components:
         data:
           properties:
             peer:
-              $ref: "#/components/schemas/Peer"
+              $ref: '#/components/schemas/Peer'
             peer_websocket_url:
-              $ref: "#/components/schemas/WebsocketURL"
+              $ref: '#/components/schemas/WebsocketURL'
             token:
-              $ref: "#/components/schemas/AuthToken"
+              $ref: '#/components/schemas/AuthToken'
           required:
             - peer
             - token
@@ -308,7 +308,7 @@ components:
     PeerOptions:
       description: Peer-specific options
       oneOf:
-        - $ref: "#/components/schemas/PeerOptionsWebRTC"
+        - $ref: '#/components/schemas/PeerOptionsWebRTC'
       title: PeerOptions
       type: object
       x-struct: Elixir.FishjamWeb.ApiSpec.Peer.Options
@@ -519,7 +519,7 @@ components:
       description: Credentials used to authorize in SIP Provider service
       properties:
         address:
-          description: "SIP provider address. Can be in the form of FQDN (my-sip-registrar.net) or IPv4 (1.2.3.4). Port can be specified e.g: 5.6.7.8:9999. If not given, the default SIP port `5060` will be assumed"
+          description: 'SIP provider address. Can be in the form of FQDN (my-sip-registrar.net) or IPv4 (1.2.3.4). Port can be specified e.g: 5.6.7.8:9999. If not given, the default SIP port `5060` will be assumed'
           example: example.org
           type: string
           x-struct:
@@ -547,7 +547,7 @@ components:
       properties:
         data:
           items:
-            $ref: "#/components/schemas/User"
+            $ref: '#/components/schemas/User'
           type: array
           x-struct:
           x-validate:
@@ -570,7 +570,7 @@ components:
       description: Returns status information for the shutdown process of Fishjam
       properties:
         data:
-          $ref: "#/components/schemas/ShutdownStatus"
+          $ref: '#/components/schemas/ShutdownStatus'
       required:
         - data
       title: ShutdownStatusResponse
@@ -581,18 +581,18 @@ components:
       description: Describes component
       discriminator:
         mapping:
-          file: "#/components/schemas/ComponentFile"
-          hls: "#/components/schemas/ComponentHLS"
-          recording: "#/components/schemas/ComponentRecording"
-          rtsp: "#/components/schemas/ComponentRTSP"
-          sip: "#/components/schemas/ComponentSIP"
+          file: '#/components/schemas/ComponentFile'
+          hls: '#/components/schemas/ComponentHLS'
+          recording: '#/components/schemas/ComponentRecording'
+          rtsp: '#/components/schemas/ComponentRTSP'
+          sip: '#/components/schemas/ComponentSIP'
         propertyName: type
       oneOf:
-        - $ref: "#/components/schemas/ComponentHLS"
-        - $ref: "#/components/schemas/ComponentRTSP"
-        - $ref: "#/components/schemas/ComponentFile"
-        - $ref: "#/components/schemas/ComponentSIP"
-        - $ref: "#/components/schemas/ComponentRecording"
+        - $ref: '#/components/schemas/ComponentHLS'
+        - $ref: '#/components/schemas/ComponentRTSP'
+        - $ref: '#/components/schemas/ComponentFile'
+        - $ref: '#/components/schemas/ComponentSIP'
+        - $ref: '#/components/schemas/ComponentRecording'
       title: Component
       type: object
       x-struct: Elixir.FishjamWeb.ApiSpec.Component
@@ -661,11 +661,11 @@ components:
           x-struct:
           x-validate:
         properties:
-          $ref: "#/components/schemas/ComponentPropertiesFile"
+          $ref: '#/components/schemas/ComponentPropertiesFile'
         tracks:
           description: List of all component's tracks
           items:
-            $ref: "#/components/schemas/Track"
+            $ref: '#/components/schemas/Track'
           type: array
           x-struct:
           x-validate:
@@ -849,7 +849,7 @@ components:
       description: Response containing health report of Fishjam
       properties:
         data:
-          $ref: "#/components/schemas/HealthReport"
+          $ref: '#/components/schemas/HealthReport'
       required:
         - data
       title: HealthcheckResponse
@@ -863,7 +863,7 @@ components:
           description: Credentials used to authorize in SIP Provider service
           properties:
             address:
-              description: "SIP provider address. Can be in the form of FQDN (my-sip-registrar.net) or IPv4 (1.2.3.4). Port can be specified e.g: 5.6.7.8:9999. If not given, the default SIP port `5060` will be assumed"
+              description: 'SIP provider address. Can be in the form of FQDN (my-sip-registrar.net) or IPv4 (1.2.3.4). Port can be specified e.g: 5.6.7.8:9999. If not given, the default SIP port `5060` will be assumed'
               example: example.org
               type: string
               x-struct:
@@ -919,7 +919,7 @@ components:
           x-struct:
           x-validate:
         localStatus:
-          $ref: "#/components/schemas/NodeStatus"
+          $ref: '#/components/schemas/NodeStatus'
         nodesInCluster:
           description: Number of nodes in cluster
           type: integer
@@ -928,7 +928,7 @@ components:
         nodesStatus:
           description: Status of each node in cluster
           items:
-            $ref: "#/components/schemas/NodeStatus"
+            $ref: '#/components/schemas/NodeStatus'
           type: array
           x-struct:
           x-validate:
@@ -959,18 +959,18 @@ components:
           x-struct:
           x-validate:
         metadata:
-          $ref: "#/components/schemas/PeerMetadata"
+          $ref: '#/components/schemas/PeerMetadata'
         status:
-          $ref: "#/components/schemas/PeerStatus"
+          $ref: '#/components/schemas/PeerStatus'
         tracks:
           description: List of all peer's tracks
           items:
-            $ref: "#/components/schemas/Track"
+            $ref: '#/components/schemas/Track'
           type: array
           x-struct:
           x-validate:
         type:
-          $ref: "#/components/schemas/PeerType"
+          $ref: '#/components/schemas/PeerType'
       required:
         - id
         - type
@@ -997,7 +997,7 @@ components:
           description: Credentials used to authorize in SIP Provider service
           properties:
             address:
-              description: "SIP provider address. Can be in the form of FQDN (my-sip-registrar.net) or IPv4 (1.2.3.4). Port can be specified e.g: 5.6.7.8:9999. If not given, the default SIP port `5060` will be assumed"
+              description: 'SIP provider address. Can be in the form of FQDN (my-sip-registrar.net) or IPv4 (1.2.3.4). Port can be specified e.g: 5.6.7.8:9999. If not given, the default SIP port `5060` will be assumed'
               example: example.org
               type: string
               x-struct:
@@ -1081,7 +1081,7 @@ components:
       properties:
         data:
           items:
-            $ref: "#/components/schemas/Room"
+            $ref: '#/components/schemas/Room'
           type: array
           x-struct:
           x-validate:
@@ -1101,11 +1101,11 @@ components:
           x-struct:
           x-validate:
         properties:
-          $ref: "#/components/schemas/ComponentPropertiesSIP"
+          $ref: '#/components/schemas/ComponentPropertiesSIP'
         tracks:
           description: List of all component's tracks
           items:
-            $ref: "#/components/schemas/Track"
+            $ref: '#/components/schemas/Track'
           type: array
           x-struct:
           x-validate:
@@ -1134,11 +1134,11 @@ components:
           x-struct:
           x-validate:
         properties:
-          $ref: "#/components/schemas/ComponentPropertiesRecording"
+          $ref: '#/components/schemas/ComponentPropertiesRecording'
         tracks:
           description: List of all component's tracks
           items:
-            $ref: "#/components/schemas/Track"
+            $ref: '#/components/schemas/Track'
           type: array
           x-struct:
           x-validate:
@@ -1203,11 +1203,11 @@ components:
           x-struct:
           x-validate:
         properties:
-          $ref: "#/components/schemas/ComponentPropertiesRTSP"
+          $ref: '#/components/schemas/ComponentPropertiesRTSP'
         tracks:
           description: List of all component's tracks
           items:
-            $ref: "#/components/schemas/Track"
+            $ref: '#/components/schemas/Track'
           type: array
           x-struct:
           x-validate:
@@ -1261,17 +1261,17 @@ paths:
       operationId: healthcheck
       parameters: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/HealthcheckResponse"
+                $ref: '#/components/schemas/HealthcheckResponse'
           description: Healthy
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
       security:
         - authorization: []
@@ -1284,13 +1284,13 @@ paths:
       operationId: drain_node
       parameters: []
       responses:
-        "200":
+        '200':
           description: Node marked as draining.
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
       security:
         - authorization: []
@@ -1302,17 +1302,17 @@ paths:
       operationId: shutdown_status
       parameters: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ShutdownStatusResponse"
+                $ref: '#/components/schemas/ShutdownStatusResponse'
           description: Shutdown status
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
       security:
         - authorization: []
@@ -1324,23 +1324,23 @@ paths:
       operationId: get_all_users
       parameters: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserListingResponse"
+                $ref: '#/components/schemas/UserListingResponse'
           description: Success
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
-        "503":
+        '503':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Service temporarily unavailable
       security:
         - authorization: []
@@ -1368,25 +1368,25 @@ paths:
             x-struct:
             x-validate:
       responses:
-        "201":
+        '201':
           description: User created
-        "400":
+        '400':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Invalid request structure
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
-        "503":
+        '503':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Service temporarily unavailable
       security:
         - authorization: []
@@ -1407,19 +1407,19 @@ paths:
             x-struct:
             x-validate:
       responses:
-        "204":
+        '204':
           description: Successfully deleted user
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
-        "503":
+        '503':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Service temporarily unavailable
       security:
         - authorization: []
@@ -1440,17 +1440,17 @@ paths:
             x-struct:
             x-validate:
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BroadcasterVerifyTokenResponse"
+                $ref: '#/components/schemas/BroadcasterVerifyTokenResponse'
           description: Success
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
       summary: Verify token provided by broadcaster
       tags:
@@ -1489,45 +1489,45 @@ paths:
           name: _HLS_msn
           required: false
           schema:
-            $ref: "#/components/schemas/HlsMsn"
+            $ref: '#/components/schemas/HlsMsn'
         - description: Partial segment sequence number
           in: query
           name: _HLS_part
           required: false
           schema:
-            $ref: "#/components/schemas/HlsPart"
+            $ref: '#/components/schemas/HlsPart'
         - description: Is delta manifest requested
           in: query
           name: _HLS_skip
           required: false
           schema:
-            $ref: "#/components/schemas/HlsSkip"
+            $ref: '#/components/schemas/HlsSkip'
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/HlsResponse"
+                $ref: '#/components/schemas/HlsResponse'
           description: File was found
-        "301":
+        '301':
           description: Resource available on another Fishjam instance
-        "400":
+        '400':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Invalid filename
-        "404":
+        '404':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: File not found
-        "503":
+        '503':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Service temporarily unavailable
       summary: Retrieve HLS Content
       tags:
@@ -1538,19 +1538,19 @@ paths:
       operationId: notification
       parameters: []
       responses:
-        "204":
+        '204':
           description: Successfully handled notification
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
-        "404":
+        '404':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Not Found
       summary: Handle notification from broadcaster
       tags: []
@@ -1560,23 +1560,23 @@ paths:
       operationId: get_recordings
       parameters: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RecordingListResponse"
+                $ref: '#/components/schemas/RecordingListResponse'
           description: Success
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
-        "404":
+        '404':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unable to obtain recordings
       security:
         - authorization: []
@@ -1597,25 +1597,25 @@ paths:
             x-struct:
             x-validate:
       responses:
-        "204":
+        '204':
           description: Successfully deleted recording
-        "400":
+        '400':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Invalid recording
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
-        "404":
+        '404':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Recording doesn't exist
       security:
         - authorization: []
@@ -1644,23 +1644,23 @@ paths:
             x-struct:
             x-validate:
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/HlsResponse"
+                $ref: '#/components/schemas/HlsResponse'
           description: File was found
-        "400":
+        '400':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Invalid request
-        "404":
+        '404':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: File not found
       summary: Retrieve Recording (HLS) Content
       tags:
@@ -1671,17 +1671,17 @@ paths:
       operationId: get_all_rooms
       parameters: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RoomsListingResponse"
+                $ref: '#/components/schemas/RoomsListingResponse'
           description: Success
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
       security:
         - authorization: []
@@ -1696,33 +1696,33 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RoomConfig"
+              $ref: '#/components/schemas/RoomConfig'
         description: Room configuration
         required: false
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RoomCreateDetailsResponse"
+                $ref: '#/components/schemas/RoomCreateDetailsResponse'
           description: Room successfully created
-        "400":
+        '400':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Invalid request structure
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
-        "503":
+        '503':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Service temporarily unavailable
       security:
         - authorization: []
@@ -1743,31 +1743,31 @@ paths:
             x-struct:
             x-validate:
       responses:
-        "204":
+        '204':
           description: Successfully deleted room
-        "400":
+        '400':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Invalid request
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
-        "404":
+        '404':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Room doesn't exist
-        "503":
+        '503':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Service temporarily unavailable
       security:
         - authorization: []
@@ -1787,35 +1787,35 @@ paths:
             x-struct:
             x-validate:
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RoomDetailsResponse"
+                $ref: '#/components/schemas/RoomDetailsResponse'
           description: Success
-        "400":
+        '400':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Invalid request
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
-        "404":
+        '404':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Room doesn't exist
-        "503":
+        '503':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Service temporarily unavailable
       security:
         - authorization: []
@@ -1841,9 +1841,9 @@ paths:
             schema:
               properties:
                 options:
-                  $ref: "#/components/schemas/ComponentOptions"
+                  $ref: '#/components/schemas/ComponentOptions'
                 type:
-                  $ref: "#/components/schemas/ComponentType"
+                  $ref: '#/components/schemas/ComponentType'
               required:
                 - type
               type: object
@@ -1852,35 +1852,35 @@ paths:
         description: Component config
         required: false
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ComponentDetailsResponse"
+                $ref: '#/components/schemas/ComponentDetailsResponse'
           description: Successfully added component
-        "400":
+        '400':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Invalid request
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
-        "404":
+        '404':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Room doesn't exist
-        "503":
+        '503':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Service temporarily unavailable
       security:
         - authorization: []
@@ -1912,35 +1912,35 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SubscriptionConfig"
+              $ref: '#/components/schemas/SubscriptionConfig'
         description: Subscribe configuration
         required: false
       responses:
-        "201":
+        '201':
           description: Tracks succesfully added.
-        "400":
+        '400':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Invalid request structure
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
-        "404":
+        '404':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Room doesn't exist
-        "503":
+        '503':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Service temporarily unavailable
       security:
         - authorization: []
@@ -1969,31 +1969,31 @@ paths:
             x-struct:
             x-validate:
       responses:
-        "204":
+        '204':
           description: Successfully deleted
-        "400":
+        '400':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Invalid request
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
-        "404":
+        '404':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Either component or the room doesn't exist
-        "503":
+        '503':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Service temporarily unavailable
       security:
         - authorization: []
@@ -2019,9 +2019,9 @@ paths:
             schema:
               properties:
                 options:
-                  $ref: "#/components/schemas/PeerOptions"
+                  $ref: '#/components/schemas/PeerOptions'
                 type:
-                  $ref: "#/components/schemas/PeerType"
+                  $ref: '#/components/schemas/PeerType'
               required:
                 - type
                 - options
@@ -2031,35 +2031,35 @@ paths:
         description: Peer specification
         required: false
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PeerDetailsResponse"
+                $ref: '#/components/schemas/PeerDetailsResponse'
           description: Peer successfully created
-        "400":
+        '400':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Invalid request body structure
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
-        "404":
+        '404':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Room doesn't exist
-        "503":
+        '503':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Service temporarily unavailable
       security:
         - authorization: []
@@ -2088,31 +2088,31 @@ paths:
             x-struct:
             x-validate:
       responses:
-        "204":
+        '204':
           description: Peer successfully deleted
-        "400":
+        '400':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Invalid request body structure
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
-        "404":
+        '404':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Room ID or Peer ID references a resource that doesn't exist
-        "503":
+        '503':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Service temporarily unavailable
       security:
         - authorization: []
@@ -2141,35 +2141,35 @@ paths:
             x-struct:
             x-validate:
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PeerRefreshTokenResponse"
+                $ref: '#/components/schemas/PeerRefreshTokenResponse'
           description: Token successfully created
-        "400":
+        '400':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Invalid request body structure
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
-        "404":
+        '404':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Room ID or Peer ID references a resource that doesn't exist
-        "503":
+        '503':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Service temporarily unavailable
       security:
         - authorization: []
@@ -2190,35 +2190,35 @@ paths:
             x-struct:
             x-validate:
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/StreamerToken"
+                $ref: '#/components/schemas/StreamerToken'
           description: Token successfully created
-        "400":
+        '400':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Invalid request body structure
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
-        "404":
+        '404':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Room doesn't exist
-        "503":
+        '503':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Service temporarily unavailable
       summary: Generate a token that can be used by a streamer to start streaming
       tags:
@@ -2237,35 +2237,35 @@ paths:
             x-struct:
             x-validate:
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ViewerToken"
+                $ref: '#/components/schemas/ViewerToken'
           description: Token successfully created
-        "400":
+        '400':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Invalid request body structure
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
-        "404":
+        '404':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Room doesn't exist
-        "503":
+        '503':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Service temporarily unavailable
       summary: Generates token that a viewer can use to watch a livestream
       tags:
@@ -2292,31 +2292,31 @@ paths:
             x-struct:
             x-validate:
       responses:
-        "201":
+        '201':
           description: Call ended
-        "400":
+        '400':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Invalid request structure
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
-        "404":
+        '404':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Room doesn't exist
-        "503":
+        '503':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Service temporarily unavailable
       security:
         - authorization: []
@@ -2347,35 +2347,35 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DialConfig"
+              $ref: '#/components/schemas/DialConfig'
         description: Phone Number configuration
         required: false
       responses:
-        "201":
+        '201':
           description: Call started
-        "400":
+        '400':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Invalid request structure
-        "401":
+        '401':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Unauthorized
-        "404":
+        '404':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Room doesn't exist
-        "503":
+        '503':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/Error'
           description: Service temporarily unavailable
       security:
         - authorization: []
