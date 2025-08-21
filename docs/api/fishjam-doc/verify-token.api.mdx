@@ -1,0 +1,71 @@
+---
+id: verify-token
+title: "Verify token provided by broadcaster"
+description: "Verify token provided by broadcaster"
+sidebar_label: "Verify token provided by broadcaster"
+hide_title: true
+hide_table_of_contents: true
+api: eJylVMFu2zAM/RVBpw3I4qzYKbduyIYC2w5Nu0tRDLTNxmptSZXktJnhfx8pK4m9dFiBnSxZj098j6Q6WUBd51A8eLns+pk0Fh0EZfRFKZdyi07d7X4G84BazqQFBw0GdAS+6WSJvnDKMpqwVwmkeGMhVLTWBKfdPt7hY6scEnNwLc6kLypsgC6WYWcZ6INTeiP7/pbB3hrtkROTZ4v3/CmMDqgDL8HaWhUx1ezecwbdiG+a2mWiEhwPStMdIkpLBELpO+OauGaZjl0Iari6hBApp3+hDRVlwgSs56AgN6ZG0JKsJDEIzUX5kr6xFzd/kJH2BDf5PRbhBB4zYpQKNcM+OgNlAZ4K8yMWLJZiL1qe0hHf1KB1WxToPWf94b+cXjlnnGiICzZ4YiXyqf9bVIlUm9pTFD5DY6O0qERU4AU+26h/9g8v0x0jeyL7a1y41lwI49QvouLjABvudJkfDWbiadRguYg9LkjvVpVYinwnxlEzSXNTGZ6pDYY4SjQgS5mNQNkwbVkXqXoCeXTbYdhueVO0ToXddLfmQhxbkpMf2nhfpNiUCA5HFlQh2CiQ+56RVF/kVqFlGtlzCxQtzuYLCmtdnaL8Msuenp7mEI/nxm2yFOuzrxefVt/Xq3cc0x/t/6x8dQ+N+IalArGOkoiThQ0GLuZniyHEGh8a0KM0XmnupCKHaQv4HDJb08AzeRTRJeOnNZ2lh44Wy+GtIocrSoaBXZeDx2tX9z3/fmzRpRpswSnIWSQ/hsrzmip8B7XHk5wOAyXfXKZ2fSv2b+aLCaefoDmvLdQt72j5gLvDm9rfErBCKEkFZzGcndM02zCKOhlhfmAPHflldUXd8BsHERju
+sidebar_class_name: "get api-method"
+info_path: api/fishjam-doc/fishjam-media-server
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Verify token provided by broadcaster"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/broadcaster/verify/{token}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Verify token provided by broadcaster
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"description":"Token","in":"path","name":"token","required":true,"schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"201":{"content":{"application/json":{"schema":{"description":"Response containing verification information","properties":{"data":{"properties":{"authenticated":{"type":"boolean"},"streamId":{"type":"string"}},"required":["authenticated"],"type":"object"}},"required":["data"],"title":"BroadcasterVerifyTokenResponse","type":"object"}}},"description":"Success"},"401":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Unauthorized"}}}
+>
+  
+</StatusCodes>
+
+
+      

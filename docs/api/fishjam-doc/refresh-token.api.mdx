@@ -1,0 +1,71 @@
+---
+id: refresh-token
+title: "Refresh peer token"
+description: "Refresh peer token"
+sidebar_label: "Refresh peer token"
+hide_title: true
+hide_table_of_contents: true
+api: eJzlVlFv2zYQ/isEX9YCduQ6SQP4LdgyIEC3FXH6FBjFiTpHTGSSI6k4nqD/3jtKthU7Rbf2aeiTKPLuu4/fkXdspIKqykE9Bjlr2pG0Dj1Ebc11IWfS49JjKD9H+4hGjqQDDyuM6Mn6rpEFBuW1Y3MyvrF2JXRBZpp/HcSSxoYcGIkWP6dFj3/X2iPBR1/jSAZV4goouowbx6Yhem3uZduODiN8RPRfjfAfwRdsHJw1AXnrcjp5xx9lTUQTeQjOVVolMbKHwASaAd7B3nsowf6gDcUQBtfCMeOdep7VjboLWEBMQC9nO9sj/FueFkvrBdSxtF7/wxHWmAerHjFyWIMqGY8kPsPKVbzbc1WAupi+H59fwOn4DFU+zt8V5+OLKZwW76eopmdTcog6JvNLwr7tyR4lY6DtXU9zsTOz+QOFPzJLe1zsA3ACb7ozleJsZZPHQIT0mgShVgpDWNZVtRHKI0SKRLZnk8kPpO/Ke5J2RcBwj0eZQl4NX/MqkBJehRe6d1xLCAKfXRLjW4L2MQZaJfR/I8y1eYJKF4LhMESR22IjKEytYu2xE+dHzvb/WpxPZnthtufk7GeVItXn698EcUmFlIZU39GjoRslgH6Crb1CEUuIorAYzC+RiOkQWbnzyenPqtwc/ZNmYXDlrAevqfbUBp6IFeQExR4BVe113KTGuD1z0AHcLbjdRLjntplaIdM47CCpLL7sGNRrS8uN2FlKwqjreDOZMUTW9D21zdgna3h02LADMe+69WJPcc456oQ/INrnj9XIETwO1CljdGmj2iwtW1LqkUs3DfsOfOmAvMX0ZEJuta96rzDLsvV6fQJp+cT6+6z3DdmH61+v/pxfjdmn3Wfmdx3KB1iJP7DQIOZpE4TJW+nUmpxMJ50LK7MCM6DxqpIvxN69BiI+x8xV1LAZKlFuepH7PI3kbP90YUSe6Z8aQ6lJ3pJzRH5Nk0PAT75qW56mouw3XQKe6OikA5MeTzrwmLK7hCrgEcXdRZNvbvpj/Fbs31iv7qCfBLNhtaCq+Y+Gj7gZvMHSw+p7ou/fX98RnQMvyKpEKEhGlqBbuKSO7uLA5aiu8O3ZXYWPf81vyZhP7iCTu+PaDxj+VT6UnWSRCghlaEuvSyMxbNsvYgbSgQ==
+sidebar_class_name: "post api-method"
+info_path: api/fishjam-doc/fishjam-media-server
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Refresh peer token"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/room/{room_id}/peer/{id}/refresh_token"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Refresh peer token
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"description":"Room id","in":"path","name":"room_id","required":true,"schema":{"type":"string"}},{"description":"Peer id","in":"path","name":"id","required":true,"schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"201":{"content":{"application/json":{"schema":{"description":"Response containing new peer token","properties":{"data":{"properties":{"token":{"description":"Token for authorizing websocket connection","example":"5cdac726-57a3-4ecb-b1d5-72a3d62ec242","title":"AuthToken","type":"string"}},"required":["token"],"type":"object"}},"required":["data"],"title":"PeerRefreshTokenResponse","type":"object"}}},"description":"Token successfully created"},"400":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Invalid request body structure"},"401":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Unauthorized"},"404":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Room ID or Peer ID references a resource that doesn't exist"},"503":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Service temporarily unavailable"}}}
+>
+  
+</StatusCodes>
+
+
+      

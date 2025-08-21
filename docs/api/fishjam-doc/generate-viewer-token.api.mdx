@@ -1,0 +1,71 @@
+---
+id: generate-viewer-token
+title: "Generates token that a viewer can use to watch a livestream"
+description: "Generates token that a viewer can use to watch a livestream"
+sidebar_label: "Generates token that a viewer can use to watch a livestream"
+hide_title: true
+hide_table_of_contents: true
+api: eJzlVstu2zAQ/BVCl7aAbTmOnQC+BW1aGOgLddJLEAQram0xkUiVpOy4gv69uxLjR5OiBXIqcjIpcpazs2sO60hCnicg71w0rZteZEq04JXRszSaRkvUPMWblcI12htv7lBHvagECwV6tIS6qqMUnbSqZBiBZu+EWQifoXDeIhQDAiheKMFnNNYEpZk1prhRKX2w+KNSFulAbyvsRU5mWADxifym5K0UR+ll1DTXvNmVRjtkvtFoeMQ/0miP2vMQyjJXss0gvnXMp96Ld0j0grMRC2MFVD4zVv2kU0RiDaQSHGUnurQFxdcoWxTlblkjrzoGnSI0wHsoypzZTmQK8nR00p+cwnF/jDLpJ0fppH86guP0ZIRyNB5RnN9z29fhKsSlfL3ybdTvLZWLUIAANskt8SIwoZ/KzVVSonOLKs83QlIxPEWnvePh8Bm6nVtLmhUUGJb4SBHkVfcnVIoeVO4ItROs45qBE3hftgL8TZ1wxp48bfR/EWamV5CrVHA4dF4kJt1wo1bSVxY7cZ7TVP+1OJf64Z/w0CfjlyrFN7qeRGrQ6VeezlPOsyCT4fFLFWSOdqUkCo9FaSxYRVdKpWFFrCChUIzwsGRHiLp7k485jPEh+IkT7f1GJgFewPaaBS0qRycYsQYvM1rJ1Qo7FyGK5DiZYVsqDVWj1/nJNIrZSeI6+EkTh8PJR4hxZ1HXPJGVVX5zOJtzpTr5HzofOq6hiqxJgmBxT6PM+7JNV+mF4Z3UAEiWxMNgbmclEFqMBkOCVTYPKDeN4/V6PYB2eWDsMg5YF3+cvT3/PD/vM6bZ1ee9ctktFOITpgrEvE2JYnJinabDwWjYQViWAvQejefpfVC7rRl7vPdxmQNZehNyq0MprlpTJ+R0Z+67Vsi4arSnrhNweGnzpuHPdA3bUJUVdVXbS+2jQjkeU70XkDt8RGf7H4xefwsd/kY89fZ4knf4CHrDHCGveEbDO9zsvU2aa9qaIaSUAXPqVs/IVEu/h3t0B/BDZdutX7/ML6hdfgExEkLh
+sidebar_class_name: "post api-method"
+info_path: api/fishjam-doc/fishjam-media-server
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Generates token that a viewer can use to watch a livestream"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/room/{room_id}/viewer"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Generates token that a viewer can use to watch a livestream
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"description":"ID of the stream.","in":"path","name":"room_id","required":true,"schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"201":{"content":{"application/json":{"schema":{"description":"Token for authorizing broadcaster viewer connection","properties":{"token":{"example":"5cdac726-57a3-4ecb-b1d5-72a3d62ec242","type":"string"}},"required":["token"],"title":"ViewerToken","type":"object"}}},"description":"Token successfully created"},"400":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Invalid request body structure"},"401":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Unauthorized"},"404":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Room doesn't exist"},"503":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Service temporarily unavailable"}}}
+>
+  
+</StatusCodes>
+
+
+      

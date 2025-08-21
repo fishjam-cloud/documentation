@@ -1,5 +1,7 @@
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
+import type * as OpenApiPlugin from "docusaurus-plugin-openapi-docs";
+import type * as Plugin from "@docusaurus/types/src/plugin";
 import { BundledLanguage, bundledLanguages } from "shiki";
 import type { MDXPlugin } from "@docusaurus/mdx-loader";
 import rehypeShiki, { RehypeShikiOptions } from "@shikijs/rehype";
@@ -34,6 +36,8 @@ const rehypeShikiPlugin = [
 function injectTypeDocSidebar(items) {
   return items.map((item) => {
     if (item.customProps?.id === "generated-api") {
+
+      console.log(item.items)
       return {
         ...item,
         items: [
@@ -57,7 +61,7 @@ function injectTypeDocSidebar(items) {
               items: require("./docs/api/server/typedoc-sidebar.cjs"),
             },
           ],
-          ...item.items.filter((element) => element.type == "doc"),
+          ...item.items.filter((element) => element.type == "doc" || element.label == "fishjam-doc"),
         ],
       };
     }
@@ -115,7 +119,7 @@ const config: Config = {
   markdown: {
     mermaid: true,
   },
-  themes: ["@docusaurus/theme-mermaid"],
+  themes: ["@docusaurus/theme-mermaid", "docusaurus-theme-openapi-docs"],
 
   presets: [
     [
@@ -130,6 +134,7 @@ const config: Config = {
           remarkPlugins: [
             [require("@docusaurus/remark-plugin-npm2yarn"), { sync: true }],
           ],
+          docItemComponent: "@theme/ApiItem", // Derived from docusaurus-theme-openapi
           async sidebarItemsGenerator({
             defaultSidebarItemsGenerator,
             ...args
@@ -265,6 +270,22 @@ const config: Config = {
         ...typedocConfig,
       },
     ],
+    [
+      'docusaurus-plugin-openapi-docs',
+      {
+        id: "api", // plugin id
+        docsPluginId: "classic", // configured for preset-classic
+        config: {
+          fishjam_openapi: {
+            specPath: "static/api/fishjam-server-openapi.yaml",
+            outputDir: "docs/api/fishjam-doc",
+            sidebarOptions: {
+              groupPathsBy: "tag",
+            },
+          } satisfies OpenApiPlugin.Options,
+        },
+      },
+    ]
   ],
 };
 

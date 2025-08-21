@@ -1,0 +1,71 @@
+---
+id: delete-peer
+title: "Delete peer"
+description: "Delete peer"
+sidebar_label: "Delete peer"
+hide_title: true
+hide_table_of_contents: true
+api: eJzlVU1v2zAM/SuCLtuALPa67pJbsWZAgG4YmvZUBAVjM7FaW9IkOW1m+L+PlJ3E6cdhvfYUKuLH0yP92MgMynIJ2b2Xk6YdSWPRQVBGz3I5kTmWGPDWIjo5khYcVHR25HvT0KXPnLLsTK6XxlRC5eSm+GghFGRrCqCTo8vbeOnwT60cUvLgahxJnxVYAdWWYWvZ1Qen9Fq27ehphd+E4tUK/5l8wc7eGu2RHy5P0lP+eaGgr7MMvV/VZbkVHR+5JKJO05QjMqMD6sAmWFuqLJKX3HnO0AwQHKeeOmecqCgxrJGpdUx8UB0a5Fv/WlSOAVTpKQofobIlP+zK3KMWBXiBjzZSMHpO6ICfm10NIiKoEHPE7Ic4s7zDLFAcBR7DmOkNlCoXnA59EEuTbwWVqbNQO+zI+fJeybnWUIfCOPV3Nyen75WKKAmzc0FY4qdEpsMVOtT0RQmggze1y1CEAoLIDXr9IRAw5QMz9y39+l6Zm6PbKCYGK2scOEXaU2vYECpYUiqO8JjVToVt1OLdzEGX4GbBChdgzUod1ZdhHNc4j1omem0nXS/MQfKj2pO+TmTC0UnTK3ibsH/SkCUZgtt022BxwDPnhnQsP0HVN4ufvkRwOKCiCMHGVym9MuxJfUYSZzZ7hT+zQNHiZJxSWO3KPspPkuTh4WEM8Xps3DrpY31yMfs+/TWffuaY9tCGH8oXd1CJn5grEPP4CMrJT+moSccnaRdijQ8V6AGMY9qOKN2vmYCPIbEl0J5qe6xNz2ffjZGcHHZin2tCB+KxoJLs1zRL8Hjtyrblv0lq3bZjekMDEccgbmHl2abWraD0+AzS/vORHy/74fwkDsv6RcT9n6C3TAuUNZ/IvMftYJnHDf2W6odF/obqXHhBXgVCTrQxBd3FGe1pGwYhz9SCv4n9nJ9PL6ZXU3LnIR30bj+ZvcEFXkRE/YkeURjadg8w8Jkxtu0/Dyc3xQ==
+sidebar_class_name: "delete api-method"
+info_path: api/fishjam-doc/fishjam-media-server
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Delete peer"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/room/{room_id}/peer/{id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Delete peer
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"description":"Room id","in":"path","name":"room_id","required":true,"schema":{"type":"string"}},{"description":"Peer id","in":"path","name":"id","required":true,"schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"204":{"description":"Peer successfully deleted"},"400":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Invalid request body structure"},"401":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Unauthorized"},"404":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Room ID or Peer ID references a resource that doesn't exist"},"503":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Service temporarily unavailable"}}}
+>
+  
+</StatusCodes>
+
+
+      

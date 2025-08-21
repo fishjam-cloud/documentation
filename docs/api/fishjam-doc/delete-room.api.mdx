@@ -1,0 +1,71 @@
+---
+id: delete-room
+title: "Delete the room"
+description: "Delete the room"
+sidebar_label: "Delete the room"
+hide_title: true
+hide_table_of_contents: true
+api: eJzlVcFu2zAM/RVDl21AFntdd8mtWDOgQLdD056KoGBsNlYrS5okp80M/ftI2UmcpfuCniJFfOTjE/3UiRKUWkH57MWsixNhLDoI0uirSsxEhQoDPjhjGjERFhw0tHcUe9/RoS+dtBxMoTcUk8mKwiRvLYSa1poAtOMED+nQ4e9WOqTkwbU4Eb6ssQGqLcLWcqgPTuq1iHHJwd4a7ZG5ibPinH+Oqy7askTvH1ultlnPtsoSXerlvCgYURodUAdegrVKlqm//Mlzhm7E4Dj13Dnjsoaywxq5e8faBNmzQT71/0NVGEAqTyh8hcYqbuzWPKPOavAZvtokweSk57E+97saJESQIeVI2Q84s3rCMhCOgMc0rvQGlCQpKB360Kvx5b2qcaehDbVx8g+lSlKcv1cp0mdaGfT6Q6B6sp+Nb8XX9yrIAt1GlpgFbKxx4CQZSathQ6xgRakY4bFsnQzbZHu7UYI+wf2SnSrAmk0xGR3TOK5xmYwpCzVmg5WSjdbm4LDJXMkwZyLngLwbDDMKLu42veUuD0wWfBW9vv/wGa6Jm14hOByJUIdgUz9SPxqOpBtGsldeDkZ9YYHQ2dm0IFjr1IDyszx/eXmZQjqeGrfOB6zPr6++z38t5p8ZEw8X8EP6+gma7CdWErJFaoJyciu9KMX0rOgh1vjQgB7ROBXsSND9YxHwNeRWAT05ceDbDUoOdzERs93jQ/LVVImPum4FHu+cipH/Jo90217gDU1Auvf0wknPa7qnR1AeT1jsvxfx8WaYxk/Z4SF8k+TwJ+gtqwGq5R0tn3E7eijjkkJrhIpEYyb96QU9djaMcCdfKc/ifrYu59fz2zmF84iMVNvPxbDgAm/SIplSRPogY9yzDLxnjjH+BYov2Lw=
+sidebar_class_name: "delete api-method"
+info_path: api/fishjam-doc/fishjam-media-server
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Delete the room"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/room/{room_id}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Delete the room
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"description":"Room id","in":"path","name":"room_id","required":true,"schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"204":{"description":"Successfully deleted room"},"400":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Invalid request"},"401":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Unauthorized"},"404":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Room doesn't exist"},"503":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Service temporarily unavailable"}}}
+>
+  
+</StatusCodes>
+
+
+      

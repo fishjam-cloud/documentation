@@ -1,0 +1,71 @@
+---
+id: generate-streamer-token
+title: "Generate a token that can be used by a streamer to start streaming"
+description: "Generate a token that can be used by a streamer to start streaming"
+sidebar_label: "Generate a token that can be used by a streamer to start streaming"
+hide_title: true
+hide_table_of_contents: true
+api: eJzlVt9P2zAQ/lesvGyT2qaEAlLf0MamSvulFZ4QQhfn2hhSO7OdQhflf99d4pZ0MG0Se5l4ih37O3/33cVf6khCUaQgb100rZtBZEq04JXRsyyaRkvUPMVr5y3CCu21N7eoo0FUgqW5R0u4yzrK0EmrSgYSbPZOmIXwOYoONyKA4oUSfE5jTVCaWWNW1yqjFxa/V8oiHelthYPIyRxXQIwivyl5K8VRehk1zRVvdqXRDplxlIwP+CGN9qg9D6EsCyXbHOIbx3zqXrx9ouecjVgYK6DyubHqB50iUmsgk+AoO7FNXNAJGmWLo+wt6+RVx6HThAZ4D6uyYL5HMgN5khwPj07gcDhBmQ7Tg+xoeJLAYXacoEwmCcX5Nbu+EpchLmXslW+jzgOZ81CEADfpDTEjOOGfys9VUqJzi6ooNkJSCE/xae9kPH6GdmfWkm4rCgxLfKQJ8qr7HSpDD6pwhHqQrOOagxN4X7YS/EmfcEZPoDb63wgz02soVCY4HDovUpNtuNaV9JXFTpznNNZ/Lc6F3n4N2z6ZvFQpvtEVJTKDTr/ydJ5yngU5Gh++VEHmaNdKovC4Ko0Fq+hKqTSsiRWkFIoRHpbsCtH27uSD9qN8CL4iQLSXHHkFeCFBixRF5TAT6YbWdpevNzQG68MbzmkQkf3khl2qNFSWQWcu0yhmW4nrYC5NvGNBtkLkO8e64omsrPKb/dmci9ZVYvsRQEc6FJTlSREs9uTKvS/bzJVeGN5JvYDkUDwMXndaAqFFMhoTrLJFQLlpHN/d3Y2gXR4Zu4wD1sUfZ2/PPs/PhoxpHkr1Xrn8BlbiE2YKxLxNiWJyYp2441Ey7iAszAp0j8Y/EX6vljuL9njv47IAMvompFiHmly2Vk/I6YPl95sj5wLSrrpOweGFLZqGX9PVbEN51tRpbX+1PxvK8ZhKv4DC4SNCu+8yev0tdP0b8dQ/yZPMw0vQG1YViopnNLzFTe+fpbmirTlCRhkwp271lIy29D3co3uBf2B2jfv1y/yc+uYnH0BMWQ==
+sidebar_class_name: "post api-method"
+info_path: api/fishjam-doc/fishjam-media-server
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Generate a token that can be used by a streamer to start streaming"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/room/{room_id}/streamer"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Generate a token that can be used by a streamer to start streaming
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"description":"ID of the stream.","in":"path","name":"room_id","required":true,"schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"201":{"content":{"application/json":{"schema":{"description":"Token for authorizing broadcaster streamer connection","properties":{"token":{"example":"5cdac726-57a3-4ecb-b1d5-72a3d62ec242","type":"string"}},"required":["token"],"title":"StreamerToken","type":"object"}}},"description":"Token successfully created"},"400":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Invalid request body structure"},"401":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Unauthorized"},"404":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Room doesn't exist"},"503":{"content":{"application/json":{"schema":{"description":"Error message","properties":{"errors":{"description":"Error details","example":"Token has expired","type":"string"}},"required":["errors"],"title":"Error","type":"object"}}},"description":"Service temporarily unavailable"}}}
+>
+  
+</StatusCodes>
+
+
+      
