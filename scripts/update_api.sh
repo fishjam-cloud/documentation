@@ -37,8 +37,12 @@ copy_openapi() {
     fi
 }
 
+
+PROTO_FILES="server_notifications agent_notifications notifications/shared"
 copy_protos() {
-    cp ./fishjam/server_notifications.proto $ASSETS_DIRECTORY
+    for file in $PROTO_FILES; do
+        cp ./fishjam/$file.proto $ASSETS_DIRECTORY/protobuf/
+    done
 }
 
 checkout_submodule fishjam-server
