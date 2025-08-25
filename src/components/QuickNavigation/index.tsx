@@ -4,6 +4,7 @@ import styles from "./index.module.css";
 import clsx from "clsx";
 import { CardItem } from "@site/types";
 import React from "react";
+import { useVersionedLink } from "@site/src/hooks/useVersionedLink";
 
 export default function QuickNavigation(props: { items: CardItem[] }) {
   return (
@@ -12,7 +13,7 @@ export default function QuickNavigation(props: { items: CardItem[] }) {
         <article key={index} className="col col--6 margin-top--sm">
           <Link
             className={clsx("card padding--lg", styles.cardContainer)}
-            href={item.href}
+            href={useVersionedLink(item.href)}
           >
             <Heading
               as="h3"

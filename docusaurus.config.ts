@@ -138,7 +138,8 @@ const config: Config = {
           sidebarPath: "./sidebars/docs.ts",
           path: "docs",
           routeBasePath: "/",
-          editUrl: "https://github.com/fishjam-cloud/documentation/tree/main/",
+          editUrl: ({ versionDocsDirPath, docPath }) =>
+            `https://github.com/fishjam-cloud/documentation/tree/main/${versionDocsDirPath}/${docPath}`,
           beforeDefaultRehypePlugins: [rehypeShikiPlugin],
           remarkPlugins: [
             [require("@docusaurus/remark-plugin-npm2yarn"), { sync: true }],
