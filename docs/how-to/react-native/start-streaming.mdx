@@ -16,8 +16,8 @@ enabled camera and microphone will start streaming to Room.
 
 ## Enable your camera
 
-First, you have to enable your camera by calling [`prepareCamera`](/api/mobile/functions/useCamera#preparecamera) method.
-You can open show camera preview with [`VideoPreviewView`](/api/mobile/variables/VideoPreviewView) component
+First, you have to enable your camera by calling [`prepareCamera`](../../api/mobile/functions/useCamera#preparecamera) method.
+You can open show camera preview with [`VideoPreviewView`](../../api/mobile/variables/VideoPreviewView) component
 
 ```tsx
 import React, { useEffect } from "react";
@@ -39,10 +39,10 @@ export function ViewPreview() {
 
 ### Listing user cameras
 
-To list all cameras available on device, you can use [`cameras`](/api/mobile/functions/useCamera#cameras) property from [`useCamera`](/api/mobile/functions/useCamera) hook.
+To list all cameras available on device, you can use [`cameras`](../../api/mobile/functions/useCamera#cameras) property from [`useCamera`](../../api/mobile/functions/useCamera) hook.
 This way, you can either automatically choose camera (front/back) or allow user to select camera type.
 
-To change camera, simply call [`switchCamera`](/api/mobile/functions/useCamera#switchcamera) method.
+To change camera, simply call [`switchCamera`](../../api/mobile/functions/useCamera#switchcamera) method.
 
 ```tsx
 import React, { useCallback } from "react";
@@ -68,7 +68,7 @@ export function FlipButton() {
 
 ### Disabling/enabling camera
 
-To change camera state, you use [`toggleCamera`](/api/mobile/functions/useCamera#togglecamera) method.
+To change camera state, you use [`toggleCamera`](../../api/mobile/functions/useCamera#togglecamera) method.
 
 ```tsx
 import { Button } from "react-native";
@@ -89,7 +89,7 @@ export function ToggleCameraButton() {
 
 ## Enable microphone
 
-Microphone works similar to camera. In order to enable it, you have to call [`toggleMicrophone`](/api/mobile/functions/useMicrophone#togglemicrophone) method.
+Microphone works similar to camera. In order to enable it, you have to call [`toggleMicrophone`](../../api/mobile/functions/useMicrophone#togglemicrophone) method.
 
 ```tsx
 import { Button } from "react-native";

@@ -61,12 +61,12 @@ You need to modify `AndroidManifest.xml` file and add below service:
 
   <TabItem value="android" label="Android">
 
-You can use [`useForegroundService`](/api/mobile/variables/useForegroundService) hook to handle how foreground service behaves on Android.
+You can use [`useForegroundService`](../../api/mobile/variables/useForegroundService) hook to handle how foreground service behaves on Android.
 
 :::important[Permissions]
 
-If you want to use [`enableCamera`](/api/mobile/type-aliases/ForegroundServiceConfig#enablecamera) or [`enableMicrophone`](/api/mobile/type-aliases/ForegroundServiceConfig#enablemicrophone),
-user must first grant permission for this resource. [`useForegroundService`](/api/mobile/variables/useForegroundService) will check if permission is
+If you want to use [`enableCamera`](../../api/mobile/type-aliases/ForegroundServiceConfig#enablecamera) or [`enableMicrophone`](../../api/mobile/type-aliases/ForegroundServiceConfig#enablemicrophone),
+user must first grant permission for this resource. [`useForegroundService`](../../api/mobile/variables/useForegroundService) will check if permission is
 granted and only then allow to start a service.
 
 :::

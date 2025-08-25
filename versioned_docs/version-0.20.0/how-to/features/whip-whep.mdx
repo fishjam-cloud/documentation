@@ -9,10 +9,10 @@ import TabItem from "@theme/TabItem";
 # Livestreaming using WHIP/WHEP
 
 :::tip
-Make sure to read [Livestreaming with Fishjam](/tutorials/livestreaming) before reading this guide.
+Make sure to read [Livestreaming with Fishjam](../../tutorials/livestreaming) before reading this guide.
 This guide focuses on a low-level way to communicate with Fishjam.
 
-The majority of use-cases should prefer to use the methods described in [Livestreaming with Fishjam](/tutorials/livestreaming).
+The majority of use-cases should prefer to use the methods described in [Livestreaming with Fishjam](../../tutorials/livestreaming).
 :::
 
 If you've reading this guide, it is more than likely that you've already heard of **WHIP** (WebRTC HTTP Ingress Protocol) and **WHEP** (WebRTC HTTP Egress Protocol).
@@ -44,7 +44,7 @@ You can paste this URL in your WHIP client of choice to start streaming.
 ### Getting the token
 
 To authenticate a streamer, you need to first create a room of type `livestream` and a streamer token for that room.
-You can read about this in detail in [Production Livestreaming with Server SDKs](/tutorials/livestreaming#production-livestreaming-with-server-sdks), but the TL;DR is
+You can read about this in detail in [Production Livestreaming with Server SDKs](../../tutorials/livestreaming#production-livestreaming-with-server-sdks), but the TL;DR is
 
 <Tabs groupId="language">
   <TabItem value="ts" label="Typescript">
@@ -102,7 +102,7 @@ The usage of WHEP is very similar to WHIP, as you need the following:
 With Fishjam, if the livestream is private, then the **token is required**.
 On the other hand, if the livestream is public, then the **token is omitted**.
 
-[Private vs Public Livestreams](/explanation/public-livestreams) explains private and public livestreams in more detail.
+[Private vs Public Livestreams](../../explanation/public-livestreams) explains private and public livestreams in more detail.
 In this guide we demonstrate how to view each livestream type using WHEP directly.
 
 ### Private livestreams
@@ -120,7 +120,7 @@ You can paste this URL in your WHEP client of choice to start viewing.
 #### Getting the token
 
 To authenticate a viewer, you need to create a viewer token for a room of `livestream` type.
-You can read about this in detail in [Production Livestreaming with Server SDKs](/tutorials/livestreaming#production-livestreaming-with-server-sdks), but the TL;DR is
+You can read about this in detail in [Production Livestreaming with Server SDKs](../../tutorials/livestreaming#production-livestreaming-with-server-sdks), but the TL;DR is
 
 <Tabs groupId="language">
   <TabItem value="ts" label="Typescript">
@@ -217,12 +217,12 @@ http://fishjam.io/api/v1/live/api/whep/[ROOM-ID]
 
 More on livestreaming:
 
-- [Livestreaming tutorial](/tutorials/livestreaming)
-- [Private vs Public livestreams](/explanation/public-livestreams)
+- [Livestreaming tutorial](../../tutorials/livestreaming)
+- [Private vs Public livestreams](../../explanation/public-livestreams)
 
 If livestreaming doesn't fit your use case:
 
-- [Room types explained](/explanation/room-types)
-- [Videoconferencing in React Native](/tutorials/react-native-quick-start)
-- [Videoconferencing in React](/tutorials/react-quick-start)
-- [Audio-only calls](/how-to/features/audio-only-calls)
+- [Room types explained](../../explanation/room-types)
+- [Videoconferencing in React Native](../../tutorials/react-native-quick-start)
+- [Videoconferencing in React](../../tutorials/react-quick-start)
+- [Audio-only calls](../../how-to/features/audio-only-calls)

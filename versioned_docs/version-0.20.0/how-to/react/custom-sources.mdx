@@ -9,7 +9,7 @@ import TabItem from "@theme/TabItem";
 
 :::important
 
-If you only wish to send camera, microphone or screen share output through Fishjam, then you most likely should refer to the documentation in [Streaming media](/how-to/react/start-streaming) and [Managing devices](/how-to/react/managing-devices) instead of this page.
+If you only wish to send camera, microphone or screen share output through Fishjam, then you most likely should refer to the documentation in [Streaming media](../../how-to/react/start-streaming) and [Managing devices](../../how-to/react/managing-devices) instead of this page.
 
 :::
 
@@ -17,12 +17,12 @@ This section demonstrates how to stream non-standard video or audio to other pee
 The utilities in this section allow you to integrate Fishjam with powerful browser APIs such as [WebGL](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API) and [WebGPU](https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API),
 or higher level libraries, which leverage these APIs, such as [Three.js](https://threejs.org/), [Smelter](https://smelter.dev) or [PixiJS](https://pixijs.com/)
 
-## Creating a custom source - [`useCustomSource()`](/api/web/functions/useCustomSource)
+## Creating a custom source - [`useCustomSource()`](../../api/web/functions/useCustomSource)
 
 To create a custom source, you only need to do two things:
 
 1. Call the `useCustomSource` hook.
-2. Call the [`setStream`](/api/web/functions/useCustomSource#setstream) callback provided by the `useCustomSource` hook with a [MediaStream](#how-to-get-a-mediastream-object) object.
+2. Call the [`setStream`](../../api/web/functions/useCustomSource#setstream) callback provided by the `useCustomSource` hook with a [MediaStream](#how-to-get-a-mediastream-object) object.
 
 #### Usage Example
 
@@ -40,12 +40,12 @@ useEffect(() => {
 
 ### Using a created custom source
 
-Once you have called [`setStream`](/api/web/functions/useCustomSource#setstream) for a given source ID (in the above example, `"my-custom-source"`), any subsequent calls to `useCustomSource` with the same ID will return the same state.
+Once you have called [`setStream`](../../api/web/functions/useCustomSource#setstream) for a given source ID (in the above example, `"my-custom-source"`), any subsequent calls to `useCustomSource` with the same ID will return the same state.
 This enables multiple components to control and read a shared custom source.
 
 ### Deleting a custom source
 
-If you wish to remove a custom source, then you should call the [`setStream`](/api/web/functions/useCustomSource#setstream) callback with `null` as its argument.
+If you wish to remove a custom source, then you should call the [`setStream`](../../api/web/functions/useCustomSource#setstream) callback with `null` as its argument.
 
 #### Usage Example
 
