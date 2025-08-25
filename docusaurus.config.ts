@@ -11,6 +11,10 @@ import {
 } from "@shikijs/transformers";
 
 import { rendererClassic, transformerTwoslash } from "@shikijs/twoslash";
+import {
+  NormalizedSidebar,
+  SidebarItemsGeneratorVersion,
+} from "@docusaurus/plugin-content-docs/src/sidebars/types.js";
 
 const rehypeShikiPlugin = [
   rehypeShiki,
@@ -20,9 +24,9 @@ const rehypeShikiPlugin = [
     },
     langs: Object.keys(bundledLanguages) as BundledLanguage[],
     transformers: [
-      transformerTwoslash({
-        renderer: rendererClassic(),
-      }),
+      // transformerTwoslash({
+      //   renderer: rendererClassic(),
+      // }),
       transformerMetaHighlight(),
       transformerNotationDiff(),
       transformerNotationHighlight(),
@@ -31,32 +35,41 @@ const rehypeShikiPlugin = [
   } satisfies RehypeShikiOptions,
 ] satisfies MDXPlugin;
 
-function injectTypeDocSidebar(items) {
+function injectTypeDocSidebar(
+  version: SidebarItemsGeneratorVersion,
+  items: NormalizedSidebar,
+): NormalizedSidebar {
   return items.map((item) => {
-    if (item.customProps?.id === "generated-api") {
+    if (item.customProps?.id === "generated-api" && item.type === "category") {
       return {
         ...item,
         items: [
-          ...[
+          ...([
             {
               type: "category",
               label: "React Native SDK",
               link: { type: "doc", id: "api/mobile/index" },
-              items: require("./docs/api/mobile/typedoc-sidebar.cjs"),
+              items: require(
+                `${version.contentPath}/api/mobile/typedoc-sidebar.cjs`,
+              ),
             },
             {
               type: "category",
               label: "React SDK",
               link: { type: "doc", id: "api/web/index" },
-              items: require("./docs/api/web/typedoc-sidebar.cjs"),
+              items: require(
+                `${version.contentPath}/api/web/typedoc-sidebar.cjs`,
+              ),
             },
             {
               type: "category",
               label: "Server SDK for JS",
               link: { type: "doc", id: "api/server/index" },
-              items: require("./docs/api/server/typedoc-sidebar.cjs"),
+              items: require(
+                `${version.contentPath}/api/server/typedoc-sidebar.cjs`,
+              ),
             },
-          ],
+          ] as const),
           ...item.items.filter((element) => element.type == "doc"),
         ],
       };
@@ -135,6 +148,7 @@ const config: Config = {
             ...args
           }) {
             return injectTypeDocSidebar(
+              args.version,
               await defaultSidebarItemsGenerator(args),
             );
           },

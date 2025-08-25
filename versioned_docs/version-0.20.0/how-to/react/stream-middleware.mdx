@@ -9,7 +9,7 @@ This feature is powerful for applying effects, custom encodings, or any other tr
 
 ## Overview
 
-Define a [`TrackMiddleware`](/api/web/type-aliases/TrackMiddleware) function which takes a `MediaStreamTrack` and returns an object containing the modified `MediaStreamTrack`
+Define a [`TrackMiddleware`](../../api/web/type-aliases/TrackMiddleware) function which takes a `MediaStreamTrack` and returns an object containing the modified `MediaStreamTrack`
 and an optional `onClear` function, which is called when the middleware needs to be removed or reapplied when a device changes.
 
 ### Type definition
@@ -22,11 +22,11 @@ export type TrackMiddleware = (
 
 ### Setting middleware
 
-You can set the middleware for your media tracks using [`setTrackMiddleware`](/api/web/functions/useCamera) method. This method accepts a `TrackMiddleware` or `null` for removing previously set middleware.
+You can set the middleware for your media tracks using [`setTrackMiddleware`](../../api/web/functions/useCamera) method. This method accepts a `TrackMiddleware` or `null` for removing previously set middleware.
 
 ### Example: Applying a blur effect
 
-The following example demonstrates how to apply a custom blur effect to the camera track using the [`useCamera`](/api/web/functions/useCamera) hook and middleware.
+The following example demonstrates how to apply a custom blur effect to the camera track using the [`useCamera`](../../api/web/functions/useCamera) hook and middleware.
 
 ```tsx
 class BlurProcessor {
