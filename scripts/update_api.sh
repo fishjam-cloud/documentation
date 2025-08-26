@@ -41,7 +41,7 @@ copy_openapi() {
 PROTO_FILES="server_notifications agent_notifications notifications/shared"
 copy_protos() {
     for file in $PROTO_FILES; do
-        cp ./fishjam/$file.proto $ASSETS_DIRECTORY/protobuf/
+        cp ./fishjam/$file.proto $ASSETS_DIRECTORY/protobuf/$file.proto
     done
 }
 
