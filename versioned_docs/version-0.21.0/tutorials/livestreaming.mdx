@@ -1,0 +1,347 @@
+---
+type: tutorial
+sidebar_position: 3
+title: Livestreaming
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Livestreaming with Fishjam
+
+This section explains how to set up livestreaming using Fishjam.
+We show how to quickly prototype a livestreaming scenario in [Quickstart with Sandbox API](#quickstart-with-sandbox-api)
+and how to get ready for production in [Production Livestreaming with Server SDKs](#production-livestreaming-with-server-sdks).
+
+:::tip
+Fishjam implements two real-time streaming standards: WHIP (for publishing) and WHEP (for receiving).
+
+In this tutorial we explain how to publish and view streams with the client SDKs, which wrap these standards.
+If you prefer to use WHIP or WHEP directly, then you should read [WHIP/WHEP with Fishjam](../how-to/features/whip-whep).
+:::
+
+## Quickstart with Sandbox API
+
+If you don't have a backend server setup, you can still prototype a livestreaming use-case with the Sandbox API.
+If you want to start by setting up your backend, then you can start by reading [Production Livestreaming with Server SDKs](#production-livestreaming-with-server-sdks).
+
+### Streamer setup
+
+To start streaming with Fishjam, we need two things: a _streamer token_ and video/audio sources.
+
+#### Obtaining a token
+
+The easiest way to obtain a sandbox streamer token is by using the Sandbox API in the client SDKs:
+
+<Tabs groupId="platform">
+  <TabItem value="react" label="React">
+  
+    ```tsx
+    import { useSandbox } from '@fishjam-cloud/react-client';
+
+    const { getSandboxLivestream } = useSandbox();
+    const {
+      streamerToken,
+      room: { id: roomId },
+    } = await getSandboxLivestream('example-room');
+    ```
+
+  </TabItem>
+
+  <TabItem value="react-native" label="React Native">
+
+    ```tsx
+    const FISHJAM_ID = '';
+
+    // ---cut---
+    import { useSandbox } from '@fishjam-cloud/react-native-client';
+
+    const { getSandboxLivestream } = useSandbox({ fishjamId: FISHJAM_ID });
+    const { streamerToken } = await getSandboxLivestream('example-room');
+    ```
+
+  </TabItem>
+ </Tabs>
+
+#### Starting the stream
+
+We can now start sending media, which we can obtain from the user's camera, screen share or microphone:
+
+<Tabs groupId="platform">
+  <TabItem value="react" label="React">
+    <Tabs className="smalltabs" groupId="media-source">
+      <TabItem value="camera" label="Camera + Mic">
+  
+        ```tsx
+        const streamerToken = '';
+        const roomId = '';
+
+        // ---cut---
+        import {
+          useCamera,
+          useLivestreamStreamer,
+          useMicrophone,
+        } from '@fishjam-cloud/react-client';
+
+        const { cameraStream, toggleCamera } = useCamera();
+        const { microphoneStream, toggleMicrophone } = useMicrophone();
+        const { connect } = useLivestreamStreamer();
+
+        // ...
+
+        toggleCamera();
+        toggleMicrophone();
+
+        // ...
+
+        if (cameraStream && microphoneStream) {
+          await connect({
+            token: streamerToken,
+            inputs: { video: cameraStream, audio: microphoneStream }
+          });
+        }
+        ```
+
+      </TabItem>
+
+      <TabItem value="screen" label="Screen Share">
+
+        ```tsx
+        const streamerToken = '';
+        const roomId = '';
+
+        // ---cut---
+        import {
+          useLivestreamStreamer,
+          useScreenShare,
+        } from '@fishjam-cloud/react-client';
+
+        const { stream: screenShareStream, startStreaming } = useScreenShare();
+        const { connect } = useLivestreamStreamer();
+
+        // ...
+
+        startStreaming();
+
+        // ...
+
+        if (screenShareStream) {
+          await connect({
+            token: streamerToken,
+            inputs: { video: screenShareStream, audio: screenShareStream }
+          });
+        }
+        ```
+
+      </TabItem>
+    </Tabs>
+
+  </TabItem>
+
+  <TabItem value="react-native" label="React Native">
+    <Tabs className="smalltabs" groupId="media-source">
+      <TabItem value="camera" label="Camera + Mic">
+
+        ```tsx
+        import React from 'react';
+
+        const streamerToken = '';
+        const roomId = '';
+
+        // ---cut---
+        import {
+          LivestreamStreamer,
+          useLivestreamStreamer,
+          cameras,
+        } from '@fishjam-cloud/react-native-client';
+
+        const { connect } = useLivestreamStreamer({ camera: cameras[0] });
+
+        // ...
+
+        await connect(streamerToken);
+
+        // Render the livestream
+        <LivestreamStreamer />
+        ```
+
+      </TabItem>
+    </Tabs>
+
+  </TabItem>
+ </Tabs>
+
+Et voilà, we've published a livestream!
+
+### Viewer setup
+
+To receive the published livestream, we need one thing: a _viewer token_.
+
+:::info
+In this guide, we've created a _private_ livestream, where viewers need a token to join.
+A livestream may also be _public_, where anyone can join if they know the livestream's room id.
+
+You can learn more about public livestreams in [Private vs Public Livestreams](../explanation/public-livestreams).
+:::
+
+#### Obtaining a token
+
+We obtain a sandbox viewer token using the Sandbox API in the client SDKs:
+
+<Tabs groupId="platform">
+  <TabItem value="react" label="React">
+  
+    ```tsx
+    import { useSandbox } from '@fishjam-cloud/react-client';
+
+    const { getSandboxViewerToken } = useSandbox();
+    const viewerToken = await getSandboxViewerToken('example-room');
+    ```
+
+  </TabItem>
+
+  <TabItem value="react-native" label="React Native">
+
+    ```tsx
+    import React from 'react';
+
+    const FISHJAM_ID = '';
+
+    // ---cut---
+    import { useSandbox } from '@fishjam-cloud/react-native-client';
+
+    const { getSandboxViewerToken } = useSandbox({ fishjamId: FISHJAM_ID });
+    const viewerToken = await getSandboxViewerToken('example-room');
+    ```
+
+  </TabItem>
+ </Tabs>
+
+#### Receiving the stream
+
+We can now begin receiving the stream
+
+<Tabs groupId="platform">
+  <TabItem value="react" label="React">
+  
+    ```tsx
+    const viewerToken = '';
+
+    // ---cut---
+    import { useLivestreamViewer } from '@fishjam-cloud/react-client';
+
+    const { connect, stream } = useLivestreamViewer();
+
+    await connect({ token: viewerToken });
+    // You can now use `stream` with a <video> element or your player of choice
+    ```
+
+  </TabItem>
+
+  <TabItem value="react-native" label="React Native">
+
+    ```tsx
+    import React from 'react';
+
+    const viewerToken = '';
+
+    // ---cut---
+    import {
+      LivestreamViewer,
+      useLivestreamViewer,
+    } from '@fishjam-cloud/react-native-client';
+
+    const { connect } = useLivestreamViewer();
+
+    await connect({ token: viewerToken });
+
+    // Render the livestream
+    <LivestreamViewer />
+    ```
+
+  </TabItem>
+ </Tabs>
+
+That's it!
+Now you can focus on your business logic and replace the Sandbox API usage in the future,
+when your backend is ready, or continue on to see how to set up your backend for livestreaming.
+
+## Production Livestreaming with Server SDKs
+
+The [Quickstart with Sandbox API](#quickstart-with-sandbox-api) shows how to get livestreaming up and running quickly.
+However, in a production scenario, we need a backend application with proper authentication and authorization.
+In this section, we explain what such a backend application should do.
+
+Our backend needs to do three things to be ready for streaming:
+
+1. It needs to create a room of `livestream` type.
+2. It needs to create a streamer token for that room.
+3. It needs to create a viewer token for that room.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    const fishjamId = '';
+    const managementToken = '';
+
+    // ---cut---
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamClient = new FishjamClient({
+      fishjamId,
+      managementToken,
+    });
+
+    // 1.
+    const room = await fishjamClient.createRoom({ roomType: 'livestream' });
+    // 2.
+    const { token: streamerToken } = await fishjamClient.createLivestreamStreamerToken(room.id);
+    // 3.
+    const { token: viewerToken } = await fishjamClient.createLivestreamViewerToken(room.id);
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    from fishjam import FishjamClient
+
+    fishjam_client = FishjamClient(
+      fishjam_id=fishjam_id,
+      management_token=management_token,
+    );
+
+    # 1.
+    room = await fishjam_client.create_room(room_type="livestream")
+    # 2.
+    streamer_token = await fishjam_client.create_livestream_streamer_token(room.id)
+    # 3.
+    viewer_token = await fishjam_client.create_livestream_viewer_token(room.id)
+    ```
+
+  </TabItem>
+</Tabs>
+
+Now, you need to supply these generated tokens to your frontend applications (e.g. by exposing a REST endpoint).
+You most likely will want to only supply these tokens to properly authenticate and authorize streamers and viewers before giving them tokens.
+
+Then, you can start streaming as described in [Starting the stream](#starting-the-stream) and start receiving as describe in [Receiving the stream](#receiving-the-stream).
+
+## See also
+
+Learn how to use WHIP/WHEP with Fishjam:
+
+- [WHIP/WHEP with Fishjam](../how-to/features/whip-whep)
+
+If you want to get a better understanding of livestreaming with Fishjam, make sure to check out:
+
+- [Room Types Explained](../explanation/room-types)
+- [Private vs Public Livestreams](../explanation/public-livestreams)
+
+If you have a different use case, then you should see
+
+- [React Quickstart](../tutorials/react-quick-start)
+- [React Native Quickstart](../tutorials/react-native-quick-start)
+- [Audio-only Calls](../how-to/features/audio-only-calls)

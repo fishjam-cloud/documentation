@@ -1,0 +1,228 @@
+---
+type: how-to
+title: WHIP/WHEP with Fishjam
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Livestreaming using WHIP/WHEP
+
+:::tip
+Make sure to read [Livestreaming with Fishjam](../../tutorials/livestreaming) before reading this guide.
+This guide focuses on a low-level way to communicate with Fishjam.
+
+The majority of use-cases should prefer to use the methods described in [Livestreaming with Fishjam](../../tutorials/livestreaming).
+:::
+
+If you've reading this guide, it is more than likely that you've already heard of **WHIP** (WebRTC HTTP Ingress Protocol) and **WHEP** (WebRTC HTTP Egress Protocol).
+If not, then we recommend to read our [article about WHIP/WHEP](https://blog.swmansion.com/building-interactive-streaming-apps-webrtc-whip-whep-explained-d38f4825ec90).
+In short, these are two protocols which standardize real-time livestreaming.
+This prevents vendor lock-in and allows implementations and solutions to be reused in different scenarios.
+
+Fishjam supports both WHIP and WHEP, so you can choose how to publish and receive streams.
+For example, you can use [OBS Studio](https://obsproject.com/) to publish a livestream with WHIP and then receive the stream using any public online WHEP player you like.
+
+## WHIP with Fishjam
+
+WHIP is the protocol used by streamers to start publishing.
+To use WHIP you need two things:
+
+1. The URL of an HTTP endpoint implementing the WHIP specification.
+2. A token, used by the endpoint to authorize the streamer.
+
+### Getting the URL
+
+Fishjam's WHIP endpoint is available at
+
+```sh
+https://fishjam.io/api/v1/live/api/whip
+```
+
+You can paste this URL in your WHIP client of choice to start streaming.
+
+### Getting the token
+
+To authenticate a streamer, you need to first create a room of type `livestream` and a streamer token for that room.
+You can read about this in detail in [Production Livestreaming with Server SDKs](../../tutorials/livestreaming#production-livestreaming-with-server-sdks), but the TL;DR is
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    const fishjamId = "";
+    const managementToken = "";
+
+    // ---cut---
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamClient = new FishjamClient({
+        fishjamId,
+        managementToken,
+    });
+
+    const room = await fishjamClient.createRoom({ roomType: 'livestream' });
+    const { token: streamerToken } = await fishjamClient.createLivestreamStreamerToken(room.id); // [!code highlight]
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    from fishjam import FishjamClient
+
+    fishjam_client = FishjamClient(
+      fishjam_id=fishjam_id,
+      management_token=management_token,
+    );
+
+    room = await fishjam_client.create_room(room_type="livestream")
+    streamer_token = await fishjam_client.create_livestream_streamer_token(room.id) # [!code highlight]
+    ```
+
+  </TabItem>
+</Tabs>
+
+The created streamer token must be supplied in the HTTP headers of the WHIP request:
+
+```sh
+POST https://fishjam.io/api/v1/live/api/whip
+Authorization: Bearer [STREAMER-TOKEN]
+```
+
+## WHEP with Fishjam
+
+WHEP is the protocol used by viewers to start receiving a published livestream.
+The usage of WHEP is very similar to WHIP, as you need the following:
+
+1. The URL of an HTTP endpoint implementing the WHEP specification.
+2. **(Optional)** A token, used by the endpoint to authorize the viewer.
+
+With Fishjam, if the livestream is private, then the **token is required**.
+On the other hand, if the livestream is public, then the **token is omitted**.
+
+[Private vs Public Livestreams](../../explanation/public-livestreams) explains private and public livestreams in more detail.
+In this guide we demonstrate how to view each livestream type using WHEP directly.
+
+### Private livestreams
+
+#### Getting the URL
+
+For private livestreams, Fishjam's WHEP endpoint is available at
+
+```sh
+https://fishjam.io/api/v1/live/api/whep
+```
+
+You can paste this URL in your WHEP client of choice to start viewing.
+
+#### Getting the token
+
+To authenticate a viewer, you need to create a viewer token for a room of `livestream` type.
+You can read about this in detail in [Production Livestreaming with Server SDKs](../../tutorials/livestreaming#production-livestreaming-with-server-sdks), but the TL;DR is
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    const fishjamId = "";
+    const managementToken = "";
+
+    // ---cut---
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamClient = new FishjamClient({
+      fishjamId,
+      managementToken,
+    });
+
+    const room = await fishjamClient.createRoom({ roomType: 'livestream', public: false });
+
+    // ...
+
+    const { token: viewerToken } = await fishjamClient.createLivestreamViewerToken(room.id); // [!code highlight]
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    from fishjam import FishjamClient
+
+    fishjam_client = FishjamClient(
+      fishjam_id=fishjam_id,
+      management_token=management_token,
+    );
+
+    room = await fishjam_client.create_room(room_type="livestream", public=False)
+
+    # ...
+
+    viewer_token = await fishjam_client.create_livestream_viewer_token(room.id) # [!code highlight]
+    ```
+
+  </TabItem>
+</Tabs>
+
+The created viewer token must be supplied in the HTTP headers of the WHEP request:
+
+```sh
+POST https://fishjam.io/api/v1/live/api/whep
+Authorization: Bearer [VIEWER-TOKEN]
+```
+
+### Public livestreams
+
+For public livestreams, you don't need a token, however you still need a room of `livestream` type with the `public` flag enabled.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamId = "";
+    const managementToken = "";
+    const fishjamClient = new FishjamClient({
+      fishjamId,
+      managementToken,
+    });
+
+    // ---cut---
+    const room = await fishjamClient.createRoom({ roomType: 'livestream', public: true });
+    // now you can use room.id to start viewing
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    room = await fishjam_client.create_room(room_type="livestream", public=True)
+    # now you can use room.id to start viewing
+    ```
+
+  </TabItem>
+</Tabs>
+
+Once you have such a room, you can view a stream published to that room by supplying the following URL:
+
+```sh
+http://fishjam.io/api/v1/live/api/whep/[ROOM-ID]
+```
+
+## See also
+
+More on livestreaming:
+
+- [Livestreaming tutorial](../../tutorials/livestreaming)
+- [Private vs Public livestreams](../../explanation/public-livestreams)
+
+If livestreaming doesn't fit your use case:
+
+- [Room types explained](../../explanation/room-types)
+- [Videoconferencing in React Native](../../tutorials/react-native-quick-start)
+- [Videoconferencing in React](../../tutorials/react-quick-start)
+- [Audio-only calls](../../how-to/features/audio-only-calls)
