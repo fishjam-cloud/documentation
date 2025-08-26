@@ -27,7 +27,7 @@ The notifications can be configured using Webhook or Websocket.
 
 ### Protobufs
 
-[Server Protobufs](https://github.com/fishjam-cloud/documentation/tree/main/static/api/server_notifications.proto)
+[Server Protobufs](https://github.com/fishjam-cloud/documentation/tree/main/static/api/protobuf)
 
 #### Webhook
 
