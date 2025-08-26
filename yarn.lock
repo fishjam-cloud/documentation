@@ -5578,6 +5578,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@shikijs/core@npm:3.11.0":
+  version: 3.11.0
+  resolution: "@shikijs/core@npm:3.11.0"
+  dependencies:
+    "@shikijs/types": "npm:3.11.0"
+    "@shikijs/vscode-textmate": "npm:^10.0.2"
+    "@types/hast": "npm:^3.0.4"
+    hast-util-to-html: "npm:^9.0.5"
+  checksum: 10c0/5ef0bbfc7d1a73fa9d71c348b28e801273cc0a909c80aebd7a0c6746c832cdcd5039d4b28748d3e288d84ed021c67415b0f0b30b3032b2a107ade4b41f6e2bd3
+  languageName: node
+  linkType: hard
+
 "@shikijs/core@npm:3.7.0":
   version: 3.7.0
   resolution: "@shikijs/core@npm:3.7.0"
@@ -5643,13 +5655,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shikijs/transformers@npm:^3.6.0":
-  version: 3.7.0
-  resolution: "@shikijs/transformers@npm:3.7.0"
+"@shikijs/transformers@npm:^3.11.0":
+  version: 3.11.0
+  resolution: "@shikijs/transformers@npm:3.11.0"
   dependencies:
-    "@shikijs/core": "npm:3.7.0"
-    "@shikijs/types": "npm:3.7.0"
-  checksum: 10c0/ed875bba8c6354be35a86c9a9c4d8b5254b75713372434082cdfad0bce3d6527ba907bf0b46f441fe98cc4ffea3ee35cfa6e3707899fabe87cf3e797280ff6c6
+    "@shikijs/core": "npm:3.11.0"
+    "@shikijs/types": "npm:3.11.0"
+  checksum: 10c0/3f9809d63d424620f134fa1ef8ede5216947f1180b9cb5364996fd9a979cf179d6bc1f40cfbe8907e8194ebb1de228d94c97eebe1b6fcdcbab0a6bf78891ed9a
   languageName: node
   linkType: hard
 
@@ -5663,6 +5675,16 @@ __metadata:
   peerDependencies:
     typescript: ">=5.5.0"
   checksum: 10c0/4189f10179a5c61db55923410a10d286169b27d1fa144393e4e0c21786e53a34e9a7bcd693b03d3ba04712fd1812f7e5239e03f4f71195523219a1be98ae294e
+  languageName: node
+  linkType: hard
+
+"@shikijs/types@npm:3.11.0":
+  version: 3.11.0
+  resolution: "@shikijs/types@npm:3.11.0"
+  dependencies:
+    "@shikijs/vscode-textmate": "npm:^10.0.2"
+    "@types/hast": "npm:^3.0.4"
+  checksum: 10c0/a209a84d86d8501091a06198cf11f79fc6485bb836554e96d5b3e04a7043c1a993e46a858b32a3117328becfa93c24fef1c716ead0919ae5b2677078ffb11eaf
   languageName: node
   linkType: hard
 
@@ -14585,7 +14607,7 @@ __metadata:
     "@fishjam-cloud/react-native-client": "link:./packages/mobile-client-sdk/packages/react-native-client"
     "@mdx-js/react": "npm:^3.1.0"
     "@shikijs/rehype": "npm:^3.6.0"
-    "@shikijs/transformers": "npm:^3.6.0"
+    "@shikijs/transformers": "npm:^3.11.0"
     "@shikijs/twoslash": "npm:^3.6.0"
     "@swmansion/smelter": "npm:^0.2.1"
     "@swmansion/smelter-web-wasm": "npm:^0.2.1"
