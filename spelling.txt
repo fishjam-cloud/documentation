@@ -105,3 +105,4 @@ uvicorn
 QVGA
 Memberof
 unmutes
+websocat

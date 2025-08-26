@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
@@ -17,12 +17,12 @@ checkout_submodule() {
     submodule_path=api/$1
 
     cd $CWD/$submodule_path
-    git fetch --tags
-    latest_tag=$(get_latest_semver_tag)
-    
-    echo "Latest version tag for $submodule_path is $latest_tag"
-    
-    git checkout $latest_tag --detach &> /dev/null
+    # git fetch --tags
+    # latest_tag=$(get_latest_semver_tag)
+    #
+    # echo "Latest version tag for $submodule_path is $latest_tag"
+    #
+    # git checkout $latest_tag --detach &>/dev/null
 }
 
 copy_openapi() {
@@ -36,7 +36,6 @@ copy_openapi() {
         echo "openapi.yaml for $submodule_name not found."
     fi
 }
-
 
 PROTO_FILES="server_notifications agent_notifications notifications/shared"
 copy_protos() {

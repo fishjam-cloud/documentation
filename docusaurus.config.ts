@@ -7,6 +7,7 @@ import {
   transformerMetaHighlight,
   transformerNotationDiff,
   transformerNotationHighlight,
+  transformerNotationWordHighlight,
   transformerNotationFocus,
 } from "@shikijs/transformers";
 
@@ -28,6 +29,7 @@ const rehypeShikiPlugin = [
       //   renderer: rendererClassic(),
       // }),
       transformerMetaHighlight(),
+      transformerNotationWordHighlight(),
       transformerNotationDiff(),
       transformerNotationHighlight(),
       transformerNotationFocus(),

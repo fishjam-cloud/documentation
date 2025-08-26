@@ -1,0 +1,93 @@
+---
+type: explanation
+title: Agent Internals
+sidebar_position: 5
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import AgentDefinition from "../_common/agents/definition.mdx";
+import Subscriptions from "../_common/agents/subscriptions.mdx";
+
+# Agent Internals
+
+:::info
+This explanation focuses on the inner workings of Fishjam Agents.
+If you are looking for a tutorial that shows how to implement an agent, then you may find the [Agent Introduction](../tutorials/agents) more useful.
+:::
+
+<AgentDefinition />
+
+## Agent lifecycle
+
+There are four steps to the lifecycle of a Fishjam Agent:
+
+1. The agent is created in the room `roomId`.
+   Fishjam generates a token that the agent will use to connect to the room.
+2. The agent connects to the room `roomId` via a WebSocket connection.
+3. The agent receives audio from **subscribed** peers in the room `roomId`.
+   Subscriptions are explained in the [Peer subscriptions](#peer-subscriptions) section.
+4. The agent disconnects from the room `roomId` by closing the WebSocket connection.
+
+We describe the steps of an agent's lifecycle in detail below.
+
+:::tip
+The Fishjam [server SDKs](../tutorials/agents#writing-an-agent) provide a simple way to integrate with the APIs described below.
+:::
+
+### Step 1. Creating an Agent in Fishjam
+
+Agents are created via the `/room/{roomId}/peer` [REST API](../api/reference#rest-api) endpoint, by setting the `type` option to `"agent"`.
+An example request with [cURL](https://curl.se/) would look like:
+
+```bash
+# [!code word:{"type"\: "agent"}]
+curl -XPOST -H "Authorization: Bearer $FISHJAM_MANAGEMENT_TOKEN" \
+"https://fishjam.io/api/v1/room/$ROOM_ID/peer" \
+--json '{"type": "agent"}'
+```
+
+### Step 2. Connecting to the Room
+
+Agents connect to Fishjam by initiating a WebSocket connection on the `/socket/agent/websocket` REST API endpoint.
+Once connected, the agent must authenticate with Fishjam by sending an [`AgentRequest.AuthRequest` protobuf message](../api/reference#protobufs).
+An example of initiating a connection using [websocat](https://github.com/vi/websocat) and [Buf CLI](https://buf.build/docs/cli/) would look like:
+
+```bash
+# Get the Fishjam protobuf definitions
+git clone https://github.com/fishjam-cloud/protos.git
+
+echo "{\"authRequest\": {\"token\": \"$AGENT_TOKEN\"}}" \
+| buf convert protos/fishjam/agent_notifications.proto \
+   --type="fishjam.AgentRequest" --from="-#format=json" \
+| websocat -vbn ws://localhost:5002/socket/agent/websocket
+```
+
+In a backend application, we suggest using the [Protobuf compiler](https://protobuf.dev/installation/) to generate utilities for creating protobuf message from code.
+
+### Step 3. Receiving Audio
+
+Once connected, an agent will receive chunks of audio as [`AgentRequest.TrackData` protobuf message](../api/reference#protobufs).
+
+### Step 4. Disconnecting from the Room
+
+An agent disconnects from the room by closing the WebSocket connection created in [Step 2](#step-2.-connecting-to-the-room).
+It may reconnect using the same token it provided in [Step 2](#step-2.-connecting-to-the-room).
+
+## Peer subscriptions
+
+<Subscriptions />
+
+The subscribe option contains parameters describing the desired output format of the peer's audio stream.
+This output format will be sent to connected agents.
+
+### Output format
+
+Currently, only **16-bit PCM** (raw) audio output is supported.
+
+### Output sample rate
+
+The output can have either a sample rate of **16kHz** or **24kHz**.
+
+The above values aim to be compatible with popular real-time AI audio APIs.
+If you require a different output format, then make sure to contact us at contact@fishjam.io.
