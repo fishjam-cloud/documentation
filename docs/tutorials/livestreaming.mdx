@@ -155,14 +155,19 @@ We can now start sending media, which we can obtain from the user's camera, scre
           cameras,
         } from '@fishjam-cloud/react-native-client';
 
-        const { connect } = useLivestreamStreamer({ camera: cameras[0] });
+        const { connect, whipClientRef } = useLivestreamStreamer();
 
         // ...
 
         await connect(streamerToken);
 
         // Render the livestream
-        <LivestreamStreamer />
+        <LivestreamStreamer
+          videoEnabled={true}
+          audioEnabled={true}
+          camera={cameras[0]}
+          whipClientRef={whipClientRef}
+        />
         ```
 
       </TabItem>
