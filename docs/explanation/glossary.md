@@ -14,6 +14,10 @@ A collection of peers that can send and receive video/audio to and from other pe
 
 A user that is connected to a room. Each peer has some associated metadata and tracks.
 
+### Agent
+
+A program connected to a room using the Fishjam server SDK; a programmatic peer.
+
 ### Track
 
 A single stream of video or audio from a peer. It could be a camera view, shared screen, or microphone audio. Each peer can stream multiple tracks.
