@@ -54,11 +54,11 @@
     "@docusaurus/types": "^3.8.1",
     "@shikijs/twoslash": "^3.6.0",
     "cspell": "^9.1.2",
-    "docusaurus-plugin-typedoc": "1.4.0",
+    "docusaurus-plugin-typedoc": "1.4.2",
     "prettier": "^3.5.3",
-    "typedoc": "0.28.5",
-    "typedoc-plugin-markdown": "4.7.0",
-    "typescript": "~5.8.2"
+    "typedoc": "0.28.11",
+    "typedoc-plugin-markdown": "4.8.1",
+    "typescript": "~5.9.2"
   },
   "browserslist": {
     "production": [
