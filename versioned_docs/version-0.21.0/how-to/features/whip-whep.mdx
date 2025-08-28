@@ -50,10 +50,6 @@ You can read about this in detail in [Production Livestreaming with Server SDKs]
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    const fishjamId = "";
-    const managementToken = "";
-
-    // ---cut---
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 
     const fishjamClient = new FishjamClient({
@@ -126,10 +122,6 @@ You can read about this in detail in [Production Livestreaming with Server SDKs]
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    const fishjamId = "";
-    const managementToken = "";
-
-    // ---cut---
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 
     const fishjamClient = new FishjamClient({
@@ -181,16 +173,6 @@ For public livestreams, you don't need a token, however you still need a room of
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
-
-    const fishjamId = "";
-    const managementToken = "";
-    const fishjamClient = new FishjamClient({
-      fishjamId,
-      managementToken,
-    });
-
-    // ---cut---
     const room = await fishjamClient.createRoom({ roomType: 'livestream', public: true });
     // now you can use room.id to start viewing
     ```

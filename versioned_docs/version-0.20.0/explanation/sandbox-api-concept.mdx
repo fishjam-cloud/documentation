@@ -35,16 +35,6 @@ The Sandbox API mitigates this issue and allows you to start frontend developmen
 The Sandbox API is essentially a simplified application built using the Fishjam Server SDKs:
 
 ```typescript
-import {
-  FishjamClient,
-  RoomConfigRoomTypeEnum,
-} from "@fishjam-cloud/js-server-sdk";
-import express from "express";
-const fishjamUrl = "";
-const managementToken = "";
-const app = express();
-
-// ---cut---
 // What Sandbox API does internally (simplified)
 const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
 

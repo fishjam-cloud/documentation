@@ -29,21 +29,6 @@ You can set the middleware for your media tracks using [`setTrackMiddleware`](..
 The following example demonstrates how to apply a custom blur effect to the camera track using the [`useCamera`](../../api/web/functions/useCamera) hook and middleware.
 
 ```tsx
-class BlurProcessor {
-  track: MediaStreamTrack;
-
-  constructor(stream: MediaStream) {
-    this.track = this.applyBlurEffect(stream);
-  }
-
-  private applyBlurEffect(stream: MediaStream): MediaStreamTrack {
-    return stream.getVideoTracks()[0];
-  }
-
-  destroy() {}
-}
-
-// ---cut---
 import React, { useCallback, useEffect, useRef } from "react";
 import type { TrackMiddleware } from "@fishjam-cloud/react-client";
 import { useCamera } from "@fishjam-cloud/react-client";

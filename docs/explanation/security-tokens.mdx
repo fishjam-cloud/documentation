@@ -68,15 +68,6 @@ Peer tokens give permission to:
 ### Generation Process
 
 ```typescript
-import { FishjamClient, RoomId } from "@fishjam-cloud/js-server-sdk";
-import express from "express";
-const res = {} as any;
-const fishjamUrl = "";
-const managementToken = "";
-const roomId = "" as unknown as RoomId;
-const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
-
-// ---cut---
 // Backend generates peer token (using management token)
 const { peer, peerToken } = await fishjamClient.createPeer(roomId, {
   metadata: { name: "John Doe", userId: "user-123" },
@@ -93,12 +84,6 @@ res.json({
 ### Client Usage
 
 ```typescript
-import { useConnection } from "@fishjam-cloud/react-client";
-const joinRoom = {} as any;
-const fishjamUrl = "";
-const peerToken = "";
-
-// ---cut---
 // Client uses peer token to connect (safe to use in frontend)
 await joinRoom({
   url: fishjamUrl,
