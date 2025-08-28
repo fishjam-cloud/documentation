@@ -1,7 +1,7 @@
 ---
 type: explanation
 title: Private vs Public Livestreams
-sidebar_position: 5
+sidebar_position: 6
 ---
 
 import Tabs from "@theme/Tabs";
@@ -47,8 +47,8 @@ By default, created livestreams are `private`, to prevent possible bugs.
       management_token=management_token,
     );
 
-    private_room = await fishjam_client.create_room(room_type="livestream") # [!code highlight]
-    public_room = await fishjam_client.create_room(room_type="livestream", public=True) # [!code highlight]
+    private_room = fishjam_client.create_room(room_type="livestream") # [!code highlight]
+    public_room = fishjam_client.create_room(room_type="livestream", public=True) # [!code highlight]
     ```
 
   </TabItem>
@@ -99,8 +99,8 @@ Note that for development purposes, you can [use the Sandbox API to generate a v
       management_token=management_token,
     );
 
-    private_room = await fishjam_client.create_room(room_type="livestream")
-    viewer_token = await fishjam_client.create_livestream_viewer_token(private_room.id) # [!code highlight]
+    private_room = fishjam_client.create_room(room_type="livestream")
+    viewer_token = fishjam_client.create_livestream_viewer_token(private_room.id) # [!code highlight]
     ```
 
   </TabItem>

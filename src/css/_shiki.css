@@ -49,6 +49,10 @@
   background-color: var(--docusaurus-shiki-code-highlight) !important;
 }
 
+.shiki .highlighted-word {
+  background-color: var(--docusaurus-shiki-code-highlight) !important;
+}
+
 /* diff */
 .shiki .line.diff {
   position: relative;

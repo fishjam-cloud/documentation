@@ -77,8 +77,8 @@ You can read about this in detail in [Production Livestreaming with Server SDKs]
       management_token=management_token,
     );
 
-    room = await fishjam_client.create_room(room_type="livestream")
-    streamer_token = await fishjam_client.create_livestream_streamer_token(room.id) # [!code highlight]
+    room = fishjam_client.create_room(room_type="livestream")
+    streamer_token = fishjam_client.create_livestream_streamer_token(room.id) # [!code highlight]
     ```
 
   </TabItem>
@@ -156,11 +156,11 @@ You can read about this in detail in [Production Livestreaming with Server SDKs]
       management_token=management_token,
     );
 
-    room = await fishjam_client.create_room(room_type="livestream", public=False)
+    room = fishjam_client.create_room(room_type="livestream", public=False)
 
     # ...
 
-    viewer_token = await fishjam_client.create_livestream_viewer_token(room.id) # [!code highlight]
+    viewer_token = fishjam_client.create_livestream_viewer_token(room.id) # [!code highlight]
     ```
 
   </TabItem>
@@ -200,7 +200,7 @@ For public livestreams, you don't need a token, however you still need a room of
   <TabItem value="python" label="Python">
 
     ```python
-    room = await fishjam_client.create_room(room_type="livestream", public=True)
+    room = fishjam_client.create_room(room_type="livestream", public=True)
     # now you can use room.id to start viewing
     ```
 
