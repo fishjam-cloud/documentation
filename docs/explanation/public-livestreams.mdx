@@ -20,10 +20,6 @@ By default, created livestreams are `private`, to prevent possible bugs.
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    const fishjamId = '';
-    const managementToken = '';
-
-    // ---cut---
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 
     const fishjamClient = new FishjamClient({
@@ -71,10 +67,6 @@ Note that for development purposes, you can [use the Sandbox API to generate a v
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    const fishjamId = '';
-    const managementToken = '';
-
-    // ---cut---
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 
     const fishjamClient = new FishjamClient({
@@ -114,9 +106,6 @@ Once you've created a viewer token, you can connect to a room using the Fishjam 
   <TabItem value="react" label="React">
   
     ```tsx
-    const viewerToken = '';
-
-    // ---cut---
     import { useLivestreamViewer } from '@fishjam-cloud/react-client';
 
     // ...
@@ -134,11 +123,6 @@ Once you've created a viewer token, you can connect to a room using the Fishjam 
   <TabItem value="react-native" label="React Native">
 
     ```tsx
-    import React from 'react';
-
-    const viewerToken = '';
-
-    // ---cut---
     import {
       LivestreamViewer,
       useLivestreamViewer,
@@ -178,9 +162,6 @@ Once you've created a room of type `livestream` with the `public` flag enabled, 
   <TabItem value="react" label="React">
   
     ```tsx
-    const roomId = '';
-
-    // ---cut---
     import { useLivestreamViewer } from '@fishjam-cloud/react-client';
 
     // ...
@@ -198,11 +179,6 @@ Once you've created a room of type `livestream` with the `public` flag enabled, 
   <TabItem value="react-native" label="React Native">
 
     ```tsx
-    import React from 'react';
-
-    const roomId = '';
-
-    // ---cut---
     import {
       LivestreamViewer,
       useLivestreamViewer,

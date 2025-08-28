@@ -50,9 +50,6 @@ The easiest way to obtain a sandbox streamer token is by using the Sandbox API i
   <TabItem value="react-native" label="React Native">
 
     ```tsx
-    const FISHJAM_ID = '';
-
-    // ---cut---
     import { useSandbox } from '@fishjam-cloud/react-native-client';
 
     const { getSandboxLivestream } = useSandbox({ fishjamId: FISHJAM_ID });
@@ -72,10 +69,6 @@ We can now start sending media, which we can obtain from the user's camera, scre
       <TabItem value="camera" label="Camera + Mic">
   
         ```tsx
-        const streamerToken = '';
-        const roomId = '';
-
-        // ---cut---
         import {
           useCamera,
           useLivestreamStreamer,
@@ -106,10 +99,6 @@ We can now start sending media, which we can obtain from the user's camera, scre
       <TabItem value="screen" label="Screen Share">
 
         ```tsx
-        const streamerToken = '';
-        const roomId = '';
-
-        // ---cut---
         import {
           useLivestreamStreamer,
           useScreenShare,
@@ -142,12 +131,6 @@ We can now start sending media, which we can obtain from the user's camera, scre
       <TabItem value="camera" label="Camera + Mic">
 
         ```tsx
-        import React from 'react';
-
-        const streamerToken = '';
-        const roomId = '';
-
-        // ---cut---
         import {
           LivestreamStreamer,
           useLivestreamStreamer,
@@ -202,11 +185,6 @@ We obtain a sandbox viewer token using the Sandbox API in the client SDKs:
   <TabItem value="react-native" label="React Native">
 
     ```tsx
-    import React from 'react';
-
-    const FISHJAM_ID = '';
-
-    // ---cut---
     import { useSandbox } from '@fishjam-cloud/react-native-client';
 
     const { getSandboxViewerToken } = useSandbox({ fishjamId: FISHJAM_ID });
@@ -224,9 +202,6 @@ We can now begin receiving the stream
   <TabItem value="react" label="React">
   
     ```tsx
-    const viewerToken = '';
-
-    // ---cut---
     import { useLivestreamViewer } from '@fishjam-cloud/react-client';
 
     const { connect, stream } = useLivestreamViewer();
@@ -240,11 +215,6 @@ We can now begin receiving the stream
   <TabItem value="react-native" label="React Native">
 
     ```tsx
-    import React from 'react';
-
-    const viewerToken = '';
-
-    // ---cut---
     import {
       LivestreamViewer,
       useLivestreamViewer,
@@ -281,10 +251,6 @@ Our backend needs to do three things to be ready for streaming:
   <TabItem value="ts" label="Typescript">
   
     ```ts
-    const fishjamId = '';
-    const managementToken = '';
-
-    // ---cut---
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 
     const fishjamClient = new FishjamClient({
