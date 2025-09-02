@@ -3,6 +3,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 import { BundledLanguage, bundledLanguages } from "shiki";
 import type { MDXPlugin } from "@docusaurus/mdx-loader";
 import rehypeShiki, { RehypeShikiOptions } from "@shikijs/rehype";
+import { removeTwoslashNotations } from "twoslash";
 import {
   transformerMetaHighlight,
   transformerNotationDiff,
@@ -25,9 +26,18 @@ const rehypeShikiPlugin = [
     },
     langs: Object.keys(bundledLanguages) as BundledLanguage[],
     transformers: [
-      // transformerTwoslash({
-      //   renderer: rendererClassic(),
-      // }),
+      transformerTwoslash({
+        renderer: rendererClassic(),
+        onTwoslashError(error, code, lang, options) {
+          if (options.meta.__raw.includes("loc=")) {
+            const locMatch = options.meta.__raw.match(/loc=([^\s]+)/);
+            if (locMatch?.[1] && locMatch[1].includes("versioned_docs")) {
+              return; // Ignore versioned docs
+            }
+            throw error;
+          }
+        },
+      }),
       transformerMetaHighlight(),
       transformerNotationWordHighlight(),
       transformerNotationDiff(),
@@ -142,9 +152,11 @@ const config: Config = {
           routeBasePath: "/",
           editUrl: ({ versionDocsDirPath, docPath }) =>
             `https://github.com/fishjam-cloud/documentation/tree/main/${versionDocsDirPath}/${docPath}`,
-          beforeDefaultRehypePlugins: [rehypeShikiPlugin],
+          beforeDefaultRehypePlugins: [],
+          rehypePlugins: [rehypeShikiPlugin],
           remarkPlugins: [
             [require("@docusaurus/remark-plugin-npm2yarn"), { sync: true }],
+            require("./src/remark/inject-file-path.mjs"),
           ],
           async sidebarItemsGenerator({
             defaultSidebarItemsGenerator,
