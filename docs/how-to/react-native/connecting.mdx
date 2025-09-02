@@ -24,6 +24,12 @@ This is basically a service that will create a Room, add your app as
 the Room's Peer, and return the token required to use that Room.
 
 ```ts
+import { useSandbox } from "@fishjam-cloud/react-native-client";
+const SANDBOX_FISHJAM_ID = "...";
+const roomName = "room";
+const peerName = "user";
+// ---cut---
+
 // The `useSandbox` hook will work ONLY with the FISHJAM_ID of the Sandbox environment
 const { getSandboxPeerToken } = useSandbox({ fishjamId: SANDBOX_FISHJAM_ID });
 const peerToken = await getSandboxPeerToken(roomName, peerName);

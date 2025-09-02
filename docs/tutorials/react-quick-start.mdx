@@ -46,6 +46,14 @@ npm install @fishjam-cloud/react-client
 Wrap your app in the `FishjamProvider` component:
 
 ```tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { FishjamProvider } from "@fishjam-cloud/react-client";
+
+const App = {} as any;
+
+// ---cut---
+
 // Check https://fishjam.io/app/ for your Fishjam ID
 const FISHJAM_ID = "YOUR_FISHJAM_ID";
 
@@ -139,6 +147,14 @@ export function ParticipantsView() {
 Show your own video stream:
 
 ```tsx
+const VideoPlayer = ({
+  stream,
+}: {
+  stream: MediaStream | null | undefined;
+}) => {
+  return null;
+};
+// ---cut---
 import React from "react";
 import { useCamera } from "@fishjam-cloud/react-client";
 
@@ -168,6 +184,20 @@ export function ConnectionStatus() {
 Here's a complete working app:
 
 ```tsx
+import React, { useEffect, useRef, useState } from "react";
+import {
+  FishjamProvider,
+  useConnection,
+  useCamera,
+  usePeers,
+  useInitializeDevices,
+  useSandbox,
+} from "@fishjam-cloud/react-client";
+
+// Check https://fishjam.io/app/ for your Fishjam ID
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+
+// ---cut---
 function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
   const videoRef = useRef<HTMLVideoElement>(null);
 

@@ -34,6 +34,10 @@ The Sandbox API is a development tool that lets you create rooms and peers for t
 <TabItem value="react-native" label="React Native">
 
     ```ts
+    const FISHJAM_ID = "...";
+    const roomName = "testRoom";
+    const peerName = "testUser";
+    // ---cut---
     import { useSandbox } from '@fishjam-cloud/react-native-client';
 
     // ...
@@ -47,6 +51,10 @@ The Sandbox API is a development tool that lets you create rooms and peers for t
   <TabItem value="react" label="React">
   
     ```ts
+    const FISHJAM_ID = "...";
+    const roomName = "testRoom";
+    const peerName = "testUser";
+    // ---cut---
     import { useSandbox } from '@fishjam-cloud/react-client';
 
     // ...
@@ -100,6 +108,15 @@ Below are examples on how to use tokens from the Sandbox API in your frontend ap
   <TabItem value="react-native" label="React Native">
 
     ```tsx
+    import React, { useEffect, useState } from "react";
+    import { Text } from "react-native";
+
+    const roomName = "testRoom";
+    const peerName = `user_${Date.now()}`;
+    const FISHJAM_ID = "...";
+
+    const RoomView = (props: {peerToken: string}) => null;
+    // ---cut---
     import { useSandbox } from "@fishjam-cloud/react-native-client";
 
     export default function TestScreen() {
@@ -134,6 +151,10 @@ Below are examples on how to use tokens from the Sandbox API in your frontend ap
   <TabItem value="react" label="React">
 
     ```tsx
+    import React, { useState, useEffect } from "react";
+
+    const FISHJAM_ID = "your-app-uuid-here";
+    // ---cut---
     import { FishjamProvider, useConnection, useSandbox } from "@fishjam-cloud/react-client";
 
     function VideoCallComponent() {
@@ -178,6 +199,9 @@ Below are examples on how to use tokens from the Sandbox API in your frontend ap
 ### Testing audio-only rooms
 
 ```ts
+import { useSandbox } from "@fishjam-cloud/react-client";
+const { getSandboxPeerToken } = useSandbox();
+// ---cut---
 const audioOnlyUrl = await getSandboxPeerToken(
   "audioTest",
   "user1",
@@ -188,6 +212,10 @@ const audioOnlyUrl = await getSandboxPeerToken(
 ### Testing livestream rooms
 
 ```ts
+import { useSandbox } from "@fishjam-cloud/react-client";
+const { getSandboxLivestream, getSandboxViewerToken } = useSandbox();
+// ---cut---
+
 const livestreamName = "livestream1";
 // For the streamer
 const streamerUrl = await getSandboxLivestream(livestreamName);
@@ -201,6 +229,9 @@ const viewerTokenUrl = await getSandboxViewerToken(livestreamName);
 To test with multiple participants, create multiple peer tokens with different peer names:
 
 ```ts
+import { useSandbox } from "@fishjam-cloud/react-client";
+const { getSandboxPeerToken } = useSandbox();
+// ---cut---
 // First peer
 const peer1Response = await getSandboxPeerToken("multiTest", "alice");
 
