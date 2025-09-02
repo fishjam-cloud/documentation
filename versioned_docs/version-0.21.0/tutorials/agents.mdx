@@ -141,7 +141,7 @@ If you are using the server SDKs, then creating an agent and defining its behavi
 
     const fishjamClient = new FishjamClient({ fishjamId, managementToken });
 
-    const agent = await fishjamClient.createAgent(
+    const { agent } = await fishjamClient.createAgent(
       roomId,
       {},
       console.error,
