@@ -33,15 +33,15 @@ A simple React Native app that can join conference calls and stream audio/video 
 
 <InstallPackage />
 
+### Configure app permissions
+
+<ConfigurePermissions />
+
 ### Build native dependencies
 
 ```bash
 npx expo prebuild
 ```
-
-### Configure app permissions
-
-<ConfigurePermissions />
 
 ### Get your Fishjam ID
 
@@ -169,13 +169,17 @@ const peerName = "testUser";
 
 // ---cut---
 export default function HomeScreen() {
+  const fishjamId = "YOUR_FISHJAM_ID";
   const [peerToken, setPeerToken] = useState<string | null>(null);
-  const { getSandboxPeerToken } = useSandbox({ fishjamId: FISHJAM_ID });
+  const { getSandboxPeerToken } = useSandbox({ fishjamId: fishjamId });
 
   useEffect(() => {
     const fetchPeerToken = async () => {
       try {
-        const peerToken = await getSandboxPeerToken(roomName, peerName);
+        const peerToken = await getSandboxPeerToken(
+          "example-room-name",
+          "example-peer-name",
+        );
         setPeerToken(peerToken);
       } catch (_) {
         setPeerToken(null);
@@ -188,7 +192,7 @@ export default function HomeScreen() {
     return null;
   }
 
-  return <FishjamRoom fishjamUrl={fishjamUrl} peerToken={peerToken} />;
+  return <FishjamRoom fishjamId={fishjamId} peerToken={peerToken} />;
 }
 ```
 
