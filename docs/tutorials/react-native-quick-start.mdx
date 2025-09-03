@@ -72,8 +72,8 @@ export default function HomeScreen() {
           "example-peer-name",
         );
         setPeerToken(peerToken);
-      } catch (_) {
-        setPeerToken(null);
+      } catch (e) {
+        console.error("Error connecting to Fishjam", e);
       }
     };
     fetchPeerToken();
@@ -209,24 +209,6 @@ import {
 } from "@fishjam-cloud/react-native-client";
 import { useCallback } from "react";
 
-export default function Index() {
-  return (
-    <View
-      style={{
-        flex: 1,
-        alignItems: "center",
-      }}
-    >
-      <StartStreamingButton roomName="test-room" peerName="test-peer" />
-      <ConnectionStatus />
-      <Text>Your Stream:</Text>
-      <StreamPreview />
-      <Text>Other Participants:</Text>
-      <ParticipantsView />
-    </View>
-  );
-}
-
 // Check https://fishjam.io/app for your Fishjam ID
 const FISHJAM_ID = `${process.env.EXPO_PUBLIC_FISHJAM_ID}`;
 
@@ -274,6 +256,24 @@ function ParticipantsView() {
           style={{ height: 300, width: 300 }}
         />
       ))}
+    </View>
+  );
+}
+
+export default function Index() {
+  return (
+    <View
+      style={{
+        flex: 1,
+        alignItems: "center",
+      }}
+    >
+      <StartStreamingButton roomName="test-room" peerName="test-peer" />
+      <ConnectionStatus />
+      <Text>Your Stream:</Text>
+      <StreamPreview />
+      <Text>Other Participants:</Text>
+      <ParticipantsView />
     </View>
   );
 }
