@@ -184,7 +184,6 @@ export const fishjamNotifierPlugin = fp((fastify) => {
     { fishjamUrl, managementToken },
     (err) => fastify.log.error(err),
     () => fastify.log.info("Websocket connection to Fishjam closed"),
-    () => fastify.log.error("Failed to connect Fishjam notifier"),
   );
 
   // handle the messages
