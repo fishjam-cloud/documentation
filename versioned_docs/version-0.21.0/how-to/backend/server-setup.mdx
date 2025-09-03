@@ -256,7 +256,7 @@ It sets up a websocket connection with a Fishjam instance and provides a simple 
     const onError = console.error;
     const onConnectionFailed = console.error;
 
-    const fishjamNotifier = new FishjamWSNotifier({ fishjamUrl, managementToken }, onError, onClose, onConnectionFailed);
+    const fishjamNotifier = new FishjamWSNotifier({ fishjamUrl, managementToken }, onError);
 
     fishjamNotifier.on('roomCreated', console.log);
     ```
