@@ -56,8 +56,8 @@ To quickly test our streaming infrastructure use `FishjamRoom` component. It enc
 Example usage:
 
 ```tsx
-import { FishjamRoom, useSandbox } from '@fishjam-cloud/react-native-client';
-import { useEffect, useState } from 'react';
+import { FishjamRoom, useSandbox } from "@fishjam-cloud/react-native-client";
+import { useEffect, useState } from "react";
 
 export default function HomeScreen() {
   const fishjamId = "YOUR_FISHJAM_ID";
@@ -86,6 +86,7 @@ export default function HomeScreen() {
   return <FishjamRoom fishjamId={fishjamId} peerToken={peerToken} />;
 }
 ```
+
 :::important
 This won't work on the iOS Simulator, as the Simulator can't access the camera. Test on a real device.
 :::
@@ -97,7 +98,11 @@ For more detailed implementation follow the steps below.
 Create a component that joins a room and starts streaming video:
 
 ```tsx
-import { useCamera, useConnection, useSandbox } from "@fishjam-cloud/react-native-client"
+import {
+  useCamera,
+  useConnection,
+  useSandbox,
+} from "@fishjam-cloud/react-native-client";
 import { useCallback } from "react";
 import { Button } from "react-native";
 
@@ -136,7 +141,7 @@ export function StartStreamingButton({
 Monitor your connection status:
 
 ```tsx
-import { useConnection } from "@fishjam-cloud/react-native-client"
+import { useConnection } from "@fishjam-cloud/react-native-client";
 import { Text } from "react-native";
 
 export function ConnectionStatus() {
@@ -150,10 +155,10 @@ export function ConnectionStatus() {
 Show your own video stream:
 
 ```tsx
-import { VideoPreviewView } from "@fishjam-cloud/react-native-client"
+import { VideoPreviewView } from "@fishjam-cloud/react-native-client";
 
 export function StreamPreview() {
-  return <VideoPreviewView style={{height: 300, width: 300}} />;
+  return <VideoPreviewView style={{ height: 300, width: 300 }} />;
 }
 ```
 
@@ -162,7 +167,10 @@ export function StreamPreview() {
 Show video from other peers in the room:
 
 ```tsx
-import { usePeers, VideoRendererView } from "@fishjam-cloud/react-native-client"
+import {
+  usePeers,
+  VideoRendererView,
+} from "@fishjam-cloud/react-native-client";
 import { View } from "react-native";
 
 export function ParticipantsView() {
@@ -177,7 +185,7 @@ export function ParticipantsView() {
           key={track.id}
           trackId={track.id}
           videoLayout="FIT"
-          style={{height: 300, width: 300}}
+          style={{ height: 300, width: 300 }}
         />
       ))}
     </View>
@@ -191,11 +199,17 @@ Here's a complete working example:
 
 ```tsx
 import { Text, View, Button } from "react-native";
-import { usePeers, useCamera, useConnection, useSandbox, VideoRendererView, VideoPreviewView } from "@fishjam-cloud/react-native-client"
+import {
+  usePeers,
+  useCamera,
+  useConnection,
+  useSandbox,
+  VideoRendererView,
+  VideoPreviewView,
+} from "@fishjam-cloud/react-native-client";
 import { useCallback } from "react";
 
 export default function Index() {
-
   return (
     <View
       style={{
@@ -203,12 +217,12 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <StartStreamingButton roomName="test-room" peerName="test-peer"/>
+      <StartStreamingButton roomName="test-room" peerName="test-peer" />
       <ConnectionStatus />
       <Text>Your Stream:</Text>
       <StreamPreview />
       <Text>Other Participants:</Text>
-      < ParticipantsView/>
+      <ParticipantsView />
     </View>
   );
 }
@@ -242,7 +256,7 @@ function ConnectionStatus() {
 }
 
 function StreamPreview() {
-  return <VideoPreviewView style={{height: 300, width: 300}} />;
+  return <VideoPreviewView style={{ height: 300, width: 300 }} />;
 }
 
 function ParticipantsView() {
@@ -257,7 +271,7 @@ function ParticipantsView() {
           key={track.id}
           trackId={track.id}
           videoLayout="FIT"
-          style={{height: 300, width: 300}}
+          style={{ height: 300, width: 300 }}
         />
       ))}
     </View>
