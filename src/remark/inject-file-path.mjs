@@ -6,11 +6,7 @@ export default function remarkInjectFilePath() {
       const meta = (node.meta || "").trim();
       const newMeta = `loc=${vfile.path}`;
 
-      if (meta) {
-        node.meta = `${meta} ${newMeta}`;
-      } else {
-        node.meta = newMeta;
-      }
+      node.meta = meta ? `${meta} ${newMeta}` : newMeta;
     });
   };
 }

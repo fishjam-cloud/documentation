@@ -18,6 +18,16 @@ import {
   SidebarItemsGeneratorVersion,
 } from "@docusaurus/plugin-content-docs/src/sidebars/types.js";
 
+function isErrorFromVersionedDocs(options: { meta?: { __raw?: string } }) {
+  if (options.meta?.__raw?.includes("loc=")) {
+    const locMatch = options.meta.__raw.match(/loc=([^\s]+)/);
+    if (locMatch[1]?.includes("versioned_docs")) {
+      return true;
+    }
+  }
+  return false;
+}
+
 const rehypeShikiPlugin = [
   rehypeShiki,
   {
@@ -29,13 +39,10 @@ const rehypeShikiPlugin = [
       transformerTwoslash({
         renderer: rendererClassic(),
         onTwoslashError(error, code, lang, options) {
-          if (options.meta.__raw.includes("loc=")) {
-            const locMatch = options.meta.__raw.match(/loc=([^\s]+)/);
-            if (locMatch?.[1] && locMatch[1].includes("versioned_docs")) {
-              return; // Ignore versioned docs
-            }
-            throw error;
+          if (isErrorFromVersionedDocs(options)) {
+            return; // Ignore versioned docs
           }
+          throw error;
         },
       }),
       transformerMetaHighlight(),
