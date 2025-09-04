@@ -37,6 +37,10 @@ To create an agent, you first need a room, as agents are scoped to rooms.
   <TabItem value="ts" label="TypeScript">
   
     ```ts
+    const fishjamId = "";
+    const managementToken = "";
+    
+    // ---cut---
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 
     const fishjamClient = new FishjamClient({ fishjamId, managementToken });
@@ -69,6 +73,12 @@ To create an agent, you first need a room, as agents are scoped to rooms.
   <TabItem value="ts" label="TypeScript">
   
     ```ts
+    import { RoomId } from '@fishjam-cloud/js-server-sdk';
+    const fishjamId = '';
+    const managementToken = '';
+    const roomId = '' as RoomId;
+
+    // ---cut---
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 
     const fishjamClient = new FishjamClient({ fishjamId, managementToken });
@@ -121,6 +131,12 @@ If you are using the server SDKs, then creating an agent and defining its behavi
   <TabItem value="ts" label="TypeScript">
   
     ```ts
+    import { RoomId } from '@fishjam-cloud/js-server-sdk';
+    const fishjamId = '';
+    const managementToken = '';
+    const roomId = '' as RoomId;
+
+    // ---cut---
     import { FishjamClient, IncomingTrackData } from '@fishjam-cloud/js-server-sdk';
 
     const fishjamClient = new FishjamClient({ fishjamId, managementToken });

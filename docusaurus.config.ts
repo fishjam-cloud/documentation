@@ -3,6 +3,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 import { BundledLanguage, bundledLanguages } from "shiki";
 import type { MDXPlugin } from "@docusaurus/mdx-loader";
 import rehypeShiki, { RehypeShikiOptions } from "@shikijs/rehype";
+import { removeTwoslashNotations } from "twoslash";
 import {
   transformerMetaHighlight,
   transformerNotationDiff,
@@ -17,6 +18,16 @@ import {
   SidebarItemsGeneratorVersion,
 } from "@docusaurus/plugin-content-docs/src/sidebars/types.js";
 
+function isErrorFromVersionedDocs(options: { meta?: { __raw?: string } }) {
+  if (options.meta?.__raw?.includes("loc=")) {
+    const locMatch = options.meta.__raw.match(/loc=([^\s]+)/);
+    if (locMatch[1]?.includes("versioned_docs")) {
+      return true;
+    }
+  }
+  return false;
+}
+
 const rehypeShikiPlugin = [
   rehypeShiki,
   {
@@ -25,9 +36,15 @@ const rehypeShikiPlugin = [
     },
     langs: Object.keys(bundledLanguages) as BundledLanguage[],
     transformers: [
-      // transformerTwoslash({
-      //   renderer: rendererClassic(),
-      // }),
+      transformerTwoslash({
+        renderer: rendererClassic(),
+        onTwoslashError(error, code, lang, options) {
+          if (isErrorFromVersionedDocs(options)) {
+            return; // Ignore versioned docs
+          }
+          throw error;
+        },
+      }),
       transformerMetaHighlight(),
       transformerNotationWordHighlight(),
       transformerNotationDiff(),
@@ -132,6 +149,8 @@ const config: Config = {
   },
   themes: ["@docusaurus/theme-mermaid"],
 
+  future: { v4: true, experimental_faster: true },
+
   presets: [
     [
       "classic",
@@ -142,9 +161,11 @@ const config: Config = {
           routeBasePath: "/",
           editUrl: ({ versionDocsDirPath, docPath }) =>
             `https://github.com/fishjam-cloud/documentation/tree/main/${versionDocsDirPath}/${docPath}`,
-          beforeDefaultRehypePlugins: [rehypeShikiPlugin],
+          beforeDefaultRehypePlugins: [],
+          rehypePlugins: [rehypeShikiPlugin],
           remarkPlugins: [
             [require("@docusaurus/remark-plugin-npm2yarn"), { sync: true }],
+            require("./src/remark/inject-file-path.mjs"),
           ],
           async sidebarItemsGenerator({
             defaultSidebarItemsGenerator,

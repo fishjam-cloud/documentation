@@ -28,6 +28,12 @@ Using this feature is as easy as setting the `roomType` field to `audio_only` wh
   <TabItem value="ts" label="Typescript">
   
     ```ts
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+    const fishjamClient = new FishjamClient({
+        fishjamUrl: "aaa",
+        managementToken: "bbb",
+    });
+    // ---cut---
     const createdRoom = await fishjamClient.createRoom({ roomType: 'audio_only' });
     ```
 

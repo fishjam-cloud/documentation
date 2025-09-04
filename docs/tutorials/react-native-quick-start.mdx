@@ -57,7 +57,7 @@ Example usage:
 
 ```tsx
 import { FishjamRoom, useSandbox } from "@fishjam-cloud/react-native-client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function HomeScreen() {
   const fishjamId = "YOUR_FISHJAM_ID";
@@ -98,13 +98,13 @@ For more detailed implementation follow the steps below.
 Create a component that joins a room and starts streaming video:
 
 ```tsx
+import React, { useCallback } from "react";
+import { Button } from "react-native";
 import {
   useCamera,
   useConnection,
   useSandbox,
 } from "@fishjam-cloud/react-native-client";
-import { useCallback } from "react";
-import { Button } from "react-native";
 
 // Check https://fishjam.io/app for your Fishjam ID
 const FISHJAM_ID = "YOUR_FISHJAM_ID";
@@ -141,9 +141,11 @@ export function StartStreamingButton({
 Monitor your connection status:
 
 ```tsx
-import { useConnection } from "@fishjam-cloud/react-native-client";
+import React from "react";
 import { Text } from "react-native";
+import { useConnection } from "@fishjam-cloud/react-native-client";
 
+// ---cut---
 export function ConnectionStatus() {
   const { peerStatus } = useConnection();
   return <Text>Status: {peerStatus}</Text>;
@@ -155,6 +157,7 @@ export function ConnectionStatus() {
 Show your own video stream:
 
 ```tsx
+import React from "react";
 import { VideoPreviewView } from "@fishjam-cloud/react-native-client";
 
 export function StreamPreview() {
@@ -167,12 +170,14 @@ export function StreamPreview() {
 Show video from other peers in the room:
 
 ```tsx
+import React from "react";
 import {
   usePeers,
   VideoRendererView,
 } from "@fishjam-cloud/react-native-client";
 import { View } from "react-native";
 
+// ---cut---
 export function ParticipantsView() {
   const { remotePeers } = usePeers();
   const videoTracks = remotePeers.flatMap((peer) =>
@@ -207,7 +212,7 @@ import {
   VideoRendererView,
   VideoPreviewView,
 } from "@fishjam-cloud/react-native-client";
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 
 // Check https://fishjam.io/app for your Fishjam ID
 const FISHJAM_ID = `${process.env.EXPO_PUBLIC_FISHJAM_ID}`;
