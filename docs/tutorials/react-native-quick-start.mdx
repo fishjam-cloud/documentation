@@ -57,7 +57,7 @@ Example usage:
 
 ```tsx
 import { FishjamRoom, useSandbox } from "@fishjam-cloud/react-native-client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function HomeScreen() {
   const fishjamId = "YOUR_FISHJAM_ID";
@@ -157,6 +157,7 @@ export function ConnectionStatus() {
 Show your own video stream:
 
 ```tsx
+import React from "react";
 import { VideoPreviewView } from "@fishjam-cloud/react-native-client";
 
 export function StreamPreview() {
@@ -202,25 +203,16 @@ export function ParticipantsView() {
 Here's a complete working example:
 
 ```tsx
-import React, { useEffect, useState } from "react";
-import { FishjamRoom, useSandbox } from "@fishjam-cloud/react-native-client";
-
-type RoomData = {
-  url: string;
-  peerToken: string;
-};
-
-// Check https://fishjam.io/app for your Fishjam ID
-const FISHJAM_ID = "YOUR_FISHJAM_ID";
-const fishjamUrl = "...";
-const roomName = "testRoom";
-const peerName = "testUser";
-
-// ---cut---
-export default function HomeScreen() {
-  const fishjamId = "YOUR_FISHJAM_ID";
-  const [peerToken, setPeerToken] = useState<string | null>(null);
-  const { getSandboxPeerToken } = useSandbox({ fishjamId: fishjamId });
+import { Text, View, Button } from "react-native";
+import {
+  usePeers,
+  useCamera,
+  useConnection,
+  useSandbox,
+  VideoRendererView,
+  VideoPreviewView,
+} from "@fishjam-cloud/react-native-client";
+import React, { useCallback } from "react";
 
 // Check https://fishjam.io/app for your Fishjam ID
 const FISHJAM_ID = `${process.env.EXPO_PUBLIC_FISHJAM_ID}`;
