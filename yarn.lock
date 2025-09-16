@@ -10867,9 +10867,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-camera@npm:^16.1.8":
-  version: 16.1.10
-  resolution: "expo-camera@npm:16.1.10"
+"expo-camera@npm:^17.0.7":
+  version: 17.0.7
+  resolution: "expo-camera@npm:17.0.7"
   dependencies:
     invariant: "npm:^2.2.4"
   peerDependencies:
@@ -10880,7 +10880,7 @@ __metadata:
   peerDependenciesMeta:
     react-native-web:
       optional: true
-  checksum: 10c0/a10c845a410b9f36f1f4a336369dc2fbcf8b991766e5dce60cab62a959993458fe8220161393ddc15ef6a9505cb3167db19f87fd00bf26ca8187e5dd796c4b64
+  checksum: 10c0/542df3745698387b7fb0b67d699fc4a04c00310742df3494b28db9f7329e88684275fd3db92691bec1ba6f1a8856320806b1ae615752e70272fcafeb96f1625b
   languageName: node
   linkType: hard
 
@@ -15239,7 +15239,7 @@ __metadata:
     cspell: "npm:^9.1.2"
     docusaurus-lunr-search: "npm:3.6.0"
     docusaurus-plugin-typedoc: "npm:1.4.0"
-    expo-camera: "npm:^16.1.8"
+    expo-camera: "npm:^17.0.7"
     fastify: "npm:^5.4.0"
     mock-import: "npm:^4.2.1"
     prettier: "npm:^3.5.3"
