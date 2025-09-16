@@ -145,16 +145,15 @@ We can now start sending media, which we can obtain from the user's camera, scre
         ```tsx
         import React from 'react';
 
-        const streamerToken = '';
-        const roomId = '';
-
-        // ---cut---
+        // All components and hooks needed for livestreaming can be imported from the livestream module
         import {
           LivestreamStreamer,
           useLivestreamStreamer,
           cameras,
-        } from '@fishjam-cloud/react-native-client';
+        } from '@fishjam-cloud/react-native-client/livestream';
 
+        const streamerToken = '';
+        const roomId = '';
         const { connect, whipClientRef } = useLivestreamStreamer();
 
         // ...
@@ -254,7 +253,7 @@ We can now begin receiving the stream
     import {
       LivestreamViewer,
       useLivestreamViewer,
-    } from '@fishjam-cloud/react-native-client';
+    } from '@fishjam-cloud/react-native-client/livestream';
 
     const { connect } = useLivestreamViewer();
 
