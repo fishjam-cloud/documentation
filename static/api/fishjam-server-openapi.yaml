@@ -22,15 +22,15 @@ components:
       description: Describes peer status
       properties:
         id:
-          description: Assigned peer id
-          example: peer-1
-          type: string
+          $ref: "#/components/schemas/PeerID"
         metadata:
           $ref: "#/components/schemas/PeerMetadata"
         status:
           $ref: "#/components/schemas/PeerStatus"
-        subscribe:
-          $ref: "#/components/schemas/SubscribeOptions"
+        subscribeMode:
+          $ref: "#/components/schemas/SubscribeMode"
+        subscriptions:
+          $ref: "#/components/schemas/Subscriptions"
         tracks:
           description: List of all peer's tracks
           items:
@@ -44,7 +44,8 @@ components:
         - status
         - tracks
         - metadata
-        - subscribe
+        - subscribeMode
+        - subscriptions
       title: Peer
       type: object
     PeerDetailsResponse:
@@ -66,6 +67,11 @@ components:
         - data
       title: PeerDetailsResponse
       type: object
+    PeerID:
+      description: Assigned peer id
+      example: 4a1c1164-5fb7-425d-89d7-24cdb8fff1cf
+      title: PeerID
+      type: string
     PeerMetadata:
       description: Custom metadata set by the peer
       example:
@@ -82,26 +88,9 @@ components:
       type: object
     PeerOptionsAgent:
       description: Options specific to the Agent peer
-      properties: {}
-      title: PeerOptionsAgent
-      type: object
-    PeerOptionsWebRTC:
-      description: Options specific to the WebRTC peer
       properties:
-        enableSimulcast:
-          default: true
-          description: Enables the peer to use simulcast
-          type: boolean
-        metadata:
-          additionalProperties: true
-          description: Custom peer metadata
-          type: object
-        subscribe:
-          additionalProperties: false
-          description: Configuration of server-side subscriptions to the peer's tracks
-          example:
-            audioFormat: pcm16
-          nullable: true
+        output:
+          description: Output audio options
           properties:
             audioFormat:
               default: pcm16
@@ -118,8 +107,38 @@ components:
                 - 24000
               example: 16000
               type: integer
-          title: SubscribeOptions
           type: object
+        subscribeMode:
+          default: auto
+          description: Configuration of peer's subscribing policy
+          enum:
+            - auto
+            - manual
+          nullable: false
+          title: SubscribeMode
+          type: string
+      title: PeerOptionsAgent
+      type: object
+    PeerOptionsWebRTC:
+      description: Options specific to the WebRTC peer
+      properties:
+        enableSimulcast:
+          default: true
+          description: Enables the peer to use simulcast
+          type: boolean
+        metadata:
+          additionalProperties: true
+          description: Custom peer metadata
+          type: object
+        subscribeMode:
+          default: auto
+          description: Configuration of peer's subscribing policy
+          enum:
+            - auto
+            - manual
+          nullable: false
+          title: SubscribeMode
+          type: string
       title: PeerOptionsWebRTC
       type: object
     PeerRefreshTokenResponse:
@@ -195,6 +214,7 @@ components:
             - broadcaster
             - livestream
             - conference
+            - audio_only_livestream
           nullable: false
           type: string
         videoCodec:
@@ -250,6 +270,68 @@ components:
         - data
       title: RoomsListingResponse
       type: object
+    Stream:
+      description: Describes stream status
+      properties:
+        audioOnly:
+          description: True if stream is restricted to audio only
+          type: boolean
+        id:
+          description: Assigned stream id
+          type: string
+        public:
+          type: boolean
+        streamers:
+          description: List of all streamers
+          items:
+            $ref: "#/components/schemas/Streamer"
+          type: array
+        viewers:
+          description: List of all viewers
+          items:
+            $ref: "#/components/schemas/Viewer"
+          type: array
+      required:
+        - id
+        - public
+        - viewers
+        - streamers
+      title: Stream
+      type: object
+    StreamConfig:
+      description: Stream configuration
+      properties:
+        audioOnly:
+          default: false
+          description: Restrics stream to audio only
+          nullable: true
+          type: boolean
+        public:
+          default: false
+          description: True if livestream viewers can omit specifying a token.
+          nullable: false
+          type: boolean
+      title: StreamConfig
+      type: object
+    Streamer:
+      description: Describes streamer status
+      properties:
+        id:
+          description: Assigned streamer id
+          type: string
+        status:
+          enum:
+            - connected
+            - disconnected
+          type: string
+        token:
+          $ref: "#/components/schemas/StreamerToken"
+      required:
+        - id
+        - status
+        - token
+      title: Streamer
+      type: object
     StreamerToken:
       description: Token for authorizing broadcaster streamer connection
       properties:
@@ -260,35 +342,42 @@ components:
         - token
       title: StreamerToken
       type: object
-    SubscribeOptions:
-      additionalProperties: false
-      description: Configuration of server-side subscriptions to the peer's tracks
-      example:
-        audioFormat: pcm16
-      nullable: true
+    StreamsListingResponse:
+      description: Response containing list of all streams
       properties:
-        audioFormat:
-          default: pcm16
-          description: The format of the output audio
-          enum:
-            - pcm16
-          example: pcm16
-          type: string
-        audioSampleRate:
-          default: 16000
-          description: The sample rate of the output audio
-          enum:
-            - 16000
-            - 24000
-          example: 16000
-          type: integer
-      title: SubscribeOptions
+        data:
+          items:
+            $ref: "#/components/schemas/Stream"
+          type: array
+      required:
+        - data
+      title: StreamsListingResponse
       type: object
+    SubscribeMode:
+      default: auto
+      description: Configuration of peer's subscribing policy
+      enum:
+        - auto
+        - manual
+      nullable: false
+      title: SubscribeMode
+      type: string
+    Subscriptions:
+      description: Describes peer's subscriptions in manual mode
+      items:
+        properties:
+          peerId:
+            $ref: "#/components/schemas/PeerID"
+          trackId:
+            $ref: "#/components/schemas/TrackID"
+        type: string
+      title: Subscriptions
+      type: array
     Track:
-      description: Describes media track of a Peer or Component
+      description: Describes media track of a Peer
       properties:
         id:
-          type: string
+          $ref: "#/components/schemas/TrackID"
         metadata:
           example:
             source: camera
@@ -300,6 +389,30 @@ components:
             - video
           type: string
       title: Track
+      type: object
+    TrackID:
+      description: Assigned track id
+      example: 8dbd2e6b-a1e7-4670-95a2-0262aa6c6321
+      title: TrackID
+      type: string
+    Viewer:
+      description: Describes viewer status
+      properties:
+        id:
+          description: Assigned viewer id
+          type: string
+        status:
+          enum:
+            - connected
+            - disconnected
+          type: string
+        token:
+          $ref: "#/components/schemas/ViewerToken"
+      required:
+        - id
+        - status
+        - token
+      title: Viewer
       type: object
     ViewerToken:
       description: Token for authorizing broadcaster viewer connection
@@ -325,9 +438,306 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
   title: Fishjam Media Server
-  version: 0.21.0
+  version: 0.22.0
 openapi: 3.0.0
 paths:
+  /livestream:
+    get:
+      callbacks: {}
+      operationId: get_all_streams
+      parameters: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StreamsListingResponse"
+          description: Success
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Service temporarily unavailable
+      security:
+        - authorization: []
+      summary: Show information about all streams
+      tags:
+        - stream
+    post:
+      callbacks: {}
+      operationId: create_stream
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StreamConfig"
+        description: Stream configuration
+        required: false
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Stream"
+          description: Stream created successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Invalid request structure
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Service temporarily unavailable
+      security:
+        - authorization: []
+      summary: Creates stream
+      tags:
+        - stream
+  /livestream/{stream_id}:
+    delete:
+      callbacks: {}
+      operationId: delete_stream
+      parameters:
+        - description: ""
+          in: path
+          name: stream_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Successfully deleted stream
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Service temporarily unavailable
+      security:
+        - authorization: []
+      summary: Deletes stream
+      tags:
+        - stream
+    get:
+      callbacks: {}
+      operationId: get_stream
+      parameters:
+        - description: ""
+          in: path
+          name: stream_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Stream"
+          description: Success
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Stream doesn't exist
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Service temporarily unavailable
+      security:
+        - authorization: []
+      summary: Shows information about the stream
+      tags:
+        - stream
+  /livestream/{stream_id}/streamer:
+    post:
+      callbacks: {}
+      operationId: create_streamer
+      parameters:
+        - description: Stream id
+          in: path
+          name: stream_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Streamer"
+          description: Streamer successfully created
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Stream doesn't exist
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Service temporarily unavailable
+      security:
+        - authorization: []
+      summary: Creates streamer
+      tags:
+        - streamer
+  /livestream/{stream_id}/streamer/{streamer_id}:
+    delete:
+      callbacks: {}
+      operationId: delete_streamer
+      parameters:
+        - description: Stream id
+          in: path
+          name: stream_id
+          required: true
+          schema:
+            type: string
+        - description: Streamer id
+          in: path
+          name: streamer_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Streamer successfully deleted
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Service temporarily unavailable
+      security:
+        - authorization: []
+      summary: Deletes streamer
+      tags:
+        - streamer
+  /livestream/{stream_id}/viewer:
+    post:
+      callbacks: {}
+      operationId: create_viewer
+      parameters:
+        - description: Stream id
+          in: path
+          name: stream_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Viewer"
+          description: Viewer successfully created
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Stream doesn't exist
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Service temporarily unavailable
+      security:
+        - authorization: []
+      summary: Creates viewer
+      tags:
+        - viewer
+  /livestream/{stream_id}/viewer/{viewer_id}:
+    delete:
+      callbacks: {}
+      operationId: delete_viewer
+      parameters:
+        - description: Stream id
+          in: path
+          name: stream_id
+          required: true
+          schema:
+            type: string
+        - description: Viewer id
+          in: path
+          name: viewer_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Viewer successfully deleted
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Service temporarily unavailable
+      security:
+        - authorization: []
+      summary: Deletes viewer
+      tags:
+        - viewer
   /room:
     get:
       callbacks: {}
@@ -645,6 +1055,125 @@ paths:
       summary: Refresh peer token
       tags:
         - room
+  /room/{room_id}/peer/{id}/subscribe_peer:
+    post:
+      callbacks: {}
+      operationId: subscribe_peer
+      parameters:
+        - description: Room id
+          in: path
+          name: room_id
+          required: true
+          schema:
+            type: string
+        - description: Peer id
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - description: ID of the peer that produces the track
+          in: query
+          name: peer_id
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Peer successfully subscribed to another peer's tracks
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Invalid request body structure
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Room ID or Peer ID references a resource that doesn't exist
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Service temporarily unavailable
+      security:
+        - authorization: []
+      summary: Subscribe peer to another peer's tracks
+      tags:
+        - room
+  /room/{room_id}/peer/{id}/subscribe_tracks:
+    post:
+      callbacks: {}
+      operationId: subscribe_tracks
+      parameters:
+        - description: Room id
+          in: path
+          name: room_id
+          required: true
+          schema:
+            type: string
+        - description: Peer id
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                track_ids:
+                  description: List of track IDs to subscribe to
+                  items:
+                    $ref: "#/components/schemas/TrackID"
+                  type: array
+              required:
+                - track_ids
+              type: object
+        description: Track IDs
+        required: false
+      responses:
+        "200":
+          description: Peer successfully subscribed to tracks
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Invalid request body structure
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Room ID or Peer ID references a resource that doesn't exist
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Service temporarily unavailable
+      security:
+        - authorization: []
+      summary: Subscribe peer to specific tracks
+      tags:
+        - room
   /room/{room_id}/streamer:
     post:
       callbacks: {}
@@ -687,6 +1216,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
           description: Service temporarily unavailable
+      security:
+        - authorization: []
       summary: Generate a token that can be used by a streamer to start streaming
       tags:
         - streamer
@@ -732,6 +1263,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
           description: Service temporarily unavailable
+      security:
+        - authorization: []
       summary: Generates token that a viewer can use to watch a livestream
       tags:
         - viewer
