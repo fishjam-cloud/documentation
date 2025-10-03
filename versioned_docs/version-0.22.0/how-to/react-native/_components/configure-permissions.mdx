@@ -1,0 +1,91 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Your app needs to have permissions configured in order to use the microphone and camera.
+
+### Android
+
+Permissions below are required to stream audio and video with Fishjam on Android.
+
+- `android.permission.CAMERA`
+- `android.permission.RECORD_AUDIO`
+- `android.permission.MODIFY_AUDIO_SETTINGS`
+
+<Tabs groupId="app-type">
+
+  <TabItem value="expo" label="Expo">
+
+Add required permissions to the `app.json` file.
+
+```json title='app.json'
+{
+  "expo": {
+    ...
+    "android": {
+      ...
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
+    }
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+Add required permissions to the `AndroidManifest.xml` file.
+
+```xml title='AndroidManifest.xml'
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  ...
+  <uses-permission android:name="android.permission.CAMERA"/>
+  <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTING"/>
+  ...
+</manifest>
+```
+
+  </TabItem>
+</Tabs>
+
+### iOS
+
+<Tabs groupId="app-type">
+
+  <TabItem value="expo" label="Expo">
+
+You don't have to make any changes to run app on iOS.
+To update default content of permission alert, you can add these settings to `app.json`:
+
+```json title='app.json'
+{
+  "expo": {
+    ...
+   "ios": {
+      ...
+      "infoPlist": {
+        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera.",
+        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone."
+      }
+    },
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+Ensure `Info.plist` contains camera and microphone usage description entries:
+
+```xml title='Info.plist'
+    <key>NSCameraUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your camera.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your microphone.</string>
+```
+
+  </TabItem>
+</Tabs>

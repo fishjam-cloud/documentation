@@ -1,0 +1,5 @@
+# Type Alias: CameraId
+
+> **CameraId** = [`Brand`](Brand.md)\<`string`, `"CameraId"`\>
+
+Defined in: [packages/react-native-client/src/hooks/useCamera.ts:8](https://github.com/fishjam-cloud/mobile-client-sdk/blob/daab5af2df6e35bf6eb77e09f0242e614359c1ec/packages/react-native-client/src/hooks/useCamera.ts#L8)
