@@ -129,7 +129,7 @@ A simple backend server that can create rooms, add peers, and generate tokens fo
   <TabItem value="ts" label="Node.js / TypeScript">
 
     ```bash
-    export FISHJAM_URL="your-fishjam-url"
+    export FISHJAM_ID="your-fishjam-id"
     export FISHJAM_MANAGEMENT_TOKEN="your-management-token"
     ```
 
@@ -138,7 +138,7 @@ A simple backend server that can create rooms, add peers, and generate tokens fo
   <TabItem value="python" label="Python">
 
     ```bash
-    export FISHJAM_URL="your-fishjam-url"
+    export FISHJAM_ID="your-fishjam-id"
     export FISHJAM_MANAGEMENT_TOKEN="your-management-token"
     ```
 
@@ -153,15 +153,15 @@ Create your Fishjam client:
   <TabItem value="ts" label="Node.js / TypeScript">
   
     ```ts
-    process.env.FISHJAM_URL = "";
+    process.env.FISHJAM_ID = "";
     process.env.FISHJAM_MANAGEMENT_TOKEN = "";
     // ---cut---
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 
-    const fishjamUrl = process.env.FISHJAM_URL;
+    const fishjamId = process.env.FISHJAM_ID;
     const managementToken = process.env.FISHJAM_MANAGEMENT_TOKEN;
 
-    const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
+    const fishjamClient = new FishjamClient({ fishjamId, managementToken });
     ```
 
   </TabItem>
@@ -172,7 +172,7 @@ Create your Fishjam client:
     import os
     from fishjam import FishjamClient
 
-    fishjam_url = os.environ["FISHJAM_URL"]
+    fishjam_id = os.environ["FISHJAM_ID"]
     management_token = os.environ["FISHJAM_MANAGEMENT_TOKEN"]
 
     fishjam_client = FishjamClient(fishjam_url, management_token)
@@ -190,9 +190,9 @@ Create your first room:
   
     ```ts
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
-    const fishjamUrl = "";
+    const fishjamId = "";
     const managementToken = "";
-    const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
+    const fishjamClient = new FishjamClient({ fishjamId, managementToken });
     
     // ---cut---
     async function createRoom() {
@@ -225,9 +225,9 @@ Create a peer and get a token for your client app:
   
     ```ts
     import { FishjamClient, RoomId } from '@fishjam-cloud/js-server-sdk';
-    const fishjamUrl = "";
+    const fishjamId = "";
     const managementToken = "";
-    const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
+    const fishjamClient = new FishjamClient({ fishjamId, managementToken });
     
     // ---cut---
     async function addPeer(roomId: RoomId, peerName: string) {
@@ -270,7 +270,7 @@ Build a simple HTTP endpoint that your client apps can call:
   <TabItem value="ts" label="Node.js / TypeScript">
   
     ```ts
-    process.env.FISHJAM_URL = "";
+    process.env.FISHJAM_ID = "";
     process.env.FISHJAM_MANAGEMENT_TOKEN = "";
     // ---cut---
     import express from 'express';
@@ -280,7 +280,7 @@ Build a simple HTTP endpoint that your client apps can call:
     app.use(express.json());
 
     const fishjamClient = new FishjamClient({
-      fishjamUrl: process.env.FISHJAM_URL!,
+      fishjamId: process.env.FISHJAM_ID!,
       managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN!
     });
 
@@ -299,7 +299,6 @@ Build a simple HTTP endpoint that your client apps can call:
         res.json({
           roomId: room.id,
           peerToken,
-          fishjamUrl: process.env.FISHJAM_URL
         });
       } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -346,7 +345,6 @@ Build a simple HTTP endpoint that your client apps can call:
     ```python
     import os
     from fastapi import FastAPI, HTTPException
-    from pydantic import BaseModel
     from fishjam import FishjamClient, PeerOptions
 
     app = FastAPI()
@@ -373,7 +371,6 @@ Build a simple HTTP endpoint that your client apps can call:
             return {
                 "room_id": room.id,
                 "peer_token": peer_token,
-                "fishjam_url": os.environ["FISHJAM_URL"]
             }
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
@@ -458,7 +455,6 @@ You should receive a response with:
 
 - `roomId` / `room_id` - The ID of the created room
 - `peerToken` / `peer_token` - Token for the client to join the room
-- `fishjamUrl` / `fishjam_url` - URL for the client to connect to
 
 ## Complete example
 
@@ -468,7 +464,7 @@ Here's a complete working backend:
   <TabItem value="ts" label="Node.js / TypeScript">
   
     ```ts
-    process.env.FISHJAM_URL = "";
+    process.env.FISHJAM_ID = "";
     process.env.FISHJAM_MANAGEMENT_TOKEN = "";
     // ---cut---
     import express from 'express';
@@ -478,7 +474,7 @@ Here's a complete working backend:
     app.use(express.json());
 
     const fishjamClient = new FishjamClient({
-      fishjamUrl: process.env.FISHJAM_URL!,
+      fishjamId: process.env.FISHJAM_ID!,
       managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN!
     });
 
@@ -494,7 +490,6 @@ Here's a complete working backend:
         res.json({
           roomId: room.id,
           peerToken,
-          fishjamUrl: process.env.FISHJAM_URL
         });
       } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -519,7 +514,7 @@ Here's a complete working backend:
     app = FastAPI()
 
     fishjam_client = FishjamClient(
-        os.environ["FISHJAM_URL"],
+        os.environ["FISHJAM_ID"],
         os.environ["FISHJAM_MANAGEMENT_TOKEN"]
     )
 
@@ -536,11 +531,10 @@ Here's a complete working backend:
 
             return {
                 "room_id": room.id,
-                "peer_token": peer_token,
-                "fishjam_url": os.environ["FISHJAM_URL"]
+                "peer_token": peer_token
             }
         except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+            raise HTTPException(status_code=500, detail=str(e)
     ```
 
   </TabItem>
