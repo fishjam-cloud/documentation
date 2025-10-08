@@ -1,0 +1,337 @@
+---
+type: how-to
+title: Selective Subscriptions
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Selective Subscriptions
+
+**How-to Guide** — _Full control over who receives what media_
+
+In Fishjam, peers in a conferencing room automatically subscribe to every other peer by default.  
+Selective Subscriptions let you break from that — giving your backend the power to decide who receives what.
+
+By using **manual subscription mode**, you can choose whether a peer:
+
+- receives **no one** by default, and
+- is **explicitly subscribed** to specific publishers or tracks later.
+
+This is essential for:
+
+- large-scale rooms with dozens or hundreds of peers,
+- “stage & audience” models (viewers only see speakers),
+- bandwidth optimization (e.g., audio-only dashboards, or delayed video activation).
+
+---
+
+## Core idea
+
+- Peers have a `subscribeMode` — either **`auto`** or **`manual`**.
+- Peers in **auto** mode subscribe to everyone automatically (default behavior).
+- Peers in **manual** mode will **not** receive any media until you explicitly subscribe them using the **Server SDK**.
+- You can subscribe a manual peer to:
+  - another **peer** (all of its tracks), or
+  - specific **track IDs** of another peer.
+
+> ⚠️ Subscribing adds additional publishers — it does **not** replace or “switch” existing ones.  
+> ⚠️ You can only subscribe to **peers that are already connected** to the room.
+
+---
+
+## Step 1 — Create a manual peer
+
+When creating a peer, set `subscribeMode` to `"manual"`.  
+This peer will start with zero subscriptions — it will not receive anyone’s audio or video.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/js-server-sdk";
+
+const fishjamClient = new FishjamClient({
+  fishjamId: process.env.FISHJAM_ID!,
+  managementToken: process.env.MANAGEMENT_TOKEN!,
+});
+
+// ---cut---
+
+// Create a conference room
+const room = await fishjamClient.createRoom({
+  roomType: "conference",
+});
+
+// Create a normal publisher
+const { peer: publisher } = await fishjamClient.createPeer(room.id, {
+  subscribeMode: "auto",
+});
+
+// Create a manual subscriber
+const { peer: viewer } = await fishjamClient.createPeer(room.id, {
+  subscribeMode: "manual",
+});
+```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+```python
+options = RoomOptions(room_type="conference")
+room = fishjam_client.create_room(options)
+
+# publisher_id and viewer_id represent peers already connected to the room
+# viewer must be created with subscribe_mode=manual on your side
+publisher_id = "peer_publisher_123"
+viewer_id = "peer_viewer_manual_456"
+```
+
+  </TabItem>
+</Tabs>
+
+---
+
+## Step 2 — Subscribe a peer to another peer
+
+Use this when you want your manual subscriber to receive **all tracks** from a connected publisher.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/js-server-sdk";
+const fishjamClient = new FishjamClient({
+  fishjamId: process.env.FISHJAM_ID!,
+  managementToken: process.env.MANAGEMENT_TOKEN!,
+});
+
+const room = await fishjamClient.createRoom({
+  roomType: "conference",
+});
+
+const { peer: publisher } = await fishjamClient.createPeer(room.id, {
+  subscribeMode: "auto",
+});
+
+const { peer: viewer } = await fishjamClient.createPeer(room.id, {
+  subscribeMode: "manual",
+});
+
+// ---cut---
+// Subscribe viewer to everything published by publisher
+await fishjamClient.subscribePeer(room.id, viewer.id, publisher.id);
+```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+```python
+fishjam_client.subscribe_peer(room.id, viewer_id, publisher_id)
+```
+
+  </TabItem>
+</Tabs>
+
+This will make **every current and future track** of the publisher available to the subscriber.  
+It’s additive — the subscriber can listen to multiple publishers at once.
+
+---
+
+## Step 3 — Subscribe to specific tracks
+
+Sometimes you only want a subset of a publisher’s tracks, for example:
+
+- a **screenshare**, but not their camera,
+- only **audio**, not video.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { FishjamClient, type TrackId } from "@fishjam-cloud/js-server-sdk";
+const fishjamClient = new FishjamClient({
+  fishjamId: process.env.FISHJAM_ID!,
+  managementToken: process.env.MANAGEMENT_TOKEN!,
+});
+
+const room = await fishjamClient.createRoom({
+  roomType: "conference",
+});
+
+const { peer: publisher } = await fishjamClient.createPeer(room.id, {
+  subscribeMode: "auto",
+});
+
+const { peer: viewer } = await fishjamClient.createPeer(room.id, {
+  subscribeMode: "manual",
+});
+
+// ---cut---
+// Get track IDs from your room state or webhook events
+const audioTrackId = "track_audio_abc" as TrackId;
+const screenTrackId = "track_screen_xyz" as TrackId;
+
+// Subscribe to a single track
+await fishjamClient.subscribeTracks(room.id, viewer.id, [audioTrackId]);
+
+// Or multiple
+await fishjamClient.subscribeTracks(room.id, viewer.id, [
+  audioTrackId,
+  screenTrackId,
+]);
+```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+```python
+audio_track_id = "track_audio_abc"
+screen_track_id = "track_screen_xyz"
+
+# Subscribe to one track
+fishjam_client.subscribe_tracks(room.id, viewer_id, [audio_track_id])
+
+# Or multiple
+fishjam_client.subscribe_tracks(room.id, viewer_id, [audio_track_id, screen_track_id])
+```
+
+  </TabItem>
+</Tabs>
+
+> 📘 Track IDs are available from [Fishjam’s events in your backend](/how-to/backend/server-setup#listening-to-events).
+
+---
+
+## Step 4 — Combine multiple publishers
+
+A manual peer can subscribe to **several** publishers at once.  
+Each call to `subscribePeer` adds more publishers — it doesn’t overwrite the previous ones.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { FishjamClient, type PeerOptions } from "@fishjam-cloud/js-server-sdk";
+const fishjamClient = new FishjamClient({
+  fishjamId: process.env.FISHJAM_ID!,
+  managementToken: process.env.MANAGEMENT_TOKEN!,
+});
+
+const room = await fishjamClient.createRoom({
+  roomType: "conference",
+});
+
+// ---cut---
+const options = { subscribeMode: "manual" } satisfies PeerOptions;
+
+const { peer: viewer } = await fishjamClient.createPeer(room.id, options);
+const { peer: publisherA } = await fishjamClient.createPeer(room.id, options);
+const { peer: publisherB } = await fishjamClient.createPeer(room.id, options);
+
+// Subscribe viewer to two publishers
+await fishjamClient.subscribePeer(room.id, viewer.id, publisherA.id);
+await fishjamClient.subscribePeer(room.id, viewer.id, publisherB.id);
+```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+```python
+fishjam_client.subscribe_peer(room.id, viewer_id, publisher_a_id)
+fishjam_client.subscribe_peer(room.id, viewer_id, publisher_b_id)
+```
+
+  </TabItem>
+</Tabs>
+
+The viewer now receives tracks from **both** publishers simultaneously.
+
+---
+
+## Step 5 — Example: curated stage & audience
+
+You can implement a “stage” system where:
+
+- speakers are in auto mode (they see/hear each other),
+- audience members are manual subscribers (they only see the stage).
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { FishjamClient, type Peer } from "@fishjam-cloud/js-server-sdk";
+
+const fishjamClient = new FishjamClient({
+  fishjamId: process.env.FISHJAM_ID!,
+  managementToken: process.env.MANAGEMENT_TOKEN!,
+});
+
+const room = await fishjamClient.createRoom({
+  roomType: "conference",
+});
+
+const { peer: publisher } = await fishjamClient.createPeer(room.id, {
+  subscribeMode: "auto",
+});
+
+const { peer: viewer } = await fishjamClient.createPeer(room.id, {
+  subscribeMode: "manual",
+});
+
+// ---cut---
+
+// fetch room to get actual list of peers
+const fetchedRoom = await fishjamClient.getRoom(room.id);
+const currentSpeakers = fetchedRoom.peers;
+
+// audience joins in manual mode
+const { peer: audience } = await fishjamClient.createPeer(room.id, {
+  subscribeMode: "manual",
+});
+
+// subscribe them to all current speakers
+await Promise.all(
+  currentSpeakers.map((speaker) =>
+    fishjamClient.subscribePeer(room.id, audience.id, speaker.id),
+  ),
+);
+```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+```python
+# audience peer already exists (manual)
+for speaker_id in current_speakers:
+    fishjam_client.subscribe_peer(room.id, viewer_id, speaker_id)
+```
+
+  </TabItem>
+</Tabs>
+
+As new speakers join, simply call `subscribe_peer` again to add them to the audience’s feed.
+
+---
+
+## Notes & limitations
+
+- You can only subscribe to peers that are **already connected** to the room.
+- Subscriptions are **additive** — each call adds new publishers or tracks.
+- Peers created with `subscribeMode: 'auto'` always subscribe to everyone automatically.
+- Unsubscribe support is coming soon (for now, just remove peer sessions when needed).
+
+---
+
+## See also
+
+- [Room types explained](../../explanation/room-types)
+- [React quick start](../../tutorials/react-quick-start)
+- [React Native quick start](../../tutorials/react-native-quick-start)
+
+> 🗒️ For server-side recording or media processing, see [Agents](../../how-to/backend/agents) (documented separately).

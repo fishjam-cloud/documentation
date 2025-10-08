@@ -69,7 +69,15 @@ In a backend application, we suggest using the [Protobuf compiler](https://proto
 
 Once connected, an agent will receive chunks of audio as [`AgentRequest.TrackData` protobuf message](../api/reference#protobufs).
 
-### Step 4. Disconnecting from the Room
+### Step 4. Sending Audio
+
+All of further steps are done via the websocket connection created in [Step 2](#step-2-connecting-to-the-room).
+
+To send audio to an agent, you need to create an audio track first.
+This is done by sending an [`AgentRequest.CreateTrack` protobuf message](../api/reference#protobufs).
+Once the track is created, you can send audio to it using [`AgentRequest.TrackData` protobuf message](../api/reference#protobufs).
+
+### Step 5. Disconnecting from the Room
 
 An agent disconnects from the room by closing the WebSocket connection created in [Step 2](#step-2-connecting-to-the-room).
 It may reconnect using the same token it provided in [Step 2](#step-2-connecting-to-the-room).
@@ -90,4 +98,4 @@ Currently, only **16-bit PCM** (raw) audio output is supported.
 The output can have either a sample rate of **16kHz** or **24kHz**.
 
 The above values aim to be compatible with popular real-time AI audio APIs.
-If you require a different output format, then make sure to contact us at contact@fishjam.io.
+If you require a different output format, then make sure to contact us at `contact@fishjam.io`.

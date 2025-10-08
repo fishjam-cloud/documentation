@@ -28,10 +28,8 @@ If you are not using the SDKs, then you can check out the [Agent Internals](../e
 
 ### Prerequisites
 
-#### Room
-
-To create an agent, you first need a room, as agents are scoped to rooms.
-[This Backend Quick Start section](../tutorials/backend-quick-start#step-4-create-a-room) explains how to create a room, but the TL;DR is:
+Before we create the actual agent, we need to [create a room](../tutorials/backend-quick-start#step-4-create-a-room) first, as agents are scoped to rooms.
+Additionally, we will also create a peer so that the agent has someone to listen to and talk to.
 
 <Tabs groupId="language">
   <TabItem value="ts" label="TypeScript">
@@ -44,9 +42,8 @@ To create an agent, you first need a room, as agents are scoped to rooms.
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 
     const fishjamClient = new FishjamClient({ fishjamId, managementToken });
-
-    // [!code highlight:1]
     const room = await fishjamClient.createRoom();
+    const peer = await fishjamClient.createPeer(room.id);
     ```
 
   </TabItem>
@@ -57,91 +54,49 @@ To create an agent, you first need a room, as agents are scoped to rooms.
     from fishjam import FishjamClient
 
     fishjam_client = FishjamClient(fishjam_id, management_token)
-
-    # [!code highlight:1]
     room = fishjam_client.create_room()
+    peer = fishjam_client.create_peer(room.id)
     ```
 
   </TabItem>
 </Tabs>
 
-#### Peer subscriptions
-
-<Subscriptions />
-
-<Tabs groupId="language">
-  <TabItem value="ts" label="TypeScript">
-  
-    ```ts
-    import { RoomId } from '@fishjam-cloud/js-server-sdk';
-    const fishjamId = '';
-    const managementToken = '';
-    const roomId = '' as RoomId;
-
-    // ---cut---
-    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
-
-    const fishjamClient = new FishjamClient({ fishjamId, managementToken });
-
-    const peer = await fishjamClient.createPeer(roomId);
-    // Agents will receive peer's audio streams as raw PCM audio with 16kHz sample rate
-    ```
-
-  </TabItem>
-
-  <TabItem value="python" label="Python">
-
-    ```python
-    from fishjam import FishjamClient, PeerOptions
-    from fishjam.agent import AgentResponseTrackData
-    from fishjam.peer import (
-      SubscribeOptions,
-      SubscribeOptionsAudioFormat,
-      SubscribeOptionsAudioSampleRate
-    )
-
-    fishjam_client = FishjamClient(fishjam_id, management_token)
-
-    peer = fishjam_client.create_peer(
-      room_id,
-      options=PeerOptions(
-        # [!code highlight:4]
-        subscribe=SubscribeOptions(
-          audio_format=SubscribeOptionsAudioFormat.PCM_16,
-          audio_sample_rate=SubscribeOptionsAudioSampleRate.VALUE_16000,
-        )
-      )
-    )
-    # Agents will receive peer's audio streams as raw PCM audio with 16kHz sample rate
-    ```
-
-  </TabItem>
-
-</Tabs>
-
-### Creating an Agent
+### Creating a listening Agent
 
 If you are using the server SDKs, then creating an agent and defining its behavior is very simple.
+Agents use the [Selective Subscriptions API](/how-to/features/selective-forwarding.mdx) to allow you to define which peers/tracks they should receive audio from.
+By default, agents will receive all peers' audio streams.
 
 <Tabs groupId="language">
   <TabItem value="ts" label="TypeScript">
   
     ```ts
-    import { RoomId } from '@fishjam-cloud/js-server-sdk';
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
     const fishjamId = '';
     const managementToken = '';
-    const roomId = '' as RoomId;
+    const fishjamClient = new FishjamClient({ fishjamId, managementToken });
+    const room = await fishjamClient.createRoom();
 
     // ---cut---
-    import { FishjamClient, IncomingTrackData } from '@fishjam-cloud/js-server-sdk';
 
-    const fishjamClient = new FishjamClient({ fishjamId, managementToken });
+    import type { AgentCallbacks, PeerOptions } from '@fishjam-cloud/js-server-sdk';
 
-    const { agent } = await fishjamClient.createAgent(
-      roomId,
-    );
-    // Register callback for incoming audio data
-    agent.on('trackData', ({ track, peerId, data }: IncomingTrackData) => {
+    const agentOptions = {
+      subscribeMode: 'auto',
+      output: { audioFormat: 'pcm16', audioSampleRate: 16000 }
+    } satisfies PeerOptions;
+
+    const agentCallbacks = {
+      onError: console.error,
+      onClose: (code, reason) => console.log('Agent closed', code, reason)
+    } satisfies AgentCallbacks;
+
+    // [!code highlight:1]
+    const { agent } = await fishjamClient.createAgent(room.id, agentOptions, agentCallbacks);
+
+    // Register a callback for incoming audio data
+    agent.on('trackData', ({ track, peerId, data }) => {
       // process the incoming data
     })
     ```
@@ -156,7 +111,82 @@ If you are using the server SDKs, then creating an agent and defining its behavi
 
     fishjam_client = FishjamClient(fishjam_id, management_token)
 
+    agent_options = AgentOptions(subscribe_mode="auto")
+
     agent = fishjam_client.create_agent(room_id)
+
+    # Register callback for incoming audio data
+    @agent.on_track_data
+    def _(data: AgentResponseTrackData):
+      pass
+
+    # Option 1: connect/disconnect manually
+    await agent.connect()
+    ...
+    await agent.disconnect()
+
+    # Option 2: context manager
+    async with agent:
+      ...
+    ```
+
+  </TabItem>
+
+</Tabs>
+
+### Making the Agent speak
+
+Apart from just listening, agents can also send audio data to peers.  
+Let's assume that in the previous section we forwarded the peer's audio to some audio chatbot.
+Now, the chatbot returns responses, and we want to play it back to the peer.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript">
+  
+    ```ts
+    import { RoomId, FishjamClient, TrackId } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamId = '';
+    const managementToken = '';
+    const fishjamClient = new FishjamClient({ fishjamId, managementToken });
+    const room = await fishjamClient.createRoom();
+    const { agent } = await fishjamClient.createAgent(room.id, {});
+    const chatbot: any = null;
+
+    // ---cut---
+    import { type AudioCodecParameters } from '@fishjam-cloud/js-server-sdk';
+
+    const codecParameters = {
+      encoding: 'pcm16',
+      sampleRate: 16000,
+      channels: 1,
+    } satisfies AudioCodecParameters;
+
+    const agentTrack = agent.createTrack(codecParameters);
+
+    // that's a dummy chatbot,
+    // you can bring your audio from anywhere
+    chatbot.on('response', (response: Uint8Array) => {
+      // [!code highlight:1]
+      agent.sendData(agentTrack.id, response);
+    });
+
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    from fishjam import FishjamClient
+    from fishjam.agent import AgentResponseTrackData
+
+    fishjam_client = FishjamClient(fishjam_id, management_token)
+
+    agent_options = AgentOptions(subscribe_mode="auto")
+
+    agent = fishjam_client.create_agent(room_id)
+
     # Register callback for incoming audio data
     @agent.on_track_data
     def _(data: AgentResponseTrackData):
@@ -190,6 +220,7 @@ Exact pricing values can be found on our [pricing page](https://fishjam.io/#pric
 Learn more about how agents work:
 
 - [Agent Internals](../explanation/agent-internals)
+- [Selective Subscriptions API](/how-to/features/selective-forwarding.mdx)
 
 Writing a backend server with Fishjam:
 
