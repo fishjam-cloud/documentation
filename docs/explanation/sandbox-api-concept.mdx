@@ -40,13 +40,13 @@ import {
   RoomConfigRoomTypeEnum,
 } from "@fishjam-cloud/js-server-sdk";
 import express from "express";
-const fishjamUrl = "";
+const fishjamId = "";
 const managementToken = "";
 const app = express();
 
 // ---cut---
 // What Sandbox API does internally (simplified)
-const fishjamClient = new FishjamClient({ fishjamUrl, managementToken });
+const fishjamClient = new FishjamClient({ fishjamId, managementToken });
 
 app.get("/", async (req: express.Request, res: express.Response) => {
   const { roomName, peerName, roomType } = req.query;
@@ -59,7 +59,7 @@ app.get("/", async (req: express.Request, res: express.Response) => {
   // Create or get peer
   const { peer, peerToken } = await fishjamClient.createPeer(room.id);
 
-  res.json({ peerToken, url: fishjamUrl });
+  res.json({ peerToken });
 });
 ```
 

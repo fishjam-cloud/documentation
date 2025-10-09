@@ -33,7 +33,7 @@ Create production environment variables:
 
 ```bash
 # Production Fishjam credentials
-FISHJAM_URL="your-production-fishjam-url"
+FISHJAM_ID="your-production-fishjam-id"
 FISHJAM_MANAGEMENT_TOKEN="your-production-management-token"
 
 # Your application settings
@@ -99,13 +99,13 @@ const getUserById = async (userId: string) => ({
 const getOrCreateRoom = async (roomName: string) =>
   ({ id: "room-id" }) as unknown as Room;
 const canUserJoinRoom = (user: any, room: any) => true;
-process.env.FISHJAM_URL = "";
+process.env.FISHJAM_ID = "";
 process.env.FISHJAM_MANAGEMENT_TOKEN = "";
 process.env.JWT_SECRET = "";
 
 // ---cut---
 const fishjamClient = new FishjamClient({
-  fishjamUrl: process.env.FISHJAM_URL!,
+  fishjamId: process.env.FISHJAM_ID!,
   managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN!,
 });
 
@@ -153,10 +153,7 @@ app.post("/api/join-room", authenticateUser, async (req, res) => {
       },
     });
 
-    res.json({
-      peerToken,
-      fishjamUrl: process.env.FISHJAM_URL,
-    });
+    res.json({ peerToken });
   } catch (error) {
     console.error("Join room error:", error);
     res.status(500).json({ error: "Failed to join room" });
@@ -266,7 +263,7 @@ However, if you wish to reuse a single peer over multiple days, you can make use
     ```ts
     import { FishjamClient, RoomId, PeerId } from "@fishjam-cloud/js-server-sdk";
     const fishjamClient = new FishjamClient({
-      fishjamUrl: "",
+      fishjamId: "",
       managementToken: "",
     });
     const roomId = "" as RoomId;
