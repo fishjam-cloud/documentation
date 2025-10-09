@@ -14,7 +14,7 @@ import ReadingMetadata from "../_common/metadata/reading.mdx";
 <JoiningRoom>
 
 ```tsx
-const FISHJAM_URL = "some-fishjam-url";
+const FISHJAM_ID = "fishjam-id";
 const PEER_TOKEN = "some-peer-token";
 // ---cut---
 import React, { useCallback } from "react";
@@ -30,7 +30,7 @@ export function JoinRoomButton() {
 
   const onPressJoin = useCallback(async () => {
     await joinRoom<PeerMetadata>({
-      url: FISHJAM_URL,
+      fishjamId: FISHJAM_ID,
       peerToken: PEER_TOKEN,
       peerMetadata: { displayName: "John Wick" }, // [!code highlight]
     });

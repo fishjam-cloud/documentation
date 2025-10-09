@@ -86,7 +86,7 @@ To create an agent, you first need a room, as agents are scoped to rooms.
     const peer = await fishjamClient.createPeer(
       roomId,
       // [!code highlight:1]
-      { subscribe: { audioFormat: 'pcm16', audioSampleRate: 16000 } },
+      { output: { audioFormat: 'pcm16', audioSampleRate: 16000 } }
     );
     // Agents will receive peer's audio streams as raw PCM audio with 16kHz sample rate
     ```
