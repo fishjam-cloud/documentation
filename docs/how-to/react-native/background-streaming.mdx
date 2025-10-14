@@ -5,9 +5,12 @@ sidebar_position: 6
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
-# Streaming from background
+# Background calls
 
-On Android, it is possible to continue streaming when app is in background. Unfortunately this functionality is not available on iOS (due to Apple limitations)
+Both Android and iOS support calls in background, but they use different approaches:
+
+- **Android**: Uses foreground services to keep the app active in the background
+- **iOS**: Uses CallKit integration to maintain VoIP calls in the background
 
 Below is configuration required to make it work:
 
@@ -28,6 +31,9 @@ You need to modify `app.json` file and add our plugin:
         {
           "android": {
             "enableForegroundService": true
+          },
+          "ios": {
+            "enableVoIPBackgroundMode": true
           }
         }
       ],
@@ -39,6 +45,8 @@ You need to modify `app.json` file and add our plugin:
 
   </TabItem>
   <TabItem value="rn" label="Bare workflow">
+
+**Android Configuration**
 
 You need to modify `AndroidManifest.xml` file and add below service:
 
@@ -52,12 +60,23 @@ You need to modify `AndroidManifest.xml` file and add below service:
 </manifest>
 ```
 
+**iOS Configuration**
+
+You need to modify `Info.plist` file and add VoIP background mode:
+
+```xml title='Info.plist'
+<key>UIBackgroundModes</key>
+<array>
+  <string>voip</string>
+</array>
+```
+
   </TabItem>
 </Tabs>
 
 ## Usage
 
-<Tabs groupId="app-type">
+<Tabs groupId="platform">
 
   <TabItem value="android" label="Android">
 
@@ -93,6 +112,87 @@ useForegroundService({
 
   </TabItem>
   <TabItem value="ios" label="iOS">
-This feature is unavailable on iOS.
+
+On iOS, background calls are achieved through CallKit integration. You can use the CallKit hooks to manage VoIP calls that continue running in the background.
+
+### Manual CallKit Management
+
+Use [`useCallKit`](../../api/mobile/variables/useCallKit) hook for fine-grained control over CallKit sessions:
+
+```tsx
+import { useCallKit } from "@fishjam-cloud/react-native-client";
+
+const { startCallKitSession, endCallKitSession } = useCallKit();
+
+// Start CallKit session when joining a room
+const handleJoinRoom = async () => {
+  await startCallKitSession({
+    displayName: "John Doe",
+    isVideo: true,
+  });
+  // ... join room logic
+};
+
+// End CallKit session when leaving
+const handleLeaveRoom = async () => {
+  await endCallKitSession();
+  // ... leave room logic
+};
+```
+
+### Automatic CallKit Management
+
+Use [`useCallKitService`](../../api/mobile/variables/useCallKitService) hook for automatic session lifecycle management:
+
+```tsx
+import { useCallKitService } from "@fishjam-cloud/react-native-client";
+import { View } from "react-native";
+
+function CallScreen({ username }: { username: string }) {
+  // CallKit session automatically starts when component mounts
+  // and ends when component unmounts
+  useCallKitService({
+    displayName: username,
+    isVideo: true,
+  });
+
+  return <View>...</View>;
+}
+```
+
+### Listening to CallKit Events
+
+Use [`useCallKitEvent`](../../api/mobile/variables/useCallKitEvent) hook to respond to user interactions with the native CallKit interface:
+
+```tsx
+import {
+  useCallKitEvent,
+  useCamera,
+  useMicrophone,
+} from "@fishjam-cloud/react-native-client";
+
+const { toggleCamera } = useCamera();
+const { toggleMicrophone } = useMicrophone();
+
+// Listen for mute toggle from CallKit UI
+useCallKitEvent("muted", (isMuted: boolean) => {
+  if (isMuted) {
+    toggleMicrophone();
+  }
+});
+
+// Listen for hold state changes
+useCallKitEvent("held", (isOnHold: boolean) => {
+  console.log("Call hold state:", isOnHold);
+  // Handle hold state in your app
+});
+
+// Listen for call end from CallKit UI
+useCallKitEvent("ended", () => {
+  // Handle call termination
+  leaveRoom();
+});
+```
+
   </TabItem>
 </Tabs>
