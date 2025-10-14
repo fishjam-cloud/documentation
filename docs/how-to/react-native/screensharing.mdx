@@ -17,7 +17,18 @@ To enable screen sharing on android, you need enable foreground services. Here i
 
 ### iOS
 
-To enable screen share feature on iOS, you need to follow below steps
+To enable screen sharing on iOS, you need to follow the steps below.
+
+:::tip[Background streaming during screen sharing]
+
+If you want to continue screen sharing when the app goes to the background, you need to:
+
+1. Enable VoIP background mode by setting `enableVoIPBackgroundMode: true` in the plugin configuration or adding the VoIP background mode to your `Info.plist`
+2. Use the [`useCallKitService`](../../api/mobile/variables/useCallKitService) hook in your component to manage the CallKit session
+
+See the [background calls documentation](./background-streaming) for detailed instructions and code examples.
+
+:::
 
 <Tabs groupId="app-type">
 
@@ -34,7 +45,8 @@ You need to modify `app.json` file and add our plugin:
         "@fishjam-cloud/react-native-client",
         {
           "ios": {
-            "enableScreensharing": true
+            "enableScreensharing": true,
+            "enableVoIPBackgroundMode": true
           },
           "android": {
             "enableForegroundService": true
@@ -143,6 +155,15 @@ Configuring screen sharing on iOS is a little complicated.
    <string>group.{{BUNDLE_IDENTIFIER}}</string>
    <key>ScreencastExtensionBundleId</key>
    <string>{{BUNDLE_IDENTIFIER}}.FishjamScreenBroadcastExtension</string>
+   ```
+
+1. If you want to enable background streaming during screen sharing, add VoIP background mode to your `Info.plist`:
+
+   ```xml title='Info.plist'
+   <key>UIBackgroundModes</key>
+   <array>
+     <string>voip</string>
+   </array>
    ```
 
 1. Run `pod install`, rebuild your app and enjoy!
