@@ -145,6 +145,7 @@ const handleLeaveRoom = async () => {
 Use [`useCallKitService`](../../api/mobile/variables/useCallKitService) hook for automatic session lifecycle management:
 
 ```tsx
+import React from "react";
 import { useCallKitService } from "@fishjam-cloud/react-native-client";
 import { View } from "react-native";
 
@@ -169,15 +170,19 @@ import {
   useCallKitEvent,
   useCamera,
   useMicrophone,
+  useConnection,
 } from "@fishjam-cloud/react-native-client";
 
 const { toggleCamera } = useCamera();
-const { toggleMicrophone } = useMicrophone();
+const { startMicrophone, stopMicrophone } = useMicrophone();
+const { leaveRoom } = useConnection();
 
 // Listen for mute toggle from CallKit UI
 useCallKitEvent("muted", (isMuted: boolean) => {
   if (isMuted) {
-    toggleMicrophone();
+    stopMicrophone();
+  } else {
+    startMicrophone();
   }
 });
 
