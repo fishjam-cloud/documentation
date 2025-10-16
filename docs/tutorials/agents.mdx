@@ -206,7 +206,42 @@ Now, the chatbot returns responses, and we want to play it back to the peer.
 
 </Tabs>
 
-If you are using Fishjam's REST API directly, then check out this [Agent Internals section](../explanation/agent-internals#step-1-creating-an-agent-in-fishjam).
+### Disconnecting
+
+After you're done using an agent, you can disconnect it from the room.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript">
+  
+    ```ts
+    import { RoomId, FishjamClient, TrackId } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamId = '';
+    const managementToken = '';
+    const fishjamClient = new FishjamClient({ fishjamId, managementToken });
+    const room = await fishjamClient.createRoom();
+    const { agent } = await fishjamClient.createAgent(room.id, {});
+
+    // ---cut---
+    agent.disconnect();
+
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    await agent.disconnect()
+    ```
+
+  </TabItem>
+
+</Tabs>
+
+:::danger
+Disconnecting the agent is important, as **every connected agent generates usage** just as a normal peer.
+:::
 
 ## Pricing
 
@@ -214,6 +249,10 @@ Agents are billed as if they were normal peers.
 
 For example, a room with 2 peers and 1 agent connected will be billed as if there were 3 peers connected to the room.
 Exact pricing values can be found on our [pricing page](https://fishjam.io/#pricing).
+
+## Using agents without our SDKs
+
+If you are using Fishjam's REST API directly, then check out this [Agent Internals section](../explanation/agent-internals#step-1-creating-an-agent-in-fishjam).
 
 ## See also
 
