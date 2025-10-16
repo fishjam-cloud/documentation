@@ -7,8 +7,6 @@ import TabItem from "@theme/TabItem";
 
 # Testing with the Sandbox API
 
-**How-to Guide** - _Use Sandbox API to test your Fishjam integration quickly without a backend_
-
 The Sandbox API is a development tool that lets you create rooms and peers for testing without setting up your own backend server. This guide shows you how to use it effectively.
 
 ## Prerequisites
@@ -184,7 +182,7 @@ Below are examples on how to use tokens from the Sandbox API in your frontend ap
 
     export default function App() {
       return (
-        <FishjamProvider>
+        <FishjamProvider fishjamId={FISHJAM_ID}>
           <VideoCallComponent />
         </FishjamProvider>
       );

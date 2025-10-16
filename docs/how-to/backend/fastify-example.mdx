@@ -23,9 +23,9 @@ const fastify = Fastify();
 
 const envSchema = {
   type: "object",
-  required: ["FISHJAM_URL", "FISHJAM_MANAGEMENT_TOKEN"],
+  required: ["FISHJAM_ID", "FISHJAM_MANAGEMENT_TOKEN"],
   properties: {
-    FISHJAM_URL: {
+    FISHJAM_ID: {
       type: "string",
     },
     FISHJAM_MANAGEMENT_TOKEN: {
@@ -56,7 +56,7 @@ declare module "fastify" {
   interface FastifyInstance {
     fishjam: FishjamClient;
     config: {
-      FISHJAM_URL: string;
+      FISHJAM_ID: string;
       FISHJAM_MANAGEMENT_TOKEN: string;
     };
   }
@@ -64,7 +64,7 @@ declare module "fastify" {
 
 export const fishjamPlugin = fastifyPlugin((fastify) => {
   const fishjamClient = new FishjamClient({
-    fishjamUrl: fastify.config.FISHJAM_URL,
+    fishjamId: fastify.config.FISHJAM_ID,
     managementToken: fastify.config.FISHJAM_MANAGEMENT_TOKEN,
   });
 
@@ -83,7 +83,7 @@ declare module "fastify" {
   interface FastifyInstance {
     fishjam: FishjamClient;
     config: {
-      FISHJAM_URL: string;
+      FISHJAM_ID: string;
       FISHJAM_MANAGEMENT_TOKEN: string;
     };
   }
@@ -91,7 +91,7 @@ declare module "fastify" {
 
 export const fishjamPlugin = fastifyPlugin((fastify) => {
   const fishjamClient = new FishjamClient({
-    fishjamUrl: fastify.config.FISHJAM_URL,
+    fishjamId: fastify.config.FISHJAM_ID,
     managementToken: fastify.config.FISHJAM_MANAGEMENT_TOKEN,
   });
 
@@ -154,7 +154,7 @@ declare module "fastify" {
   interface FastifyInstance {
     fishjam: FishjamClient;
     config: {
-      FISHJAM_URL: string;
+      FISHJAM_ID: string;
       FISHJAM_MANAGEMENT_TOKEN: string;
     };
   }
@@ -162,7 +162,7 @@ declare module "fastify" {
 
 export const fishjamPlugin = fastifyPlugin((fastify) => {
   const fishjamClient = new FishjamClient({
-    fishjamUrl: fastify.config.FISHJAM_URL,
+    fishjamId: fastify.config.FISHJAM_ID,
     managementToken: fastify.config.FISHJAM_MANAGEMENT_TOKEN,
   });
 
@@ -177,11 +177,11 @@ import fp from "fastify-plugin";
 import { FishjamWSNotifier } from "@fishjam-cloud/js-server-sdk";
 
 export const fishjamNotifierPlugin = fp((fastify) => {
-  const fishjamUrl = fastify.config.FISHJAM_URL;
+  const fishjamId = fastify.config.FISHJAM_ID;
   const managementToken = fastify.config.FISHJAM_MANAGEMENT_TOKEN;
 
   const fishjamNotifier = new FishjamWSNotifier(
-    { fishjamUrl, managementToken },
+    { fishjamId, managementToken },
     (err) => fastify.log.error(err),
     () => fastify.log.info("Websocket connection to Fishjam closed"),
   );
@@ -207,7 +207,7 @@ declare module "fastify" {
   interface FastifyInstance {
     fishjam: FishjamClient;
     config: {
-      FISHJAM_URL: string;
+      FISHJAM_ID: string;
       FISHJAM_MANAGEMENT_TOKEN: string;
     };
   }
@@ -215,7 +215,7 @@ declare module "fastify" {
 
 export const fishjamPlugin = fastifyPlugin((fastify) => {
   const fishjamClient = new FishjamClient({
-    fishjamUrl: "aaa",
+    fishjamId: "aaa",
     managementToken: "bbb",
   });
 
@@ -226,7 +226,7 @@ const fastify = Fastify();
 
 const fishjamNotifierPlugin = fastifyPlugin((fastify) => {
   const fishjamNotifier = new FishjamWSNotifier(
-    { fishjamUrl: "aaa", managementToken: "bbb" },
+    { fishjamId: "aaa", managementToken: "bbb" },
     (err) => fastify.log.error(err),
     (_code, _reason) =>
       fastify.log.info("Websocket connection to Fishjam closed"),
