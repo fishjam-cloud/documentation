@@ -7,6 +7,7 @@ sidebar_position: 5
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 import AgentDefinition from "../_common/agents/definition.mdx";
+import RememberToDisconnect from "../_common/agents/remember-to-disconnect.mdx";
 import Subscriptions from "../_common/agents/subscriptions.mdx";
 
 # Agent Internals
@@ -81,6 +82,8 @@ Once the track is created, you can send audio to it using [`AgentRequest.TrackDa
 
 An agent disconnects from the room by closing the WebSocket connection created in [Step 2](#step-2-connecting-to-the-room).
 It may reconnect using the same token it provided in [Step 2](#step-2-connecting-to-the-room).
+
+<RememberToDisconnect />
 
 ## Peer subscriptions
 
