@@ -122,7 +122,7 @@ A simple backend server that can create rooms, add peers, and generate tokens fo
 
 1. Log in to [Fishjam Dashboard](https://fishjam.io/app)
 2. Navigate to your app
-3. Copy your **Fishjam URL** and **Management Token**
+3. Copy your **Fishjam ID** and **Management Token**
 4. Store them as environment variables:
 
 <Tabs groupId="language">
@@ -175,7 +175,7 @@ Create your Fishjam client:
     fishjam_id = os.environ["FISHJAM_ID"]
     management_token = os.environ["FISHJAM_MANAGEMENT_TOKEN"]
 
-    fishjam_client = FishjamClient(fishjam_url, management_token)
+    fishjam_client = FishjamClient(fishjam_id, management_token)
     ```
 
   </TabItem>
@@ -350,7 +350,7 @@ Build a simple HTTP endpoint that your client apps can call:
     app = FastAPI()
 
     fishjam_client = FishjamClient(
-        os.environ["FISHJAM_URL"],
+        os.environ["FISHJAM_ID"],
         os.environ["FISHJAM_MANAGEMENT_TOKEN"]
     )
 

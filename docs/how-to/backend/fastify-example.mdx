@@ -23,7 +23,7 @@ const fastify = Fastify();
 
 const envSchema = {
   type: "object",
-  required: ["FISHJAM_URL", "FISHJAM_MANAGEMENT_TOKEN"],
+  required: ["FISHJAM_ID", "FISHJAM_MANAGEMENT_TOKEN"],
   properties: {
     FISHJAM_ID: {
       type: "string",
@@ -207,7 +207,7 @@ declare module "fastify" {
   interface FastifyInstance {
     fishjam: FishjamClient;
     config: {
-      FISHJAM_URL: string;
+      FISHJAM_ID: string;
       FISHJAM_MANAGEMENT_TOKEN: string;
     };
   }

@@ -11,7 +11,7 @@ If you wish to see more general info, visit [**Set up your server**](../../how-t
 ## Minimal setup
 
 The same way as in the [**FastAPI docs**](https://fastapi.tiangolo.com/tutorial/first-steps/), the code below can be copied and run immediately.
-Just make sure you set `FISHJAM_URL` and `FISHJAM_MANAGEMENT_TOKEN` environment variables.
+Just make sure you set `FISHJAM_ID` and `FISHJAM_MANAGEMENT_TOKEN` environment variables.
 The `Depends` function allows the `FishjamClient` to be provided to the route function as a dependency, which avoids code duplication and allows easy mocking.
 
 ```python
@@ -24,9 +24,9 @@ from fishjam import FishjamClient
 app = FastAPI()
 
 def fishjam_client():
-    fishjam_url = os.environ["FISHJAM_URL"]
+    fishjam_id = os.environ["FISHJAM_ID"]
     management_token = os.environ["FISHJAM_MANAGEMENT_TOKEN"]
-    return FishjamClient(fishjam_url=fishjam_url, management_token=management_token)
+    return FishjamClient(fishjam_id=fishjam_id, management_token=management_token)
 
 
 @app.get("/")
@@ -77,7 +77,7 @@ It doesn't interact with the FastAPI library per se, just start the event loop a
 import asyncio
 from fishjam import FishjamNotifier
 
-notifier = FishjamNotifier(server_address=fishjam_url, server_api_token=management_token)
+notifier = FishjamNotifier(server_address=fishjam_id, server_api_token=management_token)
 
 @notifier.on_server_notification
 def handle_notification(notification):

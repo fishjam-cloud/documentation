@@ -7,8 +7,6 @@ import TabItem from "@theme/TabItem";
 
 # Audio-only Conferences and Livestreams
 
-**How-to Guide** - _Set up voice-only communication with cost savings_
-
 In many use cases, you only need real-time audio, without any video streaming.
 If your use case falls into this category, then you can benefit greatly from using audio-only rooms in Fishjam.
 
@@ -55,13 +53,13 @@ Set `roomType` to `audio_only` when creating a room:
         managementToken: "bbb",
     });
     // ---cut---
-    const createdRoom = await fishjamClient.createRoom({ roomType: 'audio_only' });
+    const audioOnlyRoom = await fishjamClient.createRoom({ roomType: 'audio_only' });
     ```
   </TabItem>
   <TabItem value="python" label="Python">
     ```python
     options = RoomOptions(room_type="audio_only")
-    created_room = fishjam_client.create_room(options)
+    audio_only_room = fishjam_client.create_room(options)
     ```
   </TabItem>
 </Tabs>
@@ -80,13 +78,13 @@ Set `roomType` to `audio_only_livestream` when creating a room:
         managementToken: "bbb",
     });
     // ---cut---
-    const createdRoom = await fishjamClient.createRoom({ roomType: 'audio_only_livestream' });
+    const audioOnlyRoom = await fishjamClient.createRoom({ roomType: 'audio_only_livestream' });
     ```
   </TabItem>
   <TabItem value="python" label="Python">
     ```python
     options = RoomOptions(room_type="audio_only_livestream")
-    created_room = fishjam_client.create_room(options)
+    audio_only_room = fishjam_client.create_room(options)
     ```
   </TabItem>
 </Tabs>
@@ -95,5 +93,5 @@ Now, you can connect peers normally to the room as described in our [React Nativ
 
 :::info
 The React Native and React SDKs will log a warning in the console if any attempt to add video to an audio-only room is made.
-This aims to assist in debugging, as adding video to an audio-only room does nothing and is most likely a mistake.
+This aims to assist in debugging, as adding video to an audio-only room has no effect and is most likely a mistake.
 :::
