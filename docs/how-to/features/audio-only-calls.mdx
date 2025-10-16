@@ -39,7 +39,7 @@ Using this feature is as easy as setting the `roomType` field when creating a ro
 Attempting to stream a video while connected to an `audio_only` or `audio_only_livestream` room will result in only the audio being sent to the other peers.
 :::
 
-### Audio-only Conferencing
+### Conferencing
 
 Set `roomType` to `audio_only` when creating a room:
 
@@ -64,7 +64,9 @@ Set `roomType` to `audio_only` when creating a room:
   </TabItem>
 </Tabs>
 
-### Audio-only Livestreaming
+Now, you can connect peers normally to the room as described in our [React Native](../../how-to/react-native/connecting) and [React](../../how-to/react/connecting) docs.
+
+### Livestreaming
 
 Set `roomType` to `audio_only_livestream` when creating a room:
 
@@ -89,7 +91,7 @@ Set `roomType` to `audio_only_livestream` when creating a room:
   </TabItem>
 </Tabs>
 
-Now, you can connect peers normally to the room as described in our [React Native](../../how-to/react-native/connecting) and [React](../../how-to/react/connecting) docs.
+Refer to our [Livestreaming tutorial](../../tutorials/livestreaming.mdx) to learn how to connect streamers and viewers.
 
 :::info
 The React Native and React SDKs will log a warning in the console if any attempt to add video to an audio-only room is made.
