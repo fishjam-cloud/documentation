@@ -74,7 +74,7 @@ Once connected, an agent will receive chunks of audio as [`AgentRequest.TrackDat
 
 ### Step 4. Sending Audio
 
-All of further steps are done via the websocket connection created in [Step 2](#step-2-connecting-to-the-room).
+All further steps are done via the WebSocket connection created in [Step 2](#step-2-connecting-to-the-room).
 
 To send audio to an agent, you need to create an audio track first.
 This is done by sending an [`AgentRequest.CreateTrack` protobuf message](../api/reference#protobufs).

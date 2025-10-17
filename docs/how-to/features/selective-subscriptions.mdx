@@ -14,9 +14,9 @@ Selective Subscriptions let you break from that — giving your backend the abil
 In **manual subscription mode**, a peer or agent:
 
 - does not automatically receive **any tracks**, and
-- can **explicitly subscribe** to specific publishers or tracks later.
+- can **explicitly subscribe** to specific tracks from other peers.
 
-This is essential for:
+## When to use Selective Subscriptions
 
 - large-scale rooms with dozens or hundreds of peers,
 - “stage & audience” models (viewers only see speakers),
@@ -29,17 +29,17 @@ This is essential for:
 - Peers have a `subscribeMode` — either **`auto`** or **`manual`**.
 - Peers in **auto** mode subscribe to everyone automatically (default behavior).
 - Peers in **manual** mode will **not** receive any media until you explicitly subscribe them using the **Server SDK**.
-- You can subscribe a manual peer to:
+- Peers in manual mode can subscribe to:
   - another **peer** (all of its tracks), or
   - specific **tracks** of another peer.
 
 ::: note
-You can only subscribe to **peers that are already connected** to the room.
+Only **connected** peers can subscribe to others.
 :::
 
 ---
 
-## Step 1 — Create a manual peer
+## Step 1 — Create a peer with `manual` subscription mode
 
 When creating a peer, set `subscribeMode` to `"manual"`.  
 This peer will start with zero subscriptions — it will not receive anyone’s audio or video.
@@ -76,15 +76,17 @@ const { peer: viewer } = await fishjamClient.createPeer(room.id, {
   </TabItem>
 
   <TabItem value="python" label="Python">
+from fishjam import RoomOptions, PeerOptions
 
 ```python
-options = RoomOptions(room_type="conference")
-room = fishjam_client.create_room(options)
+room_options = RoomOptions(room_type="conference")
+room = fishjam_client.create_room(room_options)
 
-# publisher_id and viewer_id represent peers already connected to the room
-# viewer must be created with subscribe_mode=manual on your side
-publisher_id = "peer_publisher_123"
-viewer_id = "peer_viewer_manual_456"
+# Create a manual subscriber
+peer_options = PeerOptions(subscribe_mode="manual")
+publisher = fishjam_client.create_peer(room.id, peer_options)
+viewer = fishjam_client.create_peer(room.id, peer_options)
+
 ```
 
   </TabItem>
@@ -94,7 +96,7 @@ viewer_id = "peer_viewer_manual_456"
 
 ## Step 2 — Subscribe a peer to another peer
 
-Use this when you want your manual subscriber to receive **all tracks** from a connected publisher.
+Use this when you want your manual subscriber to receive **all tracks** published by another peer.
 
 <Tabs groupId="language">
   <TabItem value="ts" label="Typescript">
@@ -114,13 +116,13 @@ const { peer: publisher } = await fishjamClient.createPeer(room.id, {
   subscribeMode: "auto",
 });
 
-const { peer: viewer } = await fishjamClient.createPeer(room.id, {
+const { peer: subscriber } = await fishjamClient.createPeer(room.id, {
   subscribeMode: "manual",
 });
 
 // ---cut---
 // Subscribe viewer to everything published by publisher
-await fishjamClient.subscribePeer(room.id, viewer.id, publisher.id);
+await fishjamClient.subscribePeer(room.id, subscriber.id, publisher.id);
 ```
 
   </TabItem>
@@ -143,8 +145,8 @@ It’s additive — the subscriber can listen to multiple publishers at once.
 
 Sometimes you only want a subset of a publisher’s tracks, for example:
 
-- a **screenshare**, but not their camera,
-- only **audio**, not video.
+- their **screenshare**, but not their camera,
+- only **audio**, without video.
 
 <Tabs groupId="language">
   <TabItem value="ts" label="Typescript">
@@ -164,7 +166,7 @@ const { peer: publisher } = await fishjamClient.createPeer(room.id, {
   subscribeMode: "auto",
 });
 
-const { peer: viewer } = await fishjamClient.createPeer(room.id, {
+const { peer: subscriber } = await fishjamClient.createPeer(room.id, {
   subscribeMode: "manual",
 });
 
@@ -174,10 +176,10 @@ const audioTrackId = "track_audio_abc" as TrackId;
 const screenTrackId = "track_screen_xyz" as TrackId;
 
 // Subscribe to a single track
-await fishjamClient.subscribeTracks(room.id, viewer.id, [audioTrackId]);
+await fishjamClient.subscribeTracks(room.id, subscriber.id, [audioTrackId]);
 
 // Or multiple
-await fishjamClient.subscribeTracks(room.id, viewer.id, [
+await fishjamClient.subscribeTracks(room.id, subscriber.id, [
   audioTrackId,
   screenTrackId,
 ]);
@@ -192,10 +194,10 @@ audio_track_id = "track_audio_abc"
 screen_track_id = "track_screen_xyz"
 
 # Subscribe to one track
-fishjam_client.subscribe_tracks(room.id, viewer_id, [audio_track_id])
+fishjam_client.subscribe_tracks(room.id, subscriber_id, [audio_track_id])
 
 # Or multiple
-fishjam_client.subscribe_tracks(room.id, viewer_id, [audio_track_id, screen_track_id])
+fishjam_client.subscribe_tracks(room.id, subscriber_id, [audio_track_id, screen_track_id])
 ```
 
   </TabItem>
@@ -227,13 +229,13 @@ const room = await fishjamClient.createRoom({
 // ---cut---
 const options = { subscribeMode: "manual" } satisfies PeerOptions;
 
-const { peer: viewer } = await fishjamClient.createPeer(room.id, options);
+const { peer: subscriber } = await fishjamClient.createPeer(room.id, options);
 const { peer: publisherA } = await fishjamClient.createPeer(room.id, options);
 const { peer: publisherB } = await fishjamClient.createPeer(room.id, options);
 
-// Subscribe viewer to two publishers
-await fishjamClient.subscribePeer(room.id, viewer.id, publisherA.id);
-await fishjamClient.subscribePeer(room.id, viewer.id, publisherB.id);
+// Subscribe subscriber to two publishers
+await fishjamClient.subscribePeer(room.id, subscriber.id, publisherA.id);
+await fishjamClient.subscribePeer(room.id, subscriber.id, publisherB.id);
 ```
 
   </TabItem>
@@ -241,14 +243,14 @@ await fishjamClient.subscribePeer(room.id, viewer.id, publisherB.id);
   <TabItem value="python" label="Python">
 
 ```python
-fishjam_client.subscribe_peer(room.id, viewer_id, publisher_a_id)
-fishjam_client.subscribe_peer(room.id, viewer_id, publisher_b_id)
+fishjam_client.subscribe_peer(room.id, subscriber_id, publisher_a_id)
+fishjam_client.subscribe_peer(room.id, subscriber_id, publisher_b_id)
 ```
 
   </TabItem>
 </Tabs>
 
-The viewer now receives tracks from **both** publishers simultaneously.
+The subscriber now receives tracks from **both** publishers simultaneously.
 
 ---
 
@@ -278,10 +280,6 @@ const { peer: publisher } = await fishjamClient.createPeer(room.id, {
   subscribeMode: "auto",
 });
 
-const { peer: viewer } = await fishjamClient.createPeer(room.id, {
-  subscribeMode: "manual",
-});
-
 // ---cut---
 
 // fetch room to get actual list of peers
@@ -306,9 +304,12 @@ await Promise.all(
   <TabItem value="python" label="Python">
 
 ```python
+
+audience = fishjam_client.create_peer(room.id, PeerOptions(subscribe_mode="manual"))
+current_speakers = fishjam_client.get_room(room.id).peers
 # audience peer already exists (manual)
-for speaker_id in current_speakers:
-    fishjam_client.subscribe_peer(room.id, viewer_id, speaker_id)
+for speaker in current_speakers:
+    fishjam_client.subscribe_peer(room.id, audience.id, speaker.id)
 ```
 
   </TabItem>
@@ -320,8 +321,7 @@ As new speakers join, simply call `subscribe_peer` again to add them to the audi
 
 ## Notes & limitations
 
-- You can only subscribe to peers that are **already connected** to the room.
-- Subscriptions are **additive** — each call adds new publishers or tracks.
+- Only **connected** peers can subscribe to others..
 - Peers created with `subscribeMode: 'auto'` always subscribe to everyone automatically.
 - Unsubscribe support is not supported yet (for now, just remove peer sessions when needed).
 
