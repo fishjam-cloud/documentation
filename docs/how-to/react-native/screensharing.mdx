@@ -19,17 +19,6 @@ To enable screen sharing on android, you need enable foreground services. Here i
 
 To enable screen sharing on iOS, you need to follow the steps below.
 
-:::tip[Background streaming during screen sharing]
-
-If you want to continue screen sharing when the app goes to the background, you need to:
-
-1. Enable VoIP background mode by setting `enableVoIPBackgroundMode: true` in the plugin configuration or adding the VoIP background mode to your `Info.plist`
-2. Use the [`useCallKitService`](../../api/mobile/variables/useCallKitService) hook in your component to manage the CallKit session
-
-See the [background calls documentation](./background-streaming) for detailed instructions and code examples.
-
-:::
-
 <Tabs groupId="app-type">
 
   <TabItem value="expo" label="Expo">
@@ -170,6 +159,17 @@ Configuring screen sharing on iOS is a little complicated.
 
   </TabItem>
 </Tabs>
+
+:::tip[Background streaming during screen sharing]
+
+If you want to continue screen sharing when the app goes to the background, you need to:
+
+1. Enable VoIP background mode by setting `enableVoIPBackgroundMode: true` in the plugin configuration or adding the VoIP background mode to your `Info.plist`
+2. Use the [`useCallKitService`](../../api/mobile/variables/useCallKitService) hook in your component to manage the CallKit session
+
+See the [background calls documentation](./background-streaming) for detailed instructions and code examples.
+
+:::
 
 ## Usage
 

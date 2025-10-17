@@ -8,15 +8,13 @@ import TabItem from "@theme/TabItem";
 
 # Selective Subscriptions
 
-**How-to Guide** — _Full control over who receives what media_
-
 In Fishjam, peers in a conferencing room automatically subscribe to every other peer by default.  
-Selective Subscriptions let you break from that — giving your backend the power to decide who receives what.
+Selective Subscriptions let you break from that — giving your backend the ability to decide who receives what.
 
-By using **manual subscription mode**, you can choose whether a peer:
+In **manual subscription mode**, a peer or agent:
 
-- receives **no one** by default, and
-- is **explicitly subscribed** to specific publishers or tracks later.
+- does not automatically receive **any tracks**, and
+- can **explicitly subscribe** to specific publishers or tracks later.
 
 This is essential for:
 
@@ -33,10 +31,11 @@ This is essential for:
 - Peers in **manual** mode will **not** receive any media until you explicitly subscribe them using the **Server SDK**.
 - You can subscribe a manual peer to:
   - another **peer** (all of its tracks), or
-  - specific **track IDs** of another peer.
+  - specific **tracks** of another peer.
 
-> ⚠️ Subscribing adds additional publishers — it does **not** replace or “switch” existing ones.  
-> ⚠️ You can only subscribe to **peers that are already connected** to the room.
+::: note
+You can only subscribe to **peers that are already connected** to the room.
+:::
 
 ---
 
@@ -324,7 +323,7 @@ As new speakers join, simply call `subscribe_peer` again to add them to the audi
 - You can only subscribe to peers that are **already connected** to the room.
 - Subscriptions are **additive** — each call adds new publishers or tracks.
 - Peers created with `subscribeMode: 'auto'` always subscribe to everyone automatically.
-- Unsubscribe support is coming soon (for now, just remove peer sessions when needed).
+- Unsubscribe support is not supported yet (for now, just remove peer sessions when needed).
 
 ---
 

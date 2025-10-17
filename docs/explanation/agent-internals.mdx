@@ -51,6 +51,8 @@ curl -XPOST -H "Authorization: Bearer $FISHJAM_MANAGEMENT_TOKEN" \
 ### Step 2. Connecting to the Room
 
 Agents connect to Fishjam by initiating a WebSocket connection on the `/socket/agent/websocket` REST API endpoint.
+All communication over the WebSocket between Agent the Fishjam is done using [Protobuf messages](https://protobuf.dev/).
+Check [Fishjam Protobuf reference](../api/reference#protobufs) for more info.  
 Once connected, the agent must authenticate with Fishjam by sending an [`AgentRequest.AuthRequest` protobuf message](../api/reference#protobufs).
 An example of initiating a connection using [websocat](https://github.com/vi/websocat) and [Buf CLI](https://buf.build/docs/cli/) would look like:
 
