@@ -127,7 +127,7 @@ However, it's likely that in your scenario you'll want to use the [Selective Sub
     await agent.disconnect()
 
     # Option 2: context manager
-    async with agent:
+    async with agent.connect() as agent_session:
       ...
     ```
 
