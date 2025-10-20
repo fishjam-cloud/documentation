@@ -113,22 +113,13 @@ However, it's likely that in your scenario you'll want to use the [Selective Sub
     fishjam_client = FishjamClient(fishjam_id, management_token)
 
     agent_options = AgentOptions(subscribe_mode="auto")
-
     agent = fishjam_client.create_agent(room_id)
 
-    # Register callback for incoming audio data
-    @agent.on_track_data
-    def _(data: AgentResponseTrackData):
-      pass
-
-    # Option 1: connect/disconnect manually
-    await agent.connect()
-    ...
-    await agent.disconnect()
-
-    # Option 2: context manager
-    async with agent.connect() as agent_session:
-      ...
+    # the agent will disconnect once you exit the context
+    async with agent.connect() as session:
+      async for track_data in session.receive():
+        # process the incoming data
+        pass
     ```
 
   </TabItem>
@@ -180,7 +171,7 @@ Now, the chatbot returns responses, and we want to play it back to the peer.
 
     ```python
     from fishjam import FishjamClient
-    from fishjam.agent import AgentResponseTrackData
+    from fishjam.agent import AgentResponseTrackData, OutgoingAudioTrackOptions, TrackEncoding
 
     fishjam_client = FishjamClient(fishjam_id, management_token)
 
@@ -188,19 +179,12 @@ Now, the chatbot returns responses, and we want to play it back to the peer.
 
     agent = fishjam_client.create_agent(room_id)
 
-    # Register callback for incoming audio data
-    @agent.on_track_data
-    def _(data: AgentResponseTrackData):
-      pass
+    track_options = OutgoingAudioTrackOptions(encoding=TrackEncoding.PCM16)
 
-    # Option 1: connect/disconnect manually
-    await agent.connect()
-    ...
-    await agent.disconnect()
-
-    # Option 2: context manager
-    async with agent:
-      ...
+    # the agent will disconnect once you exit the context
+    async with agent.connect() as session:
+        outgoing_track = session.create_track(track_options)
+        outgoing_track.send_chunk(data)
     ```
 
   </TabItem>
@@ -233,7 +217,9 @@ After you're done using an agent, you can disconnect it from the room.
   <TabItem value="python" label="Python">
 
     ```python
-    await agent.disconnect()
+    # the agent will disconnect once you exit the context
+    async with agent.connect() as session:
+        pass
     ```
 
   </TabItem>
