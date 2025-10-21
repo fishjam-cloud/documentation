@@ -132,6 +132,10 @@ Apart from just listening, agents can also send audio data to peers.
 Let's assume that in the previous section we forwarded the peer's audio to some audio chatbot.
 Now, the chatbot returns responses, and we want to play it back to the peer.
 
+:::tip
+You can interrupt the currently played audio chunk. See the example below.
+:::
+
 <Tabs groupId="language">
   <TabItem value="ts" label="TypeScript">
   
@@ -161,6 +165,10 @@ Now, the chatbot returns responses, and we want to play it back to the peer.
     chatbot.on('response', (response: Uint8Array) => {
       // [!code highlight:1]
       agent.sendData(agentTrack.id, response);
+
+      // you're able to interrupt the currently played audio chunk
+      // [!code highlight:1]
+      agent.interruptTrack(agentTrack.id);
     });
 
     ```
@@ -184,7 +192,14 @@ Now, the chatbot returns responses, and we want to play it back to the peer.
     # the agent will disconnect once you exit the context
     async with agent.connect() as session:
         outgoing_track = session.create_track(track_options)
-        outgoing_track.send_chunk(data)
+
+        # that's a dummy chatbot
+        async for chatbot_data in chatbot.receive():
+            outgoing_track.send_chunk(chatbot_data)
+
+        # you're able to interrupt the currently played audio chunk
+        # [!code highlight:1]
+        ongoing_track.interrupt()
     ```
 
   </TabItem>
