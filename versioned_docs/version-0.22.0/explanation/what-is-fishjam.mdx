@@ -1,0 +1,67 @@
+---
+type: explanation
+sidebar_position: 0
+---
+
+# What is Fishjam?
+
+_Understanding the role and purpose of Fishjam_
+
+Fishjam is a multimedia streaming toolkit that allows you to build real-time video and audio streaming applications.
+It uses [WebRTC](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API) under the hood to ensure sub-second (in most cases **less than 300ms**) latency.
+We provide the infrastructure, media server, and client SDKs so you can focus on building your apps.
+
+**No WebRTC knowledge is required!**
+
+## The Problem Fishjam Solves
+
+Building real-time video and audio applications is complex. Developers typically need to:
+
+- Set up and manage WebRTC infrastructure
+- Handle complex peer-to-peer networking
+- Manage media servers and scaling
+- Deal with different devices and codec compatibility
+- Implement secure token-based authentication
+
+Fishjam abstracts away this complexity, providing a simple API and managed infrastructure.
+
+## What Fishjam Provides
+
+Fishjam consists of several components that work together to provide a seamless multimedia streaming experience:
+
+| Component             | Description                                                                                             |
+| --------------------- | ------------------------------------------------------------------------------------------------------- |
+| Developer panel       | The place to access your credentials and manage your Fishjam usage.                                     |
+| Fishjam Media Servers | Media servers route your multimedia traffic. We host and manage them for you.                           |
+| Fishjam Client SDKs   | Toolkit used for multimedia integration on endpoint devices.                                            |
+| Fishjam Server SDKs   | Toolkit for integrating your backend with Fishjam. We currently support Python and NodeJS.              |
+| Sandbox API           | Simple backend for creating test rooms. You can test Fishjam without having to set up your own backend. |
+
+## Use Cases
+
+Fishjam is ideal for:
+
+### Video Conferencing
+
+Build videoconferencing applications with multiple participants in rooms, screen sharing, and audio/video.
+
+### Livestreaming
+
+Stream live content from one streamer to many viewers with low latency.
+Perfect for live events or streaming platforms.
+
+### Audio-only Applications
+
+Create voice-only experiences like audio conferencing, podcasts, or voice chat applications.
+
+## Next Steps
+
+To understand how Fishjam works technically, see [Fishjam Architecture](../explanation/architecture).
+
+To learn about the different types of rooms available, see [Room Types Explained](../explanation/room-types).
+
+Ready to start building? Check out our tutorials:
+
+- [React Native Quick Start](../tutorials/react-native-quick-start)
+- [React Quick Start](../tutorials/react-quick-start)
+- [Backend Quick Start](../tutorials/backend-quick-start)

@@ -1,6 +1,6 @@
 {
-  "name": "my-website",
-  "version": "0.0.0",
+  "name": "fishjam-docs",
+  "version": "0.22.0",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
@@ -10,6 +10,7 @@
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
     "serve": "docusaurus serve",
+    "version:docs": "yarn docusaurus docs:version",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
     "prepare": "sh ./scripts/prepare.sh",
