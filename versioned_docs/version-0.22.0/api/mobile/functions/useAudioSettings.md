@@ -19,7 +19,7 @@ This hook manages audio settings.
 > **selectAudioSessionMode**: (`audioSessionMode`) => `Promise`\<`void`\>
 
 [iOS only] selects audio session mode. For more information refer to Apple's documentation:
- https://developer.apple.com/documentation/avfaudio/avaudiosession/mode/
+ <https://developer.apple.com/documentation/avfaudio/avaudiosession/mode/>
 
 #### Parameters
 
@@ -42,7 +42,7 @@ currently selected output audio device
 > **selectOutputAudioDevice**: (`device`) => `Promise`\<`void`\>
 
 [Android only] selects output audio device.
-For detecting and selecting bluettoth devices make sure you have the BLUETOOTH_CONNECT permission.
+For detecting and selecting bluetooth devices make sure you have the BLUETOOTH_CONNECT permission.
 
 #### Parameters
 
@@ -59,7 +59,7 @@ For detecting and selecting bluettoth devices make sure you have the BLUETOOTH_C
 > **showAudioRoutePicker**: () => `Promise`\<`void`\>
 
 [iOS only] Shows a picker modal that allows user to select output audio device. For more
-information refer to Apple's documentation: https://developer.apple.com/documentation/avkit/avroutepickerview
+information refer to Apple's documentation: <https://developer.apple.com/documentation/avkit/avroutepickerview>
 
 #### Returns
 

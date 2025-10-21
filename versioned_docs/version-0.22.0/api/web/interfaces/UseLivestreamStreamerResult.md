@@ -49,7 +49,7 @@ Callback to stop publishing anything previously published with [connect](#connec
 
 Defined in: [packages/react-client/src/hooks/useLivestreamStreamer.ts:38](https://github.com/fishjam-cloud/web-client-sdk/blob/cca0d7a57568ca97560c29d27fcd8b63f2678492/packages/react-client/src/hooks/useLivestreamStreamer.ts#L38)
 
-Any errors encounterd in [connect](#connect) will populate this field
+Any errors encountered in [connect](#connect) will populate this field
 
 ***
 

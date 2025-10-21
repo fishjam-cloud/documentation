@@ -183,7 +183,7 @@ Defined in: packages/js-server-sdk/node\_modules/typed-emitter/index.d.ts:39
 
 Defined in: [packages/js-server-sdk/packages/js-server-sdk/src/agent.ts:89](https://github.com/fishjam-cloud/js-server-sdk/blob/47c214593e589512a3ba31be9d92be66ca83da9a/packages/js-server-sdk/src/agent.ts#L89)
 
-Interrupt track indentified by `trackId`.
+Interrupt track identified by `trackId`.
 
 Any audio that has been sent by the agent, but not played
 by Fishjam will be cleared and be prevented from playing.
