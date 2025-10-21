@@ -1,0 +1,90 @@
+---
+sidebar_position: 4
+---
+
+# Managing devices
+
+The Fishjam SDK provides functions for dynamically controlling media device streams. This includes selecting desired cameras and microphones, turning them on and off, as well as muting and unmuting microphones.
+
+### Selecting Camera and Microphone - [`selectCamera()`](../../api/web/functions/useCamera#selectcamera) and [`selectMicrophone()`](../../api/web/functions/useMicrophone#selectmicrophone)
+
+To select the desired camera or microphone, use the [`selectCamera()`](../../api/web/functions/useCamera#selectcamera) and [`selectMicrophone()`](../../api/web/functions/useMicrophone#selectmicrophone) functions.  
+Lists of the available devices are available via the [`cameraDevices`](../../api/web/functions/useCamera#cameradevices) and [`microphoneDevices`](../../api/web/functions/useMicrophone#microphonedevices) properties.
+
+#### Usage Example
+
+```tsx
+import React from "react";
+import { useCamera } from "@fishjam-cloud/react-client";
+
+export function CameraControl() {
+  const { cameraDevices, selectCamera } = useCamera();
+
+  return (
+    <ul>
+      {cameraDevices.map(({ deviceId, label }) => (
+        <li key={deviceId}>
+          <button onClick={() => selectCamera(deviceId)}>{label}</button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### Turning Camera On and Off - [`toggleCamera()`](../../api/web/functions/useCamera#togglecamera)
+
+This function controls the physical operational state of the camera.
+
+- **Turning the camera off**: This action stops the camera device, disables the media stream, and pauses streaming. The webcam indicator light will shut down.
+- **Turning the camera on**: This action starts the camera and resumes streaming, allowing other participants to see video after a brief initialization period.
+
+#### Usage Example
+
+```tsx
+import React from "react";
+import { useCamera } from "@fishjam-cloud/react-client";
+
+export function CameraControl() {
+  const { toggleCamera } = useCamera();
+
+  return <button onClick={() => toggleCamera()}>Toggle Camera Device</button>;
+}
+```
+
+### Turning Microphone On and Off - [`toggleMicrophone()`](../../api/web/functions/useMicrophone#togglemicrophone)
+
+This function toggles the microphone's physical operational state. The function interacts with a physical device, so it might take a noticeable amount of time.
+
+- **Turning the microphone off**: Turns the microphone off, disables the media stream, and pauses any audio transmission.
+- **Turning the microphone on**: Turns the microphone on and resumes audio streaming.
+
+### Muting and Unmuting Microphone - [`toggleMicrophoneMute()`](../../api/web/functions/useMicrophone#togglemicrophonemute)
+
+This function manages the audio stream's operational status without affecting the microphone's hardware state.
+Muting and unmuting is faster, but a muted device still uses resources. This is useful, as it is common to mute and unmute during a meeting. Unmuting needs to be quick to capture the first word of a sentence.
+
+- **Muting the microphone**: This action disables the media stream and stops audio transmission while keeping the microphone active.
+- **Unmuting the microphone**: This action enables the media stream, allowing immediate transmission of sounds.
+
+#### Usage Example
+
+```tsx
+import React from "react";
+import { useMicrophone } from "@fishjam-cloud/react-client";
+
+export function MicrophoneControl() {
+  const { toggleMicrophone, toggleMicrophoneMute } = useMicrophone();
+
+  return (
+    <div>
+      <button onClick={() => toggleMicrophone()}>
+        Toggle Microphone Device
+      </button>
+      <button onClick={() => toggleMicrophoneMute()}>
+        Toggle Microphone Mute
+      </button>
+    </div>
+  );
+}
+```
