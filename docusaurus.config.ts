@@ -102,6 +102,7 @@ const typedocConfig = {
   parametersFormat: "table",
   propertyMembersFormat: "table",
   typeDeclarationFormat: "list",
+  excludeExternals: "true",
   tableColumnSettings: {
     hideSources: true,
   },
