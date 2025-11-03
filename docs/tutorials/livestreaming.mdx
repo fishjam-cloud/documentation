@@ -161,7 +161,7 @@ We can now start sending media, which we can obtain from the user's camera, scre
 
         const streamerToken = '';
         const roomId = '';
-        const { connect, whipClientRef } = useLivestreamStreamer();
+        const { connect, whipClientRef } = useLivestreamStreamer({enableVideo: true, enableAudio: true});
 
         // ...
 
