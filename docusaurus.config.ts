@@ -269,7 +269,14 @@ const config: Config = {
     [
       require.resolve("docusaurus-lunr-search"),
       // exclude old versions and next from search
-      { includeRoutes: ["/api/*"] },
+      {
+        includeRoutes: [
+          "/tutorials/*",
+          "/how-to/*",
+          "/explanation/*",
+          "/api/*",
+        ],
+      },
     ],
     [
       "docusaurus-plugin-typedoc",
