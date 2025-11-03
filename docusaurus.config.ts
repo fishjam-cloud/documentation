@@ -266,7 +266,7 @@ const config: Config = {
   } satisfies Preset.ThemeConfig,
 
   plugins: [
-    require.resolve("docusaurus-lunr-search"),
+    [require.resolve("docusaurus-lunr-search"), { includeRoutes: ["/api/*"] }],
     [
       "docusaurus-plugin-typedoc",
       {
