@@ -161,7 +161,7 @@ We can now start sending media, which we can obtain from the user's camera, scre
 
         const streamerToken = '';
         const roomId = '';
-        const { connect, whipClientRef } = useLivestreamStreamer();
+        const { connect, whipClientRef } = useLivestreamStreamer({ videoEnabled: true, audioEnabled: true, camera: cameras[0] });
 
         // ...
 
@@ -169,9 +169,6 @@ We can now start sending media, which we can obtain from the user's camera, scre
 
         // Render the livestream
         <LivestreamStreamer
-          videoEnabled={true}
-          audioEnabled={true}
-          camera={cameras[0]}
           whipClientRef={whipClientRef}
         />
         ```
@@ -262,12 +259,12 @@ We can now begin receiving the stream
       useLivestreamViewer,
     } from '@fishjam-cloud/react-native-client/livestream';
 
-    const { connect } = useLivestreamViewer();
+    const { connect, whepClientRef } = useLivestreamViewer();
 
     await connect({ token: viewerToken });
 
     // Render the livestream
-    <LivestreamViewer />
+    <LivestreamViewer ref={whepClientRef} />
     ```
 
   </TabItem>

@@ -266,7 +266,18 @@ const config: Config = {
   } satisfies Preset.ThemeConfig,
 
   plugins: [
-    require.resolve("docusaurus-lunr-search"),
+    [
+      require.resolve("docusaurus-lunr-search"),
+      // exclude old versions and next from search
+      {
+        includeRoutes: [
+          "/tutorials/*",
+          "/how-to/*",
+          "/explanation/*",
+          "/api/*",
+        ],
+      },
+    ],
     [
       "docusaurus-plugin-typedoc",
       {
