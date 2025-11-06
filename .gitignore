@@ -137,3 +137,5 @@ build
 docs/api/mobile/**
 docs/api/web/**
 docs/api/server/**
+
+.cursor/
