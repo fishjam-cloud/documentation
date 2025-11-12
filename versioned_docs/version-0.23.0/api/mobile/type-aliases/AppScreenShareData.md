@@ -1,0 +1,39 @@
+# Type Alias: AppScreenShareData
+
+> **AppScreenShareData** = `object`
+
+Defined in: [packages/react-native-client/src/hooks/useAppScreenShare.ts:17](https://github.com/fishjam-cloud/mobile-client-sdk/blob/13bc6085d5c0268377acde140fe9c29c39eaf73b/packages/react-native-client/src/hooks/useAppScreenShare.ts#L17)
+
+## Properties
+
+### isAppScreenShareOn
+
+> **isAppScreenShareOn**: `boolean`
+
+Defined in: [packages/react-native-client/src/hooks/useAppScreenShare.ts:18](https://github.com/fishjam-cloud/mobile-client-sdk/blob/13bc6085d5c0268377acde140fe9c29c39eaf73b/packages/react-native-client/src/hooks/useAppScreenShare.ts#L18)
+
+***
+
+### simulcastConfig
+
+> **simulcastConfig**: [`SimulcastConfig`](SimulcastConfig.md)
+
+Defined in: [packages/react-native-client/src/hooks/useAppScreenShare.ts:19](https://github.com/fishjam-cloud/mobile-client-sdk/blob/13bc6085d5c0268377acde140fe9c29c39eaf73b/packages/react-native-client/src/hooks/useAppScreenShare.ts#L19)
+
+***
+
+### toggleAppScreenShare()
+
+> **toggleAppScreenShare**: (`screenShareOptions?`) => `Promise`\<`void`\>
+
+Defined in: [packages/react-native-client/src/hooks/useAppScreenShare.ts:20](https://github.com/fishjam-cloud/mobile-client-sdk/blob/13bc6085d5c0268377acde140fe9c29c39eaf73b/packages/react-native-client/src/hooks/useAppScreenShare.ts#L20)
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `screenShareOptions?` | `Partial`\<[`ScreenShareOptions`](ScreenShareOptions.md)\> |
+
+#### Returns
+
+`Promise`\<`void`\>

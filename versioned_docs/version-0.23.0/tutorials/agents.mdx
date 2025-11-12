@@ -1,0 +1,268 @@
+---
+type: tutorial
+sidebar_position: 4
+title: Agents
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import AgentDefinition from "../_common/agents/definition.mdx";
+import RememberToDisconnect from "../_common/agents/remember-to-disconnect.mdx";
+import Subscriptions from "../_common/agents/subscriptions.mdx";
+
+# Fishjam Agent Introduction
+
+:::tip
+We recommend going through the steps in the [Backend Quick Start](../tutorials/backend-quick-start)
+before trying Fishjam agents, as you will need a working backend server to use them.
+:::
+
+This page gives an introduction to Fishjam agents and how to use them.
+You can learn more about how Agents work on the [Agent Internals](../explanation/agent-internals) page.
+
+<AgentDefinition />
+
+## Writing an Agent
+
+In this section we show how to implement an agent using the Fishjam server SDKs.
+If you are not using the SDKs, then you can check out the [Agent Internals](../explanation/agent-internals#agent-lifecycle), to learn how to integrate with Fishjam Agents.
+
+### Prerequisites
+
+Before we create the actual agent, we need to [create a room](../tutorials/backend-quick-start#step-4-create-a-room) first, as agents are scoped to rooms.
+Additionally, we will also create a peer so that the agent has someone to listen to and talk to.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript">
+  
+    ```ts
+    const fishjamId = "";
+    const managementToken = "";
+    
+    // ---cut---
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamClient = new FishjamClient({ fishjamId, managementToken });
+    const room = await fishjamClient.createRoom();
+    const peer = await fishjamClient.createPeer(room.id);
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    from fishjam import FishjamClient
+
+    fishjam_client = FishjamClient(fishjam_id, management_token)
+    room = fishjam_client.create_room()
+    peer = fishjam_client.create_peer(room.id)
+    ```
+
+  </TabItem>
+</Tabs>
+
+### Creating a listening Agent
+
+If you are using the server SDKs, then creating an agent and defining its behavior is very simple.
+By default, agents receive all peers' audio streams.
+However, it's likely that in your scenario you'll want to use the [Selective Subscriptions API](/how-to/features/selective-subscriptions.mdx) for fine-grained control over which peers/tracks they should receive audio from.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript">
+  
+    ```ts
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamId = '';
+    const managementToken = '';
+    const fishjamClient = new FishjamClient({ fishjamId, managementToken });
+    const room = await fishjamClient.createRoom();
+
+    // ---cut---
+
+    import type { AgentCallbacks, PeerOptions } from '@fishjam-cloud/js-server-sdk';
+
+    const agentOptions = {
+      subscribeMode: 'auto',
+      output: { audioFormat: 'pcm16', audioSampleRate: 16000 }
+    } satisfies PeerOptions;
+
+    const agentCallbacks = {
+      onError: console.error,
+      onClose: (code, reason) => console.log('Agent closed', code, reason)
+    } satisfies AgentCallbacks;
+
+    // [!code highlight:1]
+    const { agent } = await fishjamClient.createAgent(room.id, agentOptions, agentCallbacks);
+
+    // Register a callback for incoming audio data
+    agent.on('trackData', ({ track, peerId, data }) => {
+      // process the incoming data
+    })
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    from fishjam import FishjamClient
+    from fishjam.agent import AgentResponseTrackData
+
+    fishjam_client = FishjamClient(fishjam_id, management_token)
+
+    agent_options = AgentOptions(subscribe_mode="auto")
+    agent = fishjam_client.create_agent(room_id)
+
+    # the agent will disconnect once you exit the context
+    async with agent.connect() as session:
+      async for track_data in session.receive():
+        # process the incoming data
+        pass
+    ```
+
+  </TabItem>
+
+</Tabs>
+
+### Making the Agent speak
+
+Apart from just listening, agents can also send audio data to peers.  
+Let's assume that in the previous section we forwarded the peer's audio to some audio chatbot.
+Now, the chatbot returns responses, and we want to play it back to the peer.
+
+:::tip
+You can interrupt the currently played audio chunk. See the example below.
+:::
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript">
+  
+    ```ts
+    import { RoomId, FishjamClient, TrackId } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamId = '';
+    const managementToken = '';
+    const fishjamClient = new FishjamClient({ fishjamId, managementToken });
+    const room = await fishjamClient.createRoom();
+    const { agent } = await fishjamClient.createAgent(room.id, {});
+    const chatbot: any = null;
+
+    // ---cut---
+    import { type AudioCodecParameters } from '@fishjam-cloud/js-server-sdk';
+
+    const codecParameters = {
+      encoding: 'pcm16',
+      sampleRate: 16000,
+      channels: 1,
+    } satisfies AudioCodecParameters;
+
+    const agentTrack = agent.createTrack(codecParameters);
+
+    // that's a dummy chatbot,
+    // you can bring your audio from anywhere
+    chatbot.on('response', (response: Uint8Array) => {
+      // [!code highlight:1]
+      agent.sendData(agentTrack.id, response);
+
+      // you're able to interrupt the currently played audio chunk
+      // [!code highlight:1]
+      agent.interruptTrack(agentTrack.id);
+    });
+
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    from fishjam import FishjamClient
+    from fishjam.agent import AgentResponseTrackData, OutgoingAudioTrackOptions, TrackEncoding
+
+    fishjam_client = FishjamClient(fishjam_id, management_token)
+
+    agent_options = AgentOptions(subscribe_mode="auto")
+
+    agent = fishjam_client.create_agent(room_id)
+
+    track_options = OutgoingAudioTrackOptions(encoding=TrackEncoding.PCM16)
+
+    # the agent will disconnect once you exit the context
+    async with agent.connect() as session:
+        outgoing_track = session.create_track(track_options)
+
+        # that's a dummy chatbot
+        async for chatbot_data in chatbot.receive():
+            outgoing_track.send_chunk(chatbot_data)
+
+        # you're able to interrupt the currently played audio chunk
+        # [!code highlight:1]
+        ongoing_track.interrupt()
+    ```
+
+  </TabItem>
+
+</Tabs>
+
+### Disconnecting
+
+After you're done using an agent, you can disconnect it from the room.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript">
+  
+    ```ts
+    import { RoomId, FishjamClient, TrackId } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamId = '';
+    const managementToken = '';
+    const fishjamClient = new FishjamClient({ fishjamId, managementToken });
+    const room = await fishjamClient.createRoom();
+    const { agent } = await fishjamClient.createAgent(room.id, {});
+
+    // ---cut---
+    agent.disconnect();
+
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    # the agent will disconnect once you exit the context
+    async with agent.connect() as session:
+        pass
+    ```
+
+  </TabItem>
+
+</Tabs>
+
+<RememberToDisconnect />
+
+## Pricing
+
+Agents are billed as if they were normal peers.
+
+For example, a room with 2 peers and 1 agent connected will be billed as if there were 3 peers connected to the room.
+Exact pricing values can be found on our [pricing page](https://fishjam.io/#pricing).
+
+## Using agents without our SDKs
+
+If you are using Fishjam's REST API directly, then check out this [Agent Internals section](../explanation/agent-internals#step-1-creating-an-agent-in-fishjam).
+
+## See also
+
+Learn more about how agents work:
+
+- [Agent Internals](../explanation/agent-internals)
+- [Selective Subscriptions API](/how-to/features/selective-subscriptions.mdx)
+
+Writing a backend server with Fishjam:
+
+- [Backend Quick Start](../tutorials/backend-quick-start)
+- [How to Setup a Backend Server](../how-to/backend/server-setup)
+- [Going to Production](../how-to/backend/production-deployment)
