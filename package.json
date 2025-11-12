@@ -19,7 +19,7 @@
     "typecheck": "tsc",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "spellcheck": "cspell '**/*.md' '**/*.mdx' --show-suggestions",
+    "spellcheck": "cspell '**/*.md' '**/*.mdx' --exclude '**/api/**' --show-suggestions",
     "spellcheck:report": "yarn spellcheck --no-show-suggestions"
   },
   "dependencies": {
