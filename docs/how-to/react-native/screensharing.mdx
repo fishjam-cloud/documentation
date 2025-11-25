@@ -58,6 +58,46 @@ You need to modify `app.json` file and add our plugin:
 }
 ```
 
+#### EAS Build Configuration
+
+If you're using [EAS Build](https://docs.expo.dev/build/introduction/), you need to declare the iOS App Extension in your `app.json` file. Otherwise your build will fail with missing provisioning profiles.
+Add the following configuration to ensure the required credentials are generated and validated:
+
+```json title='app.json'
+{
+  "expo": {
+    ...
+    "extra": {
+      "eas": {
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "FishjamScreenBroadcastExtension",
+                  "bundleIdentifier": "YOUR_BUNDLE_IDENTIFIER.FishjamScreenBroadcastExtension",
+                  "entitlements": {
+                    "com.apple.security.application-groups": [
+                      "group.YOUR_BUNDLE_IDENTIFIER"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Replace `YOUR_BUNDLE_IDENTIFIER` with your app's bundle identifier (for example, `com.myapp.example`).
+
+:::note
+Learn more about iOS App Extensions with EAS Build in the [Expo documentation](https://docs.expo.dev/build-reference/app-extensions/).
+:::
+
   </TabItem>
   <TabItem value="rn" label="Bare workflow">
 
