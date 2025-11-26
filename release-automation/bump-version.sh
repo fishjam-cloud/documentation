@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Usage: ./bump-version.sh <version>
+# Usage: GH_TOKEN=... ./bump-version.sh <version>
 VERSION="$1"
 
 if [ -z "$GH_TOKEN" ]; then
