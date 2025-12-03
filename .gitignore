@@ -137,5 +137,6 @@ build
 docs/api/mobile/**
 docs/api/web/**
 docs/api/server/**
+docs/api/server-python/**
 
 .cursor/
