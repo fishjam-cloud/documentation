@@ -22,7 +22,7 @@ def __init__(room_id: str = <object object>)
 
 ### room_id
 ```python
-room_id: : str
+room_id: str
 ```
 
 
@@ -53,7 +53,7 @@ def __init__(room_id: str = <object object>)
 
 ### room_id
 ```python
-room_id: : str
+room_id: str
 ```
 
 
@@ -84,7 +84,7 @@ def __init__(room_id: str = <object object>)
 
 ### room_id
 ```python
-room_id: : str
+room_id: str
 ```
 
 
@@ -112,26 +112,26 @@ Notification sent when a peer is added
 def __init__(
     room_id: str = <object object>,
     peer_id: str = <object object>,
-    peer_type: fishjam.events._protos.fishjam.ServerMessagePeerType = <object object>
+    peer_type: ServerMessagePeerType = <object object>
 )
 ```
 
 
 ### room_id
 ```python
-room_id: : str
+room_id: str
 ```
 
 
 ### peer_id
 ```python
-peer_id: : str
+peer_id: str
 ```
 
 
 ### peer_type
 ```python
-peer_type: : fishjam.events._protos.fishjam.ServerMessagePeerType
+peer_type: ServerMessagePeerType
 ```
 
 
@@ -159,26 +159,26 @@ Notification sent when a peer connects
 def __init__(
     room_id: str = <object object>,
     peer_id: str = <object object>,
-    peer_type: fishjam.events._protos.fishjam.ServerMessagePeerType = <object object>
+    peer_type: ServerMessagePeerType = <object object>
 )
 ```
 
 
 ### room_id
 ```python
-room_id: : str
+room_id: str
 ```
 
 
 ### peer_id
 ```python
-peer_id: : str
+peer_id: str
 ```
 
 
 ### peer_type
 ```python
-peer_type: : fishjam.events._protos.fishjam.ServerMessagePeerType
+peer_type: ServerMessagePeerType
 ```
 
 
@@ -206,26 +206,26 @@ Notification sent when a peer is removed
 def __init__(
     room_id: str = <object object>,
     peer_id: str = <object object>,
-    peer_type: fishjam.events._protos.fishjam.ServerMessagePeerType = <object object>
+    peer_type: ServerMessagePeerType = <object object>
 )
 ```
 
 
 ### room_id
 ```python
-room_id: : str
+room_id: str
 ```
 
 
 ### peer_id
 ```python
-peer_id: : str
+peer_id: str
 ```
 
 
 ### peer_type
 ```python
-peer_type: : fishjam.events._protos.fishjam.ServerMessagePeerType
+peer_type: ServerMessagePeerType
 ```
 
 
@@ -253,26 +253,26 @@ Notification sent when a peer disconnects from FJ
 def __init__(
     room_id: str = <object object>,
     peer_id: str = <object object>,
-    peer_type: fishjam.events._protos.fishjam.ServerMessagePeerType = <object object>
+    peer_type: ServerMessagePeerType = <object object>
 )
 ```
 
 
 ### room_id
 ```python
-room_id: : str
+room_id: str
 ```
 
 
 ### peer_id
 ```python
-peer_id: : str
+peer_id: str
 ```
 
 
 ### peer_type
 ```python
-peer_type: : fishjam.events._protos.fishjam.ServerMessagePeerType
+peer_type: ServerMessagePeerType
 ```
 
 
@@ -301,32 +301,32 @@ def __init__(
     room_id: str = <object object>,
     peer_id: str = <object object>,
     metadata: str = <object object>,
-    peer_type: fishjam.events._protos.fishjam.ServerMessagePeerType = <object object>
+    peer_type: ServerMessagePeerType = <object object>
 )
 ```
 
 
 ### room_id
 ```python
-room_id: : str
+room_id: str
 ```
 
 
 ### peer_id
 ```python
-peer_id: : str
+peer_id: str
 ```
 
 
 ### metadata
 ```python
-metadata: : str
+metadata: str
 ```
 
 
 ### peer_type
 ```python
-peer_type: : fishjam.events._protos.fishjam.ServerMessagePeerType
+peer_type: ServerMessagePeerType
 ```
 
 
@@ -355,32 +355,32 @@ def __init__(
     room_id: str = <object object>,
     peer_id: str = <object object>,
     reason: str = <object object>,
-    peer_type: fishjam.events._protos.fishjam.ServerMessagePeerType = <object object>
+    peer_type: ServerMessagePeerType = <object object>
 )
 ```
 
 
 ### room_id
 ```python
-room_id: : str
+room_id: str
 ```
 
 
 ### peer_id
 ```python
-peer_id: : str
+peer_id: str
 ```
 
 
 ### reason
 ```python
-reason: : str
+reason: str
 ```
 
 
 ### peer_type
 ```python
-peer_type: : fishjam.events._protos.fishjam.ServerMessagePeerType
+peer_type: ServerMessagePeerType
 ```
 
 
@@ -411,7 +411,7 @@ def __init__(stream_id: str = <object object>)
 
 ### stream_id
 ```python
-stream_id: : str
+stream_id: str
 ```
 
 
@@ -442,7 +442,7 @@ def __init__(stream_id: str = <object object>)
 
 ### stream_id
 ```python
-stream_id: : str
+stream_id: str
 ```
 
 
@@ -471,32 +471,32 @@ def __init__(
     room_id: str = <object object>,
     peer_id: str = <object object>,
     component_id: str = <object object>,
-    track: fishjam.events._protos.fishjam.notifications.Track = <object object>
+    track: Track = <object object>
 )
 ```
 
 
 ### room_id
 ```python
-room_id: : str
+room_id: str
 ```
 
 
 ### peer_id
 ```python
-peer_id: : str
+peer_id: str
 ```
 
 
 ### component_id
 ```python
-component_id: : str
+component_id: str
 ```
 
 
 ### track
 ```python
-track: : fishjam.events._protos.fishjam.notifications.Track
+track: Track
 ```
 
 
@@ -525,32 +525,32 @@ def __init__(
     room_id: str = <object object>,
     peer_id: str = <object object>,
     component_id: str = <object object>,
-    track: fishjam.events._protos.fishjam.notifications.Track = <object object>
+    track: Track = <object object>
 )
 ```
 
 
 ### room_id
 ```python
-room_id: : str
+room_id: str
 ```
 
 
 ### peer_id
 ```python
-peer_id: : str
+peer_id: str
 ```
 
 
 ### component_id
 ```python
-component_id: : str
+component_id: str
 ```
 
 
 ### track
 ```python
-track: : fishjam.events._protos.fishjam.notifications.Track
+track: Track
 ```
 
 
@@ -579,32 +579,32 @@ def __init__(
     room_id: str = <object object>,
     peer_id: str = <object object>,
     component_id: str = <object object>,
-    track: fishjam.events._protos.fishjam.notifications.Track = <object object>
+    track: Track = <object object>
 )
 ```
 
 
 ### room_id
 ```python
-room_id: : str
+room_id: str
 ```
 
 
 ### peer_id
 ```python
-peer_id: : str
+peer_id: str
 ```
 
 
 ### component_id
 ```python
-component_id: : str
+component_id: str
 ```
 
 
 ### track
 ```python
-track: : fishjam.events._protos.fishjam.notifications.Track
+track: Track
 ```
 
 
@@ -635,13 +635,13 @@ def __init__(stream_id: str = <object object>, viewer_id: str = <object object>)
 
 ### stream_id
 ```python
-stream_id: : str
+stream_id: str
 ```
 
 
 ### viewer_id
 ```python
-viewer_id: : str
+viewer_id: str
 ```
 
 
@@ -672,13 +672,13 @@ def __init__(stream_id: str = <object object>, viewer_id: str = <object object>)
 
 ### stream_id
 ```python
-stream_id: : str
+stream_id: str
 ```
 
 
 ### viewer_id
 ```python
-viewer_id: : str
+viewer_id: str
 ```
 
 
@@ -705,7 +705,7 @@ Describes a media track
 ```python
 def __init__(
     id: str = <object object>,
-    type: fishjam.events._protos.fishjam.notifications.TrackType = <object object>,
+    type: TrackType = <object object>,
     metadata: str = <object object>
 )
 ```
@@ -713,19 +713,19 @@ def __init__(
 
 ### id
 ```python
-id: : str
+id: str
 ```
 
 
 ### type
 ```python
-type: : fishjam.events._protos.fishjam.notifications.TrackType
+type: TrackType
 ```
 
 
 ### metadata
 ```python
-metadata: : str
+metadata: str
 ```
 
 
@@ -751,21 +751,21 @@ from this. Bases :class:`enum.IntEnum`.
 
 ### TRACK_ENCODING_UNSPECIFIED
 ```python
-TRACK_ENCODING_UNSPECIFIED         = <TrackEncoding.TRACK_ENCODING_UNSPECIFIED: 0>
+TRACK_ENCODING_UNSPECIFIED = <TrackEncoding.TRACK_ENCODING_UNSPECIFIED: 0>
 
 ```
 
 
 ### TRACK_ENCODING_PCM16
 ```python
-TRACK_ENCODING_PCM16         = <TrackEncoding.TRACK_ENCODING_PCM16: 1>
+TRACK_ENCODING_PCM16 = <TrackEncoding.TRACK_ENCODING_PCM16: 1>
 
 ```
 
 
 ### TRACK_ENCODING_OPUS
 ```python
-TRACK_ENCODING_OPUS         = <TrackEncoding.TRACK_ENCODING_OPUS: 2>
+TRACK_ENCODING_OPUS = <TrackEncoding.TRACK_ENCODING_OPUS: 2>
 
 ```
 
@@ -790,21 +790,21 @@ Defines types of tracks being published by peers and component
 
 ### TRACK_TYPE_UNSPECIFIED
 ```python
-TRACK_TYPE_UNSPECIFIED         = <TrackType.TRACK_TYPE_UNSPECIFIED: 0>
+TRACK_TYPE_UNSPECIFIED = <TrackType.TRACK_TYPE_UNSPECIFIED: 0>
 
 ```
 
 
 ### TRACK_TYPE_VIDEO
 ```python
-TRACK_TYPE_VIDEO         = <TrackType.TRACK_TYPE_VIDEO: 1>
+TRACK_TYPE_VIDEO = <TrackType.TRACK_TYPE_VIDEO: 1>
 
 ```
 
 
 ### TRACK_TYPE_AUDIO
 ```python
-TRACK_TYPE_AUDIO         = <TrackType.TRACK_TYPE_AUDIO: 2>
+TRACK_TYPE_AUDIO = <TrackType.TRACK_TYPE_AUDIO: 2>
 
 ```
 
@@ -830,21 +830,21 @@ from this. Bases :class:`enum.IntEnum`.
 
 ### PEER_TYPE_UNSPECIFIED
 ```python
-PEER_TYPE_UNSPECIFIED         = <ServerMessagePeerType.PEER_TYPE_UNSPECIFIED: 0>
+PEER_TYPE_UNSPECIFIED = <ServerMessagePeerType.PEER_TYPE_UNSPECIFIED: 0>
 
 ```
 
 
 ### PEER_TYPE_WEBRTC
 ```python
-PEER_TYPE_WEBRTC         = <ServerMessagePeerType.PEER_TYPE_WEBRTC: 1>
+PEER_TYPE_WEBRTC = <ServerMessagePeerType.PEER_TYPE_WEBRTC: 1>
 
 ```
 
 
 ### PEER_TYPE_AGENT
 ```python
-PEER_TYPE_AGENT         = <ServerMessagePeerType.PEER_TYPE_AGENT: 2>
+PEER_TYPE_AGENT = <ServerMessagePeerType.PEER_TYPE_AGENT: 2>
 
 ```
 

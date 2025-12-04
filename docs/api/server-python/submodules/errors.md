@@ -10,7 +10,7 @@ custom_edit_url: null
 
 ## HTTPError
 ```python
-class HTTPError(builtins.Exception):
+class HTTPError(Exception):
 ```
 
 

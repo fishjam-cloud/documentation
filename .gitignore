@@ -137,6 +137,7 @@ build
 docs/api/mobile/**
 docs/api/web/**
 docs/api/server/**
-docs/api/server-python/**
+# TODO: remove this after https://github.com/fishjam-cloud/python-server-sdk/pull/51 is merged
+# docs/api/server-python/**
 
 .cursor/

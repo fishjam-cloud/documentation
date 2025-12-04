@@ -8,15 +8,15 @@ custom_edit_url: null
 
 
 ## Submodules
-- [events](fishjam/events)
-- [errors](fishjam/errors)
-- [room](fishjam/room)
-- [peer](fishjam/peer)
-- [agent](fishjam/agent)
+- [events](submodules/events)
+- [errors](submodules/errors)
+- [room](submodules/room)
+- [peer](submodules/peer)
+- [agent](submodules/agent)
 
 ## FishjamClient
 ```python
-class FishjamClient(fishjam.api._client.Client):
+class FishjamClient(Client):
 ```
 Allows for managing rooms
 
@@ -31,8 +31,8 @@ Create a FishjamClient instance, providing the fishjam id and management token.
 def create_peer(
     self,
     room_id: str,
-    options: fishjam.api._fishjam_client.PeerOptions | None = None
-) -> tuple[fishjam._openapi_client.models.peer.Peer, str]
+    options: PeerOptions | None = None
+) -> tuple[Peer, str]
 ```
 Creates peer in the room
 
@@ -46,7 +46,7 @@ The possible options to pass for peer are `PeerOptions`.
 def create_agent(
     self,
     room_id: str,
-    options: fishjam.api._fishjam_client.AgentOptions | None = None
+    options: AgentOptions | None = None
 )
 ```
 
@@ -55,21 +55,21 @@ def create_agent(
 ```python
 def create_room(
     self,
-    options: fishjam.api._fishjam_client.RoomOptions | None = None
-) -> fishjam.api._fishjam_client.Room
+    options: RoomOptions | None = None
+) -> Room
 ```
 Creates a new room
 Returns the created `Room`
 
 ### get_all_rooms
 ```python
-def get_all_rooms(self) -> list[fishjam.api._fishjam_client.Room]
+def get_all_rooms(self) -> list[Room]
 ```
 Returns list of all rooms
 
 ### get_room
 ```python
-def get_room(self, room_id: str) -> fishjam.api._fishjam_client.Room
+def get_room(self, room_id: str) -> Room
 ```
 Returns room with the given id
 
@@ -135,7 +135,7 @@ Create FishjamNotifier instance, providing the fishjam id and management token.
 ```python
 def on_server_notification(
     self,
-    handler: Union[Callable[[Union[fishjam.events._protos.fishjam.ServerMessageRoomCreated, fishjam.events._protos.fishjam.ServerMessageRoomDeleted, fishjam.events._protos.fishjam.ServerMessageRoomCrashed, fishjam.events._protos.fishjam.ServerMessagePeerAdded, fishjam.events._protos.fishjam.ServerMessagePeerDeleted, fishjam.events._protos.fishjam.ServerMessagePeerConnected, fishjam.events._protos.fishjam.ServerMessagePeerDisconnected, fishjam.events._protos.fishjam.ServerMessagePeerMetadataUpdated, fishjam.events._protos.fishjam.ServerMessagePeerCrashed, fishjam.events._protos.fishjam.ServerMessageStreamConnected, fishjam.events._protos.fishjam.ServerMessageStreamDisconnected, fishjam.events._protos.fishjam.ServerMessageViewerConnected, fishjam.events._protos.fishjam.ServerMessageViewerDisconnected, fishjam.events._protos.fishjam.ServerMessageTrackAdded, fishjam.events._protos.fishjam.ServerMessageTrackRemoved, fishjam.events._protos.fishjam.ServerMessageTrackMetadataUpdated]], NoneType], Callable[[Union[fishjam.events._protos.fishjam.ServerMessageRoomCreated, fishjam.events._protos.fishjam.ServerMessageRoomDeleted, fishjam.events._protos.fishjam.ServerMessageRoomCrashed, fishjam.events._protos.fishjam.ServerMessagePeerAdded, fishjam.events._protos.fishjam.ServerMessagePeerDeleted, fishjam.events._protos.fishjam.ServerMessagePeerConnected, fishjam.events._protos.fishjam.ServerMessagePeerDisconnected, fishjam.events._protos.fishjam.ServerMessagePeerMetadataUpdated, fishjam.events._protos.fishjam.ServerMessagePeerCrashed, fishjam.events._protos.fishjam.ServerMessageStreamConnected, fishjam.events._protos.fishjam.ServerMessageStreamDisconnected, fishjam.events._protos.fishjam.ServerMessageViewerConnected, fishjam.events._protos.fishjam.ServerMessageViewerDisconnected, fishjam.events._protos.fishjam.ServerMessageTrackAdded, fishjam.events._protos.fishjam.ServerMessageTrackRemoved, fishjam.events._protos.fishjam.ServerMessageTrackMetadataUpdated]], Coroutine[Any, Any, None]]]
+    handler: Union[Callable[[Union[ServerMessageRoomCreated, ServerMessageRoomDeleted, ServerMessageRoomCrashed, ServerMessagePeerAdded, ServerMessagePeerDeleted, ServerMessagePeerConnected, ServerMessagePeerDisconnected, ServerMessagePeerMetadataUpdated, ServerMessagePeerCrashed, ServerMessageStreamConnected, ServerMessageStreamDisconnected, ServerMessageViewerConnected, ServerMessageViewerDisconnected, ServerMessageTrackAdded, ServerMessageTrackRemoved, ServerMessageTrackMetadataUpdated]], NoneType], Callable[[Union[ServerMessageRoomCreated, ServerMessageRoomDeleted, ServerMessageRoomCrashed, ServerMessagePeerAdded, ServerMessagePeerDeleted, ServerMessagePeerConnected, ServerMessagePeerDisconnected, ServerMessagePeerMetadataUpdated, ServerMessagePeerCrashed, ServerMessageStreamConnected, ServerMessageStreamDisconnected, ServerMessageViewerConnected, ServerMessageViewerDisconnected, ServerMessageTrackAdded, ServerMessageTrackRemoved, ServerMessageTrackMetadataUpdated]], Coroutine[Any, Any, None]]]
 )
 ```
 Decorator used for defining handler for Fishjam Notifications
@@ -168,7 +168,7 @@ If already connected, returns immediately.
 ```python
 def receive_binary(
     binary: bytes
-) -> Union[fishjam.events._protos.fishjam.ServerMessageRoomCreated, fishjam.events._protos.fishjam.ServerMessageRoomDeleted, fishjam.events._protos.fishjam.ServerMessageRoomCrashed, fishjam.events._protos.fishjam.ServerMessagePeerAdded, fishjam.events._protos.fishjam.ServerMessagePeerDeleted, fishjam.events._protos.fishjam.ServerMessagePeerConnected, fishjam.events._protos.fishjam.ServerMessagePeerDisconnected, fishjam.events._protos.fishjam.ServerMessagePeerMetadataUpdated, fishjam.events._protos.fishjam.ServerMessagePeerCrashed, fishjam.events._protos.fishjam.ServerMessageStreamConnected, fishjam.events._protos.fishjam.ServerMessageStreamDisconnected, fishjam.events._protos.fishjam.ServerMessageViewerConnected, fishjam.events._protos.fishjam.ServerMessageViewerDisconnected, fishjam.events._protos.fishjam.ServerMessageTrackAdded, fishjam.events._protos.fishjam.ServerMessageTrackRemoved, fishjam.events._protos.fishjam.ServerMessageTrackMetadataUpdated, NoneType]
+) -> Union[ServerMessageRoomCreated, ServerMessageRoomDeleted, ServerMessageRoomCrashed, ServerMessagePeerAdded, ServerMessagePeerDeleted, ServerMessagePeerConnected, ServerMessagePeerDisconnected, ServerMessagePeerMetadataUpdated, ServerMessagePeerCrashed, ServerMessageStreamConnected, ServerMessageStreamDisconnected, ServerMessageViewerConnected, ServerMessageViewerDisconnected, ServerMessageTrackAdded, ServerMessageTrackRemoved, ServerMessageTrackMetadataUpdated, NoneType]
 ```
 Transform received protobuf notification to adequate notification instance.
 The available notifications are listed in `fishjam.events` module.
@@ -191,7 +191,7 @@ Method generated by attrs for class PeerMetadata.
 
 ### additional_properties
 ```python
-additional_properties: : dict[str, typing.Any]
+additional_properties: dict[str, typing.Any]
 ```
 
 
@@ -209,7 +209,7 @@ def from_dict(cls: type[~T], src_dict: Mapping[str, typing.Any]) -> ~T
 
 ### additional_keys
 ```python
-additional_keys: : list[str]
+additional_keys: list[str]
 ```
 
 
@@ -232,21 +232,21 @@ def __init__(
 
 ### enable_simulcast
 ```python
-enable_simulcast: : bool         = True
+enable_simulcast: bool = True
 
 ```
 Enables the peer to use simulcast
 
 ### metadata
 ```python
-metadata: : dict[str, typing.Any] | None         = None
+metadata: dict[str, typing.Any] | None = None
 
 ```
 Peer metadata
 
 ### subscribe_mode
 ```python
-subscribe_mode: : Literal[&#39;auto&#39;, &#39;manual&#39;]         = 'auto'
+subscribe_mode: Literal['auto', 'manual'] = 'auto'
 
 ```
 Configuration of peer's subscribing policy
@@ -272,35 +272,35 @@ def __init__(
 
 ### max_peers
 ```python
-max_peers: : int | None         = None
+max_peers: int | None = None
 
 ```
 Maximum amount of peers allowed into the room
 
 ### video_codec
 ```python
-video_codec: : Optional[Literal[&#39;h264&#39;, &#39;vp8&#39;]]         = None
+video_codec: Optional[Literal['h264', 'vp8']] = None
 
 ```
 Enforces video codec for each peer in the room
 
 ### webhook_url
 ```python
-webhook_url: : str | None         = None
+webhook_url: str | None = None
 
 ```
 URL where Fishjam notifications will be sent
 
 ### room_type
 ```python
-room_type: : Literal[&#39;conference&#39;, &#39;audio_only&#39;, &#39;livestream&#39;, &#39;full_feature&#39;, &#39;broadcaster&#39;, &#39;audio_only_livestream&#39;]         = 'conference'
+room_type: Literal['conference', 'audio_only', 'livestream', 'full_feature', 'broadcaster', 'audio_only_livestream'] = 'conference'
 
 ```
 The use-case of the room. If not provided, this defaults to conference.
 
 ### public
 ```python
-public: : bool         = False
+public: bool = False
 
 ```
 True if livestream viewers can omit specifying a token.
@@ -315,7 +315,7 @@ Options specific to a WebRTC Peer
 ### __init__
 ```python
 def __init__(
-    output: fishjam.api._fishjam_client.AgentOutputOptions = <factory>,
+    output: AgentOutputOptions = <factory>,
     subscribe_mode: Literal['auto', 'manual'] = 'auto'
 )
 ```
@@ -323,13 +323,13 @@ def __init__(
 
 ### output
 ```python
-output: : fishjam.api._fishjam_client.AgentOutputOptions
+output: AgentOutputOptions
 ```
 
 
 ### subscribe_mode
 ```python
-subscribe_mode: : Literal[&#39;auto&#39;, &#39;manual&#39;]         = 'auto'
+subscribe_mode: Literal['auto', 'manual'] = 'auto'
 
 ```
 
@@ -352,14 +352,14 @@ def __init__(
 
 ### audio_format
 ```python
-audio_format: : Literal[&#39;pcm16&#39;]         = 'pcm16'
+audio_format: Literal['pcm16'] = 'pcm16'
 
 ```
 
 
 ### audio_sample_rate
 ```python
-audio_sample_rate: : Literal[16000, 24000]         = 16000
+audio_sample_rate: Literal[16000, 24000] = 16000
 
 ```
 
@@ -374,28 +374,28 @@ Description of the room state
 ### __init__
 ```python
 def __init__(
-    config: fishjam._openapi_client.models.room_config.RoomConfig,
+    config: RoomConfig,
     id: str,
-    peers: list[fishjam._openapi_client.models.peer.Peer]
+    peers: list[Peer]
 )
 ```
 
 
 ### config
 ```python
-config: : fishjam._openapi_client.models.room_config.RoomConfig
+config: RoomConfig
 ```
 Room configuration
 
 ### id
 ```python
-id: : str
+id: str
 ```
 Room ID
 
 ### peers
 ```python
-peers: : list[fishjam._openapi_client.models.peer.Peer]
+peers: list[Peer]
 ```
 List of all peers
 
@@ -419,61 +419,61 @@ Attributes:
 ```python
 def __init__(
     id: str,
-    metadata: Optional[fishjam._openapi_client.models.peer_metadata.PeerMetadata],
-    status: fishjam._openapi_client.models.peer_status.PeerStatus,
-    subscribe_mode: fishjam._openapi_client.models.subscribe_mode.SubscribeMode,
-    subscriptions: fishjam._openapi_client.models.subscriptions.Subscriptions,
-    tracks: list[fishjam._openapi_client.models.track.Track],
-    type_: fishjam._openapi_client.models.peer_type.PeerType
+    metadata: Optional[PeerMetadata],
+    status: PeerStatus,
+    subscribe_mode: SubscribeMode,
+    subscriptions: Subscriptions,
+    tracks: list[Track],
+    type_: PeerType
 )
 ```
 Method generated by attrs for class Peer.
 
 ### id
 ```python
-id: : str
+id: str
 ```
 
 
 ### metadata
 ```python
-metadata: : Optional[fishjam._openapi_client.models.peer_metadata.PeerMetadata]
+metadata: Optional[PeerMetadata]
 ```
 
 
 ### status
 ```python
-status: : fishjam._openapi_client.models.peer_status.PeerStatus
+status: PeerStatus
 ```
 
 
 ### subscribe_mode
 ```python
-subscribe_mode: : fishjam._openapi_client.models.subscribe_mode.SubscribeMode
+subscribe_mode: SubscribeMode
 ```
 
 
 ### subscriptions
 ```python
-subscriptions: : fishjam._openapi_client.models.subscriptions.Subscriptions
+subscriptions: Subscriptions
 ```
 
 
 ### tracks
 ```python
-tracks: : list[fishjam._openapi_client.models.track.Track]
+tracks: list[Track]
 ```
 
 
 ### type_
 ```python
-type_: : fishjam._openapi_client.models.peer_type.PeerType
+type_: PeerType
 ```
 
 
 ### additional_properties
 ```python
-additional_properties: : dict[str, typing.Any]
+additional_properties: dict[str, typing.Any]
 ```
 
 
@@ -491,7 +491,7 @@ def from_dict(cls: type[~T], src_dict: Mapping[str, typing.Any]) -> ~T
 
 ### additional_keys
 ```python
-additional_keys: : list[str]
+additional_keys: list[str]
 ```
 
 

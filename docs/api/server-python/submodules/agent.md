@@ -50,7 +50,7 @@ defined with :func:`on_track_data`.
 ---
 ## AgentError
 ```python
-class AgentError(builtins.Exception):
+class AgentError(Exception):
 ```
 Base exception class for all agent exceptions
 
@@ -80,7 +80,7 @@ agent
 ```python
 def receive(
     self
-) -> AsyncIterator[fishjam.events._protos.fishjam.AgentResponseTrackData]
+) -> AsyncIterator[AgentResponseTrackData]
 ```
 Returns an infinite async iterator over the incoming messages from Fishjam to
 the agent.
@@ -123,7 +123,7 @@ reason
 ---
 ## IncomingTrackData
 ```python
-IncomingTrackData         = <class 'fishjam.events._protos.fishjam.AgentResponseTrackData'>
+IncomingTrackData = <class 'AgentResponseTrackData'>
 
 ```
 
@@ -148,19 +148,19 @@ def __init__(
 
 ### id
 ```python
-id: : str
+id: str
 ```
 The global identifier of the track.
 
 ### session
 ```python
-session: : fishjam.agent.agent.AgentSession
+session: fishjam.agent.agent.AgentSession
 ```
 The agent the track belongs to.
 
 ### options
 ```python
-options: : fishjam.agent.agent.OutgoingAudioTrackOptions
+options: fishjam.agent.agent.OutgoingAudioTrackOptions
 ```
 The parameters used to create the track.
 
@@ -193,7 +193,7 @@ Parameters of an outgoing audio track.
 ### __init__
 ```python
 def __init__(
-    encoding: fishjam.events._protos.fishjam.notifications.TrackEncoding = <TrackEncoding.TRACK_ENCODING_UNSPECIFIED: 0>,
+    encoding: TrackEncoding = <TrackEncoding.TRACK_ENCODING_UNSPECIFIED: 0>,
     sample_rate: Literal[16000, 24000] = 16000,
     channels: Literal[1, 2] = 1,
     metadata: dict[str, typing.Any] | None = None
@@ -203,7 +203,7 @@ def __init__(
 
 ### encoding
 ```python
-encoding: : fishjam.events._protos.fishjam.notifications.TrackEncoding         = <TrackEncoding.TRACK_ENCODING_UNSPECIFIED: 0>
+encoding: TrackEncoding = <TrackEncoding.TRACK_ENCODING_UNSPECIFIED: 0>
 
 ```
 The encoding of the audio source.
@@ -211,7 +211,7 @@ Defaults to raw 16-bit PCM.
 
 ### sample_rate
 ```python
-sample_rate: : Literal[16000, 24000]         = 16000
+sample_rate: Literal[16000, 24000] = 16000
 
 ```
 The sample rate of the audio source.
@@ -219,7 +219,7 @@ Defaults to 16000.
 
 ### channels
 ```python
-channels: : Literal[1, 2]         = 1
+channels: Literal[1, 2] = 1
 
 ```
 The number of channels in the audio source.
@@ -228,7 +228,7 @@ Defaults to 1 (mono)
 
 ### metadata
 ```python
-metadata: : dict[str, typing.Any] | None         = None
+metadata: dict[str, typing.Any] | None = None
 
 ```
 Custom metadata for the track.
