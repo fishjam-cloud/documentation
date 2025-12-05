@@ -16,3 +16,6 @@
 [submodule "api/room-manager"]
 	path = api/room-manager
 	url = git@github.com:fishjam-cloud/room-manager.git
+[submodule "packages/python-server-sdk"]
+	path = packages/python-server-sdk
+	url = https://github.com/fishjam-cloud/python-server-sdk.git

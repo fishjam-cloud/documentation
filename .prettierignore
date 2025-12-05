@@ -4,3 +4,4 @@ node_modules/*
 packages/*
 api/**
 versioned_docs/*/api/**
+docs/api/server-python/*
