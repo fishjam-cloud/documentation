@@ -8,6 +8,12 @@ The Documentation explains how Fishjam works and how it can be integrated in you
 
 ### Local Development
 
+#### Python
+
+`python-server-sdk` requires [uv](https://docs.astral.sh/uv/). Make sure to have it installed first.
+
+#### yarn
+
 Get all dependencies
 
 ```

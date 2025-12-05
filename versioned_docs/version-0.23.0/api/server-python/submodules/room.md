@@ -15,14 +15,14 @@ class RoomConfig:
 Room configuration
 
 Attributes:
-    max_peers (Union[None, Unset, int]): Maximum amount of peers allowed into the room Example: 10.
-    public (Union[Unset, bool]): True if livestream viewers can omit specifying a token. Default: False.
-    room_type (Union[Unset, RoomConfigRoomType]): The use-case of the room. If not provided, this defaults to
-        conference. Default: RoomConfigRoomType.CONFERENCE.
-    video_codec (Union[Unset, RoomConfigVideoCodec]): Enforces video codec for each peer in the room Default:
-        RoomConfigVideoCodec.H264.
-    webhook_url (Union[None, Unset, str]): URL where Fishjam notifications will be sent Example:
-        https://backend.address.com/fishjam-notifications-endpoint.
+- max_peers (Union[None, Unset, int]): Maximum amount of peers allowed into the room Example: 10.
+- public (Union[Unset, bool]): True if livestream viewers can omit specifying a token. Default: False.
+- room_type (Union[Unset, RoomConfigRoomType]): The use-case of the room. If not provided, this defaults to
+  conference. Default: RoomConfigRoomType.CONFERENCE.
+- video_codec (Union[Unset, RoomConfigVideoCodec]): Enforces video codec for each peer in the room Default:
+  RoomConfigVideoCodec.H264.
+- webhook_url (Union[None, Unset, str]): URL where Fishjam notifications will be sent Example:
+  https://backend.address.com/fishjam-notifications-endpoint.
 
 ### __init__
 ```python
