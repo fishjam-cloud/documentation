@@ -181,7 +181,7 @@ class PeerMetadata:
 Custom metadata set by the peer
 
 Example:
-    \{'name': 'FishjamUser'\}
+- \{'name': 'FishjamUser'\}
 
 ### __init__
 ```python
@@ -407,13 +407,13 @@ class Peer:
 Describes peer status
 
 Attributes:
-    id (str): Assigned peer id Example: 4a1c1164-5fb7-425d-89d7-24cdb8fff1cf.
-    metadata (Union['PeerMetadata', None]): Custom metadata set by the peer Example: \{'name': 'FishjamUser'\}.
-    status (PeerStatus): Informs about the peer status Example: disconnected.
-    subscribe_mode (SubscribeMode): Configuration of peer's subscribing policy
-    subscriptions (Subscriptions): Describes peer's subscriptions in manual mode
-    tracks (list['Track']): List of all peer's tracks
-    type_ (PeerType): Peer type Example: webrtc.
+- id (str): Assigned peer id Example: 4a1c1164-5fb7-425d-89d7-24cdb8fff1cf.
+- metadata (Union['PeerMetadata', None]): Custom metadata set by the peer Example: \{'name': 'FishjamUser'\}.
+- status (PeerStatus): Informs about the peer status Example: disconnected.
+- subscribe_mode (SubscribeMode): Configuration of peer's subscribing policy
+- subscriptions (Subscriptions): Describes peer's subscriptions in manual mode
+- tracks (list['Track']): List of all peer's tracks
+- type_ (PeerType): Peer type Example: webrtc.
 
 ### __init__
 ```python

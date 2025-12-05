@@ -15,7 +15,7 @@ class PeerMetadata:
 Custom metadata set by the peer
 
 Example:
-    \{'name': 'FishjamUser'\}
+- \{'name': 'FishjamUser'\}
 
 ### __init__
 ```python

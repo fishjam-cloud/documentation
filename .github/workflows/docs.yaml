@@ -40,6 +40,8 @@ jobs:
           node-version: "lts/*"
       - name: Use corepack
         run: corepack enable
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
       - name: Install dependencies
         run: yarn install --immutable
       - name: Fetch SDK packages
