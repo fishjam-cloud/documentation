@@ -67,7 +67,7 @@ We provide a helper factory to initialize the Google Client.
   <TabItem value="ts" label="TypeScript">
   
     ```ts
-    import { FishjamClient, FishjamGemini } from '@fishjam-cloud/js-server-sdk';
+    import { FishjamClient, AgentIntegrations } from '@fishjam-cloud/js-server-sdk';
 
     const fishjamClient = new FishjamClient({
       fishjamId: process.env.FISHJAM_ID!,
@@ -75,7 +75,7 @@ We provide a helper factory to initialize the Google Client.
     });
 
     // [!code highlight:3]
-    const genAi = FishjamGemini.createClient(process.env.GOOGLE_API_KEY!, {
+    const genAi = AgentIntegrations.Gemini.createClient(process.env.GOOGLE_API_KEY!, {
       // Pass standard Google client options here
     });
     ```
@@ -86,8 +86,7 @@ We provide a helper factory to initialize the Google Client.
 
     ```python
     import os
-    from fishjam import FishjamClient
-    from fishjam.integrations.gemini import create_gemini_client
+    from fishjam import AgentIntegrations, FishjamClient
 
     fishjam_client = FishjamClient(
         fishjam_id=os.environ["FISHJAM_ID"],
@@ -96,7 +95,7 @@ We provide a helper factory to initialize the Google Client.
 
     # [!code highlight:1]
     # pass standard Google client kwargs here
-    gen_ai = create_gemini_client(api_key=os.environ["GOOGLE_API_KEY"])
+    gen_ai = AgentIntegrations.Gemini.create_client(api_key=os.environ["GOOGLE_API_KEY"])
     ```
 
   </TabItem>
@@ -110,7 +109,7 @@ We create a Fishjam agent configured to match the audio format our Google client
   <TabItem value="ts" label="TypeScript">
   
     ```ts
-    import { FishjamGemini } from '@fishjam-cloud/js-server-sdk';
+    import { AgentIntegrations } from '@fishjam-cloud/js-server-sdk';
     
     const room = await fishjamClient.createRoom();
     
@@ -118,7 +117,7 @@ We create a Fishjam agent configured to match the audio format our Google client
       subscribeMode: 'auto',
       // [!code highlight:2]
       // Ensure we match Gemini audio requirements (16kHz input)
-      output: FishjamGemini.OutputAudioSettings,
+      output: AgentIntegrations.Gemini.outputAudioSettings,
     });
     ```
 
@@ -129,7 +128,7 @@ We create a Fishjam agent configured to match the audio format our Google client
     ```python
     from fishjam.peer import SubscribeOptions, SubscribeOptionsAudioSampleRate
     from fishjam.agent import OutgoingAudioTrackOptions, TrackEncoding
-    from fishjam.integrations.gemini import gemini_audio_sample_rate
+    from fishjam import AgentIntegrations
 
     room = fishjam_client.create_room()
 
@@ -138,7 +137,7 @@ We create a Fishjam agent configured to match the audio format our Google client
         # [!code highlight:5]
         # Ensure we match Gemini audio requirements (16kHz input)
         subscribe=SubscribeOptions(
-            audio_sample_rate=gemini_audio_sample_rate
+            audio_sample_rate=AgentIntegrations.Gemini.AudioSampleRate
         )
     )
     agent = fishjam_client.create_agent(room.id, agent_options)
@@ -159,46 +158,47 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
   <TabItem value="ts" label="TypeScript">
 
     ```ts
-    import { FishjamGemini } from '@fishjam-cloud/js-server-sdk';
+    import { AgentIntegrations } from '@fishjam-cloud/js-server-sdk';
 
-    const session = await genAi.live.connect({
-      model: "gemini-2.0-flash-exp",
-      config: { responseModalities: ["AUDIO"] },
-    });
+    const GEMINI_MODEL = "gemini-2.5-flash-native-audio-preview-09-2025"
 
-    // Fishjam -> Google
-    agent.on('trackData', ({ data }) => {
-      session.sendRealtimeInput({
-        mimeType: FishjamGemini.MIME_TYPE,
-        data: data.toString("base64")
-      });
-    });
 
     // Create an outgoing track for the Agent to speak
     // [!code highlight:3]
     const agentTrack = agent.createTrack({
-      ...FishjamGemini.AgentTrackSettings,
+      ...AgentIntegrations.Gemini.agentTrackSettings,
     });
 
-    // Google -> Fishjam
-    async function listenToGemini() {
-      for await (const msg of session.receive()) {
-        const audioData = msg.serverContent?.modelTurn?.parts?.[0]?.inlineData;
+    const session = await genAi.live.connect({
+      model: GEMINI_MODEL,
+      config: { responseModalities: ["AUDIO"] },
+      callbacks: {
+        // Google -> Fishjam
+        // [!code highlight:14]
+        onmessage: (msg) => {
+          if (msg.data) {
+            const pcmData = Buffer.from(msg.data, "base64");
+            agent.sendData(agentTrack.id, pcmData);
+          }
 
-        if (audioData) {
-          const pcmData = Buffer.from(audioData.data, "base64");
-          agent.sendData(agentTrack.id, pcmData);
-        }
-
-        if (msg.serverContent?.interrupted) {
-          console.log("Agent was interrupted by user.");
-          // Clears the buffer on the Fishjam media server
-          agent.interruptTrack(agentTrack.id);
+          if (msg.serverContent?.interrupted) {
+            console.log("Agent was interrupted by user.");
+            // Clears the buffer on the Fishjam media server
+            agent.interruptTrack(agentTrack.id);
+          }
         }
       }
-    }
+    });
 
-    listenToGemini();
+    // Fishjam -> Google
+    // [!code highlight:6]
+    agent.on('trackData', ({ data }) => {
+      session.sendRealtimeInput({
+        mimeType: AgentIntegrations.Gemini.inputMimeType,
+        data: data.toString("base64")
+      });
+    });
+
     ```
 
   </TabItem>
@@ -208,14 +208,16 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
     ```python
     import asyncio
     import base64
-    from fishjam.integrations.gemini import gemini_input_track_options, gemini_input_mime_type
+    from fishjam import AgentIntegrations
+
+    GEMINI_MODEL = "gemini-2.5-flash-native-audio-preview-09-2025"
 
     async with agent.connect() as fishjam_session:
 
-        outgoing_track = fishjam_session.create_track(gemini_input_track_options)
+        outgoing_track = fishjam_session.create_track(AgentIntegrations.Gemini.InputTrackOptions)
 
         async with gen_ai.aio.live.connect(
-            model="gemini-2.0-flash-exp",
+            model=GEMINI_MODEL,
             config={"response_modalities": ["AUDIO"]}
         ) as gemini_session:
 
@@ -224,7 +226,7 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
                 async for track_data in fishjam_session.receive():
                     b64_data = base64.b64encode(track_data.data).decode("utf-8")
                     await gemini_session.send_input({
-                        "mime_type": gemini_input_mime_type,
+                        "mime_type": AgentIntegrations.Gemini.InputMimeType,
                         "data": b64_data
                     })
 
