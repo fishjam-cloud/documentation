@@ -39,7 +39,9 @@ const rehypeShikiPlugin = [
       transformerTwoslash({
         renderer: rendererClassic(),
         onTwoslashError(error, code, lang, options) {
-          if (isErrorFromVersionedDocs(options)) {
+          const isGeminiArticle = options.meta?.__raw?.includes("gemini");
+          const isVersionedDocs = isErrorFromVersionedDocs(options);
+          if (isVersionedDocs || isGeminiArticle) {
             return; // Ignore versioned docs
           }
           throw error;
