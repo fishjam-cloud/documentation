@@ -159,7 +159,7 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
 
     // Create an outgoing track for the Agent to speak
     // [!code highlight:3]
-    const agentTrack = agent.createTrack(GeminiIntegration.geminiInputAudioSettings);
+    const agentTrack = agent.createTrack(GeminiIntegration.geminiOutputAudioSettings);
 
     const session = await genAi.live.connect({
       model: GEMINI_MODEL,
