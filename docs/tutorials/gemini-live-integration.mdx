@@ -96,8 +96,8 @@ We provide a helper factory to initialize the Google Client.
         management_token=os.environ["FISHJAM_TOKEN"]
     )
 
-    # [!code highlight:1]
     # pass standard Google client kwargs here
+    # [!code highlight:1]
     gen_ai = GeminiIntegration.create_client(api_key=os.environ["GOOGLE_API_KEY"])
     ```
 
@@ -106,7 +106,7 @@ We provide a helper factory to initialize the Google Client.
 
 ### Step 2: Configure the Agent
 
-We create a Fishjam agent configured to match the audio format our Google client expects (16kHz input, 24kHz output).
+We create a Fishjam agent configured to match the audio format that the Google client expects (16kHz input, 24kHz output).
 
 <Tabs groupId="language">
   <TabItem value="ts" label="TypeScript">
@@ -118,8 +118,8 @@ We create a Fishjam agent configured to match the audio format our Google client
     
     const { agent } = await fishjamClient.createAgent(room.id, {
       subscribeMode: 'auto',
-      // [!code highlight:2]
       // Ensure we match Gemini audio requirements (16kHz input)
+      // [!code highlight:1]
       output: GeminiIntegration.geminiInputAudioSettings,
     });
     ```
@@ -135,6 +135,7 @@ We create a Fishjam agent configured to match the audio format our Google client
 
     room = fishjam_client.create_room()
 
+    # [!code highlight:1]
     agent_options = AgentOptions(output=GeminiIntegration.GeminiInputAudioSettings)
     agent = fishjam_client.create_agent(room.id, agent_options)
     ```
@@ -144,22 +145,19 @@ We create a Fishjam agent configured to match the audio format our Google client
 
 ### Step 3: Connect the Streams
 
-Now we connect the websocket loops. We need to forward incoming Fishjam audio to Google, and forward incoming Google audio to Fishjam.
-
 :::warning Encoding
 Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. Ensure you convert between them correctly as shown below.
 :::
 
 <Tabs groupId="language">
   <TabItem value="ts" label="TypeScript">
-
+    Now we setup the callbacks. We need to forward incoming Fishjam audio to Google, and forward incoming Google audio to Fishjam.
     ```ts
     import GeminiIntegration from '@fishjam-cloud/js-server-sdk/gemini';
 
     const GEMINI_MODEL = "gemini-2.5-flash-native-audio-preview-09-2025"
 
     // Create an outgoing track for the Agent to speak
-    // [!code highlight:3]
     const agentTrack = agent.createTrack(GeminiIntegration.geminiOutputAudioSettings);
 
     const session = await genAi.live.connect({
@@ -167,7 +165,6 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
       config: { responseModalities: ["AUDIO"] },
       callbacks: {
         // Google -> Fishjam
-        // [!code highlight:14]
         onmessage: (msg) => {
           if (msg.data) {
             const pcmData = Buffer.from(msg.data, "base64");
@@ -184,7 +181,6 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
     });
 
     // Fishjam -> Google
-    // [!code highlight:6]
     agent.on('trackData', ({ data }) => {
       session.sendRealtimeInput({
         mimeType: GeminiIntegration.inputMimeType,
@@ -198,6 +194,7 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
 
   <TabItem value="python" label="Python">
 
+    Now we connect the websocket loops. We need to forward incoming Fishjam audio to Google, and forward incoming Google audio to Fishjam.
     ```python
     import asyncio
     import base64
