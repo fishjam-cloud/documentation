@@ -106,7 +106,7 @@ We provide a helper factory to initialize the Google Client.
 
 ### Step 2: Configure the Agent
 
-We create a Fishjam agent configured to match the audio format that the Google client expects (16kHz input, 24kHz output).
+Create a Fishjam agent configured to match the audio format that the Google client expects (16kHz and 24kHz on Gemini input and output, respectively).
 
 <Tabs groupId="language">
   <TabItem value="ts" label="TypeScript">
@@ -118,7 +118,7 @@ We create a Fishjam agent configured to match the audio format that the Google c
     
     const { agent } = await fishjamClient.createAgent(room.id, {
       subscribeMode: 'auto',
-      // Ensure we match Gemini audio requirements (16kHz input)
+      // Use our preset to match the required audio format (16kHz)
       // [!code highlight:1]
       output: GeminiIntegration.geminiInputAudioSettings,
     });
@@ -135,6 +135,7 @@ We create a Fishjam agent configured to match the audio format that the Google c
 
     room = fishjam_client.create_room()
 
+    # Use our preset to match the required audio format (16kHz)
     # [!code highlight:1]
     agent_options = AgentOptions(output=GeminiIntegration.GeminiInputAudioSettings)
     agent = fishjam_client.create_agent(room.id, agent_options)
@@ -157,7 +158,8 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
 
     const GEMINI_MODEL = "gemini-2.5-flash-native-audio-preview-09-2025"
 
-    // Create an outgoing track for the Agent to speak
+
+    // Use our preset to match the required audio format (24kHz)
     const agentTrack = agent.createTrack(GeminiIntegration.geminiOutputAudioSettings);
 
     const session = await genAi.live.connect({
@@ -204,6 +206,7 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
 
     async with agent.connect() as fishjam_session:
 
+        # Use our preset to match the required audio format (24kHz)
         outgoing_track = fishjam_session.create_track(GeminiIntegration.GeminiOutputAudioSettings)
 
         async with gen_ai.aio.live.connect(
