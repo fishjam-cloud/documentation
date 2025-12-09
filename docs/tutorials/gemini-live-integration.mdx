@@ -76,9 +76,10 @@ We provide a helper factory to initialize the Google Client.
       managementToken: process.env.FISHJAM_TOKEN!,
     });
 
-    // [!code highlight:3]
-    const genAi = GeminiIntegration.createClient(process.env.GOOGLE_API_KEY!, {
+    // [!code highlight:4]
+    const genAi = GeminiIntegration.createClient({
       // Pass standard Google client options here
+      apiKey: process.env.GOOGLE_API_KEY!,
     });
     ```
 
