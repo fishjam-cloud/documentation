@@ -185,7 +185,7 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
     // Fishjam -> Google
     agent.on('trackData', ({ data }) => {
       session.sendRealtimeInput({
-        mimeType: GeminiIntegration.inputMimeType,
+        mimeType: GeminiIntegration.geminiInputMimeType,
         data: data.toString("base64")
       });
     });
@@ -219,7 +219,7 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
                 async for track_data in fishjam_session.receive():
                     b64_data = base64.b64encode(track_data.data).decode("utf-8")
                     await gemini_session.send_input({
-                        "mime_type": GeminiIntegration.InputMimeType,
+                        "mime_type": GeminiIntegration.GeminiInputMimeType,
                         "data": b64_data
                     })
 
