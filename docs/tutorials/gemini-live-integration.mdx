@@ -89,7 +89,7 @@ We provide a helper factory to initialize the Google Client.
 
     ```python
     import os
-    from fishjam import GeminiIntegration, FishjamClient
+    from fishjam import FishjamClient, GeminiIntegration
 
     fishjam_client = FishjamClient(
         fishjam_id=os.environ["FISHJAM_ID"],
@@ -129,9 +129,9 @@ Create a Fishjam agent configured to match the audio format that the Google clie
   <TabItem value="python" label="Python">
 
     ```python
+    from fishjam import GeminiIntegration
     from fishjam.peer import SubscribeOptions, SubscribeOptionsAudioSampleRate
     from fishjam.agent import OutgoingAudioTrackOptions, TrackEncoding
-    from fishjam import GeminiIntegration
 
     room = fishjam_client.create_room()
 
