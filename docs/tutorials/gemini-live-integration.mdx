@@ -13,7 +13,8 @@ import TabItem from "@theme/TabItem";
 This tutorial requires a working Fishjam backend. If you haven't set one up yet, please check the [Backend Quick Start](../tutorials/backend-quick-start).
 :::
 
-This guide demonstrates how to build a real-time speech-to-speech agent using Fishjam and [Google's Multimodal Live API](https://ai.google.dev/gemini-api/docs/live). By connecting these two services, you can create a low-latency voice assistant that listens to peers in a room and responds with natural voice.
+This guide demonstrates how to build a real-time speech-to-speech agent using Fishjam and [Google's Multimodal Live API](https://ai.google.dev/gemini-api/docs/live).
+By connecting these two services, you can create a low-latency voice assistant that not only listens to peers in a room and responds with natural voice, but also provides a real-time transcription of the conversation.
 
 ## Overview
 
@@ -48,10 +49,10 @@ Since the Google integration is optional, you need to install the specific depen
 
   <TabItem value="python" label="Python">
 
-    Install Fishjam with the `google` extra to pull in the necessary libraries.
+    Install Fishjam with the `gemini` extra to pull in the necessary libraries.
 
     ```bash
-    pip install "fishjam[google]"
+    pip install "fishjam[gemini]"
     ```
 
   </TabItem>
@@ -68,7 +69,7 @@ We provide a helper factory to initialize the Google Client.
   
     ```ts
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
-    import { GeminiIntegration } from '@fishjam-cloud/js-server-sdk/gemini';
+    import GeminiIntegration from '@fishjam-cloud/js-server-sdk/gemini';
 
     const fishjamClient = new FishjamClient({
       fishjamId: process.env.FISHJAM_ID!,
@@ -118,7 +119,7 @@ We create a Fishjam agent configured to match the audio format our Google client
       subscribeMode: 'auto',
       // [!code highlight:2]
       // Ensure we match Gemini audio requirements (16kHz input)
-      output: GeminiIntegration.outputAudioSettings,
+      output: GeminiIntegration.geminiInputAudioSettings,
     });
     ```
 
@@ -133,14 +134,7 @@ We create a Fishjam agent configured to match the audio format our Google client
 
     room = fishjam_client.create_room()
 
-    agent_options = AgentOptions(
-        subscribe_mode="auto",
-        # [!code highlight:5]
-        # Ensure we match Gemini audio requirements (16kHz input)
-        subscribe=SubscribeOptions(
-            audio_sample_rate=GeminiIntegration.AudioSampleRate
-        )
-    )
+    agent_options = AgentOptions(output=GeminiIntegration.GeminiInputAudioSettings)
     agent = fishjam_client.create_agent(room.id, agent_options)
     ```
 
@@ -163,10 +157,9 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
 
     const GEMINI_MODEL = "gemini-2.5-flash-native-audio-preview-09-2025"
 
-
     // Create an outgoing track for the Agent to speak
     // [!code highlight:3]
-    const agentTrack = agent.createTrack(GeminiIntegration.outputAudioCodecs);
+    const agentTrack = agent.createTrack(GeminiIntegration.geminiInputAudioSettings);
 
     const session = await genAi.live.connect({
       model: GEMINI_MODEL,
@@ -213,7 +206,7 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
 
     async with agent.connect() as fishjam_session:
 
-        outgoing_track = fishjam_session.create_track(GeminiIntegration.InputTrackOptions)
+        outgoing_track = fishjam_session.create_track(GeminiIntegration.GeminiOutputAudioSettings)
 
         async with gen_ai.aio.live.connect(
             model=GEMINI_MODEL,
