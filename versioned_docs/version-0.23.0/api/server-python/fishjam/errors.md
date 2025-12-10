@@ -4,7 +4,7 @@ sidebar_label: errors
 custom_edit_url: null
 ---
 
-# errors
+# fishjam.errors
 
 
 
