@@ -109,7 +109,7 @@ function injectTypeDocSidebar(
           items: [
             {
               type: "category",
-              label: "Fishjam",
+              label: "fishjam",
               link: {
                 type: "doc",
                 id: "api/server-python/fishjam",
