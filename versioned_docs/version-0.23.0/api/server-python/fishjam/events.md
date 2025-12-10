@@ -4,7 +4,7 @@ sidebar_label: events
 custom_edit_url: null
 ---
 
-# events
+# fishjam.events
 
 
 

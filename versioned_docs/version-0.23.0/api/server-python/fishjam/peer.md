@@ -4,7 +4,7 @@ sidebar_label: peer
 custom_edit_url: null
 ---
 
-# peer
+# fishjam.peer
 
 
 

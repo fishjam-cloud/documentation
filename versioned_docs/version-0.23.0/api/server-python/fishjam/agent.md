@@ -4,7 +4,7 @@ sidebar_label: agent
 custom_edit_url: null
 ---
 
-# agent
+# fishjam.agent
 
 
 

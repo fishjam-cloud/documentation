@@ -8,11 +8,11 @@ custom_edit_url: null
 
 
 ## Submodules
-- [events](submodules/events)
-- [errors](submodules/errors)
-- [room](submodules/room)
-- [peer](submodules/peer)
-- [agent](submodules/agent)
+- [events](fishjam/events)
+- [errors](fishjam/errors)
+- [room](fishjam/room)
+- [peer](fishjam/peer)
+- [agent](fishjam/agent)
 
 ## FishjamClient
 ```python
