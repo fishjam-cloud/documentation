@@ -195,7 +195,7 @@ Allows for receiving WebSocket messages from Fishjam.
 ```python
 def __init__(fishjam_id: str, management_token: str)
 ```
-Create FishjamNotifier instance, providing the fishjam id and management token.
+Create a FishjamNotifier instance with an ID and management token.
 
 ### on_server_notification
 ```python
@@ -204,14 +204,19 @@ def on_server_notification(
     handler: Union[Callable[[Union[ServerMessageRoomCreated, ServerMessageRoomDeleted, ServerMessageRoomCrashed, ServerMessagePeerAdded, ServerMessagePeerDeleted, ServerMessagePeerConnected, ServerMessagePeerDisconnected, ServerMessagePeerMetadataUpdated, ServerMessagePeerCrashed, ServerMessageStreamConnected, ServerMessageStreamDisconnected, ServerMessageViewerConnected, ServerMessageViewerDisconnected, ServerMessageTrackAdded, ServerMessageTrackRemoved, ServerMessageTrackMetadataUpdated]], NoneType], Callable[[Union[ServerMessageRoomCreated, ServerMessageRoomDeleted, ServerMessageRoomCrashed, ServerMessagePeerAdded, ServerMessagePeerDeleted, ServerMessagePeerConnected, ServerMessagePeerDisconnected, ServerMessagePeerMetadataUpdated, ServerMessagePeerCrashed, ServerMessageStreamConnected, ServerMessageStreamDisconnected, ServerMessageViewerConnected, ServerMessageViewerDisconnected, ServerMessageTrackAdded, ServerMessageTrackRemoved, ServerMessageTrackMetadataUpdated]], Coroutine[Any, Any, None]]]
 )
 ```
-Decorator used for defining handler for Fishjam Notifications
+Decorator for defining a handler for Fishjam notifications.
+
+Args:
+- handler: The function to be registered as the notification handler.
+
+Returns:
+- NotificationHandler: The original handler function (unmodified).
 
 ### connect
 ```python
 def connect(self)
 ```
-A coroutine which connects FishjamNotifier to Fishjam and listens for
-all incoming messages from the Fishjam.
+Connects to Fishjam and listens for all incoming messages.
 
 It runs until the connection isn't closed.
 
@@ -236,8 +241,16 @@ def receive_binary(
     binary: bytes
 ) -> Union[ServerMessageRoomCreated, ServerMessageRoomDeleted, ServerMessageRoomCrashed, ServerMessagePeerAdded, ServerMessagePeerDeleted, ServerMessagePeerConnected, ServerMessagePeerDisconnected, ServerMessagePeerMetadataUpdated, ServerMessagePeerCrashed, ServerMessageStreamConnected, ServerMessageStreamDisconnected, ServerMessageViewerConnected, ServerMessageViewerDisconnected, ServerMessageTrackAdded, ServerMessageTrackRemoved, ServerMessageTrackMetadataUpdated, NoneType]
 ```
-Transform received protobuf notification to adequate notification instance.
+Transforms a received protobuf notification into a notification instance.
+
 The available notifications are listed in `fishjam.events` module.
+
+Args:
+- binary: The raw binary data received from the webhook.
+
+Returns:
+- AllowedNotification | None: The parsed notification object, or None if
+  the message type is not supported.
 
 ---
 ## PeerMetadata
