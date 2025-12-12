@@ -13,6 +13,7 @@ custom_edit_url: null
 - [room](fishjam/room)
 - [peer](fishjam/peer)
 - [agent](fishjam/agent)
+- [integrations](fishjam/integrations)
 
 ## FishjamClient
 ```python

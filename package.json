@@ -5,8 +5,8 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "generate:python:docs": "sh ./scripts/generate_python_docs.sh",
-    "start": "npm run generate:python:docs && docusaurus start",
-    "build": "npm run generate:python:docs && docusaurus build",
+    "start": "yarn generate:python:docs && docusaurus start",
+    "build": "yarn generate:python:docs && docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",

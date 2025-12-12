@@ -12,7 +12,7 @@ Fishjam publishes documentation for the Sandbox API and Fishjam Server APIs.
 
 [Sandbox API OpenAPI](https://github.com/fishjam-cloud/documentation/tree/main/static/api/room-manager-openapi.yaml)
 
-See also: [What is the Sandbox API?](/explanation/sandbox-api-concept)
+See also: [What is the Sandbox API?](../explanation/sandbox-api-concept)
 
 ## Server
 
@@ -38,7 +38,7 @@ in the `RoomConfig` options when creating a room.
 The HTTP POST to the `webhookUrl` uses "application/x-protobuf" content type.
 The body is binary data, that represents encoded `ServerMessage`.
 
-For more information see also [server setup documentation](/how-to/backend/server-setup#webhooks)
+For more information see also [server setup documentation](../how-to/backend/server-setup#webhooks)
 
 #### Websocket
 

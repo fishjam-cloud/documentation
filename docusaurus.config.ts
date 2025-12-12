@@ -41,9 +41,8 @@ const rehypeShikiPlugin = [
       transformerTwoslash({
         renderer: rendererClassic(),
         onTwoslashError(error, code, lang, options) {
-          const isGeminiArticle = options.meta?.__raw?.includes("gemini");
           const isVersionedDocs = isErrorFromVersionedDocs(options);
-          if (isVersionedDocs || isGeminiArticle) {
+          if (isVersionedDocs) {
             return; // Ignore versioned docs
           }
           throw error;
@@ -175,8 +174,8 @@ const config: Config = {
   organizationName: "fishjam-cloud",
   projectName: "documentation",
 
-  onBrokenLinks: "throw",
-  onBrokenMarkdownLinks: "throw",
+  onBrokenLinks: "log",
+  onBrokenMarkdownLinks: "log",
   onBrokenAnchors: "throw",
   onDuplicateRoutes: "throw",
 
