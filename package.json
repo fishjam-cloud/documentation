@@ -1,82 +1,82 @@
 {
-  "name": "fishjam-docs",
-  "version": "0.23.0",
-  "private": true,
-  "scripts": {
-    "docusaurus": "docusaurus",
-    "generate:python:docs": "sh ./scripts/generate_python_docs.sh",
-    "start": "npm run generate:python:docs && docusaurus start",
-    "build": "npm run generate:python:docs && docusaurus build",
-    "swizzle": "docusaurus swizzle",
-    "deploy": "docusaurus deploy",
-    "clear": "docusaurus clear",
-    "serve": "docusaurus serve",
-    "version:docs": "yarn docusaurus docs:version",
-    "write-translations": "docusaurus write-translations",
-    "write-heading-ids": "docusaurus write-heading-ids",
-    "prepare": "sh ./scripts/prepare.sh",
-    "update-modules": "sh ./scripts/update.sh",
-    "update-api": "sh ./scripts/update_api.sh && yarn format ./static/api",
-    "typecheck": "tsc",
-    "format": "prettier . --write",
-    "format:check": "prettier . --check",
-    "spellcheck": "cspell '**/*.md' '**/*.mdx' --exclude '**/api/**' --show-suggestions",
-    "spellcheck:report": "yarn spellcheck --no-show-suggestions"
-  },
-  "dependencies": {
-    "@docusaurus/core": "^3.8.1",
-    "@docusaurus/faster": "^3.8.1",
-    "@docusaurus/preset-classic": "^3.8.1",
-    "@docusaurus/remark-plugin-npm2yarn": "^3.8.1",
-    "@docusaurus/theme-mermaid": "^3.8.1",
-    "@fastify/env": "^5.0.2",
-    "@fishjam-cloud/js-server-sdk": "link:./packages/js-server-sdk/packages/js-server-sdk",
-    "@fishjam-cloud/react-client": "link:./packages/web-client-sdk/packages/react-client",
-    "@fishjam-cloud/react-native-client": "link:./packages/mobile-client-sdk/packages/react-native-client",
-    "@mdx-js/react": "^3.1.0",
-    "@shikijs/rehype": "^3.6.0",
-    "@shikijs/transformers": "^3.6.0",
-    "@swmansion/smelter": "^0.2.1",
-    "@swmansion/smelter-web-wasm": "^0.2.1",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
-    "clsx": "^2.0.0",
-    "docusaurus-lunr-search": "3.6.0",
-    "expo-camera": "^16.1.8",
-    "fastify": "^5.4.0",
-    "mock-import": "^4.2.1",
-    "prism-react-renderer": "^2.4.1",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "react-native": "^0.80.0",
-    "shiki": "^3.6.0"
-  },
-  "devDependencies": {
-    "@docusaurus/module-type-aliases": "^3.8.1",
-    "@docusaurus/tsconfig": "^3.8.1",
-    "@docusaurus/types": "^3.8.1",
-    "@shikijs/twoslash": "^3.6.0",
-    "cspell": "^9.1.2",
-    "docusaurus-plugin-typedoc": "1.4.0",
-    "prettier": "^3.5.3",
-    "typedoc": "0.28.5",
-    "typedoc-plugin-markdown": "4.7.0",
-    "typescript": "~5.8.2"
-  },
-  "browserslist": {
-    "production": [
-      ">0.5%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 3 chrome version",
-      "last 3 firefox version",
-      "last 5 safari version"
-    ]
-  },
-  "engines": {
-    "node": ">=18.0"
-  },
-  "packageManager": "yarn@4.9.2+sha256.ca4310f8ba997b4643a000ce512d9772e01c1485df35511114b325315960acb7"
+	"name": "fishjam-docs",
+	"version": "0.23.0",
+	"private": true,
+	"scripts": {
+		"docusaurus": "docusaurus",
+		"generate:python:docs": "sh ./scripts/generate_python_docs.sh",
+		"start": "yarn generate:python:docs && docusaurus start",
+		"build": "yarn generate:python:docs && docusaurus build",
+		"swizzle": "docusaurus swizzle",
+		"deploy": "docusaurus deploy",
+		"clear": "docusaurus clear",
+		"serve": "docusaurus serve",
+		"version:docs": "yarn docusaurus docs:version",
+		"write-translations": "docusaurus write-translations",
+		"write-heading-ids": "docusaurus write-heading-ids",
+		"prepare": "sh ./scripts/prepare.sh",
+		"update-modules": "sh ./scripts/update.sh",
+		"update-api": "sh ./scripts/update_api.sh && yarn format ./static/api",
+		"typecheck": "tsc",
+		"format": "prettier . --write",
+		"format:check": "prettier . --check",
+		"spellcheck": "cspell '**/*.md' '**/*.mdx' --exclude '**/api/**' --show-suggestions",
+		"spellcheck:report": "yarn spellcheck --no-show-suggestions"
+	},
+	"dependencies": {
+		"@docusaurus/core": "^3.8.1",
+		"@docusaurus/faster": "^3.8.1",
+		"@docusaurus/preset-classic": "^3.8.1",
+		"@docusaurus/remark-plugin-npm2yarn": "^3.8.1",
+		"@docusaurus/theme-mermaid": "^3.8.1",
+		"@fastify/env": "^5.0.2",
+		"@fishjam-cloud/js-server-sdk": "link:./packages/js-server-sdk/packages/js-server-sdk",
+		"@fishjam-cloud/react-client": "link:./packages/web-client-sdk/packages/react-client",
+		"@fishjam-cloud/react-native-client": "link:./packages/mobile-client-sdk/packages/react-native-client",
+		"@mdx-js/react": "^3.1.0",
+		"@shikijs/rehype": "^3.6.0",
+		"@shikijs/transformers": "^3.6.0",
+		"@swmansion/smelter": "^0.2.1",
+		"@swmansion/smelter-web-wasm": "^0.2.1",
+		"@types/react": "^19.1.8",
+		"@types/react-dom": "^19.1.6",
+		"clsx": "^2.0.0",
+		"docusaurus-lunr-search": "3.6.0",
+		"expo-camera": "^16.1.8",
+		"fastify": "^5.4.0",
+		"mock-import": "^4.2.1",
+		"prism-react-renderer": "^2.4.1",
+		"react": "^18.0.0",
+		"react-dom": "^18.0.0",
+		"react-native": "^0.80.0",
+		"shiki": "^3.6.0"
+	},
+	"devDependencies": {
+		"@docusaurus/module-type-aliases": "^3.8.1",
+		"@docusaurus/tsconfig": "^3.8.1",
+		"@docusaurus/types": "^3.8.1",
+		"@shikijs/twoslash": "^3.6.0",
+		"cspell": "^9.1.2",
+		"docusaurus-plugin-typedoc": "1.4.0",
+		"prettier": "^3.5.3",
+		"typedoc": "0.28.5",
+		"typedoc-plugin-markdown": "4.7.0",
+		"typescript": "~5.8.2"
+	},
+	"browserslist": {
+		"production": [
+			">0.5%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 3 chrome version",
+			"last 3 firefox version",
+			"last 5 safari version"
+		]
+	},
+	"engines": {
+		"node": ">=18.0"
+	},
+	"packageManager": "yarn@4.9.2+sha256.ca4310f8ba997b4643a000ce512d9772e01c1485df35511114b325315960acb7"
 }
