@@ -8,5 +8,5 @@ custom_edit_url: null
 
 
 ## Submodules
-- [gemini](fishjam/integrations/gemini)
+- [gemini](integrations/gemini)
 
