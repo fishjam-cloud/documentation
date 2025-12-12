@@ -230,6 +230,7 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
     ```python
     import asyncio
     from fishjam.integrations.gemini import GeminiIntegration
+    from google.genai.types import Modality
 
     GEMINI_MODEL = "gemini-2.5-flash-native-audio-preview-12-2025"
 
