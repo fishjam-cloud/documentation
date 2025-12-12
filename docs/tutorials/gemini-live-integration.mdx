@@ -215,7 +215,7 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
       session.sendRealtimeInput({
         audio: {
           mimeType: GeminiIntegration.inputMimeType,
-          data: Buffer.from(data).toString('base64'),
+          data: data.toBase64(),
         }
       });
     });
@@ -247,10 +247,10 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
             # Fishjam -> Google
             async def forward_audio_to_gemini():
                 async for track_data in fishjam_session.receive():
-                  await gemini_session.send_realtime_input(audio=Blob(
-                      mime_type=GeminiIntegration.GEMINI_AUDIO_MIME_TYPE,
-                      data=track_data.data
-                  ))
+                    await gemini_session.send_realtime_input(audio=Blob(
+                        mime_type=GeminiIntegration.GEMINI_AUDIO_MIME_TYPE,
+                        data=track_data.data
+                    ))
 
             # Google -> Fishjam
             async def forward_audio_to_fishjam():
@@ -265,8 +265,8 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
 
                     if server_content.model_turn and server_content.model_turn.parts:
                         for part in server_content.model_turn.parts:
-                          if part.inline_data and part.inline_data.data:
-                              await outgoing_track.send_chunk(part.inline_data.data)
+                            if part.inline_data and part.inline_data.data:
+                                await outgoing_track.send_chunk(part.inline_data.data)
 
             # Run both loops concurrently
             await asyncio.gather(
