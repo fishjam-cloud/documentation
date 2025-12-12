@@ -170,9 +170,9 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
     const genAi = GI.createClient({
       apiKey: process.env.GOOGLE_API_KEY!,
     });
-    
+
     const room = await fishjamClient.createRoom();
-    
+
     const { agent } = await fishjamClient.createAgent(room.id, {
       subscribeMode: 'auto',
       output: GI.geminiInputAudioSettings,
