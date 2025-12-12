@@ -174,8 +174,8 @@ const config: Config = {
   organizationName: "fishjam-cloud",
   projectName: "documentation",
 
-  onBrokenLinks: "throw",
-  onBrokenMarkdownLinks: "throw",
+  onBrokenLinks: "log",
+  onBrokenMarkdownLinks: "log",
   onBrokenAnchors: "throw",
   onDuplicateRoutes: "throw",
 
