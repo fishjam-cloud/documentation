@@ -215,7 +215,7 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
       session.sendRealtimeInput({
         audio: {
           mimeType: GeminiIntegration.inputMimeType,
-          data: data.toBase64(),
+          data: Buffer.from(data).toString('base64'),
         }
       });
     });
