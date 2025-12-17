@@ -174,6 +174,42 @@ We can now start sending media, which we can obtain from the user's camera, scre
         ```
 
       </TabItem>
+      <TabItem value="screen" label="Screen Share">
+      :::tip[Background streaming during screen sharing on iOS]
+
+      If you want to continue screen sharing when the app goes to the background, you need to:
+
+      1. Enable VoIP background mode by setting `enableVoIPBackgroundMode: true` in the plugin configuration or adding the VoIP background mode to your `Info.plist`
+      2. Use the [`useCallKitService`](../../api/mobile/variables/useCallKitService) hook in your component to manage the CallKit session
+
+      See the [background calls documentation](./background-streaming) for detailed instructions and code examples.
+
+      :::
+
+        ```tsx
+        import React from 'react';
+
+        // All components and hooks needed for livestreaming can be imported from the livestream module
+        import {
+          LivestreamStreamer,
+          useLivestreamScreenSharingStreamer
+        } from '@fishjam-cloud/react-native-client/livestream';
+
+        const streamerToken = '';
+        const roomId = '';
+        const { connect, whipClientRef } = useLivestreamScreenSharingStreamer({ audioEnabled: true });
+
+        // ...
+
+        await connect(streamerToken);
+
+        // Render the livestream
+        <LivestreamStreamer
+          ref={whipClientRef}
+        />
+        ```
+
+      </TabItem>
     </Tabs>
 
   </TabItem>
