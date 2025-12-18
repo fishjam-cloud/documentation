@@ -16,6 +16,7 @@ To enable debugging in a React application, pass the `debug` prop to the `Fishja
 
 ```tsx
 import React from "react";
+const App = () => null;
 // ---cut---
 import { FishjamProvider } from "@fishjam-cloud/react-client";
 
@@ -35,9 +36,11 @@ We recommend toggling this based on your environment variables:
 
 ```tsx
 import React from "react";
+import { FishjamProvider } from "@fishjam-cloud/react-client";
 const process = {
   env: { NODE_ENV: "development", FISHJAM_ID: "your-fishjam-id" },
 };
+const App = () => null;
 // ---cut---
 <FishjamProvider
   fishjamId={process.env.FISHJAM_ID}
