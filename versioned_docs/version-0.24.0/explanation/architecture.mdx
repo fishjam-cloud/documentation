@@ -1,0 +1,91 @@
+---
+type: explanation
+sidebar_position: 2
+---
+
+# Fishjam Architecture
+
+_Understanding how Fishjam works under the hood_
+
+This document explains the technical architecture of Fishjam and how data flows through the system.
+
+## High-level Architecture
+
+Streaming with Fishjam is simple: you create a room, add peers to it, and start streaming. Below is a high-level overview of how Fishjam works.
+
+![Fishjam Data Flow](@site/static/img/architecture.svg)
+
+## Components Overview
+
+### 1. Your Backend Server
+
+Your application's backend server is responsible for:
+
+- Authenticating users
+- Creating rooms using Fishjam Server SDKs
+- Generating peer tokens for clients
+- Managing room lifecycle and permissions
+
+### 2. Fishjam Media Server
+
+The Fishjam Media Server is the core infrastructure component that:
+
+- Routes audio and video streams between participants
+- Handles WebRTC negotiations and connections
+- Manages different room types (conference, audio-only, livestream)
+- Processes and transcodes media when needed
+- Enforces security policies and token validation
+
+### 3. Client Applications
+
+Client applications (React Native, React) use Fishjam Client SDKs to:
+
+- Connect to rooms using peer tokens
+- Send and receive audio/video streams
+- Handle device management (cameras, microphones)
+- Manage connection state and reconnections
+
+## Data Flow
+
+### 1. Room Creation Flow
+
+```mermaid
+sequenceDiagram
+    participant FM as Fishjam Media Server
+    participant BE as Your Backend
+    participant Client as Client App
+
+    Client->>BE: Request to join room
+    BE->>FM: Create room (Server SDK)
+    FM->>BE: Return room ID
+    BE->>FM: Create peer (Server SDK)
+    FM->>BE: Return peer token
+    BE->>Client: Send peer token + Fishjam ID
+```
+
+### 2. Media Streaming Flow
+
+```mermaid
+sequenceDiagram
+    participant C1 as Client 1
+    participant FM as Fishjam Media Server
+    participant C2 as Client 2
+
+    C1->>FM: Connect with peer token
+    C2->>FM: Connect with peer token
+    C1->>FM: Send video/audio stream
+    FM->>C2: Route stream to other peers
+    C2->>FM: Send video/audio stream
+    FM->>C1: Route stream to other peers
+```
+
+## Next Steps
+
+To understand different room types in detail, see [Room Types Explained](../explanation/room-types).
+
+To learn about security and token management, see [Security & Token Model](../explanation/security-tokens).
+
+Ready to implement? Start with our tutorials:
+
+- [React Native Quick Start](../tutorials/react-native-quick-start)
+- [Backend Quick Start](../tutorials/backend-quick-start)
