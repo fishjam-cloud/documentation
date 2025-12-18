@@ -32,12 +32,16 @@ function Root() {
 We recommend toggling this based on your environment variables:
 
 ```tsx
+const process = {
+  env: { NODE_ENV: "development", FISHJAM_ID: "your-fishjam-id" },
+};
+// ---cut---
 <FishjamProvider
   fishjamId={process.env.FISHJAM_ID}
   debug={process.env.NODE_ENV === "development"}
 >
   <App />
-</FishjamProvider>
+</FishjamProvider>;
 ```
 
 ## Behavior
