@@ -35,10 +35,7 @@ The Sandbox API mitigates this issue and allows you to start frontend developmen
 The Sandbox API is essentially a simplified application built using the Fishjam Server SDKs:
 
 ```typescript
-import {
-  FishjamClient,
-  RoomConfigRoomTypeEnum,
-} from "@fishjam-cloud/js-server-sdk";
+import { FishjamClient, RoomType } from "@fishjam-cloud/js-server-sdk";
 import express from "express";
 const fishjamId = "";
 const managementToken = "";
@@ -53,7 +50,7 @@ app.get("/", async (req: express.Request, res: express.Response) => {
 
   // Create or get room
   const room = await fishjamClient.createRoom({
-    roomType: roomType as RoomConfigRoomTypeEnum,
+    roomType: roomType as RoomType,
   });
 
   // Create or get peer
