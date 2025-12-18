@@ -65,7 +65,7 @@ function injectTypeDocSidebar(
   version: SidebarItemsGeneratorVersion,
   items: NormalizedSidebar,
 ): NormalizedSidebar {
-  const docs_without_python_reference = ["0.20.0", "0.21.0", "0.22.0"];
+  const docs_without_python_reference = ["0.22.0"];
 
   const exclude_python = docs_without_python_reference.includes(
     version.versionName,
