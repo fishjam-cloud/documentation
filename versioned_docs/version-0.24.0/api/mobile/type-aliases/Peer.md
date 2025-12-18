@@ -2,7 +2,7 @@
 
 > **Peer**\<`PeerMetadata`, `ServerMetadata`\> = `object`
 
-Defined in: [packages/react-native-client/src/hooks/usePeers.ts:66](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/usePeers.ts#L66)
+Defined in: [packages/react-native-client/src/hooks/usePeers.ts:66](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/usePeers.ts#L66)
 
 ## Type Parameters
 
@@ -17,7 +17,7 @@ Defined in: [packages/react-native-client/src/hooks/usePeers.ts:66](https://gith
 
 > **id**: [`PeerId`](PeerId.md)
 
-Defined in: [packages/react-native-client/src/hooks/usePeers.ts:73](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/usePeers.ts#L73)
+Defined in: [packages/react-native-client/src/hooks/usePeers.ts:73](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/usePeers.ts#L73)
 
 id used to identify a peer
 
@@ -27,7 +27,7 @@ id used to identify a peer
 
 > **isLocal**: `boolean`
 
-Defined in: [packages/react-native-client/src/hooks/usePeers.ts:77](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/usePeers.ts#L77)
+Defined in: [packages/react-native-client/src/hooks/usePeers.ts:77](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/usePeers.ts#L77)
 
 whether the peer is local or remote
 
@@ -37,7 +37,7 @@ whether the peer is local or remote
 
 > **metadata**: [`PeerTrackMetadata`](PeerTrackMetadata.md)\<`PeerMetadata`, `ServerMetadata`\>
 
-Defined in: [packages/react-native-client/src/hooks/usePeers.ts:81](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/usePeers.ts#L81)
+Defined in: [packages/react-native-client/src/hooks/usePeers.ts:81](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/usePeers.ts#L81)
 
 a type containing peer and server metadata
 
@@ -47,6 +47,6 @@ a type containing peer and server metadata
 
 > **tracks**: [`Track`](Track.md)[]
 
-Defined in: [packages/react-native-client/src/hooks/usePeers.ts:85](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/usePeers.ts#L85)
+Defined in: [packages/react-native-client/src/hooks/usePeers.ts:85](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/usePeers.ts#L85)
 
 a list of peer's video and audio tracks

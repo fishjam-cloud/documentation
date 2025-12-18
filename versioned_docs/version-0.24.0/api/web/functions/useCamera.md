@@ -2,7 +2,7 @@
 
 > **useCamera**(): `object`
 
-Defined in: [react-client/src/hooks/devices/useCamera.ts:9](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/devices/useCamera.ts#L9)
+Defined in: [react-client/src/hooks/devices/useCamera.ts:9](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/devices/useCamera.ts#L9)
 
 This hook can toggle camera on/off, change camera, provides current camera and other.
 

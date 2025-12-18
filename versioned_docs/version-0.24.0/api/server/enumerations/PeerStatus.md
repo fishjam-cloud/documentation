@@ -1,6 +1,6 @@
 # Enumeration: PeerStatus
 
-Defined in: fishjam-openapi/dist/index.d.ts:369
+Defined in: fishjam-openapi/dist/index.d.ts:363
 
 Informs about the peer status
 
@@ -12,7 +12,7 @@ Informs about the peer status
 
 > **Connected**: `"connected"`
 
-Defined in: fishjam-openapi/dist/index.d.ts:370
+Defined in: fishjam-openapi/dist/index.d.ts:364
 
 ***
 
@@ -20,4 +20,4 @@ Defined in: fishjam-openapi/dist/index.d.ts:370
 
 > **Disconnected**: `"disconnected"`
 
-Defined in: fishjam-openapi/dist/index.d.ts:371
+Defined in: fishjam-openapi/dist/index.d.ts:365

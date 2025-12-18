@@ -1,6 +1,6 @@
 # Class: FishjamAgent
 
-Defined in: [js-server-sdk/src/agent.ts:42](https://github.com/fishjam-cloud/js-server-sdk/blob/eca87e0b5faa981bf89f1f25a67fef9be93d7ea7/packages/js-server-sdk/src/agent.ts#L42)
+Defined in: [js-server-sdk/src/agent.ts:42](https://github.com/fishjam-cloud/js-server-sdk/blob/22932e9e40d6685e876f3295d34a2dc463114ca8/packages/js-server-sdk/src/agent.ts#L42)
 
 ## Extends
 
@@ -12,7 +12,7 @@ Defined in: [js-server-sdk/src/agent.ts:42](https://github.com/fishjam-cloud/js-
 
 > **new FishjamAgent**(`config`, `agentToken`, `callbacks?`): `FishjamAgent`
 
-Defined in: [js-server-sdk/src/agent.ts:48](https://github.com/fishjam-cloud/js-server-sdk/blob/eca87e0b5faa981bf89f1f25a67fef9be93d7ea7/packages/js-server-sdk/src/agent.ts#L48)
+Defined in: [js-server-sdk/src/agent.ts:48](https://github.com/fishjam-cloud/js-server-sdk/blob/22932e9e40d6685e876f3295d34a2dc463114ca8/packages/js-server-sdk/src/agent.ts#L48)
 
 #### Parameters
 
@@ -36,7 +36,7 @@ Defined in: [js-server-sdk/src/agent.ts:48](https://github.com/fishjam-cloud/js-
 
 > **awaitConnected**(): `Promise`\<`void`\>
 
-Defined in: [js-server-sdk/src/agent.ts:72](https://github.com/fishjam-cloud/js-server-sdk/blob/eca87e0b5faa981bf89f1f25a67fef9be93d7ea7/packages/js-server-sdk/src/agent.ts#L72)
+Defined in: [js-server-sdk/src/agent.ts:72](https://github.com/fishjam-cloud/js-server-sdk/blob/22932e9e40d6685e876f3295d34a2dc463114ca8/packages/js-server-sdk/src/agent.ts#L72)
 
 Await Agent connection to Fishjam.
 
@@ -50,7 +50,7 @@ Await Agent connection to Fishjam.
 
 > **createTrack**(`codecParameters`, `metadata`): [`AgentTrack`](../type-aliases/AgentTrack.md)
 
-Defined in: [js-server-sdk/src/agent.ts:80](https://github.com/fishjam-cloud/js-server-sdk/blob/eca87e0b5faa981bf89f1f25a67fef9be93d7ea7/packages/js-server-sdk/src/agent.ts#L80)
+Defined in: [js-server-sdk/src/agent.ts:80](https://github.com/fishjam-cloud/js-server-sdk/blob/22932e9e40d6685e876f3295d34a2dc463114ca8/packages/js-server-sdk/src/agent.ts#L80)
 
 Creates an outgoing audio track for the agent
 
@@ -73,7 +73,7 @@ a new audio track
 
 > **deleteTrack**(`trackId`): `void`
 
-Defined in: [js-server-sdk/src/agent.ts:112](https://github.com/fishjam-cloud/js-server-sdk/blob/eca87e0b5faa981bf89f1f25a67fef9be93d7ea7/packages/js-server-sdk/src/agent.ts#L112)
+Defined in: [js-server-sdk/src/agent.ts:112](https://github.com/fishjam-cloud/js-server-sdk/blob/22932e9e40d6685e876f3295d34a2dc463114ca8/packages/js-server-sdk/src/agent.ts#L112)
 
 Deletes an outgoing audio track for the agent
 
@@ -93,7 +93,7 @@ Deletes an outgoing audio track for the agent
 
 > **disconnect**(): `void`
 
-Defined in: [js-server-sdk/src/agent.ts:127](https://github.com/fishjam-cloud/js-server-sdk/blob/eca87e0b5faa981bf89f1f25a67fef9be93d7ea7/packages/js-server-sdk/src/agent.ts#L127)
+Defined in: [js-server-sdk/src/agent.ts:127](https://github.com/fishjam-cloud/js-server-sdk/blob/22932e9e40d6685e876f3295d34a2dc463114ca8/packages/js-server-sdk/src/agent.ts#L127)
 
 #### Returns
 
@@ -105,7 +105,7 @@ Defined in: [js-server-sdk/src/agent.ts:127](https://github.com/fishjam-cloud/js
 
 > **interruptTrack**(`trackId`): `void`
 
-Defined in: [js-server-sdk/src/agent.ts:103](https://github.com/fishjam-cloud/js-server-sdk/blob/eca87e0b5faa981bf89f1f25a67fef9be93d7ea7/packages/js-server-sdk/src/agent.ts#L103)
+Defined in: [js-server-sdk/src/agent.ts:103](https://github.com/fishjam-cloud/js-server-sdk/blob/22932e9e40d6685e876f3295d34a2dc463114ca8/packages/js-server-sdk/src/agent.ts#L103)
 
 Interrupt track identified by `trackId`.
 
@@ -130,7 +130,7 @@ Audio sent after the interrupt will be played normally.
 
 > **sendData**(`trackId`, `data`): `void`
 
-Defined in: [js-server-sdk/src/agent.ts:121](https://github.com/fishjam-cloud/js-server-sdk/blob/eca87e0b5faa981bf89f1f25a67fef9be93d7ea7/packages/js-server-sdk/src/agent.ts#L121)
+Defined in: [js-server-sdk/src/agent.ts:121](https://github.com/fishjam-cloud/js-server-sdk/blob/22932e9e40d6685e876f3295d34a2dc463114ca8/packages/js-server-sdk/src/agent.ts#L121)
 
 Send audio data for the given track
 

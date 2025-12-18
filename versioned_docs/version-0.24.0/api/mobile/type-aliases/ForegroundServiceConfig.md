@@ -2,7 +2,7 @@
 
 > **ForegroundServiceConfig** = `object`
 
-Defined in: [packages/react-native-client/src/hooks/useForegroundService.ts:9](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/useForegroundService.ts#L9)
+Defined in: [packages/react-native-client/src/hooks/useForegroundService.ts:9](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/useForegroundService.ts#L9)
 
 A type representing the configuration for foreground service permissions.
 
@@ -12,7 +12,7 @@ A type representing the configuration for foreground service permissions.
 
 > `optional` **channelId**: `string`
 
-Defined in: [packages/react-native-client/src/hooks/useForegroundService.ts:21](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/useForegroundService.ts#L21)
+Defined in: [packages/react-native-client/src/hooks/useForegroundService.ts:21](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/useForegroundService.ts#L21)
 
 The id of the channel. Must be unique per package.
 
@@ -22,7 +22,7 @@ The id of the channel. Must be unique per package.
 
 > `optional` **channelName**: `string`
 
-Defined in: [packages/react-native-client/src/hooks/useForegroundService.ts:25](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/useForegroundService.ts#L25)
+Defined in: [packages/react-native-client/src/hooks/useForegroundService.ts:25](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/useForegroundService.ts#L25)
 
 The user visible name of the channel.
 
@@ -32,7 +32,7 @@ The user visible name of the channel.
 
 > `optional` **enableCamera**: `boolean`
 
-Defined in: [packages/react-native-client/src/hooks/useForegroundService.ts:13](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/useForegroundService.ts#L13)
+Defined in: [packages/react-native-client/src/hooks/useForegroundService.ts:13](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/useForegroundService.ts#L13)
 
 Indicates whether the camera is enabled for the foreground service.
 
@@ -42,7 +42,7 @@ Indicates whether the camera is enabled for the foreground service.
 
 > `optional` **enableMicrophone**: `boolean`
 
-Defined in: [packages/react-native-client/src/hooks/useForegroundService.ts:17](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/useForegroundService.ts#L17)
+Defined in: [packages/react-native-client/src/hooks/useForegroundService.ts:17](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/useForegroundService.ts#L17)
 
 Indicates whether the microphone is enabled for the foreground service.
 
@@ -52,7 +52,7 @@ Indicates whether the microphone is enabled for the foreground service.
 
 > `optional` **notificationContent**: `string`
 
-Defined in: [packages/react-native-client/src/hooks/useForegroundService.ts:33](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/useForegroundService.ts#L33)
+Defined in: [packages/react-native-client/src/hooks/useForegroundService.ts:33](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/useForegroundService.ts#L33)
 
 The text (second row) of the notification, in a standard notification.
 
@@ -62,6 +62,6 @@ The text (second row) of the notification, in a standard notification.
 
 > `optional` **notificationTitle**: `string`
 
-Defined in: [packages/react-native-client/src/hooks/useForegroundService.ts:29](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/useForegroundService.ts#L29)
+Defined in: [packages/react-native-client/src/hooks/useForegroundService.ts:29](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/useForegroundService.ts#L29)
 
 The title (first row) of the notification, in a standard notification.

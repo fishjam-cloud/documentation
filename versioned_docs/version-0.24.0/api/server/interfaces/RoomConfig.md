@@ -1,6 +1,6 @@
 # Interface: RoomConfig
 
-Defined in: fishjam-openapi/dist/index.d.ts:414
+Defined in: fishjam-openapi/dist/index.d.ts:408
 
 Room configuration
 
@@ -14,7 +14,7 @@ RoomConfig
 
 > `optional` **maxPeers**: `null` \| `number`
 
-Defined in: fishjam-openapi/dist/index.d.ts:420
+Defined in: fishjam-openapi/dist/index.d.ts:414
 
 Maximum amount of peers allowed into the room
 
@@ -28,7 +28,7 @@ RoomConfig
 
 > `optional` **public**: `boolean`
 
-Defined in: fishjam-openapi/dist/index.d.ts:426
+Defined in: fishjam-openapi/dist/index.d.ts:420
 
 True if livestream viewers can omit specifying a token.
 
@@ -40,11 +40,9 @@ RoomConfig
 
 ### roomType?
 
-> `optional` **roomType**: [`RoomConfigRoomTypeEnum`](../type-aliases/RoomConfigRoomTypeEnum.md)
+> `optional` **roomType**: [`RoomType`](../enumerations/RoomType.md)
 
-Defined in: fishjam-openapi/dist/index.d.ts:432
-
-The use-case of the room. If not provided, this defaults to conference.
+Defined in: fishjam-openapi/dist/index.d.ts:426
 
 #### Memberof
 
@@ -54,11 +52,9 @@ RoomConfig
 
 ### videoCodec?
 
-> `optional` **videoCodec**: [`RoomConfigVideoCodecEnum`](../type-aliases/RoomConfigVideoCodecEnum.md)
+> `optional` **videoCodec**: [`VideoCodec`](../enumerations/VideoCodec.md)
 
-Defined in: fishjam-openapi/dist/index.d.ts:438
-
-Enforces video codec for each peer in the room
+Defined in: fishjam-openapi/dist/index.d.ts:432
 
 #### Memberof
 
@@ -70,7 +66,7 @@ RoomConfig
 
 > `optional` **webhookUrl**: `null` \| `string`
 
-Defined in: fishjam-openapi/dist/index.d.ts:444
+Defined in: fishjam-openapi/dist/index.d.ts:438
 
 URL where Fishjam notifications will be sent
 

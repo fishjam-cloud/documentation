@@ -2,7 +2,7 @@
 
 > **TrackBase** = `object`
 
-Defined in: [packages/react-native-client/src/hooks/usePeers.ts:27](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/usePeers.ts#L27)
+Defined in: [packages/react-native-client/src/hooks/usePeers.ts:27](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/usePeers.ts#L27)
 
 ## Properties
 
@@ -10,7 +10,7 @@ Defined in: [packages/react-native-client/src/hooks/usePeers.ts:27](https://gith
 
 > **id**: [`TrackId`](TrackId.md)
 
-Defined in: [packages/react-native-client/src/hooks/usePeers.ts:28](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/usePeers.ts#L28)
+Defined in: [packages/react-native-client/src/hooks/usePeers.ts:28](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/usePeers.ts#L28)
 
 ***
 
@@ -18,7 +18,7 @@ Defined in: [packages/react-native-client/src/hooks/usePeers.ts:28](https://gith
 
 > **isActive**: `boolean`
 
-Defined in: [packages/react-native-client/src/hooks/usePeers.ts:30](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/usePeers.ts#L30)
+Defined in: [packages/react-native-client/src/hooks/usePeers.ts:30](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/usePeers.ts#L30)
 
 ***
 
@@ -26,7 +26,7 @@ Defined in: [packages/react-native-client/src/hooks/usePeers.ts:30](https://gith
 
 > `optional` **metadata**: [`TrackMetadata`](TrackMetadata.md)
 
-Defined in: [packages/react-native-client/src/hooks/usePeers.ts:31](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/usePeers.ts#L31)
+Defined in: [packages/react-native-client/src/hooks/usePeers.ts:31](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/usePeers.ts#L31)
 
 ***
 
@@ -34,4 +34,4 @@ Defined in: [packages/react-native-client/src/hooks/usePeers.ts:31](https://gith
 
 > **type**: [`TrackType`](TrackType.md)
 
-Defined in: [packages/react-native-client/src/hooks/usePeers.ts:29](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/usePeers.ts#L29)
+Defined in: [packages/react-native-client/src/hooks/usePeers.ts:29](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/usePeers.ts#L29)

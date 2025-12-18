@@ -2,7 +2,7 @@
 
 > **useScreenShare**(): `object`
 
-Defined in: [packages/react-native-client/src/hooks/useScreenShare.ts:35](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/useScreenShare.ts#L35)
+Defined in: [packages/react-native-client/src/hooks/useScreenShare.ts:35](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/useScreenShare.ts#L35)
 
 This hook can toggle screen sharing on/off and provides current screen share state.
 

@@ -2,7 +2,7 @@
 
 > **SimulcastBandwidthLimits** = `object`
 
-Defined in: [react-client/src/types/public.ts:53](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/types/public.ts#L53)
+Defined in: [react-client/src/types/public.ts:53](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/types/public.ts#L53)
 
 ## Properties
 
@@ -10,7 +10,7 @@ Defined in: [react-client/src/types/public.ts:53](https://github.com/fishjam-clo
 
 > **1**: `number`
 
-Defined in: [react-client/src/types/public.ts:54](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/types/public.ts#L54)
+Defined in: [react-client/src/types/public.ts:54](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/types/public.ts#L54)
 
 ***
 
@@ -18,7 +18,7 @@ Defined in: [react-client/src/types/public.ts:54](https://github.com/fishjam-clo
 
 > **2**: `number`
 
-Defined in: [react-client/src/types/public.ts:55](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/types/public.ts#L55)
+Defined in: [react-client/src/types/public.ts:55](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/types/public.ts#L55)
 
 ***
 
@@ -26,4 +26,4 @@ Defined in: [react-client/src/types/public.ts:55](https://github.com/fishjam-clo
 
 > **3**: `number`
 
-Defined in: [react-client/src/types/public.ts:56](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/types/public.ts#L56)
+Defined in: [react-client/src/types/public.ts:56](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/types/public.ts#L56)

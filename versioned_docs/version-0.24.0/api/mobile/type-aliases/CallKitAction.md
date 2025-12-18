@@ -2,7 +2,7 @@
 
 > **CallKitAction** = `object`
 
-Defined in: [packages/react-native-client/src/hooks/useCallKit.ts:6](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/useCallKit.ts#L6)
+Defined in: [packages/react-native-client/src/hooks/useCallKit.ts:6](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/useCallKit.ts#L6)
 
 ## Properties
 
@@ -10,7 +10,7 @@ Defined in: [packages/react-native-client/src/hooks/useCallKit.ts:6](https://git
 
 > **ended**: `undefined`
 
-Defined in: [packages/react-native-client/src/hooks/useCallKit.ts:8](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/useCallKit.ts#L8)
+Defined in: [packages/react-native-client/src/hooks/useCallKit.ts:8](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/useCallKit.ts#L8)
 
 ***
 
@@ -18,7 +18,7 @@ Defined in: [packages/react-native-client/src/hooks/useCallKit.ts:8](https://git
 
 > **failed**: `string`
 
-Defined in: [packages/react-native-client/src/hooks/useCallKit.ts:9](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/useCallKit.ts#L9)
+Defined in: [packages/react-native-client/src/hooks/useCallKit.ts:9](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/useCallKit.ts#L9)
 
 ***
 
@@ -26,7 +26,7 @@ Defined in: [packages/react-native-client/src/hooks/useCallKit.ts:9](https://git
 
 > **held**: `boolean`
 
-Defined in: [packages/react-native-client/src/hooks/useCallKit.ts:11](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/useCallKit.ts#L11)
+Defined in: [packages/react-native-client/src/hooks/useCallKit.ts:11](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/useCallKit.ts#L11)
 
 ***
 
@@ -34,7 +34,7 @@ Defined in: [packages/react-native-client/src/hooks/useCallKit.ts:11](https://gi
 
 > **muted**: `boolean`
 
-Defined in: [packages/react-native-client/src/hooks/useCallKit.ts:10](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/useCallKit.ts#L10)
+Defined in: [packages/react-native-client/src/hooks/useCallKit.ts:10](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/useCallKit.ts#L10)
 
 ***
 
@@ -42,4 +42,4 @@ Defined in: [packages/react-native-client/src/hooks/useCallKit.ts:10](https://gi
 
 > **started**: `undefined`
 
-Defined in: [packages/react-native-client/src/hooks/useCallKit.ts:7](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/useCallKit.ts#L7)
+Defined in: [packages/react-native-client/src/hooks/useCallKit.ts:7](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/useCallKit.ts#L7)

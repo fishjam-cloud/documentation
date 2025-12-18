@@ -1,6 +1,6 @@
 # Interface: UseLivestreamViewerResult
 
-Defined in: [react-client/src/hooks/useLivestreamViewer.ts:11](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/useLivestreamViewer.ts#L11)
+Defined in: [react-client/src/hooks/useLivestreamViewer.ts:11](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/useLivestreamViewer.ts#L11)
 
 ## Properties
 
@@ -8,7 +8,7 @@ Defined in: [react-client/src/hooks/useLivestreamViewer.ts:11](https://github.co
 
 > **connect**: (`config`, `url?`) => `Promise`\<`void`\>
 
-Defined in: [react-client/src/hooks/useLivestreamViewer.ts:19](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/useLivestreamViewer.ts#L19)
+Defined in: [react-client/src/hooks/useLivestreamViewer.ts:19](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/useLivestreamViewer.ts#L19)
 
 Callback to start receiving a livestream.
 If the livestream is private, provide `token`.
@@ -31,7 +31,7 @@ If the livestream is public, provide `streamId`.
 
 > **disconnect**: () => `void`
 
-Defined in: [react-client/src/hooks/useLivestreamViewer.ts:21](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/useLivestreamViewer.ts#L21)
+Defined in: [react-client/src/hooks/useLivestreamViewer.ts:21](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/useLivestreamViewer.ts#L21)
 
 Callback used to disconnect from a stream previously connected to with [connect](#connect)
 
@@ -45,7 +45,7 @@ Callback used to disconnect from a stream previously connected to with [connect]
 
 > **error**: `null` \| `LivestreamError`
 
-Defined in: [react-client/src/hooks/useLivestreamViewer.ts:23](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/useLivestreamViewer.ts#L23)
+Defined in: [react-client/src/hooks/useLivestreamViewer.ts:23](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/useLivestreamViewer.ts#L23)
 
 Any errors encountered in [connect](#connect) will be present in this field.
 
@@ -55,7 +55,7 @@ Any errors encountered in [connect](#connect) will be present in this field.
 
 > **isConnected**: `boolean`
 
-Defined in: [react-client/src/hooks/useLivestreamViewer.ts:25](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/useLivestreamViewer.ts#L25)
+Defined in: [react-client/src/hooks/useLivestreamViewer.ts:25](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/useLivestreamViewer.ts#L25)
 
 Utility flag which indicates the current connection status
 
@@ -65,6 +65,6 @@ Utility flag which indicates the current connection status
 
 > **stream**: `null` \| `MediaStream`
 
-Defined in: [react-client/src/hooks/useLivestreamViewer.ts:13](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/useLivestreamViewer.ts#L13)
+Defined in: [react-client/src/hooks/useLivestreamViewer.ts:13](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/useLivestreamViewer.ts#L13)
 
 The received livestream media

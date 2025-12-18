@@ -2,7 +2,7 @@
 
 > `const` **useCameraPermissions**: (`options?`) => \[`null` \| `PermissionResponse`, `RequestPermissionMethod`\<`PermissionResponse`\>, `GetPermissionMethod`\<`PermissionResponse`\>\]
 
-Defined in: [packages/react-native-client/src/hooks/usePermissions.ts:31](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/usePermissions.ts#L31)
+Defined in: [packages/react-native-client/src/hooks/usePermissions.ts:31](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/usePermissions.ts#L31)
 
 Check or request permissions to access the camera.
 This uses both `requestCameraPermissionsAsync` and `getCameraPermissionsAsync` to interact with the permissions.

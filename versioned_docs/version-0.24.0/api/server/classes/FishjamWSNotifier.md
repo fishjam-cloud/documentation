@@ -1,6 +1,6 @@
 # Class: FishjamWSNotifier
 
-Defined in: [js-server-sdk/src/ws\_notifier.ts:76](https://github.com/fishjam-cloud/js-server-sdk/blob/eca87e0b5faa981bf89f1f25a67fef9be93d7ea7/packages/js-server-sdk/src/ws_notifier.ts#L76)
+Defined in: [js-server-sdk/src/ws\_notifier.ts:76](https://github.com/fishjam-cloud/js-server-sdk/blob/22932e9e40d6685e876f3295d34a2dc463114ca8/packages/js-server-sdk/src/ws_notifier.ts#L76)
 
 Notifier object that can be used to get notified about various events related to the Fishjam App.
 
@@ -14,7 +14,7 @@ Notifier object that can be used to get notified about various events related to
 
 > **new FishjamWSNotifier**(`config`, `onError`, `onClose`): `FishjamWSNotifier`
 
-Defined in: [js-server-sdk/src/ws\_notifier.ts:79](https://github.com/fishjam-cloud/js-server-sdk/blob/eca87e0b5faa981bf89f1f25a67fef9be93d7ea7/packages/js-server-sdk/src/ws_notifier.ts#L79)
+Defined in: [js-server-sdk/src/ws\_notifier.ts:79](https://github.com/fishjam-cloud/js-server-sdk/blob/22932e9e40d6685e876f3295d34a2dc463114ca8/packages/js-server-sdk/src/ws_notifier.ts#L79)
 
 #### Parameters
 

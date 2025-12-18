@@ -1,6 +1,6 @@
 # Interface: PeerOptionsAgent
 
-Defined in: fishjam-openapi/dist/index.d.ts:259
+Defined in: fishjam-openapi/dist/index.d.ts:297
 
 Options specific to the Agent peer
 
@@ -12,9 +12,9 @@ PeerOptionsAgent
 
 ### output?
 
-> `optional` **output**: `PeerOptionsAgentOutput`
+> `optional` **output**: `AgentOutput`
 
-Defined in: fishjam-openapi/dist/index.d.ts:265
+Defined in: fishjam-openapi/dist/index.d.ts:303
 
 #### Memberof
 
@@ -24,11 +24,9 @@ PeerOptionsAgent
 
 ### subscribeMode?
 
-> `optional` **subscribeMode**: `PeerOptionsAgentSubscribeModeEnum`
+> `optional` **subscribeMode**: `SubscribeMode`
 
-Defined in: fishjam-openapi/dist/index.d.ts:271
-
-Configuration of peer\'s subscribing policy
+Defined in: fishjam-openapi/dist/index.d.ts:309
 
 #### Memberof
 

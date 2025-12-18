@@ -1,6 +1,6 @@
 # Interface: FishjamProviderProps
 
-Defined in: [react-client/src/FishjamProvider.tsx:27](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/FishjamProvider.tsx#L27)
+Defined in: [react-client/src/FishjamProvider.tsx:27](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/FishjamProvider.tsx#L27)
 
 ## Extends
 
@@ -12,7 +12,7 @@ Defined in: [react-client/src/FishjamProvider.tsx:27](https://github.com/fishjam
 
 > `optional` **audioConfig**: [`StreamConfig`](../type-aliases/StreamConfig.md)
 
-Defined in: [react-client/src/FishjamProvider.tsx:55](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/FishjamProvider.tsx#L55)
+Defined in: [react-client/src/FishjamProvider.tsx:55](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/FishjamProvider.tsx#L55)
 
 Configure whether to use audio simulcast and which layers to send if so.
 
@@ -22,7 +22,7 @@ Configure whether to use audio simulcast and which layers to send if so.
 
 > `optional` **bandwidthLimits**: `Partial`\<[`BandwidthLimits`](../type-aliases/BandwidthLimits.md)\>
 
-Defined in: [react-client/src/FishjamProvider.tsx:47](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/FishjamProvider.tsx#L47)
+Defined in: [react-client/src/FishjamProvider.tsx:47](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/FishjamProvider.tsx#L47)
 
 Adjust max bandwidth limit for a single stream and simulcast.
 
@@ -32,7 +32,7 @@ Adjust max bandwidth limit for a single stream and simulcast.
 
 > `optional` **constraints**: `Pick`\<`MediaStreamConstraints`, `"audio"` \| `"video"`\>
 
-Defined in: [react-client/src/FishjamProvider.tsx:38](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/FishjamProvider.tsx#L38)
+Defined in: [react-client/src/FishjamProvider.tsx:38](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/FishjamProvider.tsx#L38)
 
 Set preferred constraints.
 
@@ -50,7 +50,7 @@ The media stream constraints as defined by the Web API.
 
 > `optional` **debug**: `boolean`
 
-Defined in: [react-client/src/FishjamProvider.tsx:63](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/FishjamProvider.tsx#L63)
+Defined in: [react-client/src/FishjamProvider.tsx:63](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/FishjamProvider.tsx#L63)
 
 Enables Fishjam SDK's debug logs in the console.
 
@@ -60,7 +60,7 @@ Enables Fishjam SDK's debug logs in the console.
 
 > **fishjamId**: `string`
 
-Defined in: [react-client/src/FishjamProvider.tsx:59](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/FishjamProvider.tsx#L59)
+Defined in: [react-client/src/FishjamProvider.tsx:59](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/FishjamProvider.tsx#L59)
 
 You can get you Fishjam ID at https://fishjam.io/app
 
@@ -70,7 +70,7 @@ You can get you Fishjam ID at https://fishjam.io/app
 
 > `optional` **persistLastDevice**: `boolean` \| [`PersistLastDeviceHandlers`](../type-aliases/PersistLastDeviceHandlers.md)
 
-Defined in: [react-client/src/FishjamProvider.tsx:43](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/FishjamProvider.tsx#L43)
+Defined in: [react-client/src/FishjamProvider.tsx:43](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/FishjamProvider.tsx#L43)
 
 Decide if you want Fishjam SDK to persist last used device in the local storage.
 You can also provide your getter and setter by using the [PersistLastDeviceHandlers](../type-aliases/PersistLastDeviceHandlers.md) interface.
@@ -81,7 +81,7 @@ You can also provide your getter and setter by using the [PersistLastDeviceHandl
 
 > `optional` **reconnect**: `boolean` \| [`ReconnectConfig`](../type-aliases/ReconnectConfig.md)
 
-Defined in: [react-client/src/FishjamProvider.tsx:32](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/FishjamProvider.tsx#L32)
+Defined in: [react-client/src/FishjamProvider.tsx:32](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/FishjamProvider.tsx#L32)
 
 Use [ReconnectConfig](../type-aliases/ReconnectConfig.md) to adjust reconnection policy to your needs or set false it.
 Set to true by default.
@@ -92,6 +92,6 @@ Set to true by default.
 
 > `optional` **videoConfig**: [`StreamConfig`](../type-aliases/StreamConfig.md)
 
-Defined in: [react-client/src/FishjamProvider.tsx:51](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/FishjamProvider.tsx#L51)
+Defined in: [react-client/src/FishjamProvider.tsx:51](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/FishjamProvider.tsx#L51)
 
 Configure whether to use video simulcast and which layers to send if so.

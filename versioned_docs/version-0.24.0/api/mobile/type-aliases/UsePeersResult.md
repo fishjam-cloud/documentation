@@ -2,7 +2,7 @@
 
 > **UsePeersResult**\<`PeerMetadata`, `ServerMetadata`\> = `object`
 
-Defined in: [packages/react-native-client/src/hooks/usePeers.ts:168](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/usePeers.ts#L168)
+Defined in: [packages/react-native-client/src/hooks/usePeers.ts:168](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/usePeers.ts#L168)
 
 Result type for the usePeers hook.
 
@@ -19,7 +19,7 @@ Result type for the usePeers hook.
 
 > **localPeer**: [`PeerWithTracks`](PeerWithTracks.md)\<`PeerMetadata`, `ServerMetadata`\> \| `null`
 
-Defined in: [packages/react-native-client/src/hooks/usePeers.ts:172](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/usePeers.ts#L172)
+Defined in: [packages/react-native-client/src/hooks/usePeers.ts:172](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/usePeers.ts#L172)
 
 ***
 
@@ -27,7 +27,7 @@ Defined in: [packages/react-native-client/src/hooks/usePeers.ts:172](https://git
 
 > **peers**: [`Peer`](Peer.md)\<`PeerMetadata`, `ServerMetadata`\>[]
 
-Defined in: [packages/react-native-client/src/hooks/usePeers.ts:176](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/usePeers.ts#L176)
+Defined in: [packages/react-native-client/src/hooks/usePeers.ts:176](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/usePeers.ts#L176)
 
 ***
 
@@ -35,4 +35,4 @@ Defined in: [packages/react-native-client/src/hooks/usePeers.ts:176](https://git
 
 > **remotePeers**: [`PeerWithTracks`](PeerWithTracks.md)\<`PeerMetadata`, `ServerMetadata`\>[]
 
-Defined in: [packages/react-native-client/src/hooks/usePeers.ts:174](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/usePeers.ts#L174)
+Defined in: [packages/react-native-client/src/hooks/usePeers.ts:174](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/usePeers.ts#L174)

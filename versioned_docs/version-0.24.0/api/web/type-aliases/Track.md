@@ -2,7 +2,7 @@
 
 > **Track** = `object`
 
-Defined in: [react-client/src/types/public.ts:14](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/types/public.ts#L14)
+Defined in: [react-client/src/types/public.ts:14](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/types/public.ts#L14)
 
 ## Properties
 
@@ -10,7 +10,7 @@ Defined in: [react-client/src/types/public.ts:14](https://github.com/fishjam-clo
 
 > **encoding**: [`Variant`](../enumerations/Variant.md) \| `null`
 
-Defined in: [react-client/src/types/public.ts:16](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/types/public.ts#L16)
+Defined in: [react-client/src/types/public.ts:16](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/types/public.ts#L16)
 
 ***
 
@@ -18,7 +18,7 @@ Defined in: [react-client/src/types/public.ts:16](https://github.com/fishjam-clo
 
 > `optional` **metadata**: `TrackMetadata`
 
-Defined in: [react-client/src/types/public.ts:18](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/types/public.ts#L18)
+Defined in: [react-client/src/types/public.ts:18](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/types/public.ts#L18)
 
 ***
 
@@ -26,7 +26,7 @@ Defined in: [react-client/src/types/public.ts:18](https://github.com/fishjam-clo
 
 > **simulcastConfig**: [`SimulcastConfig`](../interfaces/SimulcastConfig.md) \| `null`
 
-Defined in: [react-client/src/types/public.ts:19](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/types/public.ts#L19)
+Defined in: [react-client/src/types/public.ts:19](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/types/public.ts#L19)
 
 ***
 
@@ -34,7 +34,7 @@ Defined in: [react-client/src/types/public.ts:19](https://github.com/fishjam-clo
 
 > **stream**: `MediaStream` \| `null`
 
-Defined in: [react-client/src/types/public.ts:15](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/types/public.ts#L15)
+Defined in: [react-client/src/types/public.ts:15](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/types/public.ts#L15)
 
 ***
 
@@ -42,7 +42,7 @@ Defined in: [react-client/src/types/public.ts:15](https://github.com/fishjam-clo
 
 > **track**: `MediaStreamTrack` \| `null`
 
-Defined in: [react-client/src/types/public.ts:20](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/types/public.ts#L20)
+Defined in: [react-client/src/types/public.ts:20](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/types/public.ts#L20)
 
 ***
 
@@ -50,4 +50,4 @@ Defined in: [react-client/src/types/public.ts:20](https://github.com/fishjam-clo
 
 > **trackId**: [`TrackId`](TrackId.md)
 
-Defined in: [react-client/src/types/public.ts:17](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/types/public.ts#L17)
+Defined in: [react-client/src/types/public.ts:17](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/types/public.ts#L17)

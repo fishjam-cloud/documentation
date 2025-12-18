@@ -1,6 +1,6 @@
 # Class: ServiceUnavailableException
 
-Defined in: [js-server-sdk/src/exceptions/index.ts:33](https://github.com/fishjam-cloud/js-server-sdk/blob/eca87e0b5faa981bf89f1f25a67fef9be93d7ea7/packages/js-server-sdk/src/exceptions/index.ts#L33)
+Defined in: [js-server-sdk/src/exceptions/index.ts:33](https://github.com/fishjam-cloud/js-server-sdk/blob/22932e9e40d6685e876f3295d34a2dc463114ca8/packages/js-server-sdk/src/exceptions/index.ts#L33)
 
 ## Extends
 
@@ -12,7 +12,7 @@ Defined in: [js-server-sdk/src/exceptions/index.ts:33](https://github.com/fishja
 
 > **new ServiceUnavailableException**(`error`): `ServiceUnavailableException`
 
-Defined in: [js-server-sdk/src/exceptions/index.ts:13](https://github.com/fishjam-cloud/js-server-sdk/blob/eca87e0b5faa981bf89f1f25a67fef9be93d7ea7/packages/js-server-sdk/src/exceptions/index.ts#L13)
+Defined in: [js-server-sdk/src/exceptions/index.ts:13](https://github.com/fishjam-cloud/js-server-sdk/blob/22932e9e40d6685e876f3295d34a2dc463114ca8/packages/js-server-sdk/src/exceptions/index.ts#L13)
 
 #### Parameters
 
@@ -34,7 +34,7 @@ Defined in: [js-server-sdk/src/exceptions/index.ts:13](https://github.com/fishja
 
 > `optional` **axiosCode**: `string`
 
-Defined in: [js-server-sdk/src/exceptions/index.ts:11](https://github.com/fishjam-cloud/js-server-sdk/blob/eca87e0b5faa981bf89f1f25a67fef9be93d7ea7/packages/js-server-sdk/src/exceptions/index.ts#L11)
+Defined in: [js-server-sdk/src/exceptions/index.ts:11](https://github.com/fishjam-cloud/js-server-sdk/blob/22932e9e40d6685e876f3295d34a2dc463114ca8/packages/js-server-sdk/src/exceptions/index.ts#L11)
 
 #### Inherited from
 
@@ -46,7 +46,7 @@ Defined in: [js-server-sdk/src/exceptions/index.ts:11](https://github.com/fishja
 
 > `optional` **details**: `string`
 
-Defined in: [js-server-sdk/src/exceptions/index.ts:12](https://github.com/fishjam-cloud/js-server-sdk/blob/eca87e0b5faa981bf89f1f25a67fef9be93d7ea7/packages/js-server-sdk/src/exceptions/index.ts#L12)
+Defined in: [js-server-sdk/src/exceptions/index.ts:12](https://github.com/fishjam-cloud/js-server-sdk/blob/22932e9e40d6685e876f3295d34a2dc463114ca8/packages/js-server-sdk/src/exceptions/index.ts#L12)
 
 #### Inherited from
 
@@ -58,7 +58,7 @@ Defined in: [js-server-sdk/src/exceptions/index.ts:12](https://github.com/fishja
 
 > **statusCode**: `number`
 
-Defined in: [js-server-sdk/src/exceptions/index.ts:10](https://github.com/fishjam-cloud/js-server-sdk/blob/eca87e0b5faa981bf89f1f25a67fef9be93d7ea7/packages/js-server-sdk/src/exceptions/index.ts#L10)
+Defined in: [js-server-sdk/src/exceptions/index.ts:10](https://github.com/fishjam-cloud/js-server-sdk/blob/22932e9e40d6685e876f3295d34a2dc463114ca8/packages/js-server-sdk/src/exceptions/index.ts#L10)
 
 #### Inherited from
 

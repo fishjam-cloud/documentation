@@ -1,6 +1,6 @@
 # Interface: UseLivestreamStreamerResult
 
-Defined in: [react-client/src/hooks/useLivestreamStreamer.ts:27](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/useLivestreamStreamer.ts#L27)
+Defined in: [react-client/src/hooks/useLivestreamStreamer.ts:27](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/useLivestreamStreamer.ts#L27)
 
 ## Properties
 
@@ -8,7 +8,7 @@ Defined in: [react-client/src/hooks/useLivestreamStreamer.ts:27](https://github.
 
 > **connect**: (`inputs`, `urlOverride?`) => `Promise`\<`void`\>
 
-Defined in: [react-client/src/hooks/useLivestreamStreamer.ts:34](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/useLivestreamStreamer.ts#L34)
+Defined in: [react-client/src/hooks/useLivestreamStreamer.ts:34](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/useLivestreamStreamer.ts#L34)
 
 Callback used to start publishing the selected audio and video media streams.
 
@@ -33,7 +33,7 @@ Calling [connect](#connect) multiple times will have the effect of only publishi
 
 > **disconnect**: () => `void`
 
-Defined in: [react-client/src/hooks/useLivestreamStreamer.ts:36](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/useLivestreamStreamer.ts#L36)
+Defined in: [react-client/src/hooks/useLivestreamStreamer.ts:36](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/useLivestreamStreamer.ts#L36)
 
 Callback to stop publishing anything previously published with [connect](#connect)
 
@@ -47,9 +47,9 @@ Callback to stop publishing anything previously published with [connect](#connec
 
 > **error**: `null` \| `LivestreamError`
 
-Defined in: [react-client/src/hooks/useLivestreamStreamer.ts:38](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/useLivestreamStreamer.ts#L38)
+Defined in: [react-client/src/hooks/useLivestreamStreamer.ts:38](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/useLivestreamStreamer.ts#L38)
 
-Any errors encounterd in [connect](#connect) will populate this field
+Any errors encountered in [connect](#connect) will populate this field
 
 ***
 
@@ -57,6 +57,6 @@ Any errors encounterd in [connect](#connect) will populate this field
 
 > **isConnected**: `boolean`
 
-Defined in: [react-client/src/hooks/useLivestreamStreamer.ts:40](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/useLivestreamStreamer.ts#L40)
+Defined in: [react-client/src/hooks/useLivestreamStreamer.ts:40](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/useLivestreamStreamer.ts#L40)
 
 Utility flag which indicates the current connection status

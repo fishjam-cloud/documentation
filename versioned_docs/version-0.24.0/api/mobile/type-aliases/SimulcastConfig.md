@@ -2,7 +2,7 @@
 
 > **SimulcastConfig** = `object`
 
-Defined in: [packages/react-native-client/src/types.ts:15](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/types.ts#L15)
+Defined in: [packages/react-native-client/src/types.ts:15](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/types.ts#L15)
 
 A type describing simulcast configuration.
 
@@ -16,6 +16,6 @@ the original track resolution scaled down by 2 and 4 respectively.
 
 > **enabled**: `boolean`
 
-Defined in: [packages/react-native-client/src/types.ts:19](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/types.ts#L19)
+Defined in: [packages/react-native-client/src/types.ts:19](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/types.ts#L19)
 
 whether to simulcast track or not. By default simulcast is disabled.

@@ -1,6 +1,6 @@
 # Interface: JoinRoomConfig\<PeerMetadata\>
 
-Defined in: [react-client/src/hooks/useConnection.ts:10](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/useConnection.ts#L10)
+Defined in: [react-client/src/hooks/useConnection.ts:10](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/useConnection.ts#L10)
 
 ## Type Parameters
 
@@ -14,7 +14,7 @@ Defined in: [react-client/src/hooks/useConnection.ts:10](https://github.com/fish
 
 > `optional` **peerMetadata**: `PeerMetadata`
 
-Defined in: [react-client/src/hooks/useConnection.ts:18](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/useConnection.ts#L18)
+Defined in: [react-client/src/hooks/useConnection.ts:18](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/useConnection.ts#L18)
 
 String indexed record with metadata, that will be available to all other peers
 
@@ -24,6 +24,6 @@ String indexed record with metadata, that will be available to all other peers
 
 > **peerToken**: `string`
 
-Defined in: [react-client/src/hooks/useConnection.ts:14](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/useConnection.ts#L14)
+Defined in: [react-client/src/hooks/useConnection.ts:14](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/useConnection.ts#L14)
 
 Token received from server (or Room Manager)

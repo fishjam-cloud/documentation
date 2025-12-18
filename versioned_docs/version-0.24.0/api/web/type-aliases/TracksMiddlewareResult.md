@@ -2,7 +2,7 @@
 
 > **TracksMiddlewareResult** = `object`
 
-Defined in: [react-client/src/types/public.ts:26](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/types/public.ts#L26)
+Defined in: [react-client/src/types/public.ts:26](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/types/public.ts#L26)
 
 ## Properties
 
@@ -10,7 +10,7 @@ Defined in: [react-client/src/types/public.ts:26](https://github.com/fishjam-clo
 
 > **audioTrack**: `MediaStreamTrack` \| `null`
 
-Defined in: [react-client/src/types/public.ts:28](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/types/public.ts#L28)
+Defined in: [react-client/src/types/public.ts:28](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/types/public.ts#L28)
 
 ***
 
@@ -18,7 +18,7 @@ Defined in: [react-client/src/types/public.ts:28](https://github.com/fishjam-clo
 
 > **onClear**: () => `void`
 
-Defined in: [react-client/src/types/public.ts:29](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/types/public.ts#L29)
+Defined in: [react-client/src/types/public.ts:29](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/types/public.ts#L29)
 
 #### Returns
 
@@ -30,4 +30,4 @@ Defined in: [react-client/src/types/public.ts:29](https://github.com/fishjam-clo
 
 > **videoTrack**: `MediaStreamTrack`
 
-Defined in: [react-client/src/types/public.ts:27](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/types/public.ts#L27)
+Defined in: [react-client/src/types/public.ts:27](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/types/public.ts#L27)

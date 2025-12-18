@@ -2,7 +2,7 @@
 
 > **CameraConfigBase** = `object`
 
-Defined in: [packages/react-native-client/src/hooks/useCamera.ts:36](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/useCamera.ts#L36)
+Defined in: [packages/react-native-client/src/hooks/useCamera.ts:36](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/useCamera.ts#L36)
 
 ## Properties
 
@@ -10,7 +10,7 @@ Defined in: [packages/react-native-client/src/hooks/useCamera.ts:36](https://git
 
 > `optional` **cameraEnabled**: `boolean`
 
-Defined in: [packages/react-native-client/src/hooks/useCamera.ts:65](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/useCamera.ts#L65)
+Defined in: [packages/react-native-client/src/hooks/useCamera.ts:65](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/useCamera.ts#L65)
 
 whether the camera track is initially enabled, you can toggle it on/off later with toggleCamera method
 
@@ -24,7 +24,7 @@ whether the camera track is initially enabled, you can toggle it on/off later wi
 
 > `optional` **cameraId**: [`CameraId`](CameraId.md)
 
-Defined in: [packages/react-native-client/src/hooks/useCamera.ts:71](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/useCamera.ts#L71)
+Defined in: [packages/react-native-client/src/hooks/useCamera.ts:71](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/useCamera.ts#L71)
 
 id of the camera to start capture with. Get available cameras with `cameras`.
 You can switch the cameras later with `switchCamera` functions.
@@ -39,7 +39,7 @@ You can switch the cameras later with `switchCamera` functions.
 
 > `optional` **flipDimensions**: `boolean`
 
-Defined in: [packages/react-native-client/src/hooks/useCamera.ts:60](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/useCamera.ts#L60)
+Defined in: [packages/react-native-client/src/hooks/useCamera.ts:60](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/useCamera.ts#L60)
 
 whether to flip the dimensions of the video, that is whether to film in vertical orientation.
 This basically switches width with height and is only used to select closes capture format.
@@ -67,7 +67,7 @@ WebRTC device orientation handling:
 
 > `optional` **quality**: [`VideoQuality`](VideoQuality.md)
 
-Defined in: [packages/react-native-client/src/hooks/useCamera.ts:43](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/hooks/useCamera.ts#L43)
+Defined in: [packages/react-native-client/src/hooks/useCamera.ts:43](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/hooks/useCamera.ts#L43)
 
 resolution + aspect ratio of local video track, one of: `QVGA_169`, `VGA_169`, `QHD_169`, `HD_169`,
 `FHD_169`, `QVGA_43`, `VGA_43`, `QHD_43`, `HD_43`, `FHD_43`. Note that quality might be worse than

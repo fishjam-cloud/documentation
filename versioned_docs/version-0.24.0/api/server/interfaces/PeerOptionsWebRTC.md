@@ -1,6 +1,6 @@
 # Interface: PeerOptionsWebRTC
 
-Defined in: fishjam-openapi/dist/index.d.ts:311
+Defined in: fishjam-openapi/dist/index.d.ts:316
 
 Options specific to the WebRTC peer
 
@@ -10,25 +10,11 @@ PeerOptionsWebRTC
 
 ## Properties
 
-### enableSimulcast?
-
-> `optional` **enableSimulcast**: `boolean`
-
-Defined in: fishjam-openapi/dist/index.d.ts:317
-
-Enables the peer to use simulcast
-
-#### Memberof
-
-PeerOptionsWebRTC
-
-***
-
 ### metadata?
 
 > `optional` **metadata**: `object`
 
-Defined in: fishjam-openapi/dist/index.d.ts:323
+Defined in: fishjam-openapi/dist/index.d.ts:322
 
 Custom peer metadata
 
@@ -44,11 +30,9 @@ PeerOptionsWebRTC
 
 ### subscribeMode?
 
-> `optional` **subscribeMode**: `PeerOptionsWebRTCSubscribeModeEnum`
+> `optional` **subscribeMode**: `SubscribeMode`
 
-Defined in: fishjam-openapi/dist/index.d.ts:331
-
-Configuration of peer\'s subscribing policy
+Defined in: fishjam-openapi/dist/index.d.ts:330
 
 #### Memberof
 

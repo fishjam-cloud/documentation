@@ -2,7 +2,7 @@
 
 > **PeerWithTracks**\<`PeerMetadata`, `ServerMetadata`\> = `object`
 
-Defined in: [react-client/src/hooks/usePeers.ts:13](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/usePeers.ts#L13)
+Defined in: [react-client/src/hooks/usePeers.ts:13](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/usePeers.ts#L13)
 
 ## Type Parameters
 
@@ -17,7 +17,7 @@ Defined in: [react-client/src/hooks/usePeers.ts:13](https://github.com/fishjam-c
 
 > `optional` **cameraTrack**: [`Track`](Track.md)
 
-Defined in: [react-client/src/hooks/usePeers.ts:17](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/usePeers.ts#L17)
+Defined in: [react-client/src/hooks/usePeers.ts:17](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/usePeers.ts#L17)
 
 ***
 
@@ -25,7 +25,7 @@ Defined in: [react-client/src/hooks/usePeers.ts:17](https://github.com/fishjam-c
 
 > **customAudioTracks**: [`Track`](Track.md)[]
 
-Defined in: [react-client/src/hooks/usePeers.ts:22](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/usePeers.ts#L22)
+Defined in: [react-client/src/hooks/usePeers.ts:22](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/usePeers.ts#L22)
 
 ***
 
@@ -33,7 +33,7 @@ Defined in: [react-client/src/hooks/usePeers.ts:22](https://github.com/fishjam-c
 
 > **customVideoTracks**: [`Track`](Track.md)[]
 
-Defined in: [react-client/src/hooks/usePeers.ts:21](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/usePeers.ts#L21)
+Defined in: [react-client/src/hooks/usePeers.ts:21](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/usePeers.ts#L21)
 
 ***
 
@@ -41,7 +41,7 @@ Defined in: [react-client/src/hooks/usePeers.ts:21](https://github.com/fishjam-c
 
 > **id**: [`PeerId`](PeerId.md)
 
-Defined in: [react-client/src/hooks/usePeers.ts:14](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/usePeers.ts#L14)
+Defined in: [react-client/src/hooks/usePeers.ts:14](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/usePeers.ts#L14)
 
 ***
 
@@ -49,7 +49,7 @@ Defined in: [react-client/src/hooks/usePeers.ts:14](https://github.com/fishjam-c
 
 > `optional` **metadata**: [`Metadata`](Metadata.md)\<`PeerMetadata`, `ServerMetadata`\>
 
-Defined in: [react-client/src/hooks/usePeers.ts:15](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/usePeers.ts#L15)
+Defined in: [react-client/src/hooks/usePeers.ts:15](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/usePeers.ts#L15)
 
 ***
 
@@ -57,7 +57,7 @@ Defined in: [react-client/src/hooks/usePeers.ts:15](https://github.com/fishjam-c
 
 > `optional` **microphoneTrack**: [`Track`](Track.md)
 
-Defined in: [react-client/src/hooks/usePeers.ts:18](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/usePeers.ts#L18)
+Defined in: [react-client/src/hooks/usePeers.ts:18](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/usePeers.ts#L18)
 
 ***
 
@@ -65,7 +65,7 @@ Defined in: [react-client/src/hooks/usePeers.ts:18](https://github.com/fishjam-c
 
 > `optional` **screenShareAudioTrack**: [`Track`](Track.md)
 
-Defined in: [react-client/src/hooks/usePeers.ts:20](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/usePeers.ts#L20)
+Defined in: [react-client/src/hooks/usePeers.ts:20](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/usePeers.ts#L20)
 
 ***
 
@@ -73,7 +73,7 @@ Defined in: [react-client/src/hooks/usePeers.ts:20](https://github.com/fishjam-c
 
 > `optional` **screenShareVideoTrack**: [`Track`](Track.md)
 
-Defined in: [react-client/src/hooks/usePeers.ts:19](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/usePeers.ts#L19)
+Defined in: [react-client/src/hooks/usePeers.ts:19](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/usePeers.ts#L19)
 
 ***
 
@@ -81,4 +81,4 @@ Defined in: [react-client/src/hooks/usePeers.ts:19](https://github.com/fishjam-c
 
 > **tracks**: [`Track`](Track.md)[]
 
-Defined in: [react-client/src/hooks/usePeers.ts:16](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/usePeers.ts#L16)
+Defined in: [react-client/src/hooks/usePeers.ts:16](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/usePeers.ts#L16)

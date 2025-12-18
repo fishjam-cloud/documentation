@@ -2,7 +2,7 @@
 
 > **PictureInPictureConfig** = `object`
 
-Defined in: [packages/react-native-client/src/components/PipContainerView.tsx:5](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/components/PipContainerView.tsx#L5)
+Defined in: [packages/react-native-client/src/components/PipContainerView.tsx:5](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/components/PipContainerView.tsx#L5)
 
 ## Properties
 
@@ -10,7 +10,7 @@ Defined in: [packages/react-native-client/src/components/PipContainerView.tsx:5]
 
 > `optional` **allowsCameraInBackground**: `boolean`
 
-Defined in: [packages/react-native-client/src/components/PipContainerView.tsx:8](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/components/PipContainerView.tsx#L8)
+Defined in: [packages/react-native-client/src/components/PipContainerView.tsx:8](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/components/PipContainerView.tsx#L8)
 
 ***
 
@@ -18,7 +18,7 @@ Defined in: [packages/react-native-client/src/components/PipContainerView.tsx:8]
 
 > `optional` **primaryPlaceholderText**: `string`
 
-Defined in: [packages/react-native-client/src/components/PipContainerView.tsx:9](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/components/PipContainerView.tsx#L9)
+Defined in: [packages/react-native-client/src/components/PipContainerView.tsx:9](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/components/PipContainerView.tsx#L9)
 
 ***
 
@@ -26,7 +26,7 @@ Defined in: [packages/react-native-client/src/components/PipContainerView.tsx:9]
 
 > `optional` **secondaryPlaceholderText**: `string`
 
-Defined in: [packages/react-native-client/src/components/PipContainerView.tsx:10](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/components/PipContainerView.tsx#L10)
+Defined in: [packages/react-native-client/src/components/PipContainerView.tsx:10](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/components/PipContainerView.tsx#L10)
 
 ***
 
@@ -34,7 +34,7 @@ Defined in: [packages/react-native-client/src/components/PipContainerView.tsx:10
 
 > `optional` **startAutomatically**: `boolean`
 
-Defined in: [packages/react-native-client/src/components/PipContainerView.tsx:6](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/components/PipContainerView.tsx#L6)
+Defined in: [packages/react-native-client/src/components/PipContainerView.tsx:6](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/components/PipContainerView.tsx#L6)
 
 ***
 
@@ -42,4 +42,4 @@ Defined in: [packages/react-native-client/src/components/PipContainerView.tsx:6]
 
 > `optional` **stopAutomatically**: `boolean`
 
-Defined in: [packages/react-native-client/src/components/PipContainerView.tsx:7](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/components/PipContainerView.tsx#L7)
+Defined in: [packages/react-native-client/src/components/PipContainerView.tsx:7](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/components/PipContainerView.tsx#L7)

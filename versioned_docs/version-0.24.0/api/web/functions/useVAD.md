@@ -2,7 +2,7 @@
 
 > **useVAD**(`peerIds`): `Record`\<[`PeerId`](../type-aliases/PeerId.md), `boolean`\>
 
-Defined in: [react-client/src/hooks/useVAD.ts:25](https://github.com/fishjam-cloud/web-client-sdk/blob/107b6ffadabe4f3f1c2f36f2cea7ac93db908c8c/packages/react-client/src/hooks/useVAD.ts#L25)
+Defined in: [react-client/src/hooks/useVAD.ts:25](https://github.com/fishjam-cloud/web-client-sdk/blob/a1e4bfe8ef582d1924accb8053fa0de389380124/packages/react-client/src/hooks/useVAD.ts#L25)
 
 Voice activity detection. Use this hook to check if voice is detected in audio track for given peer(s).
 

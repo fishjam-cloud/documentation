@@ -2,7 +2,7 @@
 
 > **VideoRendererProps** = `object`
 
-Defined in: [packages/react-native-client/src/components/VideoRendererView.tsx:8](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/components/VideoRendererView.tsx#L8)
+Defined in: [packages/react-native-client/src/components/VideoRendererView.tsx:8](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/components/VideoRendererView.tsx#L8)
 
 ## Properties
 
@@ -10,7 +10,7 @@ Defined in: [packages/react-native-client/src/components/VideoRendererView.tsx:8
 
 > `optional` **skipRenderOutsideVisibleArea**: `boolean`
 
-Defined in: [packages/react-native-client/src/components/VideoRendererView.tsx:21](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/components/VideoRendererView.tsx#L21)
+Defined in: [packages/react-native-client/src/components/VideoRendererView.tsx:21](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/components/VideoRendererView.tsx#L21)
 
 Whether the video should be rendered if it's off screen or hidden.
 
@@ -20,7 +20,7 @@ Whether the video should be rendered if it's off screen or hidden.
 
 > `optional` **style**: `StyleProp`\<`ViewStyle`\>
 
-Defined in: [packages/react-native-client/src/components/VideoRendererView.tsx:22](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/components/VideoRendererView.tsx#L22)
+Defined in: [packages/react-native-client/src/components/VideoRendererView.tsx:22](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/components/VideoRendererView.tsx#L22)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: [packages/react-native-client/src/components/VideoRendererView.tsx:2
 
 > **trackId**: [`TrackId`](TrackId.md)
 
-Defined in: [packages/react-native-client/src/components/VideoRendererView.tsx:12](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/components/VideoRendererView.tsx#L12)
+Defined in: [packages/react-native-client/src/components/VideoRendererView.tsx:12](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/components/VideoRendererView.tsx#L12)
 
 id of the video track which you want to render.
 
@@ -38,7 +38,7 @@ id of the video track which you want to render.
 
 > `optional` **videoLayout**: [`VideoLayout`](VideoLayout.md)
 
-Defined in: [packages/react-native-client/src/components/VideoRendererView.tsx:17](https://github.com/fishjam-cloud/mobile-client-sdk/blob/47936f2f7cc7d0d6100314ad92f0ac25bd097980/packages/react-native-client/src/components/VideoRendererView.tsx#L17)
+Defined in: [packages/react-native-client/src/components/VideoRendererView.tsx:17](https://github.com/fishjam-cloud/mobile-client-sdk/blob/efa62a8334bae1f0b89394bc9b884c47f9be9b37/packages/react-native-client/src/components/VideoRendererView.tsx#L17)
 
 Video layout inside of the component
 

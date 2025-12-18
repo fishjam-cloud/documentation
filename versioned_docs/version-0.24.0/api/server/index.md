@@ -8,6 +8,8 @@
 ## Other
 
 - [PeerStatus](enumerations/PeerStatus.md)
+- [RoomType](enumerations/RoomType.md)
+- [VideoCodec](enumerations/VideoCodec.md)
 - [BadRequestException](classes/BadRequestException.md)
 - [FishjamAgent](classes/FishjamAgent.md)
 - [FishjamBaseException](classes/FishjamBaseException.md)
@@ -48,8 +50,6 @@
 - [PeerMetadataUpdated](type-aliases/PeerMetadataUpdated.md)
 - [PeerOptions](type-aliases/PeerOptions.md)
 - [Room](type-aliases/Room.md)
-- [RoomConfigRoomTypeEnum](type-aliases/RoomConfigRoomTypeEnum.md)
-- [RoomConfigVideoCodecEnum](type-aliases/RoomConfigVideoCodecEnum.md)
 - [RoomCrashed](type-aliases/RoomCrashed.md)
 - [RoomCreated](type-aliases/RoomCreated.md)
 - [RoomDeleted](type-aliases/RoomDeleted.md)
@@ -63,6 +63,4 @@
 - [TrackType](type-aliases/TrackType.md)
 - [ViewerConnected](type-aliases/ViewerConnected.md)
 - [ViewerDisconnected](type-aliases/ViewerDisconnected.md)
-- [RoomConfigRoomTypeEnum](variables/RoomConfigRoomTypeEnum.md)
-- [RoomConfigVideoCodecEnum](variables/RoomConfigVideoCodecEnum.md)
 - [ServerMessage](variables/ServerMessage.md)
