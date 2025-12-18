@@ -1,0 +1,53 @@
+# Debugging and Logging
+
+The Fishjam SDK includes a built-in debugging mode to help developers troubleshoot connectivity and media issues during development. This feature controls the verbosity of the SDK's internal logging mechanisms.
+
+## Overview
+
+By default, the SDK suppresses internal logs to keep your browser console clean in production environments. Enabling `debug` mode allows the SDK to output warnings and errors to the console, prefixed with `[FISHJAM]`.
+
+## Usage
+
+To enable debugging in a React application, pass the `debug` prop to the `FishjamProvider`.
+
+```tsx
+import { FishjamProvider } from "@fishjam-cloud/react-client";
+
+function Root() {
+  return (
+    <FishjamProvider
+      fishjamId="your-fishjam-id"
+      debug={true} // Enable debug logs
+    >
+      <App />
+    </FishjamProvider>
+  );
+}
+```
+
+We recommend toggling this based on your environment variables:
+
+```tsx
+<FishjamProvider
+  fishjamId={process.env.FISHJAM_ID}
+  debug={process.env.NODE_ENV === "development"}
+>
+  <App />
+</FishjamProvider>
+```
+
+## Behavior
+
+- **Enabled (`true`):** The SDK will log internal warnings (e.g., permission errors, socket closures, signaling issues) and errors to the browser console. All logs are prefixed with `[FISHJAM]` for easy filtering.
+- **Disabled (`false` or `undefined`):** The SDK operates silently, suppressing internal `console.warn` and `console.error` calls to prevent console pollution.
+
+### Example Output
+
+When enabled, you may see logs similar to:
+
+```text
+[FISHJAM] Socket closed with reason: ...
+[FISHJAM] Couldn't get camera permission: NotAllowedError ...
+[FISHJAM] ICE connection: disconnected
+
+```
