@@ -1,0 +1,38 @@
+---
+sidebar_position: 5
+---
+
+# Display media of other peers
+
+To access data and media of other peers, use the [`usePeers`](../../api/web/functions/usePeers) hook.
+It returns two properties, [`remotePeers`](../../api/web/functions/usePeers) and [`localPeer`](../../api/web/functions/usePeers).
+They contain all the tracks of other peers and all the tracks of the local user, respectively.
+
+### Example of playing other peers' available media
+
+```tsx
+import React, { FC } from "react";
+
+const VideoRenderer: FC<{ stream?: MediaStream | null }> = (_) => <video />;
+
+const AudioPlayer: FC<{ stream?: MediaStream | null }> = (_) => <audio />;
+
+// ---cut---
+import { usePeers } from "@fishjam-cloud/react-client";
+
+export function Component() {
+  const { remotePeers } = usePeers();
+
+  return (
+    <ul>
+      {remotePeers.map(({ id, cameraTrack, microphoneTrack }) => (
+        <li key={id}>
+          <VideoRenderer stream={cameraTrack?.stream} /> // remember to import
+          your VideoRenderer component
+          <AudioPlayer stream={microphoneTrack?.stream} />
+        </li>
+      ))}
+    </ul>
+  );
+}
+```

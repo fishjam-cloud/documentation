@@ -1,0 +1,81 @@
+---
+type: explanation
+sidebar_position: 1
+---
+
+# What is the Sandbox API?
+
+The Sandbox API is a development tool that simplifies getting started with Fishjam by providing a simple backend for testing, eliminating the need to build your own server initially.
+
+## What can the Sandbox API do?
+
+The Sandbox API is an HTTP server that comes with Fishjam's Sandbox environment.
+It provides basic room creation and peer management functionality without requiring you to set up your own backend infrastructure.
+
+### Key Characteristics
+
+- **Development-purposed**: Designed for initial development and testing
+- **No authentication**: Simplified access for quick prototyping
+- **Sandbox-only**: Only available in the Sandbox environment
+
+## The Problem Sandbox API Solves
+
+When starting with videoconferencing or livestreaming development, you typically need:
+
+1. A **Backend server** to create rooms
+2. An **Authentication system** to manage users
+3. **Token management** for secure peer access
+4. **API endpoints** for your frontend to call
+
+This creates a problem: to test your frontend, you need a backend, but during prototyping you want to focus on frontend development first.
+The Sandbox API mitigates this issue and allows you to start frontend development ASAP.
+
+## Relationship to Server SDKs
+
+The Sandbox API is essentially a simplified application built using the Fishjam Server SDKs:
+
+```typescript
+import {
+  FishjamClient,
+  RoomConfigRoomTypeEnum,
+} from "@fishjam-cloud/js-server-sdk";
+import express from "express";
+const fishjamId = "";
+const managementToken = "";
+const app = express();
+
+// ---cut---
+// What Sandbox API does internally (simplified)
+const fishjamClient = new FishjamClient({ fishjamId, managementToken });
+
+app.get("/", async (req: express.Request, res: express.Response) => {
+  const { roomName, peerName, roomType } = req.query;
+
+  // Create or get room
+  const room = await fishjamClient.createRoom({
+    roomType: roomType as RoomConfigRoomTypeEnum,
+  });
+
+  // Create or get peer
+  const { peer, peerToken } = await fishjamClient.createPeer(room.id);
+
+  res.json({ peerToken });
+});
+```
+
+This shows you exactly what your production backend needs to do, just with proper authentication and error handling.
+
+## See also
+
+To understand how to use The Sandbox API for development:
+
+- [How to use The Sandbox API for testing](../how-to/features/sandbox-api-testing)
+
+To learn about building your own backend:
+
+- [Backend Quick Start Tutorial](../tutorials/backend-quick-start)
+- [How to set up your server](../how-to/backend/server-setup)
+
+To understand the security model:
+
+- [Security & Token Model](../explanation/security-tokens)

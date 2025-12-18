@@ -1,0 +1,11 @@
+{
+  "label": "Tutorials",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "title": "Tutorials",
+    "description": "Learning-oriented lessons that take you through a series of steps to complete a project. Most useful when you want to get started with Fishjam.",
+    "slug": "/tutorials"
+  },
+  "collapsible": false
+}
