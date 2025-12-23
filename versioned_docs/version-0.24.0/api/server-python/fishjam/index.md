@@ -394,7 +394,7 @@ True if livestream viewers can omit specifying a token.
 ```python
 class AgentOptions:
 ```
-Options specific to a WebRTC Peer.
+Options specific to an Agent Peer.
 
 Attributes:
 - output: Configuration for the agent's output options.
