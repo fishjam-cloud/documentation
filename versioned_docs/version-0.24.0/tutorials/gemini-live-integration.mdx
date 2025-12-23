@@ -163,6 +163,7 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
     ```ts
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
     import GI from '@fishjam-cloud/js-server-sdk/gemini';
+    import { Modality } from '@google/genai';
 
     const fishjamId = '';
     const managementToken = '';
@@ -178,9 +179,7 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
       output: GI.geminiInputAudioSettings,
     });
 
-    enum Modality {
-      AUDIO = 'AUDIO'
-    }
+    
 
     // ---cut---
     import GeminiIntegration from '@fishjam-cloud/js-server-sdk/gemini';
