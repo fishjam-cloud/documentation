@@ -136,8 +136,7 @@ Create a Fishjam agent configured to match the audio format that the Google clie
   <TabItem value="python" label="Python">
 
     ```python
-    from fishjam.peer import SubscribeOptions, SubscribeOptionsAudioSampleRate
-    from fishjam.agent import OutgoingAudioTrackOptions, TrackEncoding
+    from fishjam import AgentOptions
     from fishjam.integrations.gemini import GeminiIntegration
 
     room = fishjam_client.create_room()
