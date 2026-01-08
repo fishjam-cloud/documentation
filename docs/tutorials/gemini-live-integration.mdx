@@ -160,7 +160,6 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
   <TabItem value="ts" label="TypeScript">
     Now we setup the callbacks. We need to forward incoming Fishjam audio to Google, and forward incoming Google audio to Fishjam.
     ```ts
-    // @errors: 2307
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
     import GI from '@fishjam-cloud/js-server-sdk/gemini';
 
