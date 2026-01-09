@@ -55,6 +55,7 @@
     "@docusaurus/module-type-aliases": "^3.8.1",
     "@docusaurus/tsconfig": "^3.8.1",
     "@docusaurus/types": "^3.8.1",
+    "@google/genai": "^1.35.0",
     "@shikijs/twoslash": "^3.6.0",
     "cspell": "^9.1.2",
     "docusaurus-plugin-typedoc": "1.4.0",

@@ -136,8 +136,7 @@ Create a Fishjam agent configured to match the audio format that the Google clie
   <TabItem value="python" label="Python">
 
     ```python
-    from fishjam.peer import SubscribeOptions, SubscribeOptionsAudioSampleRate
-    from fishjam.agent import OutgoingAudioTrackOptions, TrackEncoding
+    from fishjam import AgentOptions
     from fishjam.integrations.gemini import GeminiIntegration
 
     room = fishjam_client.create_room()
@@ -178,12 +177,11 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
       output: GI.geminiInputAudioSettings,
     });
 
-    enum Modality {
-      AUDIO = 'AUDIO'
-    }
+
 
     // ---cut---
     import GeminiIntegration from '@fishjam-cloud/js-server-sdk/gemini';
+    import { Modality } from '@google/genai';
 
     const GEMINI_MODEL = 'gemini-2.5-flash-native-audio-preview-12-2025'
 
