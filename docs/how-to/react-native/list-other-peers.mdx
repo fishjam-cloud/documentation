@@ -11,36 +11,39 @@ other peers, together with the tracks that they are streaming.
 
 ```tsx
 import React from "react";
-import { View } from "react-native";
-import {
-  usePeers,
-  VideoRendererView,
-} from "@fishjam-cloud/react-native-client";
+import { View, Text } from "react-native";
+import { usePeers, RTCView } from "@fishjam-cloud/mobile-client";
+
+//TODO: FCE-2487 remove it when MediaStream will be updated
+interface MediaStreamWithURL extends MediaStream {
+  toURL(): string;
+}
+
+function VideoPlayer({ stream }: { stream: MediaStream | null }) {
+  const streamURL = stream ? (stream as MediaStreamWithURL).toURL() : null;
+  if (!streamURL) return <Text>No video</Text>;
+  return (
+    <RTCView streamURL={streamURL} style={{ height: 200, width: "100%" }} objectFit="cover" />
+  );
+}
 
 export function ShowAllPeers() {
   const { remotePeers, localPeer } = usePeers(); // [!code highlight]
 
-  const videoTracks = remotePeers.flatMap(
-    (peer) =>
-      peer.tracks.filter((track) => track.type === "Video" && track.isActive), // [!code highlight]
-  );
-  const localTrack = localPeer?.tracks.find((t) => t.type === "Video"); // [!code highlight]
-
   return (
     <View>
-      {localTrack && (
-        <VideoRendererView
-          key={localTrack.id}
-          trackId={localTrack.id}
-          videoLayout="FIT"
-        />
+      {/* Local camera */}
+      {localPeer?.cameraTrack?.stream && ( // [!code highlight]
+        <VideoPlayer stream={localPeer.cameraTrack.stream} />
       )}
-      {videoTracks.map((track) => (
-        <VideoRendererView
-          key={track.id}
-          trackId={track.id}
-          videoLayout="FIT"
-        />
+
+      {/* Remote cameras */}
+      {remotePeers.map((peer) => ( // [!code highlight]
+        <View key={peer.id}>
+          {peer.cameraTrack?.stream && (
+            <VideoPlayer stream={peer.cameraTrack.stream} />
+          )}
+        </View>
       ))}
     </View>
   );
@@ -49,6 +52,6 @@ export function ShowAllPeers() {
 
 :::tip[Enable Picture in Picture]
 
-To allow users to continue watching video in a floating window when they background your app, wrap your video call UI with the `PipContainerView` component. See the [Picture in Picture guide](./picture-in-picture) for more details.
+To allow users to continue watching video in a floating window when they background your app, use the `RTCPIPView` component. See the [Picture in Picture guide](./picture-in-picture) for more details.
 
 :::

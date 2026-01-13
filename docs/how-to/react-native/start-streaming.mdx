@@ -16,51 +16,74 @@ enabled camera and microphone will start streaming to Room.
 
 ## Enable your camera
 
-First, you have to enable your camera by calling [`prepareCamera`](../../api/mobile/functions/useCamera#preparecamera) method.
-You can open show camera preview with [`VideoPreviewView`](../../api/mobile/variables/VideoPreviewView) component
+First, you have to enable your camera by calling [`startCamera`](../../api/mobile/functions/useCamera#startcamera) method.
+You can show camera preview with `RTCView` component.
 
 ```tsx
 import React, { useEffect } from "react";
-import {
-  useCamera,
-  VideoPreviewView,
-} from "@fishjam-cloud/react-native-client";
+import { View, Text } from "react-native";
+import { useCamera, RTCView } from "@fishjam-cloud/mobile-client";
 
-export function ViewPreview() {
-  const { prepareCamera } = useCamera(); // [!code highlight]
+//TODO: FCE-2487 remove it when MediaStream will be updated
+interface MediaStreamWithURL extends MediaStream {
+  toURL(): string;
+}
+
+export function CameraPreview() {
+  const { startCamera, cameraStream } = useCamera(); // [!code highlight]
 
   useEffect(() => {
-    prepareCamera({ cameraEnabled: true }); // [!code highlight]
-  }, [prepareCamera]);
+    startCamera(); // [!code highlight]
+  }, [startCamera]);
 
-  return <VideoPreviewView />;
+  const streamURL = cameraStream
+    ? (cameraStream as MediaStreamWithURL).toURL()
+    : null;
+
+  return (
+    <View>
+      {streamURL ? (
+        <RTCView
+          streamURL={streamURL}
+          style={{ height: 300, width: 300 }}
+          objectFit="cover"
+          mirror={true}
+        />
+      ) : (
+        <Text>No camera stream</Text>
+      )}
+    </View>
+  );
 }
 ```
 
 ### Listing user cameras
 
-To list all cameras available on device, you can use [`cameras`](../../api/mobile/functions/useCamera#cameras) property from [`useCamera`](../../api/mobile/functions/useCamera) hook.
+To list all cameras available on device, you can use [`cameraDevices`](../../api/mobile/functions/useCamera#cameradevices) property from [`useCamera`](../../api/mobile/functions/useCamera) hook.
 This way, you can either automatically choose camera (front/back) or allow user to select camera type.
 
-To change camera, simply call [`switchCamera`](../../api/mobile/functions/useCamera#switchcamera) method.
+To change camera, simply call [`selectCamera`](../../api/mobile/functions/useCamera#selectcamera) method.
 
 ```tsx
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { Button } from "react-native";
-import { useCamera } from "@fishjam-cloud/react-native-client";
+import { useCamera, DeviceItem } from "@fishjam-cloud/mobile-client";
 
 export function FlipButton() {
-  const { cameras, switchCamera, currentCamera } = useCamera(); // [!code highlight]
+  const { cameraDevices, selectCamera, currentCamera } = useCamera(); // [!code highlight]
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const onPressFlipCamera = useCallback(() => {
-    // find first camera facing opposite direction than current camera
-    const otherCamera = cameras.find(
-      (camera) => camera.facingDirection !== currentCamera?.facingDirection,
-    );
-    if (otherCamera) {
-      switchCamera(otherCamera.id); // [!code highlight]
+    if (cameraDevices.length === 0) return;
+
+    // Cycle through available cameras
+    const nextIndex = (currentIndex + 1) % cameraDevices.length;
+    const nextCamera = cameraDevices[nextIndex];
+    if (nextCamera) {
+      selectCamera(nextCamera.deviceId); // [!code highlight]
+      setCurrentIndex(nextIndex);
     }
-  }, [cameras, currentCamera?.facingDirection, switchCamera]);
+  }, [cameraDevices, currentIndex, selectCamera]);
 
   return <Button onPress={onPressFlipCamera} title="Flip Camera" />;
 }
@@ -73,7 +96,7 @@ To change camera state, you use [`toggleCamera`](../../api/mobile/functions/useC
 ```tsx
 import { Button } from "react-native";
 import React from "react";
-import { useCamera } from "@fishjam-cloud/react-native-client";
+import { useCamera } from "@fishjam-cloud/mobile-client";
 
 export function ToggleCameraButton() {
   const { isCameraOn, toggleCamera } = useCamera(); // [!code highlight]
@@ -94,7 +117,7 @@ Microphone works similar to camera. In order to enable it, you have to call [`to
 ```tsx
 import { Button } from "react-native";
 import React from "react";
-import { useMicrophone } from "@fishjam-cloud/react-native-client";
+import { useMicrophone } from "@fishjam-cloud/mobile-client";
 
 export function ToggleMicrophoneButton() {
   const { isMicrophoneOn, toggleMicrophone } = useMicrophone(); // [!code highlight]

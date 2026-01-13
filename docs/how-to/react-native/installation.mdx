@@ -32,7 +32,7 @@ You can also follow more detailed [Expo instructions](https://docs.expo.dev/get-
 
 ## Step 1: Install the Package
 
-Install `@fishjam-cloud/react-native-client` with your preferred package manager.
+Install `@fishjam-cloud/mobile-client` with your preferred package manager.
 
 <InstallPackage />
 
@@ -58,7 +58,7 @@ Here's an example of how to use both hooks:
 import {
   useCameraPermissions,
   useMicrophonePermissions,
-} from "@fishjam-cloud/react-native-client";
+} from "@fishjam-cloud/mobile-client";
 import { useEffect } from "react";
 
 const [cameraPermission, requestCameraPermission, getCameraPermission] =
@@ -94,7 +94,7 @@ You can control when and how permissions are requested by passing an `options` o
 By default, `get` is called automatically (auto fetch is `true`), and `request` is not (auto request is `false`). You can change this behavior:
 
 ```tsx
-import { useCameraPermissions } from "@fishjam-cloud/react-native-client";
+import { useCameraPermissions } from "@fishjam-cloud/mobile-client";
 // Do not auto-fetch permission status, enable auto-request
 const [permission, requestPermission] = useCameraPermissions({
   get: false, // disables auto-fetch

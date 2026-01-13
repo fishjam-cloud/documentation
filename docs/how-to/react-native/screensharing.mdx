@@ -42,7 +42,7 @@ You need to modify `app.json` file and add our plugin:
     ...
     "plugins": [
       [
-        "@fishjam-cloud/react-native-client",
+        "@fishjam-cloud/mobile-client",
         {
           "ios": {
             "enableScreensharing": true,
@@ -228,7 +228,7 @@ You can use [`useScreenShare`](../../api/mobile/functions/useScreenShare) hook t
 
 :::tip[Permissions]
 
-Permission request is handled for you as soon as you call [`toggleScreenShare`](../../api/mobile/functions/useScreenShare#togglescreenshare).
+Permission request is handled for you as soon as you call [`startStreaming`](../../api/mobile/functions/useScreenShare#startstreaming).
 
 :::
 
@@ -238,26 +238,29 @@ On Android API level >= 24, you must use a foreground service when screen sharin
 
 :::
 
-You can enable/disable screen sharing with [`toggleScreenShare`](../../api/mobile/functions/useScreenShare#togglescreenshare) method.
-And check current state with [`isScreenShareOn`](../../api/mobile/functions/useScreenShare#isscreenshareon) property.
+You can enable/disable screen sharing with [`startStreaming`](../../api/mobile/functions/useScreenShare#startstreaming) and [`stopStreaming`](../../api/mobile/functions/useScreenShare#stopstreaming) methods.
+And check current state by checking if [`stream`](../../api/mobile/functions/useScreenShare#stream) exists.
 
 ```tsx
 import React, { useCallback } from "react";
 import { Button } from "react-native";
-import { useScreenShare } from "@fishjam-cloud/react-native-client";
+import { useScreenShare } from "@fishjam-cloud/mobile-client";
 
 export function ScreenShareButton() {
-  const { toggleScreenShare, isScreenShareOn } = useScreenShare(); // [!code highlight]
+  const { startStreaming, stopStreaming, stream } = useScreenShare(); // [!code highlight]
 
-  const onPressToggle = useCallback(
-    () => toggleScreenShare(), // [!code highlight]
-    [toggleScreenShare],
-  );
+  const onPressToggle = useCallback(() => {
+    if (stream) {
+      stopStreaming(); // [!code highlight]
+    } else {
+      startStreaming(); // [!code highlight]
+    }
+  }, [stream, startStreaming, stopStreaming]);
 
   return (
     <Button
       onPress={onPressToggle}
-      title={`${isScreenShareOn ? "Disable" : "Enable"} screen share`}
+      title={`${stream ? "Disable" : "Enable"} screen share`}
     />
   );
 }

@@ -49,41 +49,27 @@ npx expo prebuild
 2. Navigate to your Sandbox environment
 3. Copy your Fishjam ID
 
-### Quick example
+### Set up Fishjam context
 
-To quickly test our streaming infrastructure use `FishjamRoom` component. It encapsulates all the steps needed to start streaming.
-
-Example usage:
+Wrap your app in the `FishjamProvider` component:
 
 ```tsx
-import { FishjamRoom, useSandbox } from "@fishjam-cloud/react-native-client";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { FishjamProvider } from "@fishjam-cloud/mobile-client";
 
-export default function HomeScreen() {
-  const fishjamId = "YOUR_FISHJAM_ID";
-  const [peerToken, setPeerToken] = useState<string | null>(null);
-  const { getSandboxPeerToken } = useSandbox({ fishjamId: fishjamId });
+const App = () => null;
 
-  useEffect(() => {
-    const fetchPeerToken = async () => {
-      try {
-        const peerToken = await getSandboxPeerToken(
-          "example-room-name",
-          "example-peer-name",
-        );
-        setPeerToken(peerToken);
-      } catch (e) {
-        console.error("Error connecting to Fishjam", e);
-      }
-    };
-    fetchPeerToken();
-  }, []);
+// ---cut---
 
-  if (!peerToken) {
-    return null;
-  }
+// Check https://fishjam.io/app/ for your Fishjam ID
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
 
-  return <FishjamRoom fishjamId={fishjamId} peerToken={peerToken} />;
+export default function Root() {
+  return (
+    <FishjamProvider fishjamId={FISHJAM_ID}>
+      <App />
+    </FishjamProvider>
+  );
 }
 ```
 
@@ -98,41 +84,35 @@ For more detailed implementation follow the steps below.
 Create a component that joins a room and starts streaming video:
 
 ```tsx
-import React, { useCallback } from "react";
+import React from "react";
 import { Button } from "react-native";
 import {
-  useCamera,
   useConnection,
   useSandbox,
-} from "@fishjam-cloud/react-native-client";
+  useInitializeDevices,
+} from "@fishjam-cloud/mobile-client";
 
-// Check https://fishjam.io/app for your Fishjam ID
-const FISHJAM_ID = "YOUR_FISHJAM_ID";
-
-export function StartStreamingButton({
-  roomName,
-  peerName,
-}: {
-  roomName: string;
-  peerName: string;
-}) {
-  const { prepareCamera } = useCamera();
+export function JoinRoomButton() {
   const { joinRoom } = useConnection();
-  const { getSandboxPeerToken } = useSandbox({ fishjamId: FISHJAM_ID });
+  const { initializeDevices } = useInitializeDevices();
+  const { getSandboxPeerToken } = useSandbox();
 
-  const startStreaming = useCallback(async () => {
+  const handleJoinRoom = async () => {
+    const roomName = "testRoom";
+    const peerName = "testUser";
+
     // In sandbox environment, you can get the peer token from our sandbox API
     // In production environment, you need to get it from your backend
     const peerToken = await getSandboxPeerToken(roomName, peerName);
 
-    // Prepare camera
-    await prepareCamera({ cameraEnabled: true });
+    // Start camera by selecting the first available camera
+    await initializeDevices({ enableAudio: false }); // or just initializeDevices(); if you want both camera and mic
 
     // Join the room
-    await joinRoom({ peerToken, fishjamId: FISHJAM_ID });
-  }, [joinRoom, prepareCamera, roomName, peerName]);
+    await joinRoom({ peerToken });
+  };
 
-  return <Button title="Start Streaming" onPress={startStreaming} />;
+  return <Button title="Join Room" onPress={handleJoinRoom} />;
 }
 ```
 
@@ -143,7 +123,7 @@ Monitor your connection status:
 ```tsx
 import React from "react";
 import { Text } from "react-native";
-import { useConnection } from "@fishjam-cloud/react-native-client";
+import { useConnection } from "@fishjam-cloud/mobile-client";
 
 // ---cut---
 export function ConnectionStatus() {
@@ -158,10 +138,34 @@ Show your own video stream:
 
 ```tsx
 import React from "react";
-import { VideoPreviewView } from "@fishjam-cloud/react-native-client";
+import { Text, View } from "react-native";
+import { RTCView, useCamera } from "@fishjam-cloud/mobile-client";
+
+//TODO: FCE-2487 remove it when MediaStream will be updated
+interface MediaStreamWithURL extends MediaStream {
+  toURL(): string;
+}
 
 export function StreamPreview() {
-  return <VideoPreviewView style={{ height: 300, width: 300 }} />;
+  const { cameraStream } = useCamera();
+  const streamURL = cameraStream
+    ? (cameraStream as MediaStreamWithURL).toURL()
+    : null;
+
+  return (
+    <View>
+      {streamURL ? (
+        <RTCView
+          streamURL={streamURL}
+          style={{ height: 300, width: 300 }}
+          objectFit="cover"
+          mirror={true}
+        />
+      ) : (
+        <Text>No camera stream</Text>
+      )}
+    </View>
+  );
 }
 ```
 
@@ -171,27 +175,43 @@ Show video from other peers in the room:
 
 ```tsx
 import React from "react";
-import {
-  usePeers,
-  VideoRendererView,
-} from "@fishjam-cloud/react-native-client";
-import { View } from "react-native";
+import { View, Text } from "react-native";
+import { usePeers, RTCView } from "@fishjam-cloud/mobile-client";
 
-// ---cut---
-export function ParticipantsView() {
-  const { remotePeers } = usePeers();
-  const videoTracks = remotePeers.flatMap((peer) =>
-    peer.tracks.filter((track) => track.type === "Video" && track.isActive),
-  );
+//TODO: FCE-2487 remove it when MediaStream will be updated
+interface MediaStreamWithURL extends MediaStream {
+  toURL(): string;
+}
+
+function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
+  const streamURL = stream ? (stream as MediaStreamWithURL).toURL() : null;
+
   return (
     <View>
-      {videoTracks.map((track) => (
-        <VideoRendererView
-          key={track.id}
-          trackId={track.id}
-          videoLayout="FIT"
+      {streamURL ? (
+        <RTCView
+          streamURL={streamURL}
+          objectFit="cover"
           style={{ height: 300, width: 300 }}
         />
+      ) : (
+        <Text>No video</Text>
+      )}
+    </View>
+  );
+}
+
+export function ParticipantsView() {
+  const { remotePeers } = usePeers();
+
+  return (
+    <View>
+      {remotePeers.map((peer) => (
+        <View key={peer.id}>
+          {peer.cameraTrack?.stream && (
+            <VideoPlayer stream={peer.cameraTrack.stream} />
+          )}
+        </View>
       ))}
     </View>
   );
@@ -203,85 +223,7 @@ export function ParticipantsView() {
 Here's a complete working example:
 
 ```tsx
-import { Text, View, Button } from "react-native";
-import {
-  usePeers,
-  useCamera,
-  useConnection,
-  useSandbox,
-  VideoRendererView,
-  VideoPreviewView,
-} from "@fishjam-cloud/react-native-client";
-import React, { useCallback } from "react";
 
-// Check https://fishjam.io/app for your Fishjam ID
-const FISHJAM_ID = `${process.env.EXPO_PUBLIC_FISHJAM_ID}`;
-
-function StartStreamingButton({
-  roomName,
-  peerName,
-}: {
-  roomName: string;
-  peerName: string;
-}) {
-  const { prepareCamera } = useCamera();
-  const { joinRoom } = useConnection();
-  const { getSandboxPeerToken } = useSandbox({ fishjamId: FISHJAM_ID });
-
-  const startStreaming = useCallback(async () => {
-    const peerToken = await getSandboxPeerToken(roomName, peerName);
-    await prepareCamera({ cameraEnabled: true });
-    await joinRoom({ peerToken, fishjamId: FISHJAM_ID });
-  }, [joinRoom, prepareCamera, roomName, peerName]);
-
-  return <Button title="Start Streaming" onPress={startStreaming} />;
-}
-
-function ConnectionStatus() {
-  const { peerStatus } = useConnection();
-  return <Text>Status: {peerStatus}</Text>;
-}
-
-function StreamPreview() {
-  return <VideoPreviewView style={{ height: 300, width: 300 }} />;
-}
-
-function ParticipantsView() {
-  const { remotePeers } = usePeers();
-  const videoTracks = remotePeers.flatMap((peer) =>
-    peer.tracks.filter((track) => track.type === "Video" && track.isActive),
-  );
-  return (
-    <View>
-      {videoTracks.map((track) => (
-        <VideoRendererView
-          key={track.id}
-          trackId={track.id}
-          videoLayout="FIT"
-          style={{ height: 300, width: 300 }}
-        />
-      ))}
-    </View>
-  );
-}
-
-export default function Index() {
-  return (
-    <View
-      style={{
-        flex: 1,
-        alignItems: "center",
-      }}
-    >
-      <StartStreamingButton roomName="test-room" peerName="test-peer" />
-      <ConnectionStatus />
-      <Text>Your Stream:</Text>
-      <StreamPreview />
-      <Text>Other Participants:</Text>
-      <ParticipantsView />
-    </View>
-  );
-}
 ```
 
 ## Next steps

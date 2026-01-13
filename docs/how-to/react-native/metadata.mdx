@@ -14,12 +14,11 @@ import ReadingMetadata from "../_common/metadata/reading.mdx";
 <JoiningRoom>
 
 ```tsx
-const FISHJAM_ID = "fishjam-id";
 const PEER_TOKEN = "some-peer-token";
 // ---cut---
 import React, { useCallback } from "react";
 import { Button } from "react-native";
-import { useConnection } from "@fishjam-cloud/react-native-client";
+import { useConnection } from "@fishjam-cloud/mobile-client";
 
 type PeerMetadata = {
   displayName: string;
@@ -29,8 +28,8 @@ export function JoinRoomButton() {
   const { joinRoom } = useConnection();
 
   const onPressJoin = useCallback(async () => {
+    // Note: fishjamId is passed to FishjamProvider, not joinRoom
     await joinRoom<PeerMetadata>({
-      fishjamId: FISHJAM_ID,
       peerToken: PEER_TOKEN,
       peerMetadata: { displayName: "John Wick" }, // [!code highlight]
     });
@@ -47,7 +46,7 @@ export function JoinRoomButton() {
 ```tsx
 import React, { useCallback } from "react";
 import { Button } from "react-native";
-import { useUpdatePeerMetadata } from "@fishjam-cloud/react-native-client";
+import { useUpdatePeerMetadata } from "@fishjam-cloud/mobile-client";
 
 type PeerMetadata = {
   displayName: string;
@@ -71,7 +70,7 @@ export function UpdateNameButton() {
 ```tsx
 import React from "react";
 import { Text, View } from "react-native";
-import { usePeers } from "@fishjam-cloud/react-native-client";
+import { usePeers } from "@fishjam-cloud/mobile-client";
 
 type PeerMetadata = {
   displayName: string;
