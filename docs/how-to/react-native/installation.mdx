@@ -40,66 +40,12 @@ Install `@fishjam-cloud/mobile-client` with your preferred package manager.
 
 <ConfigurePermissions />
 
-## Optional: Request Camera and Microphone Permissions
+## Camera and Microphone Permissions
 
 :::info
-You don’t need to explicitly request permissions as they’re automatically asked for when your app needs them.
+You don't need to explicitly request permissions as they're automatically asked for when your app needs them.
 :::
 
-If you want more control, you can use the `useCameraPermissions` and `useMicrophonePermissions` hooks to manage permissions manually. Both hooks return an array with three elements:
+The SDK automatically requests camera and microphone permissions when you call `initializeDevices()`. The system permission dialog will be shown to the user if permissions haven't been granted yet.
 
-1. `permission`: The current permission status
-2. `requestPermission`: A function to request permission
-3. `getPermission`: A function to get the current permission status
-
-Here's an example of how to use both hooks:
-
-```tsx
-import {
-  useCameraPermissions,
-  useMicrophonePermissions,
-} from "@fishjam-cloud/mobile-client";
-import { useEffect } from "react";
-
-const [cameraPermission, requestCameraPermission, getCameraPermission] =
-  useCameraPermissions();
-
-const [
-  microphonePermission,
-  requestMicrophonePermission,
-  getMicrophonePermission,
-] = useMicrophonePermissions();
-
-useEffect(() => {
-  requestCameraPermission();
-  requestMicrophonePermission();
-}, []);
-```
-
-**Permission Response**
-
-The `permission` object has the following properties:
-
-- `canAskAgain`: Indicates if the user can be asked again for this permission. If `false`, it is recommended to direct the user to Settings app to enable/disable the permission.
-- `expires`: When the permission expires.
-- `granted`: Indicates if the permission is granted.
-- `status`: The current status of the permission.
-
-:::info
-You can control when and how permissions are requested by passing an `options` object to the hook.
-:::
-
-### Customizing Permission Request Behavior
-
-By default, `get` is called automatically (auto fetch is `true`), and `request` is not (auto request is `false`). You can change this behavior:
-
-```tsx
-import { useCameraPermissions } from "@fishjam-cloud/mobile-client";
-// Do not auto-fetch permission status, enable auto-request
-const [permission, requestPermission] = useCameraPermissions({
-  get: false, // disables auto-fetch
-  request: true, // enables auto-request
-});
-```
-
-Adjust these options to fit your app's needs.
+If you need manual control over permissions, you can use the [expo-permissions](https://docs.expo.dev/versions/latest/sdk/permissions/) or [react-native-permissions](https://github.com/zoontek/react-native-permissions) libraries.

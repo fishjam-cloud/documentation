@@ -88,8 +88,8 @@ export function ListAllNames() {
       {remotePeers.map((peer) => (
         // [!code highlight:4]
         <Text key={peer.id}>
-          Display name: {peer.metadata.peer?.displayName || "Unknown"}
-          Real name: {peer.metadata.server?.realName || "Unknown"}
+          Display name: {peer.metadata?.peer?.displayName || "Unknown"}
+          Real name: {peer.metadata?.server?.realName || "Unknown"}
         </Text>
       ))}
     </View>

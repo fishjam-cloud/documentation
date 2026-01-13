@@ -105,91 +105,14 @@ const { isMicrophoneOn } = useMicrophone();
   </TabItem>
   <TabItem value="ios" label="iOS">
 
-On iOS, background calls are achieved through CallKit integration. You can use the CallKit hooks to manage VoIP calls that continue running in the background.
+On iOS, background calls are achieved through CallKit integration. To enable background streaming on iOS:
 
-### Manual CallKit Management
+1. Enable VoIP background mode by setting `enableVoIPBackgroundMode: true` in the plugin configuration or adding the VoIP background mode to your `Info.plist`
+2. The SDK will automatically handle CallKit integration for maintaining background audio/video sessions
 
-Use the [`useCallKit`](../../api/mobile/variables/useCallKit) hook for fine-grained control over CallKit sessions:
-
-```tsx
-import { useCallKit } from "@fishjam-cloud/mobile-client";
-
-const { startCallKitSession, endCallKitSession } = useCallKit();
-
-// Start CallKit session when joining a room
-const handleJoinRoom = async () => {
-  await startCallKitSession({
-    displayName: "John Doe",
-    isVideo: true,
-  });
-  // ... join room logic
-};
-
-// End CallKit session when leaving
-const handleLeaveRoom = async () => {
-  await endCallKitSession();
-  // ... leave room logic
-};
-```
-
-### Automatic CallKit Management
-
-Use the [`useCallKitService`](../../api/mobile/variables/useCallKitService) hook for automatic session lifecycle management:
-
-```tsx
-import React from "react";
-import { useCallKitService } from "@fishjam-cloud/mobile-client";
-import { View } from "react-native";
-
-function CallScreen({ username }: { username: string }) {
-  // CallKit session automatically starts when component mounts
-  // and ends when component unmounts
-  useCallKitService({
-    displayName: username,
-    isVideo: true,
-  });
-
-  return <View>...</View>;
-}
-```
-
-### Listening to CallKit Events
-
-Use the [`useCallKitEvent`](../../api/mobile/variables/useCallKitEvent) hook to respond to user interactions with the native CallKit interface:
-
-```tsx
-import {
-  useCallKitEvent,
-  useCamera,
-  useMicrophone,
-  useConnection,
-} from "@fishjam-cloud/mobile-client";
-
-const { toggleCamera } = useCamera();
-const { startMicrophone, stopMicrophone } = useMicrophone();
-const { leaveRoom } = useConnection();
-
-// Listen for mute toggle from CallKit UI
-useCallKitEvent("muted", (isMuted: boolean) => {
-  if (isMuted) {
-    stopMicrophone();
-  } else {
-    startMicrophone();
-  }
-});
-
-// Listen for hold state changes
-useCallKitEvent("held", (isOnHold: boolean) => {
-  console.log("Call hold state:", isOnHold);
-  // Handle hold state in your app
-});
-
-// Listen for call end from CallKit UI
-useCallKitEvent("ended", () => {
-  // Handle call termination
-  leaveRoom();
-});
-```
+:::note
+CallKit integration is handled automatically by the SDK when VoIP background mode is enabled. The call will appear in the iOS call history and can be managed through the native phone interface.
+:::
 
   </TabItem>
 </Tabs>

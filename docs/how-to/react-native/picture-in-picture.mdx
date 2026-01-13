@@ -169,14 +169,14 @@ interface MediaStreamWithURL extends MediaStream {
 }
 
 export function VideoCallScreen() {
-  const pipViewRef = useRef(null);
+  const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
   const { cameraStream } = useCamera();
   const streamURL = cameraStream ? (cameraStream as MediaStreamWithURL).toURL() : null;
 
   return (
     <View>
-      <Button title="Start PiP" onPress={() => startPIP(pipViewRef)} />
-      <Button title="Stop PiP" onPress={() => stopPIP()} />
+      <Button title="Start PiP" onPress={() => startPIP(pipViewRef as any)} />
+      <Button title="Stop PiP" onPress={() => stopPIP(pipViewRef as any)} />
       {streamURL && (
         <RTCPIPView
           ref={pipViewRef}
@@ -211,7 +211,7 @@ interface MediaStreamWithURL extends MediaStream {
 }
 
 export function VideoCallScreen() {
-  const pipViewRef = useRef(null);
+  const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
   const { cameraStream } = useCamera();
   const streamURL = cameraStream ? (cameraStream as MediaStreamWithURL).toURL() : null;
 
@@ -257,16 +257,16 @@ interface MediaStreamWithURL extends MediaStream {
 }
 
 export function VideoCallScreen() {
-  const pipViewRef = useRef(null);
+  const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
   const { cameraStream } = useCamera();
   const streamURL = cameraStream ? (cameraStream as MediaStreamWithURL).toURL() : null;
 
   const handleStartPip = () => {
-    startPIP(pipViewRef);
+    startPIP(pipViewRef as any);
   };
 
   const handleStopPip = () => {
-    stopPIP();
+    stopPIP(pipViewRef as any);
   };
 
   return (
@@ -311,7 +311,7 @@ function VideoPlayer({ stream }: { stream: MediaStream | null }) {
 }
 
 export function VideoCallScreen() {
-  const pipViewRef = useRef(null);
+  const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
   const { localPeer, remotePeers } = usePeers();
   const firstRemotePeer = remotePeers[0];
   const remoteStreamURL = firstRemotePeer?.cameraTrack?.stream
@@ -320,8 +320,8 @@ export function VideoCallScreen() {
 
   return (
     <View style={styles.container}>
-      <Button title="Start PiP" onPress={() => startPIP(pipViewRef)} />
-      <Button title="Stop PiP" onPress={() => stopPIP()} />
+      <Button title="Start PiP" onPress={() => startPIP(pipViewRef as any)} />
+      <Button title="Stop PiP" onPress={() => stopPIP(pipViewRef as any)} />
 
       {/* Render local video */}
       {localPeer?.cameraTrack?.stream && (
@@ -420,26 +420,48 @@ Example configuration combining both features:
 
 ### Basic Usage
 
+Use `RTCPIPView` to display the livestream with Picture in Picture support:
+
 ```tsx
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import {
-  LivestreamViewer,
-  useLivestreamViewer,
-} from "@fishjam-cloud/mobile-client";
+import React, { useRef, useEffect } from "react";
+import { View, StyleSheet, Text } from "react-native";
+import { RTCPIPView, useLivestreamViewer, useSandbox } from "@fishjam-cloud/mobile-client";
+
+//TODO: FCE-2487 remove it when MediaStream will be updated
+interface MediaStreamWithURL extends MediaStream {
+  toURL(): string;
+}
 
 export function LivestreamScreen() {
-  const { whepClientRef } = useLivestreamViewer();
+  const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
+  const { connect, stream } = useLivestreamViewer();
+  const { getSandboxViewerToken } = useSandbox();
+  const streamURL = stream ? (stream as MediaStreamWithURL).toURL() : null;
+
+  useEffect(() => {
+    const connectToStream = async () => {
+      const token = await getSandboxViewerToken("room-name");
+      await connect({ token });
+    };
+    connectToStream();
+  }, []);
 
   return (
     <View style={styles.container}>
-      <LivestreamViewer
-        style={styles.viewer}
-        pipEnabled={true}
-        autoStartPip={true}
-        autoStopPip={true}
-        ref={whepClientRef}
-      />
+      {streamURL ? (
+        <RTCPIPView
+          ref={pipViewRef}
+          streamURL={streamURL}
+          style={styles.viewer}
+          pip={{
+            startAutomatically: true,
+            stopAutomatically: true,
+            enabled: true,
+          }}
+        />
+      ) : (
+        <Text>Connecting to stream...</Text>
+      )}
     </View>
   );
 }
@@ -456,69 +478,48 @@ const styles = StyleSheet.create({
 
 ### Configuration Options
 
-```tsx
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import {
-  LivestreamViewer,
-  useLivestreamViewer,
-} from "@fishjam-cloud/mobile-client";
+Configure Picture in Picture behavior using the `pip` prop:
 
-export function LivestreamScreen() {
-  const { whepClientRef } = useLivestreamViewer();
-
-  return (
-    <View style={styles.container}>
-      <LivestreamViewer
-        style={styles.viewer}
-        pipEnabled={true} // Enable Picture in Picture (default: true)
-        autoStartPip={true} // Auto-start PiP when app backgrounds (default: false)
-        autoStopPip={true} // Auto-stop PiP when app foregrounds (iOS only, default: false)
-        pipSize={{ width: 1920, height: 1080 }} // Set PiP window aspect ratio
-        ref={whepClientRef}
-      />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  viewer: {
-    flex: 1,
-  },
-});
+```jsx
+<RTCPIPView
+  ref={pipViewRef}
+  streamURL={streamURL}
+  style={styles.viewer}
+  pip={{
+    startAutomatically: true, // Auto-start PiP when app backgrounds
+    stopAutomatically: true, // Auto-stop PiP when app foregrounds
+    enabled: true, // Enable PiP functionality
+  }}
+/>
 ```
 
 #### Configuration Properties
 
-**pipEnabled**: Enable or disable Picture in Picture functionality. Default: `true`
+**enabled**: Enable or disable Picture in Picture functionality.
 
-**autoStartPip**: When `true`, Picture in Picture starts automatically when the app goes to the background. Default: `false`
+**startAutomatically**: When `true`, Picture in Picture starts automatically when the app goes to the background. Default: `true`
 
-**autoStopPip**: **(iOS only)** When `true`, Picture in Picture stops automatically when the app returns to the foreground. On Android, PiP always stops when returning to foreground. Default: `false`
-
-**pipSize**: An object with `width` and `height` properties to set the aspect ratio of the Picture in Picture window
+**stopAutomatically**: When `true`, Picture in Picture stops automatically when the app returns to the foreground. Default: `true`
 
 ### Complete Example
 
 Here's a complete example showing how to connect to a livestream and display it with Picture in Picture:
 
 ```tsx
-import React, { useEffect } from "react";
-import { View, StyleSheet } from "react-native";
-import {
-  LivestreamViewer,
-  useLivestreamViewer,
-} from "@fishjam-cloud/mobile-client";
-import { useSandbox } from "@fishjam-cloud/mobile-client";
+import React, { useEffect, useRef } from "react";
+import { View, StyleSheet, Text, Button } from "react-native";
+import { RTCPIPView, useLivestreamViewer, useSandbox, startPIP, stopPIP } from "@fishjam-cloud/mobile-client";
+
+//TODO: FCE-2487 remove it when MediaStream will be updated
+interface MediaStreamWithURL extends MediaStream {
+  toURL(): string;
+}
 
 export function LivestreamViewerScreen() {
-  // fishjamId is provided through FishjamProvider
+  const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
   const { getSandboxViewerToken } = useSandbox();
-
-  const { connect, disconnect, whepClientRef } = useLivestreamViewer();
+  const { connect, disconnect, stream } = useLivestreamViewer();
+  const streamURL = stream ? (stream as MediaStreamWithURL).toURL() : null;
 
   useEffect(() => {
     const connectToStream = async () => {
@@ -539,14 +540,22 @@ export function LivestreamViewerScreen() {
 
   return (
     <View style={styles.container}>
-      <LivestreamViewer
-        style={styles.viewer}
-        pipEnabled={true}
-        autoStartPip={true}
-        autoStopPip={true}
-        pipSize={{ width: 1920, height: 1080 }}
-        ref={whepClientRef}
-      />
+      <Button title="Start PiP" onPress={() => startPIP(pipViewRef as any)} />
+      <Button title="Stop PiP" onPress={() => stopPIP(pipViewRef as any)} />
+      {streamURL ? (
+        <RTCPIPView
+          ref={pipViewRef}
+          streamURL={streamURL}
+          style={styles.viewer}
+          pip={{
+            startAutomatically: true,
+            stopAutomatically: true,
+            enabled: true,
+          }}
+        />
+      ) : (
+        <Text style={styles.loading}>Connecting to stream...</Text>
+      )}
     </View>
   );
 }
@@ -558,6 +567,11 @@ const styles = StyleSheet.create({
   },
   viewer: {
     flex: 1,
+  },
+  loading: {
+    color: "#fff",
+    textAlign: "center",
+    marginTop: 20,
   },
 });
 ```
