@@ -292,10 +292,155 @@ export function ParticipantsView() {
 
 ## Complete example
 
-Here's a complete working example:
+Here's a complete working app:
 
 ```tsx
+import React, { useState } from "react";
+import { View, Text, Button, ScrollView, StyleSheet } from "react-native";
+import {
+  FishjamProvider,
+  useConnection,
+  useCamera,
+  usePeers,
+  useInitializeDevices,
+  useSandbox,
+  RTCView,
+} from "@fishjam-cloud/mobile-client";
 
+// Check https://fishjam.io/app/ for your Fishjam ID
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+
+//TODO: FCE-2487 remove it when MediaStream will be updated
+interface MediaStreamWithURL extends MediaStream {
+  toURL(): string;
+}
+
+// ---cut---
+function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
+  const streamURL = stream ? (stream as MediaStreamWithURL).toURL() : null;
+
+  if (!streamURL) {
+    return (
+      <View style={styles.videoPlaceholder}>
+        <Text>No video</Text>
+      </View>
+    );
+  }
+
+  return (
+    <RTCView
+      streamURL={streamURL}
+      style={styles.video}
+      objectFit="cover"
+    />
+  );
+}
+
+function VideoCall() {
+  const { joinRoom, peerStatus } = useConnection();
+  const { cameraStream } = useCamera();
+  const { remotePeers } = usePeers();
+  const { initializeDevices } = useInitializeDevices();
+  const { getSandboxPeerToken } = useSandbox();
+
+  const [isJoined, setIsJoined] = useState(false);
+
+  const handleJoin = async () => {
+    const roomName = "testRoom";
+    const peerName = `user_${Date.now()}`;
+
+    // Initialize devices first
+    await initializeDevices();
+
+    // In sandbox environment, you can get the peer token from our sandbox API
+    // In production environment, you need to get it from your backend
+    const peerToken = await getSandboxPeerToken(roomName, peerName);
+
+    await joinRoom({ peerToken });
+    setIsJoined(true);
+  };
+
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>Fishjam Video Call</Text>
+      <Text style={styles.status}>Status: {peerStatus}</Text>
+
+      {!isJoined && (
+        <Button title="Join Room" onPress={handleJoin} />
+      )}
+
+      {cameraStream && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Your Video</Text>
+          <VideoPlayer stream={cameraStream} />
+        </View>
+      )}
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Other Participants</Text>
+        {remotePeers.length === 0 ? (
+          <Text>No other participants</Text>
+        ) : (
+          remotePeers.map((peer) => (
+            <View key={peer.id} style={styles.participant}>
+              {peer.cameraTrack?.stream && (
+                <VideoPlayer stream={peer.cameraTrack.stream} />
+              )}
+            </View>
+          ))
+        )}
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  status: {
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  section: {
+    marginTop: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 10,
+  },
+  participant: {
+    marginBottom: 10,
+  },
+  video: {
+    height: 200,
+    width: "100%",
+    borderRadius: 8,
+  },
+  videoPlaceholder: {
+    height: 200,
+    width: "100%",
+    backgroundColor: "#000",
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
+
+export default function App() {
+  return (
+    <FishjamProvider fishjamId={FISHJAM_ID}>
+      <VideoCall />
+    </FishjamProvider>
+  );
+}
 ```
 
 ## Next steps
