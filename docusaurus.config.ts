@@ -327,10 +327,10 @@ const config: Config = {
         id: "mobile-api",
         out: "docs/api/mobile",
         entryPoints: [
-          "./packages/mobile-client-sdk/packages/react-native-client/src/index.tsx",
+          "./packages/web-client-sdk/packages/mobile-client/src/index.ts",
         ],
         tsconfig:
-          "./packages/mobile-client-sdk/packages/react-native-client/tsconfig.json",
+          "./packages/web-client-sdk/packages/mobile-client/tsconfig.json",
         ...typedocConfig,
       },
     ],

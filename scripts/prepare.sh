@@ -26,7 +26,7 @@ cd packages/web-client-sdk/packages/react-client/
 yarn && yarn build
 
 cd $ROOTDIR
-cd packages/mobile-client-sdk/packages/react-native-client/
+cd packages/web-client-sdk/packages/mobile-client/
 yarn && yarn build
 
 cd $ROOTDIR
