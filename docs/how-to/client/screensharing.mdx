@@ -1,11 +1,12 @@
 ---
-sidebar_position: 5
+sidebar_position: 8
+sidebar_label: "Screen sharing 📱"
 ---
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
-# Screen sharing
+# Screen sharing <span className="badge badge--mobile">Mobile</span>
 
 Our SDK also allow to stream content of mobile device screen.
 
@@ -21,10 +22,7 @@ To enable screen sharing on iOS, you need to follow the steps below.
 
 :::tip[Background streaming during screen sharing]
 
-If you want to continue screen sharing when the app goes to the background, you need to:
-
-1. Enable VoIP background mode by setting `enableVoIPBackgroundMode: true` in the plugin configuration or adding the VoIP background mode to your `Info.plist`
-2. Use the [`useCallKitService`](../../api/mobile/variables/useCallKitService) hook in your component to manage the CallKit session
+If you want to continue screen sharing when the app goes to the background, you need to enable VoIP background mode by setting `enableVoIPBackgroundMode: true` in the plugin configuration or adding the VoIP background mode to your `Info.plist`.
 
 See the [background calls documentation](./background-streaming) for detailed instructions and code examples.
 
@@ -115,15 +113,12 @@ Configuring screen sharing on iOS is a little complicated.
 1. Open your `<your-project>.xcworkspace` in Xcode
 
 1. Create new Broadcast Upload Extension. Select `File → New → Target... → Broadcast Upload Extension → Next`. Choose the name for the new target, select Swift language and deselect "Include UI Extension".
-   ![New Target](./assets/ios-new-target.png)
 
 1. Configure app group. Go to "Signing & Capabilities" tab, click "+ Capability" button in upper left corner and select "App Groups".
 
-   ![New Group](./assets/ios-new-group.png)
    Then in the "App Groups" add a new group or select existing. Usually group name has format `group.<your-bundle-identifier>`. Verify that both app and extension targets have app group and dev team set correctly.
 
-1. A new folder with app extension should appear on the left with contents like this:
-   ![New Folder](./assets/ios-new-folder.png)
+1. A new folder with app extension should appear on the left.
 
    Replace `SampleHandler.swift` with `FishjamBroadcastHandler.swift` and this code:
 
@@ -213,10 +208,7 @@ Configuring screen sharing on iOS is a little complicated.
 
 :::tip[Background streaming during screen sharing]
 
-If you want to continue screen sharing when the app goes to the background, you need to:
-
-1. Enable VoIP background mode by setting `enableVoIPBackgroundMode: true` in the plugin configuration or adding the VoIP background mode to your `Info.plist`
-2. Use the [`useCallKitService`](../../api/mobile/variables/useCallKitService) hook in your component to manage the CallKit session
+If you want to continue screen sharing when the app goes to the background, you need to enable VoIP background mode by setting `enableVoIPBackgroundMode: true` in the plugin configuration or adding the VoIP background mode to your `Info.plist`.
 
 See the [background calls documentation](./background-streaming) for detailed instructions and code examples.
 
@@ -265,3 +257,4 @@ export function ScreenShareButton() {
   );
 }
 ```
+

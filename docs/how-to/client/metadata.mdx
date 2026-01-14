@@ -1,0 +1,212 @@
+---
+sidebar_position: 5
+title: "Metadata"
+description: "How to use metadata"
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Alongside audio and video, it is possible to send additional metadata with each peer. Metadata is just
+JSON that can contain arbitrary information. Its most common use is sending a user name associated with a peer.
+However, it can be also used to send the peer's camera type, application information etc.
+
+:::info
+
+You can also set metadata on [the server side, when adding user to the room](../backend/server-setup#metadata). This metadata is persistent throughout its lifetime and is useful for attaching information that
+can't be overwritten by the peer, like information about real user names or basic permission info.
+
+:::
+
+## Setting metadata when joining the room
+
+The `joinRoom` method from the `useConnection` hook has a `peerMetadata` parameter, that can be used for setting object metadata.
+
+<Tabs groupId="platform">
+  <TabItem value="web" label="React (Web)">
+
+```tsx
+const PEER_TOKEN = "some-peer-token";
+// ---cut---
+import { useConnection } from "@fishjam-cloud/react-client";
+import React, { useCallback } from "react";
+
+type PeerMetadata = {
+  displayName: string;
+};
+
+export function JoinRoomButton() {
+  const { joinRoom } = useConnection(); // [!code highlight]
+
+  const onJoinRoomPress = useCallback(async () => {
+    await joinRoom<PeerMetadata>({
+      peerToken: PEER_TOKEN,
+      peerMetadata: { displayName: "John Wick" }, // [!code highlight]
+    });
+  }, [joinRoom]);
+
+  return <button onClick={onJoinRoomPress}>Join room</button>;
+}
+```
+
+  </TabItem>
+  <TabItem value="mobile" label="React Native (Mobile)">
+
+```tsx
+const PEER_TOKEN = "some-peer-token";
+// ---cut---
+import React, { useCallback } from "react";
+import { Button } from "react-native";
+import { useConnection } from "@fishjam-cloud/mobile-client";
+
+type PeerMetadata = {
+  displayName: string;
+};
+
+export function JoinRoomButton() {
+  const { joinRoom } = useConnection();
+
+  const onPressJoin = useCallback(async () => {
+    // Note: fishjamId is passed to FishjamProvider, not joinRoom
+    await joinRoom<PeerMetadata>({
+      peerToken: PEER_TOKEN,
+      peerMetadata: { displayName: "John Wick" }, // [!code highlight]
+    });
+  }, [joinRoom]);
+
+  return <Button onPress={onPressJoin} title="Join Room" />;
+}
+```
+
+  </TabItem>
+</Tabs>
+
+## Updating metadata during connection
+
+Once you've joined the room, you can update your peer metadata with the `updatePeerMetadata` method of the `useUpdatePeerMetadata` hook:
+
+<Tabs groupId="platform">
+  <TabItem value="web" label="React (Web)">
+
+```tsx
+import { useUpdatePeerMetadata } from "@fishjam-cloud/react-client";
+import React, { useCallback } from "react";
+
+type PeerMetadata = {
+  displayName: string;
+};
+
+export function JoinRoomButton() {
+  const { updatePeerMetadata } = useUpdatePeerMetadata<PeerMetadata>(); // [!code highlight]
+
+  const onPressUpdateName = useCallback(async () => {
+    await updatePeerMetadata({ displayName: "Thomas A. Anderson" }); // [!code highlight]
+  }, [updatePeerMetadata]);
+
+  return <button onClick={onPressUpdateName}>Change name</button>;
+}
+```
+
+  </TabItem>
+  <TabItem value="mobile" label="React Native (Mobile)">
+
+```tsx
+import React, { useCallback } from "react";
+import { Button } from "react-native";
+import { useUpdatePeerMetadata } from "@fishjam-cloud/mobile-client";
+
+type PeerMetadata = {
+  displayName: string;
+};
+
+export function UpdateNameButton() {
+  const { updatePeerMetadata } = useUpdatePeerMetadata<PeerMetadata>(); // [!code highlight]
+
+  const onPressUpdateName = useCallback(async () => {
+    await updatePeerMetadata({ displayName: "Thomas A. Anderson" }); // [!code highlight]
+  }, [updatePeerMetadata]);
+
+  return <Button onPress={onPressUpdateName} title="Change name" />;
+}
+```
+
+  </TabItem>
+</Tabs>
+
+## Reading metadata
+
+Peer metadata is available as the `metadata` property for each peer. Therefore, when you list your peers with the `usePeers` hook, you can read
+the metadata associated with them.
+Note that the `metadata.peer` property contains only the metadata set by the client SDK (as in the examples examples above).
+The metadata set on the server side is available as `metadata.server`.
+Learn more about server metadata [here](../backend/server-setup#metadata).
+
+<Tabs groupId="platform">
+  <TabItem value="web" label="React (Web)">
+
+```tsx
+import React from "react";
+import { usePeers } from "@fishjam-cloud/react-client";
+
+type PeerMetadata = {
+  displayName: string;
+};
+
+type ServerMetadata = {
+  realName: string;
+};
+
+export function ListAllNames() {
+  const { remotePeers } = usePeers<PeerMetadata, ServerMetadata>(); // [!code highlight]
+
+  return (
+    <div>
+      {remotePeers.map((peer) => (
+        // [!code highlight:5]
+        <span>
+          Display name: {peer.metadata?.peer.displayName}
+          <br />
+          Real name: {peer.metadata?.server.realName}
+        </span>
+      ))}
+    </div>
+  );
+}
+```
+
+  </TabItem>
+  <TabItem value="mobile" label="React Native (Mobile)">
+
+```tsx
+import React from "react";
+import { Text, View } from "react-native";
+import { usePeers } from "@fishjam-cloud/mobile-client";
+
+type PeerMetadata = {
+  displayName: string;
+};
+
+type ServerMetadata = {
+  realName: string;
+};
+
+export function ListAllNames() {
+  const { remotePeers } = usePeers<PeerMetadata, ServerMetadata>(); // [!code highlight]
+
+  return (
+    <View>
+      {remotePeers.map((peer) => (
+        // [!code highlight:4]
+        <Text key={peer.id}>
+          Display name: {peer.metadata?.peer?.displayName || "Unknown"}
+          Real name: {peer.metadata?.server?.realName || "Unknown"}
+        </Text>
+      ))}
+    </View>
+  );
+}
+```
+
+  </TabItem>
+</Tabs>
+

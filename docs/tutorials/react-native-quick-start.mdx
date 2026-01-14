@@ -3,8 +3,8 @@ type: tutorial
 sidebar_position: 0
 ---
 
-import InstallPackage from "../how-to/react-native/_components/install-package.mdx";
-import ConfigurePermissions from "../how-to/react-native/_components/configure-permissions.mdx";
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
 
 # React Native Quick Start
 
@@ -31,11 +31,83 @@ A simple React Native app that can join conference calls and stream audio/video 
 
 ### Install the package
 
-<InstallPackage />
+```bash npm2yarn
+npm install @fishjam-cloud/mobile-client
+```
 
 ### Configure app permissions
 
-<ConfigurePermissions />
+Your app needs to have permissions configured in order to use the microphone and camera.
+
+#### Android
+
+<Tabs groupId="app-type">
+  <TabItem value="expo" label="Expo">
+
+Add required permissions to the `app.json` file:
+
+```json title='app.json'
+{
+  "expo": {
+    "android": {
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
+    }
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+Add required permissions to the `AndroidManifest.xml` file:
+
+```xml title='AndroidManifest.xml'
+<uses-permission android:name="android.permission.CAMERA"/>
+<uses-permission android:name="android.permission.RECORD_AUDIO"/>
+<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTING"/>
+```
+
+  </TabItem>
+</Tabs>
+
+#### iOS
+
+<Tabs groupId="app-type">
+  <TabItem value="expo" label="Expo">
+
+Add camera and microphone usage descriptions to `app.json`:
+
+```json title='app.json'
+{
+  "expo": {
+   "ios": {
+      "infoPlist": {
+        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera.",
+        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone."
+      }
+    }
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+Ensure `Info.plist` contains camera and microphone usage description entries:
+
+```xml title='Info.plist'
+<key>NSCameraUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to access your camera.</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to access your microphone.</string>
+```
+
+  </TabItem>
+</Tabs>
 
 ### Build native dependencies
 
@@ -230,10 +302,10 @@ Here's a complete working example:
 
 Now that you have a basic app working, explore these how-to guides:
 
-- [How to handle screen sharing](../how-to/react-native/screensharing)
-- [How to implement background streaming](../how-to/react-native/background-streaming)
-- [How to handle reconnections](../how-to/react-native/reconnection-handling)
-- [How to work with metadata](../how-to/react-native/metadata)
+- [How to handle screen sharing](../how-to/client/screensharing)
+- [How to implement background streaming](../how-to/client/background-streaming)
+- [How to handle reconnections](../how-to/client/reconnection-handling)
+- [How to work with metadata](../how-to/client/metadata)
 
 Or learn more about Fishjam concepts:
 
