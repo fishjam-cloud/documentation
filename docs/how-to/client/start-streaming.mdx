@@ -1,11 +1,13 @@
 ---
-sidebar_position: 3
+sidebar_position: 2
 ---
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
 # Streaming media
+
+This guide covers the basics of initializing and using camera and microphone devices. For more advanced device management (selecting specific devices, device switching, muting, etc.), see the [Managing devices](./managing-devices) guide.
 
 ## Initialize access to your devices
 
@@ -47,18 +49,19 @@ It is not the only way to enable the device. You can just toggle the device usin
   </TabItem>
   <TabItem value="mobile" label="React Native (Mobile)">
 
-On mobile, the SDK automatically requests camera and microphone permissions when you call [`startCamera`](../../api/mobile/functions/useCamera#startcamera) or [`startMicrophone`](../../api/mobile/functions/useMicrophone#startmicrophone). You can also use `initializeDevices()` to request permissions upfront.
+On mobile, you should use `initializeDevices()` when you first want to stream. This gives your app access to all available devices and automatically requests camera and microphone permissions. The SDK will show the system permission dialog if permissions haven't been granted yet.
+
+Once devices are initialized, you can manage their state using the methods described in the [Managing devices](./managing-devices) guide.
 
   </TabItem>
 </Tabs>
 
-## Camera API
-
-To manage users' camera devices, use the [`useCamera`](../../api/web/functions/useCamera) hook.
+## Device API
 
 <Tabs groupId="platform">
   <TabItem value="web" label="React (Web)">
 
+To manage users' camera and microphone devices, use the respective [`useCamera`](../../api/web/functions/useCamera) and [`useMicrophone`](../../api/web/functions/useMicrophone) hooks. Both of them have similar API. To keep things simple, we will just use the camera hook.
 ```tsx
 import React, { useEffect, useRef } from "react";
 import { useCamera } from "@fishjam-cloud/react-client";
@@ -93,8 +96,9 @@ export function ExampleCameraPreview() {
   </TabItem>
   <TabItem value="mobile" label="React Native (Mobile)">
 
-First, you have to enable your camera by calling [`startCamera`](../../api/mobile/functions/useCamera#startcamera) method.
-You can show camera preview with `RTCView` component.
+To manage users' camera and microphone devices, use the respective [`useCamera`](../../api/mobile/functions/useCamera) and [`useMicrophone`](../../api/mobile/functions/useMicrophone) hooks. Both of them have similar API. To keep things simple, we will just use the camera hook.
+
+You can preview your camera stream using the `RTCView` component.
 
 ```tsx
 import React, { useEffect } from "react";
@@ -136,160 +140,3 @@ export function CameraPreview() {
 
   </TabItem>
 </Tabs>
-
-### Listing user cameras
-
-To list all cameras available on the device, you can use the `cameraDevices` property from the `useCamera` hook.
-
-<Tabs groupId="platform">
-  <TabItem value="web" label="React (Web)">
-
-```tsx
-import React from "react";
-import { useCamera } from "@fishjam-cloud/react-client";
-
-export function CameraSelector() {
-  const { cameraDevices, selectCamera, activeCamera } = useCamera();
-
-  return (
-    <select 
-      value={activeCamera?.deviceId ?? ""} 
-      onChange={(e) => selectCamera(e.target.value)}
-    >
-      {cameraDevices.map(({ label, deviceId }) => (
-        <option key={deviceId} value={deviceId}>
-          {label}
-        </option>
-      ))}
-    </select>
-  );
-}
-```
-
-  </TabItem>
-  <TabItem value="mobile" label="React Native (Mobile)">
-
-To change camera, simply call [`selectCamera`](../../api/mobile/functions/useCamera#selectcamera) method.
-
-```tsx
-import React, { useCallback, useState } from "react";
-import { Button } from "react-native";
-import { useCamera, DeviceItem } from "@fishjam-cloud/mobile-client";
-
-export function FlipButton() {
-  const { cameraDevices, selectCamera, currentCamera } = useCamera(); // [!code highlight]
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const onPressFlipCamera = useCallback(() => {
-    if (cameraDevices.length === 0) return;
-
-    // Cycle through available cameras
-    const nextIndex = (currentIndex + 1) % cameraDevices.length;
-    const nextCamera = cameraDevices[nextIndex];
-    if (nextCamera) {
-      selectCamera(nextCamera.deviceId); // [!code highlight]
-      setCurrentIndex(nextIndex);
-    }
-  }, [cameraDevices, currentIndex, selectCamera]);
-
-  return <Button onPress={onPressFlipCamera} title="Flip Camera" />;
-}
-```
-
-  </TabItem>
-</Tabs>
-
-### Disabling/enabling camera
-
-<Tabs groupId="platform">
-  <TabItem value="web" label="React (Web)">
-
-Use the `toggleCamera` method from the `useCamera` hook to toggle the camera state.
-
-```tsx
-import React from "react";
-import { useCamera } from "@fishjam-cloud/react-client";
-
-export function ToggleCameraButton() {
-  const { isCameraOn, toggleCamera } = useCamera();
-
-  return (
-    <button onClick={toggleCamera}>
-      {isCameraOn ? "Disable camera" : "Enable camera"}
-    </button>
-  );
-}
-```
-
-  </TabItem>
-  <TabItem value="mobile" label="React Native (Mobile)">
-
-To change camera state, use the [`toggleCamera`](../../api/mobile/functions/useCamera#togglecamera) method.
-
-```tsx
-import { Button } from "react-native";
-import React from "react";
-import { useCamera } from "@fishjam-cloud/mobile-client";
-
-export function ToggleCameraButton() {
-  const { isCameraOn, toggleCamera } = useCamera(); // [!code highlight]
-
-  return (
-    <Button
-      onPress={toggleCamera} // [!code highlight]
-      title={isCameraOn ? "Disable camera" : "Enable camera"}
-    />
-  );
-}
-```
-
-  </TabItem>
-</Tabs>
-
-## Microphone API
-
-Microphone works similar to camera. Use the [`useMicrophone`](../../api/web/functions/useMicrophone) hook to manage the microphone.
-
-<Tabs groupId="platform">
-  <TabItem value="web" label="React (Web)">
-
-```tsx
-import React from "react";
-import { useMicrophone } from "@fishjam-cloud/react-client";
-
-export function ToggleMicrophoneButton() {
-  const { isMicrophoneOn, toggleMicrophone } = useMicrophone();
-
-  return (
-    <button onClick={toggleMicrophone}>
-      {isMicrophoneOn ? "Mute" : "Unmute"}
-    </button>
-  );
-}
-```
-
-  </TabItem>
-  <TabItem value="mobile" label="React Native (Mobile)">
-
-In order to enable it, you have to call [`toggleMicrophone`](../../api/mobile/functions/useMicrophone#togglemicrophone) method.
-
-```tsx
-import { Button } from "react-native";
-import React from "react";
-import { useMicrophone } from "@fishjam-cloud/mobile-client";
-
-export function ToggleMicrophoneButton() {
-  const { isMicrophoneOn, toggleMicrophone } = useMicrophone(); // [!code highlight]
-
-  return (
-    <Button
-      onPress={toggleMicrophone} // [!code highlight]
-      title={isMicrophoneOn ? "Disable microphone" : "Enable microphone"}
-    />
-  );
-}
-```
-
-  </TabItem>
-</Tabs>
-
