@@ -25,23 +25,22 @@ npm install @fishjam-cloud/react-native-client
 npm install @fishjam-cloud/mobile-client
 ```
 
-Update all your imports:
+Remember to update all your imports:
 
+**From:**
 ```tsx
-// Before
-import { ... } from "@fishjam-cloud/react-native-client";
+import { useCamera } from "@fishjam-cloud/react-native-client";
 
-// After
-import { ... } from "@fishjam-cloud/mobile-client";
+```
+
+**To:**
+```tsx
+import { useCamera } from "@fishjam-cloud/mobile-client";
 ```
 
 ## Required Android Permissions
 
-Add the following WebRTC permissions to your Android configuration:
-
-### Expo
-
-Add to `app.json`:
+Add the following WebRTC permissions to your Android configuration in `app.json`:
 
 ```json
 {
@@ -58,16 +57,6 @@ Add to `app.json`:
   }
 }
 ```
-
-### Bare React Native
-
-Add to `AndroidManifest.xml`:
-
-```xml
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-```
-
 ## FishjamProvider Setup
 
 The new package requires wrapping your app with `FishjamProvider` to provide the Fishjam ID context.
@@ -75,25 +64,35 @@ The new package requires wrapping your app with `FishjamProvider` to provide the
 ### Before
 
 ```tsx
-import { FishjamRoom } from "@fishjam-cloud/react-native-client";
+import React from "react";
+// ---cut---
+import { useConnection } from "@fishjam-cloud/react-native-client";
 
+const { joinRoom } = useConnection();
 // fishjamId was passed directly to joinRoom
 await joinRoom({ fishjamId: "your-fishjam-id", peerToken: "..." });
+
 ```
 
 ### After
 
 ```tsx
-import { FishjamProvider } from "@fishjam-cloud/mobile-client";
+import React from "react";
+import { Text } from "react-native";
+// ---cut---
+import { FishjamProvider } from "@fishjam-cloud/mobile-client"; // [!code highlight]
 
 // Wrap your app with FishjamProvider
 export default function App() {
   return (
-    <FishjamProvider fishjamId="YOUR_FISHJAM_ID">
+    <FishjamProvider fishjamId="YOUR_FISHJAM_ID"> // [!code highlight]
       <YourApp />
-    </FishjamProvider>
+    </FishjamProvider> // [!code highlight]
   );
 }
+
+const YourApp = () => {return (<><Text>Your app content</Text></>);};
+
 ```
 
 The `fishjamId` is now provided through the context, so you no longer need to pass it to `joinRoom` or `useSandbox`.
@@ -108,6 +107,7 @@ import { useCamera } from "@fishjam-cloud/react-native-client";
 const { prepareCamera } = useCamera();
 
 await prepareCamera({ cameraEnabled: true });
+
 ```
 
 ### After
@@ -119,6 +119,7 @@ const { initializeDevices } = useInitializeDevices();
 
 // Initialize devices when you first want to stream
 await initializeDevices({ enableAudio: false }); // or initializeDevices() for both
+
 ```
 
 :::important
@@ -130,18 +131,31 @@ On mobile, you should use `initializeDevices()` when you first want to stream. T
 ### Before
 
 ```tsx
-import { VideoRendererView } from "@fishjam-cloud/react-native-client";
+import React from "react";
+import { View } from "react-native";
+// ---cut---
+import { usePeers, VideoRendererView } from "@fishjam-cloud/react-native-client";
 
-<VideoRendererView
-  trackId={peer.track.id}
-  style={{ width: 300, height: 200 }}
-/>
+const { localPeer } = usePeers();
+
+const localTrack = localPeer?.tracks.find((t) => t.type === "Video");
+
+{localTrack && (
+    <VideoRendererView
+        key={localTrack.id}
+        trackId={localTrack.id}
+        videoLayout="FIT"
+    />
+)}
+
 ```
 
 ### After
 
 ```tsx
-import { RTCView } from "@fishjam-cloud/mobile-client";
+import React from "react";
+// ---cut---
+import { usePeers, RTCView } from "@fishjam-cloud/mobile-client";
 
 //TODO: FCE-2487 remove it when MediaStream will be updated
 interface MediaStreamWithURL extends MediaStream {
@@ -162,13 +176,14 @@ function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
   );
 }
 
-// Usage with peer camera track
-{peer.cameraTrack?.stream && (
-  <VideoPlayer stream={peer.cameraTrack.stream} />
+const { localPeer } = usePeers();
+{localPeer?.cameraTrack?.stream && ( 
+    <VideoPlayer stream={localPeer.cameraTrack.stream} />
 )}
 ```
 
 Key changes:
+
 - `VideoRendererView` → `RTCView`
 - `trackId` prop → `streamURL` prop
 - Use `stream.toURL()` to get the URL from a MediaStream
@@ -184,10 +199,10 @@ import { useConnection, useSandbox } from "@fishjam-cloud/react-native-client";
 const { joinRoom } = useConnection();
 const { getSandboxPeerToken } = useSandbox({ fishjamId: "your-id" });
 
-const peerToken = await getSandboxPeerToken(roomName, peerName);
+const peerToken = await getSandboxPeerToken("roomName", "peerName");
 await joinRoom({ fishjamId: "your-id", peerToken });
-```
 
+```
 ### After
 
 ```tsx
@@ -197,26 +212,36 @@ const { joinRoom } = useConnection();
 // fishjamId is now provided through FishjamProvider
 const { getSandboxPeerToken } = useSandbox();
 
-const peerToken = await getSandboxPeerToken(roomName, peerName);
-await joinRoom({ peerToken }); // fishjamId removed
+const peerToken = await getSandboxPeerToken("roomName", "peerName");
+await joinRoom({ peerToken }); // fishjamId passed through FishjamProvider
+
 ```
 
 ## Device Management
 
 ### Camera Device Selection
 
-#### Before
+### Before
 
 ```tsx
-const { cameras, switchCamera, facingDirection } = useCamera();
+import { useCamera } from "@fishjam-cloud/react-native-client";
 
-// Switch camera
-switchCamera(facingDirection === "front" ? "back" : "front");
+const { cameras, switchCamera, currentCamera } = useCamera();
+
+// find first camera facing opposite direction than current camera
+const otherCamera = cameras.find(
+    (camera) => camera.facingDirection !== currentCamera?.facingDirection,
+);
+if (otherCamera) {
+    switchCamera(otherCamera.id);
+}
+
 ```
 
-#### After
+### After
 
 ```tsx
+import { useCamera } from "@fishjam-cloud/mobile-client";
 const { cameraDevices, selectCamera } = useCamera();
 
 // Select camera by deviceId
@@ -224,25 +249,37 @@ const nextCamera = cameraDevices[0];
 if (nextCamera) {
   selectCamera(nextCamera.deviceId);
 }
+
 ```
 
 Key changes:
+
 - `cameras` → `cameraDevices`
 - `switchCamera` → `selectCamera` (takes `deviceId` instead of direction)
 - `facingDirection` property removed
 
 ### Camera Control
 
-#### Before
+### Before
 
 ```tsx
-const { prepareCamera } = useCamera();
-await prepareCamera({ cameraEnabled: true });
+import React from "react";
+import { Button } from "react-native";
+// ---cut---
+import { useCamera } from "@fishjam-cloud/react-native-client";
+const { isCameraOn, toggleCamera } = useCamera();
+
+<Button
+    onPress={toggleCamera}
+    title={isCameraOn ? "Disable camera" : "Enable camera"}
+/>
+
 ```
 
-#### After
+### After
 
 ```tsx
+import { useCamera } from "@fishjam-cloud/mobile-client";
 const { startCamera, stopCamera, toggleCamera } = useCamera();
 
 // Start camera
@@ -253,6 +290,7 @@ await stopCamera();
 
 // Toggle camera
 toggleCamera();
+
 ```
 
 ## Screen Sharing
@@ -260,19 +298,30 @@ toggleCamera();
 ### Before
 
 ```tsx
+import React, { useCallback } from "react";
+import { Button } from "react-native";
+// ---cut---
 import { useScreenShare } from "@fishjam-cloud/react-native-client";
 
 const { toggleScreenShare, isScreenShareOn } = useScreenShare();
+const onPressToggle = useCallback(
+    () => toggleScreenShare(),
+    [toggleScreenShare],
+  );
 
 <Button
-  onPress={toggleScreenShare}
+  onPress={onPressToggle}
   title={isScreenShareOn ? "Disable" : "Enable"}
 />
+
 ```
 
 ### After
 
 ```tsx
+import React, { useCallback } from "react";
+import { Button } from "react-native";
+// ---cut---
 import { useScreenShare } from "@fishjam-cloud/mobile-client";
 
 const { startStreaming, stopStreaming, stream } = useScreenShare();
@@ -289,328 +338,12 @@ const onPressToggle = () => {
   onPress={onPressToggle}
   title={stream ? "Disable" : "Enable"}
 />
+
 ```
 
 Key changes:
+
 - `toggleScreenShare()` → `startStreaming()` / `stopStreaming()`
 - `isScreenShareOn` → check if `stream` exists
 
-## Picture in Picture
-
-### Before
-
-```tsx
-import { PipContainerView } from "@fishjam-cloud/react-native-client";
-
-<PipContainerView
-  trackId={peer.track.id}
-  style={{ width: 300, height: 200 }}
-/>
-```
-
-### After
-
-```tsx
-import { RTCPIPView, startPIP, stopPIP } from "@fishjam-cloud/mobile-client";
-
-//TODO: FCE-2487 remove it when MediaStream will be updated
-interface MediaStreamWithURL extends MediaStream {
-  toURL(): string;
-}
-
-const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
-const streamURL = stream ? (stream as MediaStreamWithURL).toURL() : null;
-
-<RTCPIPView
-  ref={pipViewRef}
-  streamURL={streamURL}
-  style={{ width: 300, height: 200 }}
-  pip={{
-    startAutomatically: true,
-    stopAutomatically: true,
-    enabled: true,
-  }}
-/>
-
-// Manual control
-<Button title="Start PiP" onPress={() => startPIP(pipViewRef as any)} />
-<Button title="Stop PiP" onPress={() => stopPIP(pipViewRef as any)} />
-```
-
-Key changes:
-- `PipContainerView` → `RTCPIPView`
-- `trackId` prop → `streamURL` prop
-- Requires a ref for manual `startPIP`/`stopPIP` control
-- Added `pip` prop for configuration
-
-## Livestreaming Imports
-
-### Before
-
-```tsx
-import {
-  useLivestreamStreamer,
-  useLivestreamViewer,
-} from "@fishjam-cloud/react-native-client/livestream";
-```
-
-### After
-
-```tsx
-import {
-  useLivestreamStreamer,
-  useLivestreamViewer,
-} from "@fishjam-cloud/mobile-client";
-```
-
-The livestreaming hooks are now exported from the main package instead of a separate `/livestream` subpath.
-
-## Removed Hooks and APIs
-
-The following hooks and APIs have been removed and are no longer available:
-
-### Permission Hooks
-
-#### Before
-
-```tsx
-import {
-  useCameraPermissions,
-  useMicrophonePermissions,
-} from "@fishjam-cloud/react-native-client";
-
-const [cameraPermission, requestCameraPermission] = useCameraPermissions();
-const [micPermission, requestMicPermission] = useMicrophonePermissions();
-```
-
-#### After
-
-Permissions are now handled automatically by the SDK. When you call `initializeDevices()`, the SDK will automatically request camera and microphone permissions if they haven't been granted yet.
-
-### CallKit Hooks
-
-#### Before
-
-```tsx
-import {
-  useCallKit,
-  useCallKitService,
-  useCallKitEvent,
-} from "@fishjam-cloud/react-native-client";
-
-// Manual CallKit control
-const { startCallKitSession, endCallKitSession } = useCallKit();
-
-// Automatic CallKit service
-useCallKitService({
-  displayName: "User Name",
-  isVideo: true,
-});
-
-// CallKit events
-useCallKitEvent("muted", (isMuted) => {
-  // Handle mute event
-});
-```
-
-#### After
-
-CallKit integration is now handled automatically by the SDK when VoIP background mode is enabled. You no longer need to manually manage CallKit sessions.
-
-To enable background calls on iOS:
-
-**Expo:**
-```json
-{
-  "expo": {
-    "plugins": [
-      [
-        "@fishjam-cloud/mobile-client",
-        {
-          "ios": {
-            "enableVoIPBackgroundMode": true
-          }
-        }
-      ]
-    ]
-  }
-}
-```
-
-**Bare React Native:**
-Add to `Info.plist`:
-```xml
-<key>UIBackgroundModes</key>
-<array>
-  <string>voip</string>
-</array>
-```
-
-## Accessing Peer Tracks
-
-### Before
-
-```tsx
-// Accessing tracks
-{peer.tracks.map((track) => {
-  if (track.type === "video") {
-    return <VideoRendererView trackId={track.id} />;
-  }
-})}
-
-// Checking if track is active
-if (track.isActive) {
-  // ...
-}
-```
-
-### After
-
-```tsx
-// Access camera track directly
-{peer.cameraTrack?.stream && (
-  <VideoPlayer stream={peer.cameraTrack.stream} />
-)}
-
-// Access microphone track
-{peer.microphoneTrack?.stream && (
-  // Handle audio track
-)}
-```
-
-Key changes:
-- `peer.tracks` array → `peer.cameraTrack` and `peer.microphoneTrack` properties
-- `track.isActive` removed (check if stream exists instead)
-- `track.type` removed (use specific track properties)
-
-## Complete Migration Example
-
-### Before
-
-```tsx
-import React, { useEffect } from "react";
-import { View, Button } from "react-native";
-import {
-  FishjamRoom,
-  VideoRendererView,
-  useCamera,
-  useConnection,
-  useSandbox,
-} from "@fishjam-cloud/react-native-client";
-
-const FISHJAM_ID = "your-fishjam-id";
-
-export function VideoCall() {
-  const { prepareCamera } = useCamera();
-  const { joinRoom } = useConnection();
-  const { getSandboxPeerToken } = useSandbox({ fishjamId: FISHJAM_ID });
-
-  useEffect(() => {
-    const connect = async () => {
-      await prepareCamera({ cameraEnabled: true });
-      const peerToken = await getSandboxPeerToken("room", "user");
-      await joinRoom({ fishjamId: FISHJAM_ID, peerToken });
-    };
-    connect();
-  }, []);
-
-  return (
-    <View>
-      <VideoRendererView trackId="local-track" />
-    </View>
-  );
-}
-```
-
-### After
-
-```tsx
-import React, { useEffect } from "react";
-import { View } from "react-native";
-import {
-  FishjamProvider,
-  RTCView,
-  useCamera,
-  useConnection,
-  useSandbox,
-  useInitializeDevices,
-} from "@fishjam-cloud/mobile-client";
-
-const FISHJAM_ID = "your-fishjam-id";
-
-//TODO: FCE-2487 remove it when MediaStream will be updated
-interface MediaStreamWithURL extends MediaStream {
-  toURL(): string;
-}
-
-function VideoCall() {
-  const { initializeDevices } = useInitializeDevices();
-  const { cameraStream } = useCamera();
-  const { joinRoom } = useConnection();
-  const { getSandboxPeerToken } = useSandbox();
-
-  useEffect(() => {
-    const connect = async () => {
-      await initializeDevices();
-      const peerToken = await getSandboxPeerToken("room", "user");
-      await joinRoom({ peerToken });
-    };
-    connect();
-  }, []);
-
-  const streamURL = cameraStream
-    ? (cameraStream as MediaStreamWithURL).toURL()
-    : null;
-
-  return (
-    <View>
-      {streamURL && (
-        <RTCView
-          streamURL={streamURL}
-          style={{ width: 300, height: 200 }}
-          objectFit="cover"
-        />
-      )}
-    </View>
-  );
-}
-
-export default function App() {
-  return (
-    <FishjamProvider fishjamId={FISHJAM_ID}>
-      <VideoCall />
-    </FishjamProvider>
-  );
-}
-```
-
-## Summary of Changes
-
-| Old API | New API | Notes |
-|---------|---------|-------|
-| `@fishjam-cloud/react-native-client` | `@fishjam-cloud/mobile-client` | Package name change |
-| `prepareCamera()` | `initializeDevices()` | Device initialization |
-| `VideoRendererView` | `RTCView` | Video rendering component |
-| `trackId` prop | `streamURL` prop | Video rendering prop |
-| `peer.track` | `peer.cameraTrack` | Peer track access |
-| `joinRoom({ fishjamId, peerToken })` | `joinRoom({ peerToken })` | fishjamId from provider |
-| `useSandbox({ fishjamId })` | `useSandbox()` | fishjamId from provider |
-| `cameras` | `cameraDevices` | Camera device list |
-| `switchCamera()` | `selectCamera(deviceId)` | Camera selection |
-| `toggleScreenShare()` | `startStreaming()` / `stopStreaming()` | Screen sharing |
-| `isScreenShareOn` | `stream` (check existence) | Screen sharing state |
-| `PipContainerView` | `RTCPIPView` | Picture in Picture |
-| `useCameraPermissions()` | Removed | Auto-handled |
-| `useMicrophonePermissions()` | Removed | Auto-handled |
-| `useCallKit()` | Removed | Auto-handled |
-| `useCallKitService()` | Removed | Auto-handled |
-| `useCallKitEvent()` | Removed | Auto-handled |
-
-## Need Help?
-
-If you encounter any issues during migration, please:
-
-1. Check the [API documentation](../../api/mobile/index) for the new package
-2. Review the [React Native Quick Start tutorial](../../tutorials/react-native-quick-start)
-3. Open an issue on our [GitHub repository](https://github.com/fishjam-cloud/web-client-sdk)
 
