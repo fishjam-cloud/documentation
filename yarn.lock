@@ -3572,12 +3572,6 @@ __metadata:
   languageName: node
   linkType: soft
 
-"@fishjam-cloud/react-native-client@link:./packages/mobile-client-sdk/packages/react-native-client::locator=fishjam-docs%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@fishjam-cloud/react-native-client@link:./packages/mobile-client-sdk/packages/react-native-client::locator=fishjam-docs%40workspace%3A."
-  languageName: node
-  linkType: soft
-
 "@gerrit0/mini-shiki@npm:^3.2.2":
   version: 3.7.0
   resolution: "@gerrit0/mini-shiki@npm:3.7.0"
@@ -11342,7 +11336,6 @@ __metadata:
     "@fishjam-cloud/js-server-sdk": "link:./packages/js-server-sdk/packages/js-server-sdk"
     "@fishjam-cloud/mobile-client": "link:./packages/web-client-sdk/packages/mobile-client"
     "@fishjam-cloud/react-client": "link:./packages/web-client-sdk/packages/react-client"
-    "@fishjam-cloud/react-native-client": "link:./packages/mobile-client-sdk/packages/react-native-client"
     "@google/genai": "npm:^1.35.0"
     "@mdx-js/react": "npm:^3.1.0"
     "@shikijs/rehype": "npm:^3.6.0"
