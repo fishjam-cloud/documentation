@@ -9,6 +9,7 @@
       "addWords": true
     }
   ],
+  "useGitignore": true,
   "ignorePaths": [
     "node_modules/**",
     "packages/**",
