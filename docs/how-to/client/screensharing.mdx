@@ -220,11 +220,11 @@ See the [background calls documentation](./background-streaming) for detailed in
 
 ## Usage
 
-You can use [`useScreenShare`](../../api/mobile/functions/useScreenShare) hook to enable screen sharing.
+You can use [`useScreenShare`](../../api/mobile/variables/useScreenShare) hook to enable screen sharing.
 
 :::tip[Permissions]
 
-Permission request is handled for you as soon as you call [`startStreaming`](../../api/mobile/functions/useScreenShare#startstreaming).
+Permission request is handled for you as soon as you call [`startStreaming`](../../api/mobile/variables/useScreenShare#startstreaming).
 
 :::
 
@@ -234,8 +234,8 @@ On Android API level >= 24, you must use a foreground service when screen sharin
 
 :::
 
-You can enable/disable screen sharing with [`startStreaming`](../../api/mobile/functions/useScreenShare#startstreaming) and [`stopStreaming`](../../api/mobile/functions/useScreenShare#stopstreaming) methods.
-And check current state by checking if [`stream`](../../api/mobile/functions/useScreenShare#stream) exists.
+You can enable/disable screen sharing with [`startStreaming`](../../api/mobile/variables/useScreenShare#startstreaming) and [`stopStreaming`](../../api/mobile/variables/useScreenShare#stopstreaming) methods.
+And check current state by checking if [`stream`](../../api/mobile/variables/useScreenShare#stream) exists.
 
 ```tsx
 import React, { useCallback } from "react";
