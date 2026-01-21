@@ -61,9 +61,9 @@ The easiest way to obtain a sandbox streamer token is by using the Sandbox API i
     const FISHJAM_ID = '';
 
     // ---cut---
-    import { useSandbox } from '@fishjam-cloud/react-native-client';
+    import { useSandbox } from '@fishjam-cloud/mobile-client';
 
-    const { getSandboxLivestream } = useSandbox({ fishjamId: FISHJAM_ID });
+    const { getSandboxLivestream } = useSandbox();
     const { streamerToken } = await getSandboxLivestream('example-room');
     ```
 
@@ -151,26 +151,50 @@ We can now start sending media, which we can obtain from the user's camera, scre
 
         ```tsx
         import React from 'react';
-
-        // All components and hooks needed for livestreaming can be imported from the livestream module
+        import { View, Text } from 'react-native';
         import {
-          LivestreamStreamer,
+          useInitializeDevices,
+          useSandbox,
           useLivestreamStreamer,
-          cameras,
-        } from '@fishjam-cloud/react-native-client/livestream';
+          useCamera,
+          useMicrophone,
+          RTCView,
+        } from '@fishjam-cloud/mobile-client';
 
-        const streamerToken = '';
-        const roomId = '';
-        const { connect, whipClientRef } = useLivestreamStreamer({ videoEnabled: true, audioEnabled: true, camera: cameras[0] });
+        const roomName = 'my-room';
+
+        // Inside your component:
+        const { getSandboxLivestream } = useSandbox();
+        const { connect } = useLivestreamStreamer();
+        const { cameraStream } = useCamera();
+        const { microphoneStream } = useMicrophone();
+        const { initializeDevices } = useInitializeDevices();
 
         // ...
+        await initializeDevices({ enableVideo: true, enableAudio: true });
 
-        await connect(streamerToken);
+        const { streamerToken } = await getSandboxLivestream(roomName);
+        await connect({
+          inputs: {
+            video: cameraStream!,
+            audio: microphoneStream!,
+          },
+          token: streamerToken,
+        });
 
         // Render the livestream
-        <LivestreamStreamer
-          ref={whipClientRef}
-        />
+        <View>
+          {cameraStream ? (
+            <RTCView
+              style={{width: 300, height: 300}}
+              mediaStream={cameraStream}
+              objectFit="cover"
+              mirror={true}
+            />
+          ) : (
+            <Text>No video</Text>
+          )}
+        </View>
         ```
 
       </TabItem>
@@ -182,31 +206,57 @@ We can now start sending media, which we can obtain from the user's camera, scre
       1. Enable VoIP background mode by setting `enableVoIPBackgroundMode: true` in the plugin configuration or adding the VoIP background mode to your `Info.plist`
       2. Use the [`useCallKitService`](../../api/mobile/variables/useCallKitService) hook in your component to manage the CallKit session
 
-      See the [background calls documentation](./background-streaming) for detailed instructions and code examples.
+      See the [background calls documentation](../how-to/client/background-streaming) for detailed instructions and code examples.
 
       :::
 
         ```tsx
         import React from 'react';
-
-        // All components and hooks needed for livestreaming can be imported from the livestream module
+        import { View, Text } from 'react-native';
         import {
-          LivestreamStreamer,
-          useLivestreamScreenSharingStreamer
-        } from '@fishjam-cloud/react-native-client/livestream';
+          useSandbox,
+          useLivestreamStreamer,
+          useScreenShare,
+          useInitializeDevices,
+          RTCView,
+        } from '@fishjam-cloud/mobile-client';
 
-        const streamerToken = '';
-        const roomId = '';
-        const { connect, whipClientRef } = useLivestreamScreenSharingStreamer({ audioEnabled: true });
+        const roomName = 'my-room';
+
+        // Inside your component:
+        const { initializeDevices } = useInitializeDevices();
+        const { getSandboxLivestream } = useSandbox();
+        const { connect } = useLivestreamStreamer();
+        const {
+          startStreaming: startScreenCapture,
+          stream: screenStream,
+        } = useScreenShare();
 
         // ...
+        await initializeDevices({ enableVideo: true, enableAudio: true });
+        await startScreenCapture();
 
-        await connect(streamerToken);
+        const { streamerToken } = await getSandboxLivestream(roomName);
+        await connect({
+          inputs: {
+            video: screenStream!,
+          },
+          token: streamerToken,
+        });
 
         // Render the livestream
-        <LivestreamStreamer
-          ref={whipClientRef}
-        />
+        <View>
+          {screenStream ? (
+            <RTCView
+              style={{width: 300, height: 300}}
+              mediaStream={screenStream}
+              objectFit="cover"
+              mirror={true}
+            />
+          ) : (
+            <Text>No video</Text>
+          )}
+        </View>
         ```
 
       </TabItem>
@@ -252,9 +302,9 @@ We obtain a sandbox viewer token using the Sandbox API in the client SDKs:
     const FISHJAM_ID = '';
 
     // ---cut---
-    import { useSandbox } from '@fishjam-cloud/react-native-client';
+    import { useSandbox } from '@fishjam-cloud/mobile-client';
 
-    const { getSandboxViewerToken } = useSandbox({ fishjamId: FISHJAM_ID });
+    const { getSandboxViewerToken } = useSandbox();
     const viewerToken = await getSandboxViewerToken('example-room');
     ```
 
@@ -286,26 +336,40 @@ We can now begin receiving the stream
 
     ```tsx
     import React from 'react';
-
-    const viewerToken = '';
-
-    // ---cut---
+    import { View, Text } from 'react-native';
     import {
-      LivestreamViewer,
       useLivestreamViewer,
-    } from '@fishjam-cloud/react-native-client/livestream';
+      useSandbox,
+      RTCView,
+    } from '@fishjam-cloud/mobile-client';
 
-    const { connect, whepClientRef } = useLivestreamViewer();
+    const roomName = 'my-room';
 
-    await connect({ token: viewerToken });
+    // Inside your component:
+    const { getSandboxViewerToken } = useSandbox();
+    const { connect, stream } = useLivestreamViewer();
+
+    const token = await getSandboxViewerToken(roomName);
+    await connect({ token });
 
     // Render the livestream
-    <LivestreamViewer ref={whepClientRef} />
+    <View>
+      {stream ? (
+        <RTCView
+          style={{width: 300, height: 300}}
+          mediaStream={stream}
+          objectFit="cover"
+          mirror={true}
+        />
+      ) : (
+        <Text>No video</Text>
+      )}
+    </View>
     ```
 
 :::tip[Picture in Picture on React Native]
 
-The `LivestreamViewer` component supports Picture in Picture, allowing viewers to watch the livestream in a floating window while using other apps. See the [Picture in Picture guide](../how-to/react-native/picture-in-picture) to learn how to enable and configure this feature.
+You can use `RTCPIPView` to enable Picture in Picture, allowing viewers to watch the livestream in a floating window while using other apps. See the [Picture in Picture guide](../how-to/client/picture-in-picture) to learn how to enable and configure this feature.
 
 :::
 

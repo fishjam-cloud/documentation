@@ -139,21 +139,17 @@ Once you've created a viewer token, you can connect to a room using the Fishjam 
     const viewerToken = '';
 
     // ---cut---
-    import {
-      LivestreamViewer,
-      useLivestreamViewer,
-    } from '@fishjam-cloud/react-native-client/livestream';
+    import { useLivestreamViewer, RTCView } from '@fishjam-cloud/mobile-client';
 
-    // ...
-
-    const { connect, whepClientRef } = useLivestreamViewer();
+    // Inside your component:
+    const { connect, stream } = useLivestreamViewer();
 
     // ...
 
     await connect({ token: viewerToken });
 
-    // Use `LivestreamViewer` to render the stream
-    <LivestreamViewer ref={whepClientRef} />
+    // Render the stream
+    {stream && <RTCView mediaStream={stream} style={{ flex: 1 }} />}
     ```
 
   </TabItem>
@@ -203,21 +199,17 @@ Once you've created a room of type `livestream` with the `public` flag enabled, 
     const roomId = '';
 
     // ---cut---
-    import {
-      LivestreamViewer,
-      useLivestreamViewer,
-    } from '@fishjam-cloud/react-native-client/livestream';
+    import { useLivestreamViewer, RTCView } from '@fishjam-cloud/mobile-client';
 
-    // ...
-
-    const { connect, whepClientRef } = useLivestreamViewer();
+    // Inside your component:
+    const { connect, stream } = useLivestreamViewer();
 
     // ...
 
     await connect({ streamId: roomId });
 
-    // Use `LivestreamViewer` to render the stream
-    <LivestreamViewer ref={whepClientRef} />
+    // Render the stream
+    {stream && <RTCView mediaStream={stream} style={{ flex: 1 }} />}
     ```
 
   </TabItem>

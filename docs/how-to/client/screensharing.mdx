@@ -1,11 +1,16 @@
 ---
-sidebar_position: 5
+sidebar_position: 12
+sidebar_label: "Screen sharing 📱"
 ---
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
-# Screen sharing
+# Screen sharing <span className="badge badge--mobile">Mobile</span>
+
+:::note
+This guide is exclusively for **Mobile** (React Native) applications.
+:::
 
 Our SDK also allow to stream content of mobile device screen.
 
@@ -21,10 +26,7 @@ To enable screen sharing on iOS, you need to follow the steps below.
 
 :::tip[Background streaming during screen sharing]
 
-If you want to continue screen sharing when the app goes to the background, you need to:
-
-1. Enable VoIP background mode by setting `enableVoIPBackgroundMode: true` in the plugin configuration or adding the VoIP background mode to your `Info.plist`
-2. Use the [`useCallKitService`](../../api/mobile/variables/useCallKitService) hook in your component to manage the CallKit session
+If you want to continue screen sharing when the app goes to the background, you need to enable VoIP background mode by setting `enableVoIPBackgroundMode: true` in the plugin configuration or adding the VoIP background mode to your `Info.plist`.
 
 See the [background calls documentation](./background-streaming) for detailed instructions and code examples.
 
@@ -42,7 +44,7 @@ You need to modify `app.json` file and add our plugin:
     ...
     "plugins": [
       [
-        "@fishjam-cloud/react-native-client",
+        "@fishjam-cloud/mobile-client",
         {
           "ios": {
             "enableScreensharing": true,
@@ -115,15 +117,12 @@ Configuring screen sharing on iOS is a little complicated.
 1. Open your `<your-project>.xcworkspace` in Xcode
 
 1. Create new Broadcast Upload Extension. Select `File → New → Target... → Broadcast Upload Extension → Next`. Choose the name for the new target, select Swift language and deselect "Include UI Extension".
-   ![New Target](./assets/ios-new-target.png)
 
 1. Configure app group. Go to "Signing & Capabilities" tab, click "+ Capability" button in upper left corner and select "App Groups".
 
-   ![New Group](./assets/ios-new-group.png)
    Then in the "App Groups" add a new group or select existing. Usually group name has format `group.<your-bundle-identifier>`. Verify that both app and extension targets have app group and dev team set correctly.
 
-1. A new folder with app extension should appear on the left with contents like this:
-   ![New Folder](./assets/ios-new-folder.png)
+1. A new folder with app extension should appear on the left.
 
    Replace `SampleHandler.swift` with `FishjamBroadcastHandler.swift` and this code:
 
@@ -213,10 +212,7 @@ Configuring screen sharing on iOS is a little complicated.
 
 :::tip[Background streaming during screen sharing]
 
-If you want to continue screen sharing when the app goes to the background, you need to:
-
-1. Enable VoIP background mode by setting `enableVoIPBackgroundMode: true` in the plugin configuration or adding the VoIP background mode to your `Info.plist`
-2. Use the [`useCallKitService`](../../api/mobile/variables/useCallKitService) hook in your component to manage the CallKit session
+If you want to continue screen sharing when the app goes to the background, you need to enable VoIP background mode by setting `enableVoIPBackgroundMode: true` in the plugin configuration or adding the VoIP background mode to your `Info.plist`.
 
 See the [background calls documentation](./background-streaming) for detailed instructions and code examples.
 
@@ -224,11 +220,11 @@ See the [background calls documentation](./background-streaming) for detailed in
 
 ## Usage
 
-You can use [`useScreenShare`](../../api/mobile/functions/useScreenShare) hook to enable screen sharing.
+You can use [`useScreenShare`](../../api/mobile/variables/useScreenShare) hook to enable screen sharing.
 
 :::tip[Permissions]
 
-Permission request is handled for you as soon as you call [`toggleScreenShare`](../../api/mobile/functions/useScreenShare#togglescreenshare).
+Permission request is handled for you as soon as you call [`startStreaming`](../../api/mobile/variables/useScreenShare#startstreaming).
 
 :::
 
@@ -238,26 +234,29 @@ On Android API level >= 24, you must use a foreground service when screen sharin
 
 :::
 
-You can enable/disable screen sharing with [`toggleScreenShare`](../../api/mobile/functions/useScreenShare#togglescreenshare) method.
-And check current state with [`isScreenShareOn`](../../api/mobile/functions/useScreenShare#isscreenshareon) property.
+You can enable/disable screen sharing with [`startStreaming`](../../api/mobile/variables/useScreenShare#startstreaming) and [`stopStreaming`](../../api/mobile/variables/useScreenShare#stopstreaming) methods.
+And check current state by checking if [`stream`](../../api/mobile/variables/useScreenShare#stream) exists.
 
 ```tsx
 import React, { useCallback } from "react";
 import { Button } from "react-native";
-import { useScreenShare } from "@fishjam-cloud/react-native-client";
+import { useScreenShare } from "@fishjam-cloud/mobile-client";
 
 export function ScreenShareButton() {
-  const { toggleScreenShare, isScreenShareOn } = useScreenShare(); // [!code highlight]
+  const { startStreaming, stopStreaming, stream } = useScreenShare(); // [!code highlight]
 
-  const onPressToggle = useCallback(
-    () => toggleScreenShare(), // [!code highlight]
-    [toggleScreenShare],
-  );
+  const onPressToggle = useCallback(() => {
+    if (stream) {
+      stopStreaming(); // [!code highlight]
+    } else {
+      startStreaming(); // [!code highlight]
+    }
+  }, [stream, startStreaming, stopStreaming]);
 
   return (
     <Button
       onPress={onPressToggle}
-      title={`${isScreenShareOn ? "Disable" : "Enable"} screen share`}
+      title={`${stream ? "Disable" : "Enable"} screen share`}
     />
   );
 }

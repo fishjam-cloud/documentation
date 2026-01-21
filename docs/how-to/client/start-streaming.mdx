@@ -1,10 +1,18 @@
 ---
-sidebar_position: 3
+sidebar_position: 2
 ---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
 
 # Streaming media
 
-### Initialize access to your devices
+This guide covers the basics of initializing and using camera and microphone devices. For more advanced device management (selecting specific devices, device switching, muting, etc.), see the [Managing devices](./managing-devices) guide.
+
+## Initialize access to your devices
+
+<Tabs groupId="platform">
+  <TabItem value="web" label="React (Web)">
 
 Fishjam provides an API to browse and manage media devices you can use.  
 To ask the browser for permission to list the available devices,
@@ -38,11 +46,22 @@ The [`useInitializeDevices`](../../api/web/functions/useInitializeDevices) hook 
 It is not the only way to enable the device. You can just toggle the device using [`useCamera`](../../api/web/functions/useCamera) or [`useMicrophone`](../../api/web/functions/useMicrophone) hooks.
 :::
 
-### Device API
+  </TabItem>
+  <TabItem value="mobile" label="React Native (Mobile)">
 
-To manage users' camera and microphone devices, use the respective [`useCamera`](../../api/web/functions/useCamera)
-and [`useMicrophone`](../../api/web/functions/useMicrophone) hooks.
-Both of them has similar API. To keep things simple, we will just use the camera hook.
+On mobile, you should use `initializeDevices()` when you first want to stream. This gives your app access to all available devices and automatically requests camera and microphone permissions. The SDK will show the system permission dialog if permissions haven't been granted yet.
+
+Once devices are initialized, you can manage their state using the methods described in the [Managing devices](./managing-devices) guide.
+
+  </TabItem>
+</Tabs>
+
+## Device API
+
+<Tabs groupId="platform">
+  <TabItem value="web" label="React (Web)">
+
+To manage users' camera and microphone devices, use the respective [`useCamera`](../../api/web/functions/useCamera) and [`useMicrophone`](../../api/web/functions/useMicrophone) hooks. Both of them have similar API. To keep things simple, we will just use the camera hook.
 
 ```tsx
 import React, { useEffect, useRef } from "react";
@@ -74,3 +93,42 @@ export function ExampleCameraPreview() {
   );
 }
 ```
+
+  </TabItem>
+  <TabItem value="mobile" label="React Native (Mobile)">
+
+To manage users' camera and microphone devices, use the respective [`useCamera`](../../api/mobile/functions/useCamera) and [`useMicrophone`](../../api/mobile/variables/useMicrophone) hooks. Both of them have similar API. To keep things simple, we will just use the camera hook.
+
+You can preview your camera stream using the `RTCView` component.
+
+```tsx
+import React, { useEffect } from "react";
+import { View, Text } from "react-native";
+import { useCamera, RTCView } from "@fishjam-cloud/mobile-client";
+
+export function CameraPreview() {
+  const { startCamera, cameraStream } = useCamera(); // [!code highlight]
+
+  useEffect(() => {
+    startCamera(); // [!code highlight]
+  }, [startCamera]);
+
+  return (
+    <View>
+      {cameraStream ? (
+        <RTCView
+          mediaStream={cameraStream}
+          style={{ height: 300, width: 300 }}
+          objectFit="cover"
+          mirror={true}
+        />
+      ) : (
+        <Text>No camera stream</Text>
+      )}
+    </View>
+  );
+}
+```
+
+  </TabItem>
+</Tabs>

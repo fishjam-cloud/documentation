@@ -1,0 +1,99 @@
+---
+sidebar_position: 5
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Display media of other peers
+
+To access data and media of other peers, use the [`usePeers`](../../api/web/functions/usePeers) hook.
+It returns two properties, `remotePeers` and `localPeer`.
+They contain all the tracks of other peers and all the tracks of the local user, respectively.
+
+## Example of playing other peers' available media
+
+<Tabs groupId="platform">
+  <TabItem value="web" label="React (Web)">
+
+```tsx
+import React, { FC } from "react";
+
+const VideoRenderer: FC<{ stream?: MediaStream | null }> = (_) => <video />;
+
+const AudioPlayer: FC<{ stream?: MediaStream | null }> = (_) => <audio />;
+
+// ---cut---
+import { usePeers } from "@fishjam-cloud/react-client";
+
+export function Component() {
+  const { remotePeers } = usePeers();
+
+  return (
+    <ul>
+      {remotePeers.map(({ id, cameraTrack, microphoneTrack }) => (
+        <li key={id}>
+          <VideoRenderer stream={cameraTrack?.stream} /> // remember to import
+          your VideoRenderer component
+          <AudioPlayer stream={microphoneTrack?.stream} />
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+  </TabItem>
+  <TabItem value="mobile" label="React Native (Mobile)">
+
+```tsx
+import React from "react";
+import { View, Text } from "react-native";
+import { usePeers, RTCView } from "@fishjam-cloud/mobile-client";
+
+function VideoPlayer({ stream }: { stream: MediaStream | null }) {
+  if (!stream) return <Text>No video</Text>;
+  return (
+    <RTCView
+      mediaStream={stream}
+      style={{ height: 200, width: "100%" }}
+      objectFit="cover"
+    />
+  );
+}
+
+export function ShowAllPeers() {
+  const { remotePeers, localPeer } = usePeers(); // [!code highlight]
+
+  return (
+    <View>
+      {/* Local camera */}
+      {localPeer?.cameraTrack?.stream && ( // [!code highlight]
+        <VideoPlayer stream={localPeer.cameraTrack.stream} />
+      )}
+
+      {/* Remote cameras */}
+      {remotePeers.map(
+        (
+          peer, // [!code highlight]
+        ) => (
+          <View key={peer.id}>
+            {peer.cameraTrack?.stream && (
+              <VideoPlayer stream={peer.cameraTrack.stream} />
+            )}
+          </View>
+        ),
+      )}
+    </View>
+  );
+}
+```
+
+:::tip[Enable Picture in Picture]
+
+To allow users to continue watching video in a floating window when they background your app, use the `RTCPIPView` component. See the [Picture in Picture guide](./picture-in-picture) for more details.
+
+:::
+
+  </TabItem>
+</Tabs>

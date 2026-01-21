@@ -51,4 +51,44 @@ html[data-theme="light"] header.heroBanner_src-pages-index-module {
   font-size: 0.8rem;
 }
 
+/* Platform badges for documentation */
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.badge--web {
+  background-color: #3578e5;
+  color: white;
+}
+
+.badge--mobile {
+  background-color: #25c2a0;
+  color: white;
+}
+
+[data-theme="dark"] .badge--web {
+  background-color: #4d8fef;
+}
+
+[data-theme="dark"] .badge--mobile {
+  background-color: #2ed9b5;
+}
+
+/* Badge in headings */
+h1 .badge,
+h2 .badge,
+h3 .badge {
+  font-size: 0.65em;
+  vertical-align: middle;
+  margin-left: 0.75rem;
+}
+
 @import url("./_shiki.css");
