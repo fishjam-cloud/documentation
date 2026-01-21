@@ -213,22 +213,14 @@ import React from "react";
 import { Text, View } from "react-native";
 import { RTCView, useCamera } from "@fishjam-cloud/mobile-client";
 
-//TODO: FCE-2487 remove it when MediaStream will be updated
-interface MediaStreamWithURL extends MediaStream {
-  toURL(): string;
-}
-
 export function StreamPreview() {
   const { cameraStream } = useCamera();
-  const streamURL = cameraStream
-    ? (cameraStream as MediaStreamWithURL).toURL()
-    : null;
 
   return (
     <View>
-      {streamURL ? (
+      {cameraStream ? (
         <RTCView
-          streamURL={streamURL}
+          mediaStream={cameraStream}
           style={{ height: 300, width: 300 }}
           objectFit="cover"
           mirror={true}
@@ -250,19 +242,12 @@ import React from "react";
 import { View, Text } from "react-native";
 import { usePeers, RTCView } from "@fishjam-cloud/mobile-client";
 
-//TODO: FCE-2487 remove it when MediaStream will be updated
-interface MediaStreamWithURL extends MediaStream {
-  toURL(): string;
-}
-
 function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
-  const streamURL = stream ? (stream as MediaStreamWithURL).toURL() : null;
-
   return (
     <View>
-      {streamURL ? (
+      {stream ? (
         <RTCView
-          streamURL={streamURL}
+          mediaStream={stream}
           objectFit="cover"
           style={{ height: 300, width: 300 }}
         />
@@ -310,16 +295,9 @@ import {
 // Check https://fishjam.io/app/ for your Fishjam ID
 const FISHJAM_ID = "YOUR_FISHJAM_ID";
 
-//TODO: FCE-2487 remove it when MediaStream will be updated
-interface MediaStreamWithURL extends MediaStream {
-  toURL(): string;
-}
-
 // ---cut---
 function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
-  const streamURL = stream ? (stream as MediaStreamWithURL).toURL() : null;
-
-  if (!streamURL) {
+  if (!stream) {
     return (
       <View style={styles.videoPlaceholder}>
         <Text>No video</Text>
@@ -328,7 +306,7 @@ function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
   }
 
   return (
-    <RTCView streamURL={streamURL} style={styles.video} objectFit="cover" />
+    <RTCView mediaStream={stream} style={styles.video} objectFit="cover" />
   );
 }
 

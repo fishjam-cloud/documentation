@@ -141,11 +141,6 @@ Once you've created a viewer token, you can connect to a room using the Fishjam 
     // ---cut---
     import { useLivestreamViewer, RTCView } from '@fishjam-cloud/mobile-client';
 
-    //TODO: FCE-2487 remove it when MediaStream will be updated
-    interface MediaStreamWithURL extends MediaStream {
-      toURL(): string;
-    }
-
     // Inside your component:
     const { connect, stream } = useLivestreamViewer();
 
@@ -154,8 +149,7 @@ Once you've created a viewer token, you can connect to a room using the Fishjam 
     await connect({ token: viewerToken });
 
     // Render the stream
-    const streamURL = stream ? (stream as MediaStreamWithURL).toURL() : null;
-    {streamURL && <RTCView streamURL={streamURL} style={{ flex: 1 }} />}
+    {stream && <RTCView mediaStream={stream} style={{ flex: 1 }} />}
     ```
 
   </TabItem>
@@ -207,11 +201,6 @@ Once you've created a room of type `livestream` with the `public` flag enabled, 
     // ---cut---
     import { useLivestreamViewer, RTCView } from '@fishjam-cloud/mobile-client';
 
-    //TODO: FCE-2487 remove it when MediaStream will be updated
-    interface MediaStreamWithURL extends MediaStream {
-      toURL(): string;
-    }
-
     // Inside your component:
     const { connect, stream } = useLivestreamViewer();
 
@@ -220,8 +209,7 @@ Once you've created a room of type `livestream` with the `public` flag enabled, 
     await connect({ streamId: roomId });
 
     // Render the stream
-    const streamURL = stream ? (stream as MediaStreamWithURL).toURL() : null;
-    {streamURL && <RTCView streamURL={streamURL} style={{ flex: 1 }} />}
+    {stream && <RTCView mediaStream={stream} style={{ flex: 1 }} />}
     ```
 
   </TabItem>

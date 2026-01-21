@@ -97,7 +97,7 @@ export function ExampleCameraPreview() {
   </TabItem>
   <TabItem value="mobile" label="React Native (Mobile)">
 
-To manage users' camera and microphone devices, use the respective [`useCamera`](../../api/mobile/functions/useCamera) and [`useMicrophone`](../../api/mobile/functions/useMicrophone) hooks. Both of them have similar API. To keep things simple, we will just use the camera hook.
+To manage users' camera and microphone devices, use the respective [`useCamera`](../../api/mobile/functions/useCamera) and [`useMicrophone`](../../api/mobile/variables/useMicrophone) hooks. Both of them have similar API. To keep things simple, we will just use the camera hook.
 
 You can preview your camera stream using the `RTCView` component.
 
@@ -106,11 +106,6 @@ import React, { useEffect } from "react";
 import { View, Text } from "react-native";
 import { useCamera, RTCView } from "@fishjam-cloud/mobile-client";
 
-//TODO: FCE-2487 remove it when MediaStream will be updated
-interface MediaStreamWithURL extends MediaStream {
-  toURL(): string;
-}
-
 export function CameraPreview() {
   const { startCamera, cameraStream } = useCamera(); // [!code highlight]
 
@@ -118,15 +113,11 @@ export function CameraPreview() {
     startCamera(); // [!code highlight]
   }, [startCamera]);
 
-  const streamURL = cameraStream
-    ? (cameraStream as MediaStreamWithURL).toURL()
-    : null;
-
   return (
     <View>
-      {streamURL ? (
+      {cameraStream ? (
         <RTCView
-          streamURL={streamURL}
+          mediaStream={cameraStream}
           style={{ height: 300, width: 300 }}
           objectFit="cover"
           mirror={true}

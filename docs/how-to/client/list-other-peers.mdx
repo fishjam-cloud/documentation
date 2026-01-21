@@ -51,17 +51,11 @@ import React from "react";
 import { View, Text } from "react-native";
 import { usePeers, RTCView } from "@fishjam-cloud/mobile-client";
 
-//TODO: FCE-2487 remove it when MediaStream will be updated
-interface MediaStreamWithURL extends MediaStream {
-  toURL(): string;
-}
-
 function VideoPlayer({ stream }: { stream: MediaStream | null }) {
-  const streamURL = stream ? (stream as MediaStreamWithURL).toURL() : null;
-  if (!streamURL) return <Text>No video</Text>;
+  if (!stream) return <Text>No video</Text>;
   return (
     <RTCView
-      streamURL={streamURL}
+      mediaStream={stream}
       style={{ height: 200, width: "100%" }}
       objectFit="cover"
     />

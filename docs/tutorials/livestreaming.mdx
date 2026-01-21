@@ -161,11 +161,6 @@ We can now start sending media, which we can obtain from the user's camera, scre
           RTCView,
         } from '@fishjam-cloud/mobile-client';
 
-        //TODO: FCE-2487 remove it when MediaStream will be updated
-        interface MediaStreamWithURL extends MediaStream {
-          toURL(): string;
-        }
-
         const roomName = 'my-room';
 
         // Inside your component:
@@ -192,7 +187,7 @@ We can now start sending media, which we can obtain from the user's camera, scre
           {cameraStream ? (
             <RTCView
               style={{width: 300, height: 300}}
-              streamURL={(cameraStream as MediaStreamWithURL).toURL()}
+              mediaStream={cameraStream}
               objectFit="cover"
               mirror={true}
             />
@@ -226,11 +221,6 @@ We can now start sending media, which we can obtain from the user's camera, scre
           RTCView,
         } from '@fishjam-cloud/mobile-client';
 
-        //TODO: FCE-2487 remove it when MediaStream will be updated
-        interface MediaStreamWithURL extends MediaStream {
-          toURL(): string;
-        }
-
         const roomName = 'my-room';
 
         // Inside your component:
@@ -259,7 +249,7 @@ We can now start sending media, which we can obtain from the user's camera, scre
           {screenStream ? (
             <RTCView
               style={{width: 300, height: 300}}
-              streamURL={(screenStream as MediaStreamWithURL).toURL()}
+              mediaStream={screenStream}
               objectFit="cover"
               mirror={true}
             />
@@ -353,11 +343,6 @@ We can now begin receiving the stream
       RTCView,
     } from '@fishjam-cloud/mobile-client';
 
-    //TODO: FCE-2487 remove it when MediaStream will be updated
-    interface MediaStreamWithURL extends MediaStream {
-      toURL(): string;
-    }
-
     const roomName = 'my-room';
 
     // Inside your component:
@@ -372,7 +357,7 @@ We can now begin receiving the stream
       {stream ? (
         <RTCView
           style={{width: 300, height: 300}}
-          streamURL={(stream as MediaStreamWithURL).toURL()}
+          mediaStream={stream}
           objectFit="cover"
           mirror={true}
         />
