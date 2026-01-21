@@ -60,7 +60,11 @@ function VideoPlayer({ stream }: { stream: MediaStream | null }) {
   const streamURL = stream ? (stream as MediaStreamWithURL).toURL() : null;
   if (!streamURL) return <Text>No video</Text>;
   return (
-    <RTCView streamURL={streamURL} style={{ height: 200, width: "100%" }} objectFit="cover" />
+    <RTCView
+      streamURL={streamURL}
+      style={{ height: 200, width: "100%" }}
+      objectFit="cover"
+    />
   );
 }
 
@@ -75,13 +79,17 @@ export function ShowAllPeers() {
       )}
 
       {/* Remote cameras */}
-      {remotePeers.map((peer) => ( // [!code highlight]
-        <View key={peer.id}>
-          {peer.cameraTrack?.stream && (
-            <VideoPlayer stream={peer.cameraTrack.stream} />
-          )}
-        </View>
-      ))}
+      {remotePeers.map(
+        (
+          peer, // [!code highlight]
+        ) => (
+          <View key={peer.id}>
+            {peer.cameraTrack?.stream && (
+              <VideoPlayer stream={peer.cameraTrack.stream} />
+            )}
+          </View>
+        ),
+      )}
     </View>
   );
 }
@@ -95,4 +103,3 @@ To allow users to continue watching video in a floating window when they backgro
 
   </TabItem>
 </Tabs>
-

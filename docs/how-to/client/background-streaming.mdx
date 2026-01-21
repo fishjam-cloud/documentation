@@ -96,15 +96,10 @@ granted and only then allow to start a service.
 :::
 
 ```tsx
-import {
-  useCamera,
-  useMicrophone,
-} from "@fishjam-cloud/mobile-client";
+import { useCamera, useMicrophone } from "@fishjam-cloud/mobile-client";
 
 const { isCameraOn } = useCamera();
 const { isMicrophoneOn } = useMicrophone();
-
-
 ```
 
   </TabItem>
@@ -125,4 +120,3 @@ CallKit integration is handled automatically by the SDK when VoIP background mod
 ## See Also
 
 For an enhanced user experience when your app is in the background, consider enabling [Picture in Picture](./picture-in-picture), which allows users to see video content in a floating window while using other apps.
-

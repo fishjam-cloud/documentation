@@ -135,8 +135,16 @@ export function CameraControls() {
 
   return (
     <View>
-      <Button onPress={() => startCamera()} title="Start Camera" disabled={isCameraOn} />
-      <Button onPress={() => stopCamera()} title="Stop Camera" disabled={!isCameraOn} />
+      <Button
+        onPress={() => startCamera()}
+        title="Start Camera"
+        disabled={isCameraOn}
+      />
+      <Button
+        onPress={() => stopCamera()}
+        title="Stop Camera"
+        disabled={!isCameraOn}
+      />
     </View>
   );
 }
@@ -192,8 +200,16 @@ export function MicrophoneControls() {
 
   return (
     <View>
-      <Button onPress={() => startMicrophone()} title="Start Microphone" disabled={isMicrophoneOn} />
-      <Button onPress={() => stopMicrophone()} title="Stop Microphone" disabled={!isMicrophoneOn} />
+      <Button
+        onPress={() => startMicrophone()}
+        title="Start Microphone"
+        disabled={isMicrophoneOn}
+      />
+      <Button
+        onPress={() => stopMicrophone()}
+        title="Stop Microphone"
+        disabled={!isMicrophoneOn}
+      />
     </View>
   );
 }

@@ -166,7 +166,12 @@ The `RTCPIPView` component displays video content that can be shown in Picture i
 ```tsx
 import React, { useRef } from "react";
 import { View, Button } from "react-native";
-import { RTCPIPView, startPIP, stopPIP, useCamera } from "@fishjam-cloud/mobile-client";
+import {
+  RTCPIPView,
+  startPIP,
+  stopPIP,
+  useCamera,
+} from "@fishjam-cloud/mobile-client";
 
 //TODO: FCE-2487 remove it when MediaStream will be updated
 interface MediaStreamWithURL extends MediaStream {
@@ -176,7 +181,9 @@ interface MediaStreamWithURL extends MediaStream {
 export function VideoCallScreen() {
   const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
   const { cameraStream } = useCamera();
-  const streamURL = cameraStream ? (cameraStream as MediaStreamWithURL).toURL() : null;
+  const streamURL = cameraStream
+    ? (cameraStream as MediaStreamWithURL).toURL()
+    : null;
 
   return (
     <View>
@@ -218,7 +225,9 @@ interface MediaStreamWithURL extends MediaStream {
 export function VideoCallScreen() {
   const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
   const { cameraStream } = useCamera();
-  const streamURL = cameraStream ? (cameraStream as MediaStreamWithURL).toURL() : null;
+  const streamURL = cameraStream
+    ? (cameraStream as MediaStreamWithURL).toURL()
+    : null;
 
   return (
     <View>
@@ -254,7 +263,12 @@ For more control over when Picture in Picture starts and stops, use the `startPI
 ```tsx
 import React, { useRef } from "react";
 import { Button, View } from "react-native";
-import { RTCPIPView, startPIP, stopPIP, useCamera } from "@fishjam-cloud/mobile-client";
+import {
+  RTCPIPView,
+  startPIP,
+  stopPIP,
+  useCamera,
+} from "@fishjam-cloud/mobile-client";
 
 //TODO: FCE-2487 remove it when MediaStream will be updated
 interface MediaStreamWithURL extends MediaStream {
@@ -264,7 +278,9 @@ interface MediaStreamWithURL extends MediaStream {
 export function VideoCallScreen() {
   const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
   const { cameraStream } = useCamera();
-  const streamURL = cameraStream ? (cameraStream as MediaStreamWithURL).toURL() : null;
+  const streamURL = cameraStream
+    ? (cameraStream as MediaStreamWithURL).toURL()
+    : null;
 
   const handleStartPip = () => {
     startPIP(pipViewRef as any);
@@ -302,7 +318,13 @@ Here's a complete example showing Picture in Picture with a video call:
 ```tsx
 import React, { useRef } from "react";
 import { FlatList, StyleSheet, View, Text, Button } from "react-native";
-import { RTCPIPView, RTCView, startPIP, stopPIP, usePeers } from "@fishjam-cloud/mobile-client";
+import {
+  RTCPIPView,
+  RTCView,
+  startPIP,
+  stopPIP,
+  usePeers,
+} from "@fishjam-cloud/mobile-client";
 
 //TODO: FCE-2487 remove it when MediaStream will be updated
 interface MediaStreamWithURL extends MediaStream {
@@ -312,7 +334,9 @@ interface MediaStreamWithURL extends MediaStream {
 function VideoPlayer({ stream }: { stream: MediaStream | null }) {
   const streamURL = stream ? (stream as MediaStreamWithURL).toURL() : null;
   if (!streamURL) return <Text>No video</Text>;
-  return <RTCView streamURL={streamURL} style={styles.video} objectFit="cover" />;
+  return (
+    <RTCView streamURL={streamURL} style={styles.video} objectFit="cover" />
+  );
 }
 
 export function VideoCallScreen() {
@@ -430,7 +454,11 @@ Use `RTCPIPView` to display the livestream with Picture in Picture support:
 ```tsx
 import React, { useRef, useEffect } from "react";
 import { View, StyleSheet, Text } from "react-native";
-import { RTCPIPView, useLivestreamViewer, useSandbox } from "@fishjam-cloud/mobile-client";
+import {
+  RTCPIPView,
+  useLivestreamViewer,
+  useSandbox,
+} from "@fishjam-cloud/mobile-client";
 
 //TODO: FCE-2487 remove it when MediaStream will be updated
 interface MediaStreamWithURL extends MediaStream {
@@ -513,7 +541,13 @@ Here's a complete example showing how to connect to a livestream and display it 
 ```tsx
 import React, { useEffect, useRef } from "react";
 import { View, StyleSheet, Text, Button } from "react-native";
-import { RTCPIPView, useLivestreamViewer, useSandbox, startPIP, stopPIP } from "@fishjam-cloud/mobile-client";
+import {
+  RTCPIPView,
+  useLivestreamViewer,
+  useSandbox,
+  startPIP,
+  stopPIP,
+} from "@fishjam-cloud/mobile-client";
 
 //TODO: FCE-2487 remove it when MediaStream will be updated
 interface MediaStreamWithURL extends MediaStream {
@@ -593,4 +627,3 @@ Picture in Picture requires the `audio` background mode. Uses the native AVPictu
 
   </TabItem>
 </Tabs>
-

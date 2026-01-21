@@ -83,7 +83,9 @@ html[data-theme="light"] header.heroBanner_src-pages-index-module {
 }
 
 /* Badge in headings */
-h1 .badge, h2 .badge, h3 .badge {
+h1 .badge,
+h2 .badge,
+h3 .badge {
   font-size: 0.65em;
   vertical-align: middle;
   margin-left: 0.75rem;

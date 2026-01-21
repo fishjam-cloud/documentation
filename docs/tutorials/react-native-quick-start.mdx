@@ -84,7 +84,7 @@ Add camera and microphone usage descriptions to `app.json`:
 ```json title='app.json'
 {
   "expo": {
-   "ios": {
+    "ios": {
       "infoPlist": {
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera.",
         "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone."
@@ -328,11 +328,7 @@ function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
   }
 
   return (
-    <RTCView
-      streamURL={streamURL}
-      style={styles.video}
-      objectFit="cover"
-    />
+    <RTCView streamURL={streamURL} style={styles.video} objectFit="cover" />
   );
 }
 
@@ -365,9 +361,7 @@ function VideoCall() {
       <Text style={styles.title}>Fishjam Video Call</Text>
       <Text style={styles.status}>Status: {peerStatus}</Text>
 
-      {!isJoined && (
-        <Button title="Join Room" onPress={handleJoin} />
-      )}
+      {!isJoined && <Button title="Join Room" onPress={handleJoin} />}
 
       {cameraStream && (
         <View style={styles.section}>
