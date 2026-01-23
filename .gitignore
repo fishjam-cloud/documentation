@@ -138,5 +138,6 @@ docs/api/mobile/**
 docs/api/web/**
 docs/api/server/**
 docs/api/server-python/**
+docs/api/react-native-client/**
 
 .cursor/
