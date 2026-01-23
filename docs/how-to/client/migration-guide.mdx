@@ -127,13 +127,6 @@ On mobile, you should use `initializeDevices()` when you first want to stream. T
 :::
 
 ## Video Rendering and Accessing Peer Tracks
-Key changes:
-
-- `VideoRendererView` → `RTCView`
-- `trackId` prop → `streamURL` prop
-- Use `stream.toURL()` to get the URL from a MediaStream
-- Access peer video via `peer.cameraTrack.stream` instead of `peer.track`
-
 ### Before
 
 ```tsx
@@ -166,6 +159,7 @@ const localTrack = localPeer?.tracks.find((t) => t.type === "Video");
     />
     ))}
 </View>
+
 ```
 
 ### After
@@ -175,27 +169,20 @@ import React from "react";
 // ---cut---
 import { usePeers, RTCView } from "@fishjam-cloud/mobile-client";
 
-//TODO: FCE-2487 remove it when MediaStream will be updated
-interface MediaStreamWithURL extends MediaStream {
-  toURL(): string;
-}
-
 function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
-  const streamURL = stream ? (stream as MediaStreamWithURL).toURL() : null;
-
-  if (!streamURL) return null;
-
   return (
-    <RTCView
-      streamURL={streamURL}
-      style={{ width: 300, height: 200 }}
-      objectFit="cover"
-    />
+    <>
+      { stream && <RTCView
+        mediaStream={stream}
+        style={{ width: 300, height: 200 }}
+        objectFit="cover"
+      />}
+    </>
   );
 }
 
 const { localPeer, remotePeers } = usePeers();
-{localPeer?.cameraTrack?.stream && ( 
+{localPeer?.cameraTrack?.stream && (
     <VideoPlayer stream={localPeer.cameraTrack.stream} />
 )}
 
@@ -206,12 +193,13 @@ const { localPeer, remotePeers } = usePeers();
     )}
     </>
 ))}
+
 ```
 
 Key changes:
+
 - `VideoRendererView` → `RTCView`
-- `trackId` prop → `streamURL` prop
-- Use `stream.toURL()` to get the URL from a MediaStream
+- `trackId` prop → `mediaStream` prop
 - `peer.tracks` array → `peer.cameraTrack` and `peer.microphoneTrack` properties
 - `track.isActive` removed (check if stream exists instead)
 - `track.type` removed (use specific track properties)
@@ -230,6 +218,7 @@ const peerToken = await getSandboxPeerToken("roomName", "peerName");
 await joinRoom({ fishjamId: "your-id", peerToken });
 
 ```
+
 ### After
 
 ```tsx
@@ -245,7 +234,6 @@ await joinRoom({ peerToken }); // fishjamId passed through FishjamProvider
 ```
 
 ## Device Management
-
 ### Camera Device Selection
 
 ### Before
@@ -309,19 +297,15 @@ const { isCameraOn, toggleCamera } = useCamera();
 import { useCamera } from "@fishjam-cloud/mobile-client";
 const { startCamera, stopCamera, toggleCamera } = useCamera();
 
-// Start camera
 await startCamera();
 
-// Stop camera
 await stopCamera();
 
-// Toggle camera
 toggleCamera();
 
 ```
 
 ## Screen Sharing
-
 ### Before
 
 ```tsx
@@ -396,44 +380,41 @@ export function VideoCallScreen() {
 
 ```tsx
 import React, { useRef } from "react";
-import { Button } from "react-native";
-// ---cut---
-import { RTCPIPView, startPIP, stopPIP, usePeers } from "@fishjam-cloud/mobile-client";
-
-//TODO: FCE-2487 remove it when MediaStream will be updated
-interface MediaStreamWithURL extends MediaStream {
-  toURL(): string;
+import { View, Button } from "react-native";
+import {
+  RTCPIPView,
+  startPIP,
+  stopPIP,
+  useCamera,
+} from "@fishjam-cloud/mobile-client";
+export function VideoCallScreen() {
+  const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
+  const { cameraStream } = useCamera();
+  return (
+    <View>
+      <Button title="Start PiP" onPress={() => startPIP(pipViewRef as any)} />
+      <Button title="Stop PiP" onPress={() => stopPIP(pipViewRef as any)} />
+      {cameraStream && (
+        <RTCPIPView
+          ref={pipViewRef}
+          mediaStream={cameraStream}
+          style={{ width: 300, height: 200 }}
+          pip={{
+            startAutomatically: true,
+            stopAutomatically: true,
+            enabled: true,
+          }}
+        />
+      )}
+    </View>
+  );
 }
-
-const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
-const { localPeer } = usePeers();
-const stream = localPeer?.cameraTrack?.stream
-const streamURL = stream ? (stream as MediaStreamWithURL).toURL() : undefined;
-
-<>
-    <RTCPIPView
-    ref={pipViewRef}
-    streamURL={streamURL}
-    style={{ width: 300, height: 200 }}
-    pip={{
-        startAutomatically: true,
-        stopAutomatically: true,
-        enabled: true,
-    }}
-    />
-
-    // Manual control
-
-    <Button title="Start PiP" onPress={() => startPIP(pipViewRef as any)} />
-    <Button title="Stop PiP" onPress={() => stopPIP(pipViewRef as any)} />
-</>
 
 ```
 
 Key changes:
 
 - `PipContainerView` → `RTCPIPView`
-- `trackId` prop → `streamURL` prop
 - Requires a ref for manual `startPIP`/`stopPIP` control
 - Added `pip` prop for configuration
 
@@ -481,6 +462,7 @@ const [micPermission, requestMicPermission] = useMicrophonePermissions();
 ```
 
 ### After
+
 Permissions are now handled automatically by the SDK. When you call initializeDevices(), the SDK will automatically request camera and microphone permissions if they haven't been granted yet.
 
 ### CallKit Hooks
@@ -513,26 +495,3 @@ useCallKitEvent("muted", (isMuted) => {
 ### After
 
 CallKit integration is now handled automatically by the SDK when VoIP background mode is enabled. You no longer need to manually manage CallKit sessions.
-
-To enable background calls on iOS:
-
-**Expo:**
-
-```json
-{
-  "expo": {
-    "plugins": [
-      [
-        "@fishjam-cloud/mobile-client",
-        {
-          "ios": {
-            "enableVoIPBackgroundMode": true
-          }
-        }
-      ]
-    ]
-  }
-}
-
-```
-
