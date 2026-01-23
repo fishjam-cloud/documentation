@@ -18,28 +18,31 @@ The new `@fishjam-cloud/mobile-client` package provides a more consistent API ac
 ```bash
 npm install @fishjam-cloud/react-native-client
 ```
-
 ### After
 
 ```bash
 npm install @fishjam-cloud/mobile-client
+
 ```
 
 Remember to update all your imports:
 
 **From:**
+
 ```tsx
+// @errors: 2307
 import { useCamera } from "@fishjam-cloud/react-native-client";
 
 ```
 
 **To:**
+
 ```tsx
 import { useCamera } from "@fishjam-cloud/mobile-client";
+
 ```
 
 ## Required Android Permissions
-
 Add the following WebRTC permissions to your Android configuration in `app.json`:
 
 ```json
@@ -56,7 +59,9 @@ Add the following WebRTC permissions to your Android configuration in `app.json`
     }
   }
 }
+
 ```
+
 ## FishjamProvider Setup
 
 The new package requires wrapping your app with `FishjamProvider` to provide the Fishjam ID context.
@@ -64,6 +69,7 @@ The new package requires wrapping your app with `FishjamProvider` to provide the
 ### Before
 
 ```tsx
+// @errors: 2307
 import React from "react";
 // ---cut---
 import { useConnection } from "@fishjam-cloud/react-native-client";
@@ -96,12 +102,12 @@ const YourApp = () => {return (<><Text>Your app content</Text></>);};
 ```
 
 The `fishjamId` is now provided through the context, so you no longer need to pass it to `joinRoom` or `useSandbox`.
-
 ## Device Initialization
 
 ### Before
 
 ```tsx
+// @errors: 2307
 import { useCamera } from "@fishjam-cloud/react-native-client";
 
 const { prepareCamera } = useCamera();
@@ -125,11 +131,12 @@ await initializeDevices({ enableAudio: false }); // or initializeDevices() for b
 :::important
 On mobile, you should use `initializeDevices()` when you first want to stream. This gives your app access to all available devices and automatically requests camera and microphone permissions. After initialization, you can use `startCamera`/`stopCamera` or `startMicrophone`/`stopMicrophone` to manage device state.
 :::
-
 ## Video Rendering and Accessing Peer Tracks
+
 ### Before
 
 ```tsx
+// @errors: 2307 7006
 import React from "react";
 import { View } from "react-native";
 // ---cut---
@@ -203,12 +210,12 @@ Key changes:
 - `peer.tracks` array → `peer.cameraTrack` and `peer.microphoneTrack` properties
 - `track.isActive` removed (check if stream exists instead)
 - `track.type` removed (use specific track properties)
-
 ## Connection API
 
 ### Before
 
 ```tsx
+// @errors: 2307
 import { useConnection, useSandbox } from "@fishjam-cloud/react-native-client";
 
 const { joinRoom } = useConnection();
@@ -239,6 +246,7 @@ await joinRoom({ peerToken }); // fishjamId passed through FishjamProvider
 ### Before
 
 ```tsx
+// @errors: 2307 7006
 import { useCamera } from "@fishjam-cloud/react-native-client";
 
 const { cameras, switchCamera, currentCamera } = useCamera();
@@ -272,12 +280,12 @@ Key changes:
 - `cameras` → `cameraDevices`
 - `switchCamera` → `selectCamera` (takes `deviceId` instead of direction)
 - `facingDirection` property removed
-
 ### Camera Control
 
 ### Before
 
 ```tsx
+// @errors: 2307
 import React from "react";
 import { Button } from "react-native";
 // ---cut---
@@ -309,6 +317,7 @@ toggleCamera();
 ### Before
 
 ```tsx
+// @errors: 2307
 import React, { useCallback } from "react";
 import { Button } from "react-native";
 // ---cut---
@@ -356,12 +365,12 @@ Key changes:
 
 - `toggleScreenShare()` → `startStreaming()` / `stopStreaming()`
 - `isScreenShareOn` → check if `stream` exists
-
 ## Picture in Picture
 
 ### Before
 
 ```tsx
+// @errors: 2307
 import React from "react";
 import { View } from "react-native";
 // ---cut---
@@ -417,12 +426,12 @@ Key changes:
 - `PipContainerView` → `RTCPIPView`
 - Requires a ref for manual `startPIP`/`stopPIP` control
 - Added `pip` prop for configuration
-
 ## Livestreaming Imports
 
 ### Before
 
 ```tsx
+// @errors: 2307
 import {
   useLivestreamStreamer,
   useLivestreamViewer,
@@ -441,7 +450,6 @@ import {
 ```
 
 The livestreaming hooks are now exported from the main package instead of a separate `/livestream` subpath.
-
 ## Removed Hooks and APIs
 
 The following hooks and APIs have been removed and are no longer available:
@@ -451,6 +459,7 @@ The following hooks and APIs have been removed and are no longer available:
 ### Before
 
 ```tsx
+// @errors: 2307
 import {
   useCameraPermissions,
   useMicrophonePermissions,
@@ -470,6 +479,7 @@ Permissions are now handled automatically by the SDK. When you call initializeDe
 ### Before
 
 ```tsx
+// @errors: 2307 7006
 import {
   useCallKit,
   useCallKitService,

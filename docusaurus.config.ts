@@ -337,18 +337,6 @@ const config: Config = {
     [
       "docusaurus-plugin-typedoc",
       {
-        id: "react-native-client-api",
-        out: "docs/api/react-native-client",
-        entryPoints: [
-          "./packages/mobile-client-sdk/packages/react-native-client/src/index.tsx",
-        ],
-        tsconfig: "./packages/mobile-client-sdk/packages/react-native-client/tsconfig.json",
-        ...typedocConfig,
-      },
-    ],
-    [
-      "docusaurus-plugin-typedoc",
-      {
         id: "server-api",
         out: "docs/api/server",
         entryPoints: [
