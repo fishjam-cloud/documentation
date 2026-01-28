@@ -32,7 +32,7 @@ A simple React Native app that can join conference calls and stream audio/video 
 ### Install the package
 
 ```bash npm2yarn
-npm install @fishjam-cloud/mobile-client
+npm install @fishjam-cloud/react-native-client
 ```
 
 ### Configure app permissions
@@ -127,7 +127,7 @@ Wrap your app in the `FishjamProvider` component:
 
 ```tsx
 import React from "react";
-import { FishjamProvider } from "@fishjam-cloud/mobile-client";
+import { FishjamProvider } from "@fishjam-cloud/react-native-client";
 
 const App = () => null;
 
@@ -162,7 +162,7 @@ import {
   useConnection,
   useSandbox,
   useInitializeDevices,
-} from "@fishjam-cloud/mobile-client";
+} from "@fishjam-cloud/react-native-client";
 
 export function JoinRoomButton() {
   const { joinRoom } = useConnection();
@@ -195,7 +195,7 @@ Monitor your connection status:
 ```tsx
 import React from "react";
 import { Text } from "react-native";
-import { useConnection } from "@fishjam-cloud/mobile-client";
+import { useConnection } from "@fishjam-cloud/react-native-client";
 
 // ---cut---
 export function ConnectionStatus() {
@@ -211,7 +211,7 @@ Show your own video stream:
 ```tsx
 import React from "react";
 import { Text, View } from "react-native";
-import { RTCView, useCamera } from "@fishjam-cloud/mobile-client";
+import { RTCView, useCamera } from "@fishjam-cloud/react-native-client";
 
 export function StreamPreview() {
   const { cameraStream } = useCamera();
@@ -240,7 +240,7 @@ Show video from other peers in the room:
 ```tsx
 import React from "react";
 import { View, Text } from "react-native";
-import { usePeers, RTCView } from "@fishjam-cloud/mobile-client";
+import { usePeers, RTCView } from "@fishjam-cloud/react-native-client";
 
 function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
   return (
@@ -290,7 +290,7 @@ import {
   useInitializeDevices,
   useSandbox,
   RTCView,
-} from "@fishjam-cloud/mobile-client";
+} from "@fishjam-cloud/react-native-client";
 
 // Check https://fishjam.io/app/ for your Fishjam ID
 const FISHJAM_ID = "YOUR_FISHJAM_ID";

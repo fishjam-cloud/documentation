@@ -42,7 +42,7 @@ const peerToken = await getSandboxPeerToken(roomName, peerName);
   <TabItem value="mobile" label="React Native (Mobile)">
 
 ```ts
-import { useSandbox } from "@fishjam-cloud/mobile-client";
+import { useSandbox } from "@fishjam-cloud/react-native-client";
 const roomName = "room";
 const peerName = "user";
 // ---cut---
@@ -100,7 +100,7 @@ export function JoinRoomButton() {
 ```tsx
 import React, { useCallback } from "react";
 import { Button } from "react-native";
-import { useConnection, useSandbox } from "@fishjam-cloud/mobile-client";
+import { useConnection, useSandbox } from "@fishjam-cloud/react-native-client";
 
 export function JoinRoomButton() {
   const { joinRoom } = useConnection(); // [!code highlight]
@@ -146,7 +146,7 @@ export function LeaveRoomButton() {
 ```tsx
 import React, { useCallback } from "react";
 import { Button } from "react-native";
-import { useConnection } from "@fishjam-cloud/mobile-client";
+import { useConnection } from "@fishjam-cloud/react-native-client";
 
 export function LeaveRoomButton() {
   const { leaveRoom } = useConnection(); // [!code highlight]

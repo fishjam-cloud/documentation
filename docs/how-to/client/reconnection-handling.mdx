@@ -19,7 +19,7 @@ import { useEffect, useRef } from "react";
 import {
   ReconnectionStatus,
   useConnection,
-} from "@fishjam-cloud/mobile-client";
+} from "@fishjam-cloud/react-native-client";
 
 export function useLogConnectionStatus() {
   const prevStatus = useRef<ReconnectionStatus>("idle");

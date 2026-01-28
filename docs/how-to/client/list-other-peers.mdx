@@ -49,7 +49,7 @@ export function Component() {
 ```tsx
 import React from "react";
 import { View, Text } from "react-native";
-import { usePeers, RTCView } from "@fishjam-cloud/mobile-client";
+import { usePeers, RTCView } from "@fishjam-cloud/react-native-client";
 
 function VideoPlayer({ stream }: { stream: MediaStream | null }) {
   if (!stream) return <Text>No video</Text>;

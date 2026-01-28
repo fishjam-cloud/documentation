@@ -32,7 +32,7 @@ You need to modify `app.json` file and add our plugin:
     "plugins": {
       ...
       [
-        "@fishjam-cloud/mobile-client",
+        "@fishjam-cloud/react-native-client",
         {
           "android": {
             "enableForegroundService": true
@@ -96,7 +96,7 @@ granted and only then allow to start a service.
 :::
 
 ```tsx
-import { useCamera, useMicrophone } from "@fishjam-cloud/mobile-client";
+import { useCamera, useMicrophone } from "@fishjam-cloud/react-native-client";
 
 const { isCameraOn } = useCamera();
 const { isMicrophoneOn } = useMicrophone();

@@ -57,7 +57,7 @@ const PEER_TOKEN = "some-peer-token";
 // ---cut---
 import React, { useCallback } from "react";
 import { Button } from "react-native";
-import { useConnection } from "@fishjam-cloud/mobile-client";
+import { useConnection } from "@fishjam-cloud/react-native-client";
 
 type PeerMetadata = {
   displayName: string;
@@ -113,7 +113,7 @@ export function JoinRoomButton() {
 ```tsx
 import React, { useCallback } from "react";
 import { Button } from "react-native";
-import { useUpdatePeerMetadata } from "@fishjam-cloud/mobile-client";
+import { useUpdatePeerMetadata } from "@fishjam-cloud/react-native-client";
 
 type PeerMetadata = {
   displayName: string;
@@ -180,7 +180,7 @@ export function ListAllNames() {
 ```tsx
 import React from "react";
 import { Text, View } from "react-native";
-import { usePeers } from "@fishjam-cloud/mobile-client";
+import { usePeers } from "@fishjam-cloud/react-native-client";
 
 type PeerMetadata = {
   displayName: string;

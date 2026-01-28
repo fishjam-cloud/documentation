@@ -39,7 +39,7 @@ You need to modify your `app.json` file and add our plugin with Picture in Pictu
     ...
     "plugins": [
       [
-        "@fishjam-cloud/mobile-client",
+        "@fishjam-cloud/react-native-client",
         {
           "android": {
             "supportsPictureInPicture": true
@@ -102,7 +102,7 @@ You need to modify your `app.json` file and add our plugin with Picture in Pictu
     ...
     "plugins": [
       [
-        "@fishjam-cloud/mobile-client",
+        "@fishjam-cloud/react-native-client",
         {
           "android": {
             "supportsPictureInPicture": true
@@ -171,7 +171,7 @@ import {
   startPIP,
   stopPIP,
   useCamera,
-} from "@fishjam-cloud/mobile-client";
+} from "@fishjam-cloud/react-native-client";
 
 export function VideoCallScreen() {
   const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
@@ -207,7 +207,7 @@ You can customize the Picture in Picture behavior using the `pip` prop on `RTCPI
 ```tsx
 import React, { useRef } from "react";
 import { View } from "react-native";
-import { RTCPIPView, useCamera } from "@fishjam-cloud/mobile-client";
+import { RTCPIPView, useCamera } from "@fishjam-cloud/react-native-client";
 
 export function VideoCallScreen() {
   const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
@@ -252,7 +252,7 @@ import {
   startPIP,
   stopPIP,
   useCamera,
-} from "@fishjam-cloud/mobile-client";
+} from "@fishjam-cloud/react-native-client";
 
 export function VideoCallScreen() {
   const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
@@ -300,7 +300,7 @@ import {
   startPIP,
   stopPIP,
   usePeers,
-} from "@fishjam-cloud/mobile-client";
+} from "@fishjam-cloud/react-native-client";
 
 function VideoPlayer({ stream }: { stream: MediaStream | null }) {
   if (!stream) return <Text>No video</Text>;
@@ -395,7 +395,7 @@ Example configuration combining both features:
   "expo": {
     "plugins": [
       [
-        "@fishjam-cloud/mobile-client",
+        "@fishjam-cloud/react-native-client",
         {
           "android": {
             "enableForegroundService": true,
@@ -426,7 +426,7 @@ import {
   RTCPIPView,
   useLivestreamViewer,
   useSandbox,
-} from "@fishjam-cloud/mobile-client";
+} from "@fishjam-cloud/react-native-client";
 
 export function LivestreamScreen() {
   const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
@@ -509,7 +509,7 @@ import {
   useSandbox,
   startPIP,
   stopPIP,
-} from "@fishjam-cloud/mobile-client";
+} from "@fishjam-cloud/react-native-client";
 
 export function LivestreamViewerScreen() {
   const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);

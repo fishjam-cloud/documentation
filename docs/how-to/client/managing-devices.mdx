@@ -51,7 +51,7 @@ The list of the available camera devices is available via the [`cameraDevices`](
 ```tsx
 import React, { useCallback, useState } from "react";
 import { Button } from "react-native";
-import { useCamera } from "@fishjam-cloud/mobile-client";
+import { useCamera } from "@fishjam-cloud/react-native-client";
 
 export function FlipButton() {
   const { cameraDevices, selectCamera } = useCamera(); // [!code highlight]
@@ -109,7 +109,7 @@ You can use [`toggleCamera`](../../api/mobile/functions/useCamera#togglecamera) 
 ```tsx
 import { Button } from "react-native";
 import React from "react";
-import { useCamera } from "@fishjam-cloud/mobile-client";
+import { useCamera } from "@fishjam-cloud/react-native-client";
 
 export function ToggleCameraButton() {
   const { isCameraOn, toggleCamera } = useCamera(); // [!code highlight]
@@ -128,7 +128,7 @@ export function ToggleCameraButton() {
 ```tsx
 import { Button, View } from "react-native";
 import React from "react";
-import { useCamera } from "@fishjam-cloud/mobile-client";
+import { useCamera } from "@fishjam-cloud/react-native-client";
 
 export function CameraControls() {
   const { startCamera, stopCamera, isCameraOn } = useCamera();
@@ -174,7 +174,7 @@ You can use [`toggleMicrophone`](../../api/mobile/variables/useMicrophone) to to
 ```tsx
 import { Button } from "react-native";
 import React from "react";
-import { useMicrophone } from "@fishjam-cloud/mobile-client";
+import { useMicrophone } from "@fishjam-cloud/react-native-client";
 
 export function ToggleMicrophoneButton() {
   const { isMicrophoneOn, toggleMicrophone } = useMicrophone(); // [!code highlight]
@@ -193,7 +193,7 @@ export function ToggleMicrophoneButton() {
 ```tsx
 import { Button, View } from "react-native";
 import React from "react";
-import { useMicrophone } from "@fishjam-cloud/mobile-client";
+import { useMicrophone } from "@fishjam-cloud/react-native-client";
 
 export function MicrophoneControls() {
   const { startMicrophone, stopMicrophone, isMicrophoneOn } = useMicrophone();

@@ -61,7 +61,7 @@ The easiest way to obtain a sandbox streamer token is by using the Sandbox API i
     const FISHJAM_ID = '';
 
     // ---cut---
-    import { useSandbox } from '@fishjam-cloud/mobile-client';
+    import { useSandbox } from '@fishjam-cloud/react-native-client';
 
     const { getSandboxLivestream } = useSandbox();
     const { streamerToken } = await getSandboxLivestream('example-room');
@@ -159,7 +159,7 @@ We can now start sending media, which we can obtain from the user's camera, scre
           useCamera,
           useMicrophone,
           RTCView,
-        } from '@fishjam-cloud/mobile-client';
+        } from '@fishjam-cloud/react-native-client';
 
         const roomName = 'my-room';
 
@@ -219,7 +219,7 @@ We can now start sending media, which we can obtain from the user's camera, scre
           useScreenShare,
           useInitializeDevices,
           RTCView,
-        } from '@fishjam-cloud/mobile-client';
+        } from '@fishjam-cloud/react-native-client';
 
         const roomName = 'my-room';
 
@@ -302,7 +302,7 @@ We obtain a sandbox viewer token using the Sandbox API in the client SDKs:
     const FISHJAM_ID = '';
 
     // ---cut---
-    import { useSandbox } from '@fishjam-cloud/mobile-client';
+    import { useSandbox } from '@fishjam-cloud/react-native-client';
 
     const { getSandboxViewerToken } = useSandbox();
     const viewerToken = await getSandboxViewerToken('example-room');
@@ -341,7 +341,7 @@ We can now begin receiving the stream
       useLivestreamViewer,
       useSandbox,
       RTCView,
-    } from '@fishjam-cloud/mobile-client';
+    } from '@fishjam-cloud/react-native-client';
 
     const roomName = 'my-room';
 
