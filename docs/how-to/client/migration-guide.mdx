@@ -3,43 +3,13 @@ sidebar_position: 0
 sidebar_label: "Migration Guide"
 ---
 
-# Migration Guide: From @fishjam-cloud/react-native-client to @fishjam-cloud/mobile-client
+# Migration Guide: Upgrading @fishjam-cloud/react-native-client from 0.24 to 0.25
 
-This guide will help you migrate your React Native application from `@fishjam-cloud/react-native-client` to `@fishjam-cloud/mobile-client`.
+This guide will help you upgrade your React Native application from `@fishjam-cloud/react-native-client@0.24.x` to `@fishjam-cloud/react-native-client@0.25.x`.
 
 ## Overview
 
-The new `@fishjam-cloud/mobile-client` package provides a more consistent API across web and mobile platforms, improved TypeScript support, and better integration with React's context system.
-
-## Package Installation
-
-### Before
-
-```bash
-npm install @fishjam-cloud/react-native-client
-```
-
-### After
-
-```bash
-npm install @fishjam-cloud/mobile-client
-
-```
-
-Remember to update all your imports:
-
-**From:**
-
-```tsx
-// @noErrors
-import { useCamera } from "@fishjam-cloud/react-native-client";
-```
-
-**To:**
-
-```tsx
-import { useCamera } from "@fishjam-cloud/mobile-client";
-```
+Version `0.25` of `@fishjam-cloud/react-native-client` introduces API changes that may require code updates.
 
 ## Required Android Permissions
 
@@ -63,7 +33,7 @@ Add the following WebRTC permissions to your Android configuration in `app.json`
 
 ## FishjamProvider Setup
 
-The new package requires wrapping your app with `FishjamProvider` to provide the Fishjam ID context.
+In `0.25`, wrapping your app with `FishjamProvider` is required to provide the Fishjam ID context.
 
 ### Before
 
@@ -84,7 +54,7 @@ await joinRoom({ fishjamId: "your-fishjam-id", peerToken: "..." });
 import React from "react";
 import { Text } from "react-native";
 // ---cut---
-import { FishjamProvider } from "@fishjam-cloud/mobile-client"; // [!code highlight]
+import { FishjamProvider } from "@fishjam-cloud/react-native-client"; // [!code highlight]
 
 // Wrap your app with FishjamProvider
 export default function App() {
@@ -124,7 +94,7 @@ await prepareCamera({ cameraEnabled: true });
 ### After
 
 ```tsx
-import { useInitializeDevices } from "@fishjam-cloud/mobile-client";
+import { useInitializeDevices } from "@fishjam-cloud/react-native-client";
 
 const { initializeDevices } = useInitializeDevices();
 
@@ -176,7 +146,7 @@ const localTrack = localPeer?.tracks.find((t) => t.type === "Video");
 ```tsx
 import React from "react";
 // ---cut---
-import { usePeers, RTCView } from "@fishjam-cloud/mobile-client";
+import { usePeers, RTCView } from "@fishjam-cloud/react-native-client";
 
 function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
   return (
@@ -236,7 +206,7 @@ await joinRoom({ fishjamId: "your-id", peerToken });
 ### After
 
 ```tsx
-import { useConnection, useSandbox } from "@fishjam-cloud/mobile-client";
+import { useConnection, useSandbox } from "@fishjam-cloud/react-native-client";
 
 const { joinRoom } = useConnection();
 // fishjamId is now provided through FishjamProvider
@@ -270,7 +240,7 @@ if (otherCamera) {
 ### After
 
 ```tsx
-import { useCamera } from "@fishjam-cloud/mobile-client";
+import { useCamera } from "@fishjam-cloud/react-native-client";
 const { cameraDevices, selectCamera } = useCamera();
 
 // Select camera by deviceId
@@ -307,7 +277,7 @@ const { isCameraOn, toggleCamera } = useCamera();
 ### After
 
 ```tsx
-import { useCamera } from "@fishjam-cloud/mobile-client";
+import { useCamera } from "@fishjam-cloud/react-native-client";
 const { startCamera, stopCamera, toggleCamera } = useCamera();
 
 await startCamera();
@@ -346,7 +316,7 @@ const onPressToggle = useCallback(
 import React, { useCallback } from "react";
 import { Button } from "react-native";
 // ---cut---
-import { useScreenShare } from "@fishjam-cloud/mobile-client";
+import { useScreenShare } from "@fishjam-cloud/react-native-client";
 
 const { startStreaming, stopStreaming, stream } = useScreenShare();
 
@@ -395,7 +365,7 @@ import {
   startPIP,
   stopPIP,
   useCamera,
-} from "@fishjam-cloud/mobile-client";
+} from "@fishjam-cloud/react-native-client";
 export function VideoCallScreen() {
   const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
   const { cameraStream } = useCamera();
@@ -444,7 +414,7 @@ import {
 import {
   useLivestreamStreamer,
   useLivestreamViewer,
-} from "@fishjam-cloud/mobile-client";
+} from "@fishjam-cloud/react-native-client";
 ```
 
 The livestreaming hooks are now exported from the main package instead of a separate `/livestream` subpath.
