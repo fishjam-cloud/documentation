@@ -1,0 +1,51 @@
+---
+type: explanation
+sidebar_position: 7
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Data Channels
+
+Data channels allow you to send and receive arbitrary binary data between peers in a room. This is useful for implementing features like text chat, file sharing, game state synchronization, or real-time cursor positions.
+
+## Prerequisites
+
+Before using data channels, you must be [connected to a room](./connecting). Data channels only work after you have successfully joined a room.
+
+## Channel Types
+
+The SDK provides two types of data channels, each optimized for different use cases:
+
+### Reliable Channel
+
+- **Ordered delivery**: Messages arrive in the order they were sent
+- **Guaranteed delivery**: All messages will be delivered, with automatic retransmission if needed
+- **Use cases**: Chat messages, file transfers, commands, or any data that must not be lost
+
+### Lossy Channel
+
+- **Unordered delivery**: Messages may arrive out of order
+- **No retransmission**: Messages may be dropped if the network is congested
+- **Lower latency**: Faster delivery since there's no waiting for retransmissions
+- **Use cases**: Real-time cursor positions, game state updates, live sensor data, or any data where the latest value matters more than every value
+
+## Broadcast Communication
+
+Data channels work in a **broadcast fashion** - when you publish data, it is sent to all other peers in the room. Additionally:
+
+- Messages sent on the **reliable channel** are only received by peers subscribed to the **reliable channel**
+- Messages sent on the **lossy channel** are only received by peers subscribed to the **lossy channel**
+
+This separation allows you to use both channels simultaneously for different purposes without interference.
+
+## Using Data Channels
+
+Use the [`useDataChannel`](../api/web/functions/useDataChannel) hook to work with data channels. The typical flow is:
+
+1. Initialize the data channel after connecting to a room
+2. Subscribe to incoming messages
+3. Publish messages to other peers
+
+For a complete step-by-step guide on implementing text chat, see [Text Chat](../how-to/features/text-chat).
