@@ -1,9 +1,10 @@
 ---
 sidebar_position: 0
-sidebar_label: "Migration Guide"
+sidebar_label: "Migration Guide 📱"
 ---
 
-# Migration Guide: Upgrading @fishjam-cloud/react-native-client from 0.24 to 0.25
+# Migration Guide <span className="badge badge--mobile">Mobile</span>
+# Upgrading @fishjam-cloud/react-native-client from 0.24 to 0.25
 
 This guide will help you upgrade your React Native application from `@fishjam-cloud/react-native-client@0.24.x` to `@fishjam-cloud/react-native-client@0.25.x`.
 
@@ -59,9 +60,7 @@ import { FishjamProvider } from "@fishjam-cloud/react-native-client"; // [!code 
 // Wrap your app with FishjamProvider
 export default function App() {
   return (
-    <FishjamProvider fishjamId="YOUR_FISHJAM_ID">
-      {" "}
-      // [!code highlight]
+    <FishjamProvider fishjamId="YOUR_FISHJAM_ID"> // [!code highlight]
       <YourApp />
     </FishjamProvider> // [!code highlight]
   );
@@ -99,7 +98,7 @@ import { useInitializeDevices } from "@fishjam-cloud/react-native-client";
 const { initializeDevices } = useInitializeDevices();
 
 // Initialize devices when you first want to stream
-await initializeDevices({ enableAudio: false }); // or initializeDevices() for both
+await initializeDevices({ enableAudio: false }); // or initializeDevices() for both audio and video
 ```
 
 :::important
