@@ -36,7 +36,7 @@ The Sandbox API is a development tool that lets you create rooms and peers for t
     const roomName = "testRoom";
     const peerName = "testUser";
     // ---cut---
-    import { useSandbox } from '@fishjam-cloud/mobile-client';
+    import { useSandbox } from '@fishjam-cloud/react-native-client';
 
     // ...
 
@@ -116,7 +116,7 @@ Below are examples on how to use tokens from the Sandbox API in your frontend ap
 
     const RoomView = (props: {peerToken: string}) => null;
     // ---cut---
-    import { useSandbox } from "@fishjam-cloud/mobile-client";
+    import { useSandbox } from "@fishjam-cloud/react-native-client";
 
     export default function TestScreen() {
       const [peerToken, setPeerToken] = useState<string | null>(null);

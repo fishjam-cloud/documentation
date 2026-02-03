@@ -44,7 +44,7 @@ You need to modify `app.json` file and add our plugin:
     ...
     "plugins": [
       [
-        "@fishjam-cloud/mobile-client",
+        "@fishjam-cloud/react-native-client",
         {
           "ios": {
             "enableScreensharing": true,
@@ -240,7 +240,7 @@ And check current state by checking if [`stream`](../../api/mobile/variables/use
 ```tsx
 import React, { useCallback } from "react";
 import { Button } from "react-native";
-import { useScreenShare } from "@fishjam-cloud/mobile-client";
+import { useScreenShare } from "@fishjam-cloud/react-native-client";
 
 export function ScreenShareButton() {
   const { startStreaming, stopStreaming, stream } = useScreenShare(); // [!code highlight]
