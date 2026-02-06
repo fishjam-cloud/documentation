@@ -214,7 +214,7 @@ const config: Config = {
           customCss: "./src/css/custom.css",
         },
         googleTagManager: {
-          containerId: "GTM-MZWSHSWM",
+          containerId: "GTM-5L68C9JS",
         },
         sitemap: {
           lastmod: "date",
