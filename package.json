@@ -42,7 +42,7 @@
     "@types/react-dom": "^19.1.6",
     "clsx": "^2.0.0",
     "docusaurus-lunr-search": "3.6.0",
-    "expo-camera": "^16.1.8",
+    "expo-camera": "^17.0.8",
     "fastify": "^5.4.0",
     "mock-import": "^4.2.1",
     "prism-react-renderer": "^2.4.1",
