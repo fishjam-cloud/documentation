@@ -1,0 +1,5 @@
+# Type Alias: TrackMiddleware
+
+> **TrackMiddleware** = (`track`) => [`MiddlewareResult`](MiddlewareResult.md) \| `Promise`\<[`MiddlewareResult`](MiddlewareResult.md)\> \| `null`
+
+Defined in: [react-client/src/types/public.ts:30](https://github.com/fishjam-cloud/web-client-sdk/blob/d78484b4f189e2789ab2da373043d6e3c10800de/packages/react-client/src/types/public.ts#L30)
