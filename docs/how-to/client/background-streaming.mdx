@@ -194,15 +194,14 @@ import {
   useConnection,
 } from "@fishjam-cloud/react-native-client";
 
-const { toggleCamera } = useCamera();
 const { startMicrophone, stopMicrophone } = useMicrophone();
 const { leaveRoom } = useConnection();
 
 // Listen for mute toggle from CallKit UI
 useCallKitEvent("muted", (isMuted?: boolean) => {
-  if (isMuted) {
+  if (isMuted === true) {
     stopMicrophone();
-  } else if (!isMuted) {
+  } else if (isMuted === false) {
     startMicrophone();
   }
 });
