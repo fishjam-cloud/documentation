@@ -89,13 +89,11 @@ Your app needs to have permissions configured in order to use the microphone and
 
 ### Android
 
-Permissions below are required to stream audio and video with Fishjam on Android.
+These permissions are required to stream audio and video with Fishjam on Android:
 
 - `android.permission.CAMERA`
 - `android.permission.RECORD_AUDIO`
 - `android.permission.MODIFY_AUDIO_SETTINGS`
-- `android.permission.ACCESS_NETWORK_STATE`
-- `android.permission.ACCESS_WIFI_STATE`
 
 <Tabs groupId="app-type">
 
@@ -112,9 +110,7 @@ Add required permissions to the `app.json` file.
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO",
-        "android.permission.MODIFY_AUDIO_SETTINGS",
-        "android.permission.ACCESS_NETWORK_STATE",
-        "android.permission.ACCESS_WIFI_STATE"
+        "android.permission.MODIFY_AUDIO_SETTINGS"
       ]
     }
   }
@@ -131,7 +127,7 @@ Add required permissions to the `AndroidManifest.xml` file.
   ...
   <uses-permission android:name="android.permission.CAMERA"/>
   <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTING"/>
+  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
   ...
 </manifest>
 ```
