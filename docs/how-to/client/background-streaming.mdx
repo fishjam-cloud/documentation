@@ -53,14 +53,28 @@ You need to modify `app.json` file and add our plugin:
 
 **Android Configuration**
 
-You need to add the following service to `AndroidManifest.xml`:
+Add the following permissions and services to `AndroidManifest.xml`:
 
 ```xml title='AndroidManifest.xml'
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
   ...
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION"/>
   <application ...>
     ...
-    <service android:name="io.fishjam.reactnative.FishjamForegroundService" android:foregroundServiceType="camera|microphone|mediaProjection"/>
+    <service
+      android:name="com.oney.WebRTCModule.foregroundService.WebRTCForegroundService"
+      android:foregroundServiceType="camera|microphone"
+      android:stopWithTask="true"
+    />
+    <!-- Add this service only if you use screen sharing -->
+    <service
+      android:name="com.oney.WebRTCModule.MediaProjectionService"
+      android:foregroundServiceType="mediaProjection"
+      android:stopWithTask="true"
+    />
   </application>
 </manifest>
 ```
@@ -105,13 +119,15 @@ import {
 const { isCameraOn } = useCamera();
 const { isMicrophoneOn } = useMicrophone();
 
-useForegroundService({ // [!code highlight]
+useForegroundService({
+  // [!code highlight]
   channelId: "io.fishjam.example.fishjamchat.foregroundservice.channel",
   channelName: "Fishjam Chat Notifications",
   notificationTitle: "Your video call is ongoing",
   notificationContent: "Tap to return to the call.",
   enableCamera: isCameraOn,
   enableMicrophone: isMicrophoneOn,
+  // enableScreenSharing: true,
 });
 ```
 
@@ -183,17 +199,17 @@ const { startMicrophone, stopMicrophone } = useMicrophone();
 const { leaveRoom } = useConnection();
 
 // Listen for mute toggle from CallKit UI
-useCallKitEvent("muted", (isMuted: boolean) => {
+useCallKitEvent("muted", (isMuted?: boolean) => {
   if (isMuted) {
     stopMicrophone();
-  } else {
+  } else if (!isMuted) {
     startMicrophone();
   }
 });
 
 // Listen for hold state changes
-useCallKitEvent("held", (isOnHold: boolean) => {
-  console.log("Call hold state:", isOnHold);
+useCallKitEvent("held", (isHeld?: boolean) => {
+  console.log("Call hold state:", isHeld);
   // Handle hold state in your app
 });
 
