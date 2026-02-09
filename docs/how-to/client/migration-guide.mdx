@@ -1,9 +1,9 @@
 ---
-sidebar_position: 0
-sidebar_label: "Migration Guide 📱"
+sidebar_position: 14
+sidebar_label: "0.25.x Migration Guide 📱"
 ---
 
-# Migration Guide <span className="badge badge--mobile">Mobile</span>
+# 0.25.x Migration Guide <span className="badge badge--mobile">Mobile</span>
 
 # Upgrading @fishjam-cloud/react-native-client from 0.24 to 0.25
 
@@ -442,34 +442,3 @@ const [micPermission, requestMicPermission] = useMicrophonePermissions();
 ### After
 
 Permissions are now handled automatically by the SDK. When you call initializeDevices(), the SDK will automatically request camera and microphone permissions if they haven't been granted yet.
-
-### CallKit Hooks
-
-### Before
-
-```tsx
-// @noErrors
-import {
-  useCallKit,
-  useCallKitService,
-  useCallKitEvent,
-} from "@fishjam-cloud/react-native-client";
-
-// Manual CallKit control
-const { startCallKitSession, endCallKitSession } = useCallKit();
-
-// Automatic CallKit service
-useCallKitService({
-  displayName: "User Name",
-  isVideo: true,
-});
-
-// CallKit events
-useCallKitEvent("muted", (isMuted) => {
-  // Handle mute event
-});
-```
-
-### After
-
-CallKit integration is now handled automatically by the SDK when VoIP background mode is enabled. You no longer need to manually manage CallKit sessions.
