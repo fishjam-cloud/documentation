@@ -42,7 +42,22 @@ This separation allows you to use both channels simultaneously for different pur
 
 ## Using Data Channels
 
-Use the [`useDataChannel`](../api/web/functions/useDataChannel) hook to work with data channels. The typical flow is:
+Use the `useDataChannel` hook to work with data channels. The hook is available in both the web and mobile SDKs with the same API:
+
+<Tabs groupId="platform">
+  <TabItem value="web" label="React (Web)">
+
+Use [`useDataChannel`](../api/web/functions/useDataChannel) from `@fishjam-cloud/react-client`.
+
+  </TabItem>
+  <TabItem value="mobile" label="React Native (Mobile)">
+
+Use [`useDataChannel`](../api/mobile/functions/useDataChannel) from `@fishjam-cloud/react-native-client`.
+
+  </TabItem>
+</Tabs>
+
+The typical flow is:
 
 1. Initialize the data channel after connecting to a room
 2. Subscribe to incoming messages

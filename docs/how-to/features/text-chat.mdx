@@ -22,7 +22,7 @@ For a deeper understanding of how data channels work, including channel types an
 
 ## Step 1 — Set up the chat hook
 
-Use the [`useDataChannel`](/api/web/functions/useDataChannel) hook to work with data channels. The typical flow is:
+Use the [`useDataChannel`](/api/web/functions/useDataChannel) (web) or [`useDataChannel`](/api/mobile/functions/useDataChannel) (mobile) hook to work with data channels. The typical flow is:
 
 1. Initialize the data channel after connecting to a room
 2. Subscribe to incoming messages
@@ -84,9 +84,64 @@ export function useChat() {
 ```
 
   </TabItem>
-  <TabItem value="mobile" label="React Native (Mobile)" disabled>
+  <TabItem value="mobile" label="React Native (Mobile)">
 
-Mobile SDK support for data channels will be available in a future release.
+```tsx
+import { useConnection, useDataChannel } from "@fishjam-cloud/react-native-client";
+import { useCallback, useEffect, useState } from "react";
+
+export function useChat() {
+  const { peerStatus } = useConnection();
+  const {
+    initializeDataChannel,
+    publishData,
+    subscribeData,
+    dataChannelReady,
+    dataChannelLoading,
+    dataChannelError,
+  } = useDataChannel();
+
+  const [messages, setMessages] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (peerStatus === "connected") {
+      initializeDataChannel();
+    }
+  }, [peerStatus, initializeDataChannel]);
+
+  useEffect(() => {
+    if (dataChannelLoading || !dataChannelReady) return;
+
+    const unsubscribe = subscribeData(
+      (data: Uint8Array) => {
+        const message = new TextDecoder().decode(data);
+        setMessages((prev) => [...prev, message]);
+      },
+      { reliable: true },
+    );
+
+    return unsubscribe;
+  }, [dataChannelReady, dataChannelLoading, subscribeData]);
+
+  const sendMessage = useCallback(
+    (text: string) => {
+      if (!dataChannelReady) return;
+
+      const encoded = new TextEncoder().encode(text);
+      publishData(encoded, { reliable: true });
+    },
+    [publishData, dataChannelReady],
+  );
+
+  return {
+    messages,
+    sendMessage,
+    ready: dataChannelReady,
+    loading: dataChannelLoading,
+    error: dataChannelError,
+  };
+}
+```
 
   </TabItem>
 </Tabs>
@@ -185,9 +240,94 @@ function ChatPanel() {
 ```
 
   </TabItem>
-  <TabItem value="mobile" label="React Native (Mobile)" disabled>
+  <TabItem value="mobile" label="React Native (Mobile)">
 
-Mobile SDK support for data channels will be available in a future release.
+```tsx
+import React, { useState, useEffect, useCallback } from "react";
+import { View, Text, TextInput, FlatList, Pressable } from "react-native";
+import { useConnection, useDataChannel } from "@fishjam-cloud/react-native-client";
+
+function useChat() {
+  const { peerStatus } = useConnection();
+  const {
+    initializeDataChannel,
+    publishData,
+    subscribeData,
+    dataChannelReady,
+  } = useDataChannel();
+
+  const [messages, setMessages] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (peerStatus === "connected") {
+      initializeDataChannel();
+    }
+  }, [peerStatus, initializeDataChannel]);
+
+  useEffect(() => {
+    if (!dataChannelReady) return;
+
+    const unsubscribe = subscribeData(
+      (data: Uint8Array) => {
+        const message = new TextDecoder().decode(data);
+        setMessages((prev) => [...prev, message]);
+      },
+      { reliable: true },
+    );
+
+    return unsubscribe;
+  }, [subscribeData, dataChannelReady]);
+
+  const sendMessage = useCallback(
+    (text: string) => {
+      if (!dataChannelReady) return;
+
+      const encoded = new TextEncoder().encode(text);
+      publishData(encoded, { reliable: true });
+    },
+    [publishData, dataChannelReady],
+  );
+
+  return { messages, sendMessage, ready: dataChannelReady };
+}
+
+// ---cut---
+
+function ChatPanel() {
+  const { messages, sendMessage, ready } = useChat();
+  const [input, setInput] = useState("");
+
+  const handleSend = () => {
+    if (input.trim()) {
+      sendMessage(input);
+      setInput("");
+    }
+  };
+
+  if (!ready) {
+    return <Text>Connecting to chat...</Text>;
+  }
+
+  return (
+    <View>
+      <FlatList
+        data={messages}
+        keyExtractor={(_, i) => String(i)}
+        renderItem={({ item }) => <Text>{item}</Text>}
+      />
+      <TextInput
+        value={input}
+        onChangeText={setInput}
+        placeholder="Type a message..."
+        onSubmitEditing={handleSend}
+      />
+      <Pressable onPress={handleSend}>
+        <Text>Send</Text>
+      </Pressable>
+    </View>
+  );
+}
+```
 
   </TabItem>
 </Tabs>
@@ -209,4 +349,5 @@ This ensures no chat messages are lost or arrive out of order.
 
 - [Data Channels](../../explanation/data-channels) — detailed explanation of channel types and broadcast behavior
 - [Connecting to a room](../../how-to/client/connecting) — prerequisite for using data channels
-- [`useDataChannel` API reference](../../api/web/functions/useDataChannel)
+- [`useDataChannel` API reference (Web)](../../api/web/functions/useDataChannel)
+- [`useDataChannel` API reference (Mobile)](../../api/mobile/functions/useDataChannel)
