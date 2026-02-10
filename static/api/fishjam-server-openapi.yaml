@@ -276,6 +276,10 @@ components:
         audioOnly:
           description: True if stream is restricted to audio only
           type: boolean
+        connectedViewers:
+          description: Number of connected viewers
+          minimum: 0
+          type: integer
         id:
           description: Assigned stream id
           type: string
@@ -296,6 +300,7 @@ components:
         - public
         - viewers
         - streamers
+        - connectedViewers
       title: Stream
       type: object
     StreamConfig:
@@ -364,15 +369,22 @@ components:
       type: string
     Subscriptions:
       description: Describes peer's subscriptions in manual mode
-      items:
-        properties:
-          peerId:
+      properties:
+        peers:
+          description: List of peer IDs this peer subscribes to
+          items:
             $ref: "#/components/schemas/PeerID"
-          trackId:
+          type: array
+        tracks:
+          description: List of track IDs this peer subscribes to
+          items:
             $ref: "#/components/schemas/TrackID"
-        type: string
+          type: array
+      required:
+        - peers
+        - tracks
       title: Subscriptions
-      type: array
+      type: object
     Track:
       description: Describes media track of a Peer
       properties:
@@ -438,7 +450,7 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
   title: Fishjam Media Server
-  version: 0.22.0
+  version: 0.23.0
 openapi: 3.0.0
 paths:
   /livestream:
