@@ -268,7 +268,8 @@ We recommend not requesting frames more than once per second to avoid unnecessar
         # Captured frames arrive as IncomingTrackImage messages
         async for message in session.receive():
             match message:
-                case IncomingTrackImage(track_id=track_id, data=data):
+                case IncomingTrackImage() as msg if msg.track_id == track_id:
+                    data = msg.data
                     # process the image data
                     pass
     ```
