@@ -208,11 +208,11 @@ You can interrupt the currently played audio chunk. See the example below.
 
 ### Making the Agent see
 
-Agents can also request video frames (images) from peers' video tracks.
+Agents can also request video frames (JPEG images) from peers' video tracks.
 Unlike audio, which streams continuously, video frames must be explicitly requested and arrive asynchronously.
 
-:::tip
-We recommend not requesting frames more than once per second to avoid unnecessary load.
+:::important
+Video frame capture is rate-limited to one frame per second per track.
 :::
 
 <Tabs groupId="language">
