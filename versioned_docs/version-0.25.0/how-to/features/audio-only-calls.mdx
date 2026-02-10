@@ -1,0 +1,99 @@
+---
+type: how-to
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Audio-only Conferences and Livestreams
+
+In many use cases, you only need real-time audio, without any video streaming.
+If your use case falls into this category, then you can benefit greatly from using audio-only rooms in Fishjam.
+
+## Why Should I Care?
+
+Audio-only rooms are heavily discounted compared to normal rooms.
+As described in more detail on the [pricing page](https://fishjam.io/#pricing), Fishjam rooms are priced based on the total connection time of peers in them.
+Audio-only rooms come at a **75% discount** for both conferencing and livestreaming.
+
+### Conferencing
+
+For conferencing, the base price is $1 per 1000 participant minutes.
+
+For example, if you have a normal room with 10 peers connected for 100 minutes, then the total cost of the room will be $1.
+If the same room were audio-only, the final cost of the room would only be $0.25.
+
+### Livestreaming
+
+For livestreaming, the base price is $0.8 per 1000 minutes of streamer and each viewer.
+
+In a livestream with 1 streamer and 9999 viewers, all connected for 100 minutes, the total connection time is 10,000 minutes.
+For a normal livestream, this would cost $8.00.
+If the same room were audio-only, the final cost would only be $2.00.
+
+## How Do I Use It?
+
+Using this feature is as easy as setting the `roomType` field when creating a room using our [Server SDKs](../../how-to/backend/server-setup).
+
+:::info
+Attempting to stream a video while connected to an `audio_only` or `audio_only_livestream` room will result in only the audio being sent to the other peers.
+:::
+
+### Conferencing
+
+Set `roomType` to `audio_only` when creating a room:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+    const fishjamClient = new FishjamClient({
+        fishjamId: "aaa",
+        managementToken: "bbb",
+    });
+    // ---cut---
+    const audioOnlyRoom = await fishjamClient.createRoom({ roomType: 'audio_only' });
+    ```
+  </TabItem>
+  <TabItem value="python" label="Python">
+    ```python
+    options = RoomOptions(room_type="audio_only")
+    audio_only_room = fishjam_client.create_room(options)
+    ```
+  </TabItem>
+</Tabs>
+
+Now, you can connect peers normally to the room as described in our [Web & Mobile connecting guide](../../how-to/client/connecting).
+
+### Livestreaming
+
+Set `roomType` to `audio_only_livestream` when creating a room:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+    const fishjamClient = new FishjamClient({
+        fishjamId: "aaa",
+        managementToken: "bbb",
+    });
+    // ---cut---
+    const audioOnlyRoom = await fishjamClient.createRoom({ roomType: 'audio_only_livestream' });
+    ```
+  </TabItem>
+  <TabItem value="python" label="Python">
+    ```python
+    options = RoomOptions(room_type="audio_only_livestream")
+    audio_only_room = fishjam_client.create_room(options)
+    ```
+  </TabItem>
+</Tabs>
+
+Refer to our [Livestreaming tutorial](../../tutorials/livestreaming.mdx) to learn how to connect streamers and viewers.
+
+:::info
+The React Native and React SDKs will log a warning in the console if any attempt to add video to an audio-only room is made.
+This aims to assist in debugging, as adding video to an audio-only room has no effect and is most likely a mistake.
+:::

@@ -1,0 +1,208 @@
+---
+sidebar_position: 1
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Installation
+
+<Tabs groupId="platform">
+  <TabItem value="web" label="React (Web)">
+
+## 1. Install the package
+
+```bash npm2yarn
+npm install @fishjam-cloud/react-client
+```
+
+## 2. Setup Fishjam context
+
+Wrap your app in our [`FishjamProvider`](../../api/web/functions/FishjamProvider) component. Get your Fishjam ID from [Fishjam Dashboard](https://fishjam.io/app) and pass it to the provider.
+
+```tsx
+const App = () => {
+  return <div>Hello world</div>;
+};
+
+// ---cut---
+import React from "react";
+import ReactDOM from "react-dom/client";
+// import App from "./App";
+import { FishjamProvider } from "@fishjam-cloud/react-client";
+
+// Check https://fishjam.io/app/ for your Fishjam ID
+const FISHJAM_ID = "your-fishjam-id";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  // [!code highlight:5]
+  <React.StrictMode>
+    <FishjamProvider fishjamId={FISHJAM_ID}>
+      <App />
+    </FishjamProvider>
+  </React.StrictMode>,
+);
+```
+
+:::tip
+
+It's possible to have many independent Fishjam contexts in one app.  
+Just render many [`FishjamProvider`](../../api/web/functions/FishjamProvider) components and make sure they don't overlap.
+
+:::
+
+  </TabItem>
+  <TabItem value="mobile" label="React Native (Mobile)">
+
+## Optional: Create a New App
+
+<details>
+  <summary>Follow these steps to create a new mobile app</summary>
+
+If you don't have an existing project, you can create a new Expo app using a template
+
+```bash
+npx create-expo-app@latest my-video-app
+```
+
+As the next step, you have to generate native files with the `expo prebuild` command:
+
+```bash
+npx expo prebuild
+```
+
+You can also follow more detailed [Expo instructions](https://docs.expo.dev/get-started/introduction/).
+
+</details>
+
+## Step 1: Install the Package
+
+Install `@fishjam-cloud/react-native-client` with your preferred package manager.
+
+```bash npm2yarn
+npm install @fishjam-cloud/react-native-client
+```
+
+## Step 2: Configure App Permissions
+
+Your app needs to have permissions configured in order to use the microphone and camera.
+
+### Android
+
+These permissions are required to stream audio and video with Fishjam on Android:
+
+- `android.permission.CAMERA`
+- `android.permission.RECORD_AUDIO`
+- `android.permission.MODIFY_AUDIO_SETTINGS`
+
+<Tabs groupId="app-type">
+
+  <TabItem value="expo" label="Expo">
+
+Add required permissions to the `app.json` file.
+
+```json title='app.json'
+{
+  "expo": {
+    ...
+    "android": {
+      ...
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
+    }
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+Add required permissions to the `AndroidManifest.xml` file.
+
+```xml title='AndroidManifest.xml'
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  ...
+  <uses-permission android:name="android.permission.CAMERA"/>
+  <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+  ...
+</manifest>
+```
+
+  </TabItem>
+</Tabs>
+
+### iOS
+
+<Tabs groupId="app-type">
+
+  <TabItem value="expo" label="Expo">
+
+You don't have to make any changes to run app on iOS.
+To update default content of permission alert, you can add these settings to `app.json`:
+
+```json title='app.json'
+{
+  "expo": {
+    ...
+   "ios": {
+      ...
+      "infoPlist": {
+        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera.",
+        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone."
+      }
+    },
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+Ensure `Info.plist` contains camera and microphone usage description entries:
+
+```xml title='Info.plist'
+    <key>NSCameraUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your camera.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your microphone.</string>
+```
+
+  </TabItem>
+</Tabs>
+
+## Step 3: Setup Fishjam Context
+
+Wrap your app in the [`FishjamProvider`](../../api/mobile/functions/FishjamProvider) component:
+
+```tsx
+import React from "react";
+import { FishjamProvider } from "@fishjam-cloud/react-native-client";
+
+// Check https://fishjam.io/app/ for your Fishjam ID
+const FISHJAM_ID = "your-fishjam-id";
+
+export default function App() {
+  return (
+    <FishjamProvider fishjamId={FISHJAM_ID}>
+      {/* Your app components */}
+    </FishjamProvider>
+  );
+}
+```
+
+## Camera and Microphone Permissions
+
+:::info
+You don't need to explicitly request permissions as they're automatically asked for when your app needs them.
+:::
+
+The SDK automatically requests camera and microphone permissions when you call `initializeDevices()`. The system permission dialog will be shown to the user if permissions haven't been granted yet.
+
+If you need manual control over permissions, you can use the [expo-permissions](https://docs.expo.dev/versions/latest/sdk/permissions/) or [react-native-permissions](https://github.com/zoontek/react-native-permissions) libraries.
+
+  </TabItem>
+</Tabs>

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Fishjam Room Manager
-  version: 0.22.0
+  version: 0.25.0
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0

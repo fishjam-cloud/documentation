@@ -1,0 +1,585 @@
+---
+sidebar_position: 11
+sidebar_label: "Picture in Picture 📱"
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Picture in Picture <span className="badge badge--mobile">Mobile</span>
+
+:::note
+This guide is exclusively for **Mobile** (React Native) applications.
+:::
+
+Picture in Picture (PiP) allows your app to display video content in a small window that floats above other apps when the user backgrounds your application. This is especially useful for video calls and livestreaming where users want to multitask while staying connected.
+
+The SDK provides two Picture in Picture modes depending on your use case:
+
+- **Conferencing**: For interactive video calls with multiple participants. Uses a **custom split-screen layout** in the PiP window showing your local camera (left) and the active speaker (right) with automatic voice activity detection.
+- **Livestreaming**: For viewing livestreams. Displays the **full WHEP stream video** in the Picture in Picture window using the native video player's PiP functionality.
+
+Choose the scenario that matches your application below.
+
+## Installation
+
+<Tabs groupId="pip-scenario">
+
+  <TabItem value="conferencing" label="Conferencing">
+
+<Tabs groupId="app-type">
+
+  <TabItem value="expo" label="Expo">
+
+You need to modify your `app.json` file and add our plugin with Picture in Picture support:
+
+```json title='app.json'
+{
+  "expo": {
+    ...
+    "plugins": [
+      [
+        "@fishjam-cloud/react-native-client",
+        {
+          "android": {
+            "supportsPictureInPicture": true
+          },
+          "ios": {
+            "supportsPictureInPicture": true
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+**Android Configuration**
+
+Add the `android:supportsPictureInPicture` attribute to your main activity in `AndroidManifest.xml`:
+
+```xml title='AndroidManifest.xml'
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <application ...>
+    <activity
+      android:name=".MainActivity"
+      android:supportsPictureInPicture="true"
+      ...>
+    </activity>
+  </application>
+</manifest>
+```
+
+**iOS Configuration**
+
+Add the `audio` background mode to your `Info.plist`:
+
+```xml title='Info.plist'
+<key>UIBackgroundModes</key>
+<array>
+  <string>audio</string>
+</array>
+```
+
+  </TabItem>
+</Tabs>
+
+  </TabItem>
+  <TabItem value="livestreaming" label="Livestreaming">
+
+<Tabs groupId="app-type">
+
+  <TabItem value="expo" label="Expo">
+
+You need to modify your `app.json` file and add our plugin with Picture in Picture support:
+
+```json title='app.json'
+{
+  "expo": {
+    ...
+    "plugins": [
+      [
+        "@fishjam-cloud/react-native-client",
+        {
+          "android": {
+            "supportsPictureInPicture": true
+          },
+          "ios": {
+            "supportsPictureInPicture": true
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+**Android Configuration**
+
+Add the `android:supportsPictureInPicture` attribute to your main activity in `AndroidManifest.xml`:
+
+```xml title='AndroidManifest.xml'
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <application ...>
+    <activity
+      android:name=".MainActivity"
+      android:supportsPictureInPicture="true"
+      ...>
+    </activity>
+  </application>
+</manifest>
+```
+
+**iOS Configuration**
+
+Add the `audio` background mode to your `Info.plist`:
+
+```xml title='Info.plist'
+<key>UIBackgroundModes</key>
+<array>
+  <string>audio</string>
+</array>
+```
+
+  </TabItem>
+</Tabs>
+
+  </TabItem>
+</Tabs>
+
+## Usage
+
+<Tabs groupId="pip-scenario">
+
+  <TabItem value="conferencing" label="Conferencing">
+
+### Basic Usage
+
+The `RTCPIPView` component displays video content that can be shown in Picture in Picture mode. Use `startPIP` and `stopPIP` to control PIP manually:
+
+```tsx
+import React, { useRef } from "react";
+import { View, Button } from "react-native";
+import {
+  RTCPIPView,
+  startPIP,
+  stopPIP,
+  useCamera,
+} from "@fishjam-cloud/react-native-client";
+
+export function VideoCallScreen() {
+  const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
+  const { cameraStream } = useCamera();
+
+  return (
+    <View>
+      <Button title="Start PiP" onPress={() => startPIP(pipViewRef as any)} />
+      <Button title="Stop PiP" onPress={() => stopPIP(pipViewRef as any)} />
+      {cameraStream && (
+        <RTCPIPView
+          ref={pipViewRef}
+          mediaStream={cameraStream}
+          style={{ width: 300, height: 200 }}
+          pip={{
+            startAutomatically: true,
+            stopAutomatically: true,
+            enabled: true,
+          }}
+        />
+      )}
+    </View>
+  );
+}
+```
+
+By default, Picture in Picture will start automatically when the app goes to the background and stop when it returns to the foreground.
+
+### Configuration Options
+
+You can customize the Picture in Picture behavior using the `pip` prop on `RTCPIPView`:
+
+```tsx
+import React, { useRef } from "react";
+import { View } from "react-native";
+import { RTCPIPView, useCamera } from "@fishjam-cloud/react-native-client";
+
+export function VideoCallScreen() {
+  const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
+  const { cameraStream } = useCamera();
+
+  return (
+    <View>
+      {cameraStream && (
+        <RTCPIPView
+          ref={pipViewRef}
+          mediaStream={cameraStream}
+          style={{ width: 300, height: 200 }}
+          pip={{
+            startAutomatically: true, // Start PiP when app goes to background
+            stopAutomatically: true, // Stop PiP when app returns to foreground
+            enabled: true, // Enable PiP functionality
+          }}
+        />
+      )}
+    </View>
+  );
+}
+```
+
+#### Configuration Properties
+
+**startAutomatically**: When `true`, Picture in Picture starts automatically when the app goes to the background. Default: `true`
+
+**stopAutomatically**: When `true`, Picture in Picture stops automatically when the app returns to the foreground. Default: `true`
+
+**enabled**: When `true`, enables Picture in Picture functionality for this view.
+
+### Manual Control
+
+For more control over when Picture in Picture starts and stops, use the `startPIP` and `stopPIP` functions with a ref:
+
+```tsx
+import React, { useRef } from "react";
+import { Button, View } from "react-native";
+import {
+  RTCPIPView,
+  startPIP,
+  stopPIP,
+  useCamera,
+} from "@fishjam-cloud/react-native-client";
+
+export function VideoCallScreen() {
+  const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
+  const { cameraStream } = useCamera();
+
+  const handleStartPip = () => {
+    startPIP(pipViewRef as any);
+  };
+
+  const handleStopPip = () => {
+    stopPIP(pipViewRef as any);
+  };
+
+  return (
+    <View>
+      <Button title="Start PiP" onPress={handleStartPip} />
+      <Button title="Stop PiP" onPress={handleStopPip} />
+      {cameraStream && (
+        <RTCPIPView
+          ref={pipViewRef}
+          mediaStream={cameraStream}
+          style={{ width: 300, height: 200 }}
+          pip={{
+            startAutomatically: false, // Disable automatic PiP
+            stopAutomatically: true,
+            enabled: true,
+          }}
+        />
+      )}
+    </View>
+  );
+}
+```
+
+### Complete Example
+
+Here's a complete example showing Picture in Picture with a video call:
+
+```tsx
+import React, { useRef } from "react";
+import { FlatList, StyleSheet, View, Text, Button } from "react-native";
+import {
+  RTCPIPView,
+  RTCView,
+  startPIP,
+  stopPIP,
+  usePeers,
+} from "@fishjam-cloud/react-native-client";
+
+function VideoPlayer({ stream }: { stream: MediaStream | null }) {
+  if (!stream) return <Text>No video</Text>;
+  return (
+    <RTCView mediaStream={stream} style={styles.video} objectFit="cover" />
+  );
+}
+
+export function VideoCallScreen() {
+  const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
+  const { localPeer, remotePeers } = usePeers();
+  const firstRemotePeer = remotePeers[0];
+  const remoteStream = firstRemotePeer?.cameraTrack?.stream;
+
+  return (
+    <View style={styles.container}>
+      <Button title="Start PiP" onPress={() => startPIP(pipViewRef as any)} />
+      <Button title="Stop PiP" onPress={() => stopPIP(pipViewRef as any)} />
+
+      {/* Render local video */}
+      {localPeer?.cameraTrack?.stream && (
+        <VideoPlayer stream={localPeer.cameraTrack.stream} />
+      )}
+
+      {/* Render first remote peer with PiP support */}
+      {remoteStream && (
+        <RTCPIPView
+          ref={pipViewRef}
+          mediaStream={remoteStream}
+          style={styles.video}
+          pip={{
+            startAutomatically: true,
+            stopAutomatically: true,
+            enabled: true,
+          }}
+        />
+      )}
+
+      {/* Render remaining remote videos */}
+      <FlatList
+        data={remotePeers.slice(1)}
+        keyExtractor={(peer) => peer.id}
+        renderItem={({ item: peer }) => (
+          <View>
+            {peer.cameraTrack?.stream && (
+              <VideoPlayer stream={peer.cameraTrack.stream} />
+            )}
+          </View>
+        )}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  video: {
+    width: "100%",
+    height: 200,
+  },
+});
+```
+
+### Platform-Specific Behavior
+
+Both Android and iOS display a split-screen layout in Picture in Picture mode with your local camera on the left and the active speaker on the right. The active speaker is automatically determined by voice activity detection (VAD).
+
+#### Android
+
+Picture in Picture is supported on Android 8.0 (API level 26) and above. The system automatically manages the PiP window size and position. Users can tap the PiP window to return to your app. On Android 12 (API level 31) and above, automatic Picture in Picture is supported when `startAutomatically` is `true`.
+
+#### iOS
+
+Picture in Picture requires the `audio` background mode. When `allowsCameraInBackground` is enabled, the camera continues to capture in PiP mode (iOS 16.0+). Picture in Picture works seamlessly with CallKit for native call integration.
+
+### Active Speaker Detection
+
+The secondary view (right side) automatically displays the remote participant who is currently speaking, based on voice activity detection (VAD). When no one is speaking, it will show the last active speaker if available, fall back to the first remote participant with a video track, or show the placeholder text if no remote video is available.
+
+This automatic switching ensures the most relevant video is always displayed in the Picture in Picture window.
+
+### Combining with Background Streaming
+
+Picture in Picture works great with [background streaming](./background-streaming). When both features are enabled, use foreground services on **Android** to keep the call active in the background, and use CallKit integration along with VoIP background mode on **iOS**.
+
+Example configuration combining both features:
+
+```json title='app.json (Expo)'
+{
+  "expo": {
+    "plugins": [
+      [
+        "@fishjam-cloud/react-native-client",
+        {
+          "android": {
+            "enableForegroundService": true,
+            "supportsPictureInPicture": true
+          },
+          "ios": {
+            "enableVoIPBackgroundMode": true,
+            "supportsPictureInPicture": true
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="livestreaming" label="Livestreaming">
+
+### Basic Usage
+
+Use `RTCPIPView` to display the livestream with Picture in Picture support:
+
+```tsx
+import React, { useRef, useEffect } from "react";
+import { View, StyleSheet, Text } from "react-native";
+import {
+  RTCPIPView,
+  useLivestreamViewer,
+  useSandbox,
+} from "@fishjam-cloud/react-native-client";
+
+export function LivestreamScreen() {
+  const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
+  const { connect, stream } = useLivestreamViewer();
+  const { getSandboxViewerToken } = useSandbox();
+
+  useEffect(() => {
+    const connectToStream = async () => {
+      const token = await getSandboxViewerToken("room-name");
+      await connect({ token });
+    };
+    connectToStream();
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      {stream ? (
+        <RTCPIPView
+          ref={pipViewRef}
+          mediaStream={stream}
+          style={styles.viewer}
+          pip={{
+            startAutomatically: true,
+            stopAutomatically: true,
+            enabled: true,
+          }}
+        />
+      ) : (
+        <Text>Connecting to stream...</Text>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  viewer: {
+    flex: 1,
+  },
+});
+```
+
+### Configuration Options
+
+Configure Picture in Picture behavior using the `pip` prop:
+
+```jsx
+<RTCPIPView
+  ref={pipViewRef}
+  mediaStream={stream}
+  style={styles.viewer}
+  pip={{
+    startAutomatically: true, // Auto-start PiP when app backgrounds
+    stopAutomatically: true, // Auto-stop PiP when app foregrounds
+    enabled: true, // Enable PiP functionality
+  }}
+/>
+```
+
+#### Configuration Properties
+
+**enabled**: Enable or disable Picture in Picture functionality.
+
+**startAutomatically**: When `true`, Picture in Picture starts automatically when the app goes to the background. Default: `true`
+
+**stopAutomatically**: When `true`, Picture in Picture stops automatically when the app returns to the foreground. Default: `true`
+
+### Complete Example
+
+Here's a complete example showing how to connect to a livestream and display it with Picture in Picture:
+
+```tsx
+import React, { useEffect, useRef } from "react";
+import { View, StyleSheet, Text, Button } from "react-native";
+import {
+  RTCPIPView,
+  useLivestreamViewer,
+  useSandbox,
+  startPIP,
+  stopPIP,
+} from "@fishjam-cloud/react-native-client";
+
+export function LivestreamViewerScreen() {
+  const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
+  const { getSandboxViewerToken } = useSandbox();
+  const { connect, disconnect, stream } = useLivestreamViewer();
+
+  useEffect(() => {
+    const connectToStream = async () => {
+      try {
+        const token = await getSandboxViewerToken("room-name");
+        await connect({ token });
+      } catch (err) {
+        console.error("Failed to connect to livestream:", err);
+      }
+    };
+
+    connectToStream();
+
+    return () => {
+      disconnect();
+    };
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <Button title="Start PiP" onPress={() => startPIP(pipViewRef as any)} />
+      <Button title="Stop PiP" onPress={() => stopPIP(pipViewRef as any)} />
+      {stream ? (
+        <RTCPIPView
+          ref={pipViewRef}
+          mediaStream={stream}
+          style={styles.viewer}
+          pip={{
+            startAutomatically: true,
+            stopAutomatically: true,
+            enabled: true,
+          }}
+        />
+      ) : (
+        <Text style={styles.loading}>Connecting to stream...</Text>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#000",
+  },
+  viewer: {
+    flex: 1,
+  },
+  loading: {
+    color: "#fff",
+    textAlign: "center",
+    marginTop: 20,
+  },
+});
+```
+
+### Platform-Specific Behavior
+
+#### Android
+
+Picture in Picture is supported on Android 8.0 (API level 26) and above. The native video player's PiP window displays the WHEP stream. PiP automatically stops when the app returns to the foreground. Users can tap the PiP window to return to your app.
+
+#### iOS
+
+Picture in Picture requires the `audio` background mode. Uses the native AVPictureInPictureController to display the video. The WHEP stream continues playing in the PiP window. When `autoStopPip` is enabled, PiP stops automatically when returning to the app.
+
+  </TabItem>
+</Tabs>
