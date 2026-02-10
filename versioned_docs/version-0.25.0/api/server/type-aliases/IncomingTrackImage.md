@@ -1,0 +1,5 @@
+# Type Alias: IncomingTrackImage
+
+> **IncomingTrackImage** = `NonNullable`\<`AgentResponse_TrackImage`\>
+
+Defined in: [js-server-sdk/src/agent.ts:25](https://github.com/fishjam-cloud/js-server-sdk/blob/5093c326f087fbff97ecb84523e27d6e67ca1662/packages/js-server-sdk/src/agent.ts#L25)
