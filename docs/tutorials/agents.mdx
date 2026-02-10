@@ -268,7 +268,8 @@ Video frame capture is rate-limited to one frame per second per track.
         # Captured frames arrive as IncomingTrackImage messages
         async for message in session.receive():
             match message:
-                case IncomingTrackImage(track_id=track_id, data=data):
+                case IncomingTrackImage() as msg if msg.track_id == track_id:
+                    data = msg.data
                     # process the image data
                     pass
     ```
