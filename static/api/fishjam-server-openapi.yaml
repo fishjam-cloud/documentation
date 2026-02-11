@@ -2,11 +2,121 @@
 components:
   responses: {}
   schemas:
-    AuthToken:
-      description: Token for authorizing websocket connection
-      example: 5cdac726-57a3-4ecb-b1d5-72a3d62ec242
-      title: AuthToken
+    PeerRefreshTokenResponse:
+      description: Response containing new peer token
+      properties:
+        data:
+          properties:
+            token:
+              $ref: "#/components/schemas/AuthToken"
+          required:
+            - token
+          type: object
+      required:
+        - data
+      title: PeerRefreshTokenResponse
+      type: object
+    PeerOptionsAgent:
+      additionalProperties: false
+      description: Options specific to the Agent peer
+      properties:
+        output:
+          $ref: "#/components/schemas/AgentOutput"
+        subscribeMode:
+          $ref: "#/components/schemas/SubscribeMode"
+      title: PeerOptionsAgent
+      type: object
+    RoomDetailsResponse:
+      description: Response containing room details
+      properties:
+        data:
+          $ref: "#/components/schemas/Room"
+      required:
+        - data
+      title: RoomDetailsResponse
+      type: object
+    RoomCreateDetailsResponse:
+      description: Response containing room details
+      properties:
+        data:
+          properties:
+            fishjam_address:
+              description: Fishjam instance address where the room was created. This might be different than the address of Fishjam where the request was sent only when running a cluster of Fishjams.
+              example: fishjam1:5003
+              type: string
+            room:
+              $ref: "#/components/schemas/Room"
+          required:
+            - room
+            - fishjam_address
+          type: object
+      required:
+        - data
+      title: RoomCreateDetailsResponse
+      type: object
+    Room:
+      description: Description of the room state
+      properties:
+        config:
+          $ref: "#/components/schemas/RoomConfig"
+        id:
+          description: Room ID
+          example: room-1
+          type: string
+        peers:
+          description: List of all peers
+          items:
+            $ref: "#/components/schemas/Peer"
+          type: array
+      required:
+        - id
+        - config
+        - peers
+      title: Room
+      type: object
+    TrackID:
+      description: Assigned track id
+      example: 8dbd2e6b-a1e7-4670-95a2-0262aa6c6321
+      title: TrackID
       type: string
+    PeerType:
+      description: Peer type
+      enum:
+        - webrtc
+        - agent
+      example: webrtc
+      title: PeerType
+      type: string
+    SubscribeMode:
+      default: auto
+      description: Configuration of peer's subscribing policy
+      enum:
+        - auto
+        - manual
+      nullable: false
+      title: SubscribeMode
+      type: string
+    StreamConfig:
+      additionalProperties: false
+      description: Stream configuration
+      properties:
+        audioOnly:
+          default: false
+          description: Restrics stream to audio only
+          nullable: true
+          type: boolean
+        public:
+          default: false
+          description: True if livestream viewers can omit specifying a token.
+          nullable: false
+          type: boolean
+        webhookUrl:
+          description: Webhook URL for receiving server notifications
+          nullable: true
+          pattern: ^https?://[^/]+/.*$
+          type: string
+      title: StreamConfig
+      type: object
     Error:
       description: Error message
       properties:
@@ -17,6 +127,221 @@ components:
       required:
         - errors
       title: Error
+      type: object
+    PeerID:
+      description: Assigned peer id
+      example: 4a1c1164-5fb7-425d-89d7-24cdb8fff1cf
+      title: PeerID
+      type: string
+    PeerDetailsResponse:
+      description: Response containing peer details and their token
+      properties:
+        data:
+          properties:
+            peer:
+              $ref: "#/components/schemas/Peer"
+            peer_websocket_url:
+              $ref: "#/components/schemas/WebsocketURL"
+            token:
+              $ref: "#/components/schemas/AuthToken"
+          required:
+            - peer
+            - token
+          type: object
+      required:
+        - data
+      title: PeerDetailsResponse
+      type: object
+    AuthToken:
+      description: Token for authorizing websocket connection
+      example: 5cdac726-57a3-4ecb-b1d5-72a3d62ec242
+      title: AuthToken
+      type: string
+    AudioSampleRate:
+      default: 16000
+      description: The sample rate of the output audio
+      enum:
+        - 16000
+        - 24000
+      example: 16000
+      title: AudioSampleRate
+      type: integer
+    PeerStatus:
+      description: Informs about the peer status
+      enum:
+        - connected
+        - disconnected
+      example: disconnected
+      title: PeerStatus
+      type: string
+    StreamsListingResponse:
+      description: Response containing list of all streams
+      properties:
+        data:
+          items:
+            $ref: "#/components/schemas/Stream"
+          type: array
+      required:
+        - data
+      title: StreamsListingResponse
+      type: object
+    PeerOptions:
+      additionalProperties: false
+      description: Peer-specific options
+      oneOf:
+        - $ref: "#/components/schemas/PeerOptionsWebRTC"
+        - $ref: "#/components/schemas/PeerOptionsAgent"
+      title: PeerOptions
+      type: object
+    Streamer:
+      description: Describes streamer status
+      properties:
+        id:
+          description: Assigned streamer id
+          type: string
+        status:
+          enum:
+            - connected
+            - disconnected
+          type: string
+        token:
+          $ref: "#/components/schemas/StreamerToken"
+      required:
+        - id
+        - status
+        - token
+      title: Streamer
+      type: object
+    VideoCodec:
+      default: h264
+      description: Enforces video codec for each peer in the room
+      enum:
+        - h264
+        - vp8
+      title: VideoCodec
+      type: string
+    RoomType:
+      default: conference
+      description: The use-case of the room. If not provided, this defaults to conference.
+      enum:
+        - full_feature
+        - audio_only
+        - broadcaster
+        - livestream
+        - conference
+        - audio_only_livestream
+      nullable: false
+      title: RoomType
+      type: string
+    PeerConfig:
+      additionalProperties: false
+      description: Peer configuration
+      properties:
+        options:
+          $ref: "#/components/schemas/PeerOptions"
+        type:
+          $ref: "#/components/schemas/PeerType"
+      required:
+        - options
+        - type
+      title: PeerConfig
+      type: object
+    TrackMetadata:
+      example:
+        source: camera
+      nullable: true
+      title: TrackMetadata
+      type: object
+    Subscriptions:
+      description: Describes peer's subscriptions in manual mode
+      properties:
+        peers:
+          description: List of peer IDs this peer subscribes to
+          items:
+            $ref: "#/components/schemas/PeerID"
+          type: array
+        tracks:
+          description: List of track IDs this peer subscribes to
+          items:
+            $ref: "#/components/schemas/TrackID"
+          type: array
+      required:
+        - peers
+        - tracks
+      title: Subscriptions
+      type: object
+    WebsocketURL:
+      description: Websocket URL to which peer has to connect
+      example: www.fishjam.org/socket/peer
+      title: WebsocketURL
+      type: string
+    ViewerToken:
+      description: Token for authorizing broadcaster viewer connection
+      properties:
+        token:
+          example: 5cdac726-57a3-4ecb-b1d5-72a3d62ec242
+          type: string
+      required:
+        - token
+      title: ViewerToken
+      type: object
+    Viewer:
+      description: Describes viewer status
+      properties:
+        id:
+          description: Assigned viewer id
+          type: string
+        status:
+          enum:
+            - connected
+            - disconnected
+          type: string
+        token:
+          $ref: "#/components/schemas/ViewerToken"
+      required:
+        - id
+        - status
+        - token
+      title: Viewer
+      type: object
+    WebRTCMetadata:
+      additionalProperties: true
+      description: Custom peer metadata
+      title: WebRTCMetadata
+      type: object
+    RoomConfig:
+      additionalProperties: false
+      description: Room configuration
+      properties:
+        maxPeers:
+          description: Maximum amount of peers allowed into the room
+          example: 10
+          minimum: 0
+          nullable: true
+          type: integer
+        public:
+          default: false
+          description: True if livestream viewers can omit specifying a token.
+          nullable: false
+          type: boolean
+        roomType:
+          $ref: "#/components/schemas/RoomType"
+        videoCodec:
+          $ref: "#/components/schemas/VideoCodec"
+        webhookUrl:
+          description: URL where Fishjam notifications will be sent
+          example: https://backend.address.com/fishjam-notifications-endpoint
+          nullable: true
+          pattern: ^https?://[^/]+/.*$
+          type: string
+      title: RoomConfig
+      type: object
+    PeerMetadata:
+      description: Custom metadata set by the peer
+      example:
+        name: FishjamUser
+      nullable: true
+      title: PeerMetadata
       type: object
     Peer:
       description: Describes peer status
@@ -48,216 +373,21 @@ components:
         - subscriptions
       title: Peer
       type: object
-    PeerDetailsResponse:
-      description: Response containing peer details and their token
-      properties:
-        data:
-          properties:
-            peer:
-              $ref: "#/components/schemas/Peer"
-            peer_websocket_url:
-              $ref: "#/components/schemas/WebsocketURL"
-            token:
-              $ref: "#/components/schemas/AuthToken"
-          required:
-            - peer
-            - token
-          type: object
-      required:
-        - data
-      title: PeerDetailsResponse
-      type: object
-    PeerID:
-      description: Assigned peer id
-      example: 4a1c1164-5fb7-425d-89d7-24cdb8fff1cf
-      title: PeerID
+    TrackType:
+      enum:
+        - audio
+        - video
+      title: TrackType
       type: string
-    PeerMetadata:
-      description: Custom metadata set by the peer
-      example:
-        name: FishjamUser
-      nullable: true
-      title: PeerMetadata
-      type: object
-    PeerOptions:
-      description: Peer-specific options
-      oneOf:
-        - $ref: "#/components/schemas/PeerOptionsWebRTC"
-        - $ref: "#/components/schemas/PeerOptionsAgent"
-      title: PeerOptions
-      type: object
-    PeerOptionsAgent:
-      description: Options specific to the Agent peer
-      properties:
-        output:
-          description: Output audio options
-          properties:
-            audioFormat:
-              default: pcm16
-              description: The format of the output audio
-              enum:
-                - pcm16
-              example: pcm16
-              type: string
-            audioSampleRate:
-              default: 16000
-              description: The sample rate of the output audio
-              enum:
-                - 16000
-                - 24000
-              example: 16000
-              type: integer
-          type: object
-        subscribeMode:
-          default: auto
-          description: Configuration of peer's subscribing policy
-          enum:
-            - auto
-            - manual
-          nullable: false
-          title: SubscribeMode
-          type: string
-      title: PeerOptionsAgent
-      type: object
     PeerOptionsWebRTC:
+      additionalProperties: false
       description: Options specific to the WebRTC peer
       properties:
-        enableSimulcast:
-          default: true
-          description: Enables the peer to use simulcast
-          type: boolean
         metadata:
-          additionalProperties: true
-          description: Custom peer metadata
-          type: object
+          $ref: "#/components/schemas/WebRTCMetadata"
         subscribeMode:
-          default: auto
-          description: Configuration of peer's subscribing policy
-          enum:
-            - auto
-            - manual
-          nullable: false
-          title: SubscribeMode
-          type: string
+          $ref: "#/components/schemas/SubscribeMode"
       title: PeerOptionsWebRTC
-      type: object
-    PeerRefreshTokenResponse:
-      description: Response containing new peer token
-      properties:
-        data:
-          properties:
-            token:
-              $ref: "#/components/schemas/AuthToken"
-          required:
-            - token
-          type: object
-      required:
-        - data
-      title: PeerRefreshTokenResponse
-      type: object
-    PeerStatus:
-      description: Informs about the peer status
-      enum:
-        - connected
-        - disconnected
-      example: disconnected
-      title: PeerStatus
-      type: string
-    PeerType:
-      description: Peer type
-      enum:
-        - webrtc
-        - agent
-      example: webrtc
-      title: PeerType
-      type: string
-    Room:
-      description: Description of the room state
-      properties:
-        config:
-          $ref: "#/components/schemas/RoomConfig"
-        id:
-          description: Room ID
-          example: room-1
-          type: string
-        peers:
-          description: List of all peers
-          items:
-            $ref: "#/components/schemas/Peer"
-          type: array
-      required:
-        - id
-        - config
-        - peers
-      title: Room
-      type: object
-    RoomConfig:
-      description: Room configuration
-      properties:
-        maxPeers:
-          description: Maximum amount of peers allowed into the room
-          example: 10
-          minimum: 0
-          nullable: true
-          type: integer
-        public:
-          default: false
-          description: True if livestream viewers can omit specifying a token.
-          nullable: false
-          type: boolean
-        roomType:
-          default: conference
-          description: The use-case of the room. If not provided, this defaults to conference.
-          enum:
-            - full_feature
-            - audio_only
-            - broadcaster
-            - livestream
-            - conference
-            - audio_only_livestream
-          nullable: false
-          type: string
-        videoCodec:
-          default: h264
-          description: Enforces video codec for each peer in the room
-          enum:
-            - h264
-            - vp8
-          type: string
-        webhookUrl:
-          description: URL where Fishjam notifications will be sent
-          example: https://backend.address.com/fishjam-notifications-endpoint
-          nullable: true
-          type: string
-      title: RoomConfig
-      type: object
-    RoomCreateDetailsResponse:
-      description: Response containing room details
-      properties:
-        data:
-          properties:
-            fishjam_address:
-              description: Fishjam instance address where the room was created. This might be different than the address of Fishjam where the request was sent only when running a cluster of Fishjams.
-              example: fishjam1:5003
-              type: string
-            room:
-              $ref: "#/components/schemas/Room"
-          required:
-            - room
-            - fishjam_address
-          type: object
-      required:
-        - data
-      title: RoomCreateDetailsResponse
-      type: object
-    RoomDetailsResponse:
-      description: Response containing room details
-      properties:
-        data:
-          $ref: "#/components/schemas/Room"
-      required:
-        - data
-      title: RoomDetailsResponse
       type: object
     RoomsListingResponse:
       description: Response containing list of all rooms
@@ -276,6 +406,10 @@ components:
         audioOnly:
           description: True if stream is restricted to audio only
           type: boolean
+        connectedViewers:
+          description: Number of connected viewers
+          minimum: 0
+          type: integer
         id:
           description: Assigned stream id
           type: string
@@ -296,41 +430,8 @@ components:
         - public
         - viewers
         - streamers
+        - connectedViewers
       title: Stream
-      type: object
-    StreamConfig:
-      description: Stream configuration
-      properties:
-        audioOnly:
-          default: false
-          description: Restrics stream to audio only
-          nullable: true
-          type: boolean
-        public:
-          default: false
-          description: True if livestream viewers can omit specifying a token.
-          nullable: false
-          type: boolean
-      title: StreamConfig
-      type: object
-    Streamer:
-      description: Describes streamer status
-      properties:
-        id:
-          description: Assigned streamer id
-          type: string
-        status:
-          enum:
-            - connected
-            - disconnected
-          type: string
-        token:
-          $ref: "#/components/schemas/StreamerToken"
-      required:
-        - id
-        - status
-        - token
-      title: Streamer
       type: object
     StreamerToken:
       description: Token for authorizing broadcaster streamer connection
@@ -342,92 +443,34 @@ components:
         - token
       title: StreamerToken
       type: object
-    StreamsListingResponse:
-      description: Response containing list of all streams
-      properties:
-        data:
-          items:
-            $ref: "#/components/schemas/Stream"
-          type: array
-      required:
-        - data
-      title: StreamsListingResponse
-      type: object
-    SubscribeMode:
-      default: auto
-      description: Configuration of peer's subscribing policy
-      enum:
-        - auto
-        - manual
-      nullable: false
-      title: SubscribeMode
-      type: string
-    Subscriptions:
-      description: Describes peer's subscriptions in manual mode
-      items:
-        properties:
-          peerId:
-            $ref: "#/components/schemas/PeerID"
-          trackId:
-            $ref: "#/components/schemas/TrackID"
-        type: string
-      title: Subscriptions
-      type: array
     Track:
       description: Describes media track of a Peer
       properties:
         id:
           $ref: "#/components/schemas/TrackID"
         metadata:
-          example:
-            source: camera
-          nullable: true
-          type: object
+          $ref: "#/components/schemas/TrackMetadata"
         type:
-          enum:
-            - audio
-            - video
-          type: string
+          $ref: "#/components/schemas/TrackType"
       title: Track
       type: object
-    TrackID:
-      description: Assigned track id
-      example: 8dbd2e6b-a1e7-4670-95a2-0262aa6c6321
-      title: TrackID
-      type: string
-    Viewer:
-      description: Describes viewer status
+    AgentOutput:
+      additionalProperties: false
+      description: Output audio options
       properties:
-        id:
-          description: Assigned viewer id
-          type: string
-        status:
-          enum:
-            - connected
-            - disconnected
-          type: string
-        token:
-          $ref: "#/components/schemas/ViewerToken"
-      required:
-        - id
-        - status
-        - token
-      title: Viewer
+        audioFormat:
+          $ref: "#/components/schemas/AudioFormat"
+        audioSampleRate:
+          $ref: "#/components/schemas/AudioSampleRate"
+      title: AgentOutput
       type: object
-    ViewerToken:
-      description: Token for authorizing broadcaster viewer connection
-      properties:
-        token:
-          example: 5cdac726-57a3-4ecb-b1d5-72a3d62ec242
-          type: string
-      required:
-        - token
-      title: ViewerToken
-      type: object
-    WebsocketURL:
-      description: Websocket URL to which peer has to connect
-      example: www.fishjam.org/socket/peer
-      title: WebsocketURL
+    AudioFormat:
+      default: pcm16
+      description: The format of the output audio
+      enum:
+        - pcm16
+      example: pcm16
+      title: AudioFormat
       type: string
   securitySchemes:
     authorization:
@@ -438,7 +481,7 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
   title: Fishjam Media Server
-  version: 0.22.0
+  version: 0.25.0
 openapi: 3.0.0
 paths:
   /livestream:
@@ -516,7 +559,7 @@ paths:
       callbacks: {}
       operationId: delete_stream
       parameters:
-        - description: ""
+        - description: Stream ID
           in: path
           name: stream_id
           required: true
@@ -546,7 +589,7 @@ paths:
       callbacks: {}
       operationId: get_stream
       parameters:
-        - description: ""
+        - description: Stream ID
           in: path
           name: stream_id
           required: true
@@ -906,15 +949,7 @@ paths:
         content:
           application/json:
             schema:
-              properties:
-                options:
-                  $ref: "#/components/schemas/PeerOptions"
-                type:
-                  $ref: "#/components/schemas/PeerType"
-              required:
-                - type
-                - options
-              type: object
+              $ref: "#/components/schemas/PeerConfig"
         description: Peer specification
         required: false
       responses:
@@ -942,6 +977,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
           description: Room doesn't exist
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Request conflict
         "503":
           content:
             application/json:

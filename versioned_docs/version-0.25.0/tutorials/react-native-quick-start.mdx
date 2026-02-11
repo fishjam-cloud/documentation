@@ -1,0 +1,430 @@
+---
+type: tutorial
+sidebar_position: 0
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# React Native Quick Start
+
+This tutorial will guide you through integrating Fishjam into your React Native application step by step.  
+By the end, you'll have a working video streaming app and understand the core concepts.
+
+## What you'll build
+
+A simple React Native app that can join conference calls and stream audio/video between participants.
+
+## What you'll learn
+
+- How to install and configure Fishjam SDK
+- How to join a room and start streaming
+- How to display video and play audio from other participants
+- How to check connection status
+
+## Prerequisites
+
+- React Native development environment set up
+- Access to [Fishjam Dashboard](https://fishjam.io/app)
+
+## Step 1: Install and configure
+
+### Install the package
+
+```bash npm2yarn
+npm install @fishjam-cloud/react-native-client
+```
+
+### Configure app permissions
+
+Your app needs to have permissions configured in order to use the microphone and camera.
+
+#### Android
+
+<Tabs groupId="app-type">
+  <TabItem value="expo" label="Expo">
+
+Add required permissions to the `app.json` file:
+
+```json title='app.json'
+{
+  "expo": {
+    "android": {
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
+    }
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+Add required permissions to the `AndroidManifest.xml` file:
+
+```xml title='AndroidManifest.xml'
+<uses-permission android:name="android.permission.CAMERA"/>
+<uses-permission android:name="android.permission.RECORD_AUDIO"/>
+<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTING"/>
+```
+
+  </TabItem>
+</Tabs>
+
+#### iOS
+
+<Tabs groupId="app-type">
+  <TabItem value="expo" label="Expo">
+
+Add camera and microphone usage descriptions to `app.json`:
+
+```json title='app.json'
+{
+  "expo": {
+    "ios": {
+      "infoPlist": {
+        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera.",
+        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone."
+      }
+    }
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+Ensure `Info.plist` contains camera and microphone usage description entries:
+
+```xml title='Info.plist'
+<key>NSCameraUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to access your camera.</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to access your microphone.</string>
+```
+
+  </TabItem>
+</Tabs>
+
+### Build native dependencies
+
+```bash
+npx expo prebuild
+```
+
+### Get your Fishjam ID
+
+1. Log in to [Fishjam Dashboard](https://fishjam.io/app)
+2. Navigate to your Sandbox environment
+3. Copy your Fishjam ID
+
+### Set up Fishjam context
+
+Wrap your app in the `FishjamProvider` component:
+
+```tsx
+import React from "react";
+import { FishjamProvider } from "@fishjam-cloud/react-native-client";
+
+const App = () => null;
+
+// ---cut---
+
+// Check https://fishjam.io/app/ for your Fishjam ID
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+
+export default function Root() {
+  return (
+    <FishjamProvider fishjamId={FISHJAM_ID}>
+      <App />
+    </FishjamProvider>
+  );
+}
+```
+
+:::important
+This won't work on the iOS Simulator, as the Simulator can't access the camera. Test on a real device.
+:::
+
+For more detailed implementation follow the steps below.
+
+## Step 2: Join a room and start streaming
+
+Create a component that joins a room and starts streaming video:
+
+```tsx
+import React from "react";
+import { Button } from "react-native";
+import {
+  useConnection,
+  useSandbox,
+  useInitializeDevices,
+} from "@fishjam-cloud/react-native-client";
+
+export function JoinRoomButton() {
+  const { joinRoom } = useConnection();
+  const { initializeDevices } = useInitializeDevices();
+  const { getSandboxPeerToken } = useSandbox();
+
+  const handleJoinRoom = async () => {
+    const roomName = "testRoom";
+    const peerName = "testUser";
+
+    // In sandbox environment, you can get the peer token from our sandbox API
+    // In production environment, you need to get it from your backend
+    const peerToken = await getSandboxPeerToken(roomName, peerName);
+
+    // Start camera by selecting the first available camera
+    await initializeDevices({ enableAudio: false }); // or just initializeDevices(); if you want both camera and mic
+
+    // Join the room
+    await joinRoom({ peerToken });
+  };
+
+  return <Button title="Join Room" onPress={handleJoinRoom} />;
+}
+```
+
+## Step 3: Check connection status
+
+Monitor your connection status:
+
+```tsx
+import React from "react";
+import { Text } from "react-native";
+import { useConnection } from "@fishjam-cloud/react-native-client";
+
+// ---cut---
+export function ConnectionStatus() {
+  const { peerStatus } = useConnection();
+  return <Text>Status: {peerStatus}</Text>;
+}
+```
+
+## Step 4: Display your video
+
+Show your own video stream:
+
+```tsx
+import React from "react";
+import { Text, View } from "react-native";
+import { RTCView, useCamera } from "@fishjam-cloud/react-native-client";
+
+export function StreamPreview() {
+  const { cameraStream } = useCamera();
+
+  return (
+    <View>
+      {cameraStream ? (
+        <RTCView
+          mediaStream={cameraStream}
+          style={{ height: 300, width: 300 }}
+          objectFit="cover"
+          mirror={true}
+        />
+      ) : (
+        <Text>No camera stream</Text>
+      )}
+    </View>
+  );
+}
+```
+
+## Step 5: Display other participants
+
+Show video from other peers in the room:
+
+```tsx
+import React from "react";
+import { View, Text } from "react-native";
+import { usePeers, RTCView } from "@fishjam-cloud/react-native-client";
+
+function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
+  return (
+    <View>
+      {stream ? (
+        <RTCView
+          mediaStream={stream}
+          objectFit="cover"
+          style={{ height: 300, width: 300 }}
+        />
+      ) : (
+        <Text>No video</Text>
+      )}
+    </View>
+  );
+}
+
+export function ParticipantsView() {
+  const { remotePeers } = usePeers();
+
+  return (
+    <View>
+      {remotePeers.map((peer) => (
+        <View key={peer.id}>
+          {peer.cameraTrack?.stream && (
+            <VideoPlayer stream={peer.cameraTrack.stream} />
+          )}
+        </View>
+      ))}
+    </View>
+  );
+}
+```
+
+## Complete example
+
+Here's a complete working app:
+
+```tsx
+import React, { useState } from "react";
+import { View, Text, Button, ScrollView, StyleSheet } from "react-native";
+import {
+  FishjamProvider,
+  useConnection,
+  useCamera,
+  usePeers,
+  useInitializeDevices,
+  useSandbox,
+  RTCView,
+} from "@fishjam-cloud/react-native-client";
+
+// Check https://fishjam.io/app/ for your Fishjam ID
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+
+// ---cut---
+function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
+  if (!stream) {
+    return (
+      <View style={styles.videoPlaceholder}>
+        <Text>No video</Text>
+      </View>
+    );
+  }
+
+  return (
+    <RTCView mediaStream={stream} style={styles.video} objectFit="cover" />
+  );
+}
+
+function VideoCall() {
+  const { joinRoom, peerStatus } = useConnection();
+  const { cameraStream } = useCamera();
+  const { remotePeers } = usePeers();
+  const { initializeDevices } = useInitializeDevices();
+  const { getSandboxPeerToken } = useSandbox();
+
+  const [isJoined, setIsJoined] = useState(false);
+
+  const handleJoin = async () => {
+    const roomName = "testRoom";
+    const peerName = `user_${Date.now()}`;
+
+    // Initialize devices first
+    await initializeDevices();
+
+    // In sandbox environment, you can get the peer token from our sandbox API
+    // In production environment, you need to get it from your backend
+    const peerToken = await getSandboxPeerToken(roomName, peerName);
+
+    await joinRoom({ peerToken });
+    setIsJoined(true);
+  };
+
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>Fishjam Video Call</Text>
+      <Text style={styles.status}>Status: {peerStatus}</Text>
+
+      {!isJoined && <Button title="Join Room" onPress={handleJoin} />}
+
+      {cameraStream && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Your Video</Text>
+          <VideoPlayer stream={cameraStream} />
+        </View>
+      )}
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Other Participants</Text>
+        {remotePeers.length === 0 ? (
+          <Text>No other participants</Text>
+        ) : (
+          remotePeers.map((peer) => (
+            <View key={peer.id} style={styles.participant}>
+              {peer.cameraTrack?.stream && (
+                <VideoPlayer stream={peer.cameraTrack.stream} />
+              )}
+            </View>
+          ))
+        )}
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  status: {
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  section: {
+    marginTop: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 10,
+  },
+  participant: {
+    marginBottom: 10,
+  },
+  video: {
+    height: 200,
+    width: "100%",
+    borderRadius: 8,
+  },
+  videoPlaceholder: {
+    height: 200,
+    width: "100%",
+    backgroundColor: "#000",
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
+
+export default function App() {
+  return (
+    <FishjamProvider fishjamId={FISHJAM_ID}>
+      <VideoCall />
+    </FishjamProvider>
+  );
+}
+```
+
+## Next steps
+
+Now that you have a basic app working, explore these how-to guides:
+
+- [How to handle screen sharing](../how-to/client/screensharing)
+- [How to implement background streaming](../how-to/client/background-streaming)
+- [How to handle reconnections](../how-to/client/reconnection-handling)
+- [How to work with metadata](../how-to/client/metadata)
+
+Or learn more about Fishjam concepts:
+
+- [Understanding Fishjam architecture](../explanation/architecture)
+- [Room types explained](../explanation/room-types)

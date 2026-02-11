@@ -1,0 +1,173 @@
+---
+sidebar_position: 3
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Connecting
+
+This article will guide you through the process of connecting to a Fishjam room.
+
+## Getting URL and token
+
+In order to connect, you need to obtain a **Peer Token** (the token that will authenticate the peer in
+your Room).
+
+<Tabs groupId="app-type">
+
+  <TabItem value="sandbox" label="Sandbox App">
+
+Once you create your account on [Fishjam](https://fishjam.io), you will have access to the Sandbox environment as part of the Mini Jar plan.
+While using the Sandbox environment, [you can use the Sandbox API](../features/sandbox-api-testing) to generate peer tokens for testing or development purposes.
+This is basically a service that will create a Room, add your app as
+the Room's Peer, and return the token required to use that Room.
+
+<Tabs groupId="platform">
+  <TabItem value="web" label="React (Web)">
+
+```ts
+import { useSandbox } from "@fishjam-cloud/react-client";
+const roomName = "room";
+const peerName = "user";
+// ---cut---
+
+// The `useSandbox` hook gets the fishjamId from FishjamProvider
+// It will work ONLY with the FISHJAM_ID of the Sandbox environment
+const { getSandboxPeerToken } = useSandbox();
+const peerToken = await getSandboxPeerToken(roomName, peerName);
+```
+
+  </TabItem>
+  <TabItem value="mobile" label="React Native (Mobile)">
+
+```ts
+import { useSandbox } from "@fishjam-cloud/react-native-client";
+const roomName = "room";
+const peerName = "user";
+// ---cut---
+
+// The `useSandbox` hook gets the fishjamId from FishjamProvider
+// It will work ONLY with the FISHJAM_ID of the Sandbox environment
+const { getSandboxPeerToken } = useSandbox();
+const peerToken = await getSandboxPeerToken(roomName, peerName);
+```
+
+  </TabItem>
+</Tabs>
+
+  </TabItem>
+  <TabItem value="production" label="Production App">
+
+For the production app, you need to implement your own backend service that will provide the user with a **Peer Token**. To do that,
+follow our [server setup instructions](../backend/server-setup).
+
+  </TabItem>
+</Tabs>
+
+## Connecting
+
+Use the [`useConnection`](../../api/web/functions/useConnection) hook to get
+the [`joinRoom`](../../api/web/functions/useConnection#joinroom) function.
+
+<Tabs groupId="platform">
+  <TabItem value="web" label="React (Web)">
+
+```tsx
+const PEER_TOKEN = "some-peer-token";
+// ---cut-before---
+import { useConnection, useSandbox } from "@fishjam-cloud/react-client";
+import React, { useCallback } from "react";
+
+export function JoinRoomButton() {
+  const { joinRoom } = useConnection(); // [!code highlight]
+  // get the peer token from sandbox or your backend
+  const { getSandboxPeerToken } = useSandbox();
+
+  const onJoinRoomPress = useCallback(async () => {
+    // [!code highlight:5]
+    const peerToken = await getSandboxPeerToken("Room", "User");
+    await joinRoom({ peerToken });
+  }, [joinRoom]);
+
+  return <button onClick={onJoinRoomPress}>Join room</button>;
+}
+```
+
+  </TabItem>
+  <TabItem value="mobile" label="React Native (Mobile)">
+
+```tsx
+import React, { useCallback } from "react";
+import { Button } from "react-native";
+import { useConnection, useSandbox } from "@fishjam-cloud/react-native-client";
+
+export function JoinRoomButton() {
+  const { joinRoom } = useConnection(); // [!code highlight]
+  // fishjamId is provided through FishjamProvider
+  const { getSandboxPeerToken } = useSandbox();
+
+  const onPressJoin = useCallback(async () => {
+    // in production environment, get the peerToken from your backend
+    const peerToken = await getSandboxPeerToken("Room", "User");
+
+    await joinRoom({ peerToken }); // [!code highlight]
+  }, [joinRoom, getSandboxPeerToken]);
+
+  return <Button onPress={onPressJoin} title="Join Room" />;
+}
+```
+
+  </TabItem>
+</Tabs>
+
+## Disconnecting
+
+In order to close connection, use the [`leaveRoom`](../../api/web/functions/useConnection#leaveroom) method
+from [`useConnection`](../../api/web/functions/useConnection) hook.
+
+<Tabs groupId="platform">
+  <TabItem value="web" label="React (Web)">
+
+```tsx
+import { useConnection } from "@fishjam-cloud/react-client";
+import React, { useCallback } from "react";
+
+export function LeaveRoomButton() {
+  const { leaveRoom } = useConnection(); // [!code highlight]
+
+  return <button onClick={leaveRoom}>Leave room</button>;
+}
+```
+
+  </TabItem>
+  <TabItem value="mobile" label="React Native (Mobile)">
+
+```tsx
+import React, { useCallback } from "react";
+import { Button } from "react-native";
+import { useConnection } from "@fishjam-cloud/react-native-client";
+
+export function LeaveRoomButton() {
+  const { leaveRoom } = useConnection(); // [!code highlight]
+
+  const onPressLeave = useCallback(async () => {
+    await leaveRoom(); // [!code highlight]
+  }, [leaveRoom]);
+
+  return <Button onPress={onPressLeave} title="Leave Room" />;
+}
+```
+
+  </TabItem>
+</Tabs>
+
+## Next Steps
+
+Now that you're connected to a room, you can explore additional features:
+
+- [Start Streaming](./start-streaming) - Enable your camera and microphone
+- [List Other Peers](./list-other-peers) - Display video from other participants
+- [Data Channels](../../explanation/data-channels) - Send and receive arbitrary data between peers (e.g., text chat)
+- [Picture in Picture](./picture-in-picture) - Allow users to watch video in a floating window (Mobile)
+- [Background Calls](./background-streaming) - Keep calls active when the app is backgrounded (Mobile)

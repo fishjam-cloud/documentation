@@ -206,6 +206,78 @@ You can interrupt the currently played audio chunk. See the example below.
 
 </Tabs>
 
+### Making the Agent see
+
+Agents can also request video frames (JPEG images) from peers' video tracks.
+Unlike audio, which streams continuously, video frames must be explicitly requested and arrive asynchronously.
+
+:::important
+Video frame capture is rate-limited to one frame per second per track.
+:::
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript">
+
+    ```ts
+    // @noErrors
+    import { RoomId, FishjamClient, TrackId } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamId = '';
+    const managementToken = '';
+    const fishjamClient = new FishjamClient({ fishjamId, managementToken });
+    const room = await fishjamClient.createRoom();
+    const { agent } = await fishjamClient.createAgent(room.id, {});
+    const trackId: TrackId = '' as TrackId;
+
+    // ---cut---
+    import type { IncomingTrackImage } from '@fishjam-cloud/js-server-sdk';
+
+    // Listen for incoming video frames
+    agent.on('trackImage', (message: IncomingTrackImage) => {
+      const { contentType, data } = message;
+      // process the image data
+    });
+
+    // Request a frame periodically
+    setInterval(() => {
+      // [!code highlight:1]
+      agent.captureImage(trackId);
+    }, 1000);
+
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    import asyncio
+
+    from fishjam import FishjamClient
+    from fishjam.agent import IncomingTrackImage
+
+    fishjam_client = FishjamClient(fishjam_id, management_token)
+
+    agent = fishjam_client.create_agent(room_id)
+
+    async with agent.connect() as session:
+        # Request a frame
+        # [!code highlight:1]
+        await session.capture_image(track_id)
+
+        # Captured frames arrive as IncomingTrackImage messages
+        async for message in session.receive():
+            match message:
+                case IncomingTrackImage() as msg if msg.track_id == track_id:
+                    data = msg.data
+                    # process the image data
+                    pass
+    ```
+
+  </TabItem>
+
+</Tabs>
+
 ### Disconnecting
 
 After you're done using an agent, you can disconnect it from the room.
