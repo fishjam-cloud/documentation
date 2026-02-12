@@ -47,7 +47,7 @@ jobs:
       - name: Fetch SDK packages
         run: yarn prepare
       - name: Build
-        run: yarn build
+        run: yarn build --out-dir ./build/docs
       # 👆 Build steps
       - name: Setup Pages
         uses: actions/configure-pages@v5
