@@ -145,10 +145,10 @@ const config: Config = {
   tagline: "Easiest way to add video streaming to your React Native app",
   favicon: "img/favicon.svg",
   // Set the production url of your site here
-  url: "https://docs.fishjam.io/",
+  url: "https://documentation.fishjam.io/",
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: "/",
+  baseUrl: "/docs",
   trailingSlash: false,
 
   // GitHub pages deployment config.
