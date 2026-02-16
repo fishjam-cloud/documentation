@@ -293,10 +293,10 @@ const config: Config = {
       // exclude old versions and next from search
       {
         includeRoutes: [
-          "/tutorials/*",
-          "/how-to/*",
-          "/explanation/*",
-          "/api/*",
+          "/docs/tutorials/*",
+          "/docs/how-to/*",
+          "/docs/explanation/*",
+          "/docs/api/*",
         ],
       },
     ],
