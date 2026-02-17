@@ -9,7 +9,7 @@ ASSETS_DIRECTORY="$CWD/static/api"
 
 # Get the last tag, that matches semantic versioning
 get_latest_semver_tag() {
-    echo $(git tag -l | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n 1)
+    git tag -l | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$' | sed 's/^v//' | sort -V | tail -n 1 | xargs -I {} git tag -l "v{}" "{}" | head -n 1
 }
 
 checkout_submodule() {

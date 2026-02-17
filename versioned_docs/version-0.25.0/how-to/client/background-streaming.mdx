@@ -1,0 +1,227 @@
+---
+sidebar_position: 13
+sidebar_label: "Background calls 📱"
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Background calls <span className="badge badge--mobile">Mobile</span>
+
+:::note
+This guide is exclusively for **Mobile** (React Native) applications.
+:::
+
+Both Android and iOS support calls running in the background, but they use different approaches:
+
+- **Android**: Uses foreground services to keep the app active in the background
+- **iOS**: Uses CallKit integration to maintain VoIP calls in the background
+
+Below is configuration required to make it work:
+
+<Tabs groupId="app-type">
+
+  <TabItem value="expo" label="Expo">
+
+You need to modify `app.json` file and add our plugin:
+
+```json
+{
+  "expo": {
+    ...
+    "plugins": {
+      ...
+      [
+        "@fishjam-cloud/react-native-client",
+        {
+          "android": {
+            "enableForegroundService": true
+          },
+          "ios": {
+            "enableVoIPBackgroundMode": true
+          }
+        }
+      ],
+      ...
+    }
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+**Android Configuration**
+
+Add the following permissions and services to `AndroidManifest.xml`:
+
+```xml title='AndroidManifest.xml'
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  ...
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION"/>
+  <application ...>
+    ...
+    <service
+      android:name="com.oney.WebRTCModule.foregroundService.WebRTCForegroundService"
+      android:foregroundServiceType="camera|microphone"
+      android:stopWithTask="true"
+    />
+    <!-- Add this service only if you use screen sharing -->
+    <service
+      android:name="com.oney.WebRTCModule.MediaProjectionService"
+      android:foregroundServiceType="mediaProjection"
+      android:stopWithTask="true"
+    />
+  </application>
+</manifest>
+```
+
+**iOS Configuration**
+
+You need to add VoIP background mode in `Info.plist`:
+
+```xml title='Info.plist'
+<key>UIBackgroundModes</key>
+<array>
+  <string>voip</string>
+</array>
+```
+
+  </TabItem>
+</Tabs>
+
+## Usage
+
+<Tabs groupId="platform">
+
+  <TabItem value="android" label="Android">
+
+You can use [`useForegroundService`](../../api/mobile/variables/useForegroundService) hook to handle how foreground service behaves on Android.
+
+:::important[Permissions]
+
+If you want to use [`enableCamera`](../../api/mobile/type-aliases/ForegroundServiceConfig#enablecamera) or [`enableMicrophone`](../../api/mobile/type-aliases/ForegroundServiceConfig#enablemicrophone),
+user must first grant permission for this resource. [`useForegroundService`](../../api/mobile/variables/useForegroundService) will check if permission is
+granted and only then allow to start a service.
+
+:::
+
+```tsx
+import {
+  useForegroundService,
+  useCamera,
+  useMicrophone,
+} from "@fishjam-cloud/react-native-client";
+
+const { isCameraOn } = useCamera();
+const { isMicrophoneOn } = useMicrophone();
+
+useForegroundService({
+  // [!code highlight]
+  channelId: "io.fishjam.example.fishjamchat.foregroundservice.channel",
+  channelName: "Fishjam Chat Notifications",
+  notificationTitle: "Your video call is ongoing",
+  notificationContent: "Tap to return to the call.",
+  enableCamera: isCameraOn,
+  enableMicrophone: isMicrophoneOn,
+  // enableScreenSharing: true,
+});
+```
+
+  </TabItem>
+  <TabItem value="ios" label="iOS">
+
+On iOS, background calls are achieved through CallKit integration. You can use the CallKit hooks to manage VoIP calls that continue running in the background.
+
+### Manual CallKit Management
+
+Use the [`useCallKit`](../../api/mobile/variables/useCallKit) hook for fine-grained control over CallKit sessions:
+
+```tsx
+import { useCallKit } from "@fishjam-cloud/react-native-client";
+
+const { startCallKitSession, endCallKitSession } = useCallKit();
+
+// Start CallKit session when joining a room
+const handleJoinRoom = async () => {
+  await startCallKitSession({
+    displayName: "John Doe",
+    isVideo: true,
+  });
+  // ... join room logic
+};
+
+// End CallKit session when leaving
+const handleLeaveRoom = async () => {
+  await endCallKitSession();
+  // ... leave room logic
+};
+```
+
+### Automatic CallKit Management
+
+Use the [`useCallKitService`](../../api/mobile/variables/useCallKitService) hook for automatic session lifecycle management:
+
+```tsx
+import React from "react";
+import { useCallKitService } from "@fishjam-cloud/react-native-client";
+import { View } from "react-native";
+
+function CallScreen({ username }: { username: string }) {
+  // CallKit session automatically starts when component mounts
+  // and ends when component unmounts
+  useCallKitService({
+    displayName: username,
+    isVideo: true,
+  });
+
+  return <View>...</View>;
+}
+```
+
+### Listening to CallKit Events
+
+Use the [`useCallKitEvent`](../../api/mobile/variables/useCallKitEvent) hook to respond to user interactions with the native CallKit interface:
+
+```tsx
+import {
+  useCallKitEvent,
+  useCamera,
+  useMicrophone,
+  useConnection,
+} from "@fishjam-cloud/react-native-client";
+
+const { startMicrophone, stopMicrophone } = useMicrophone();
+const { leaveRoom } = useConnection();
+
+// Listen for mute toggle from CallKit UI
+useCallKitEvent("muted", (isMuted?: boolean) => {
+  if (isMuted === true) {
+    stopMicrophone();
+  } else if (isMuted === false) {
+    startMicrophone();
+  }
+});
+
+// Listen for hold state changes
+useCallKitEvent("held", (isHeld?: boolean) => {
+  console.log("Call hold state:", isHeld);
+  // Handle hold state in your app
+});
+
+// Listen for call end from CallKit UI
+useCallKitEvent("ended", () => {
+  // Handle call termination
+  leaveRoom();
+});
+```
+
+  </TabItem>
+</Tabs>
+
+## See Also
+
+For an enhanced user experience when your app is in the background, consider enabling [Picture in Picture](./picture-in-picture), which allows users to see video content in a floating window while using other apps.
