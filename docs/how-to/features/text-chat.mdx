@@ -87,7 +87,10 @@ export function useChat() {
   <TabItem value="mobile" label="React Native (Mobile)">
 
 ```tsx
-import { useConnection, useDataChannel } from "@fishjam-cloud/react-native-client";
+import {
+  useConnection,
+  useDataChannel,
+} from "@fishjam-cloud/react-native-client";
 import { useCallback, useEffect, useState } from "react";
 
 export function useChat() {
@@ -245,7 +248,10 @@ function ChatPanel() {
 ```tsx
 import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, TextInput, FlatList, Pressable } from "react-native";
-import { useConnection, useDataChannel } from "@fishjam-cloud/react-native-client";
+import {
+  useConnection,
+  useDataChannel,
+} from "@fishjam-cloud/react-native-client";
 
 function useChat() {
   const { peerStatus } = useConnection();
