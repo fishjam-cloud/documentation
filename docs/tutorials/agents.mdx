@@ -126,6 +126,56 @@ However, it's likely that in your scenario you'll want to use the [Selective Sub
 
 </Tabs>
 
+### Multiple Agents in a Room
+
+You can create multiple agents inside a single room by calling `createAgent` multiple times with the same room ID.
+Each agent operates independently, with its own set of tracks and callbacks.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript">
+
+    ```ts
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamId = '';
+    const managementToken = '';
+    const fishjamClient = new FishjamClient({ fishjamId, managementToken });
+    const room = await fishjamClient.createRoom();
+
+    import type { AgentCallbacks, PeerOptions } from '@fishjam-cloud/js-server-sdk';
+
+    const agentOptions = {
+      subscribeMode: 'auto',
+      output: { audioFormat: 'pcm16', audioSampleRate: 16000 }
+    } satisfies PeerOptions;
+
+    const agentCallbacks = {
+      onError: console.error,
+      onClose: (code, reason) => console.log('Agent closed', code, reason)
+    } satisfies AgentCallbacks;
+
+    // ---cut---
+    const { agent: agent1 } = await fishjamClient.createAgent(room.id, agentOptions, agentCallbacks);
+    const { agent: agent2 } = await fishjamClient.createAgent(room.id, agentOptions, agentCallbacks);
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    from fishjam import FishjamClient
+
+    fishjam_client = FishjamClient(fishjam_id, management_token)
+
+    agent1 = fishjam_client.create_agent(room_id)
+    agent2 = fishjam_client.create_agent(room_id)
+    ```
+
+  </TabItem>
+
+</Tabs>
+
 ### Making the Agent speak
 
 Apart from just listening, agents can also send audio data to peers.  
