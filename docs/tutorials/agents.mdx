@@ -155,8 +155,18 @@ Each agent operates independently, with its own set of tracks and callbacks.
     } satisfies AgentCallbacks;
 
     // ---cut---
-    const { agent: agent1 } = await fishjamClient.createAgent(room.id, agentOptions, agentCallbacks);
-    const { agent: agent2 } = await fishjamClient.createAgent(room.id, agentOptions, agentCallbacks);
+    const agentCallbacks1 = {
+      onError: console.error,
+      onClose: (code, reason) => console.log('Agent 1 closed', code, reason)
+    } satisfies AgentCallbacks;
+
+    const agentCallbacks2 = {
+      onError: console.error,
+      onClose: (code, reason) => console.log('Agent 2 closed', code, reason)
+    } satisfies AgentCallbacks;
+
+    const { agent: agent1 } = await fishjamClient.createAgent(room.id, agentOptions, agentCallbacks1);
+    const { agent: agent2 } = await fishjamClient.createAgent(room.id, agentOptions, agentCallbacks2);
     ```
 
   </TabItem>
