@@ -252,3 +252,48 @@ export function MicrophoneControl() {
   );
 }
 ```
+
+## Managing Permissions (Mobile only)
+
+The SDK provides built-in hooks for querying and requesting device permissions: `useCameraPermissions` and `useMicrophonePermissions` from `@fishjam-cloud/react-native-client`.
+
+Both hooks return a `[query, request]` tuple:
+
+- **`query()`** — checks the current permission status without prompting the user
+- **`request()`** — triggers the native permission dialog and returns the resulting status
+
+The returned `PermissionStatus` is one of: `'granted'`, `'denied'`, or `'prompt'`.
+
+#### Usage Example
+
+```tsx
+// @noErrors: 2305
+import React, { useEffect } from "react";
+import {
+  useCameraPermissions,
+  useMicrophonePermissions,
+  useInitializeDevices,
+} from "@fishjam-cloud/react-native-client";
+
+function RoomScreen() {
+  const [queryCamera, requestCamera] = useCameraPermissions(); // [!code highlight]
+  const [queryMicrophone, requestMicrophone] = useMicrophonePermissions(); // [!code highlight]
+  const { initializeDevices } = useInitializeDevices(); // [!code highlight]
+
+  const setup = async () => {
+    let cam = await queryCamera();
+    let mic = await queryMicrophone();
+
+    if (cam !== "granted") cam = await requestCamera();
+    if (mic !== "granted") mic = await requestMicrophone();
+
+    if (cam === "granted" && mic === "granted") {
+      await initializeDevices(); // [!code highlight]
+    }
+  };
+
+  useEffect(() => {
+    setup();
+  }, []);
+}
+```
