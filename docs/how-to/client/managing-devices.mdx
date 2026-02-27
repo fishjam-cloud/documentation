@@ -280,20 +280,25 @@ function RoomScreen() {
   const [queryMicrophone, requestMicrophone] = useMicrophonePermissions(); // [!code highlight]
   const { initializeDevices } = useInitializeDevices(); // [!code highlight]
 
-  const setup = async () => {
-    let cam = await queryCamera();
-    let mic = await queryMicrophone();
-
-    if (cam !== "granted") cam = await requestCamera();
-    if (mic !== "granted") mic = await requestMicrophone();
-
-    if (cam === "granted" && mic === "granted") {
-      await initializeDevices(); // [!code highlight]
-    }
-  };
-
   useEffect(() => {
+    const setup = async () => {
+      let cam = await queryCamera();
+      let mic = await queryMicrophone();
+
+      if (cam !== "granted") cam = await requestCamera();
+      if (mic !== "granted") mic = await requestMicrophone();
+
+      if (cam === "granted" && mic === "granted") {
+        await initializeDevices(); // [!code highlight]
+      }
+    };
     setup();
-  }, []);
+  }, [
+    queryCamera,
+    requestCamera,
+    queryMicrophone,
+    requestMicrophone,
+    initializeDevices,
+  ]);
 }
 ```
