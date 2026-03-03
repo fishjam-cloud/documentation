@@ -112,9 +112,22 @@ Ensure `Info.plist` contains camera and microphone usage description entries:
 
 ### Build native dependencies
 
+<Tabs groupId="app-type">
+  <TabItem value="expo" label="Expo">
+
 ```bash
 npx expo prebuild
 ```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+```bash
+cd ios && pod install
+```
+
+  </TabItem>
+</Tabs>
 
 ### Get your Fishjam ID
 
