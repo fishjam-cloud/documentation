@@ -221,12 +221,10 @@ export default function App() {
 ## Camera and Microphone Permissions
 
 :::info
-You don't need to explicitly request permissions as they're automatically asked for when your app needs them.
+You don't need to explicitly request permissions — they're automatically requested when your app calls `initializeDevices()`.
 :::
 
-The SDK automatically requests camera and microphone permissions when you call `initializeDevices()`. The system permission dialog will be shown to the user if permissions haven't been granted yet.
-
-If you need manual control over permissions, you can use the [expo-permissions](https://docs.expo.dev/versions/latest/sdk/permissions/) or [react-native-permissions](https://github.com/zoontek/react-native-permissions) libraries.
+If you need manual control over when permissions are requested, see [Managing Permissions](./managing-devices#managing-permissions-mobile-only).
 
   </TabItem>
 </Tabs>
