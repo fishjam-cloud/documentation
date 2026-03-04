@@ -264,6 +264,11 @@ Both hooks return a `[query, request]` tuple:
 
 The returned `PermissionStatus` is one of: `'granted'`, `'denied'`, or `'prompt'`.
 
+:::info
+Requesting permissions manually is optional — `initializeDevices()` will automatically prompt for any permissions that haven't been granted yet.
+However, you must always call `initializeDevices()` to set up camera and microphone devices.
+:::
+
 #### Usage Example
 
 ```tsx
