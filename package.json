@@ -58,6 +58,7 @@
     "@google/genai": "^1.35.0",
     "@shikijs/twoslash": "^3.6.0",
     "cspell": "^9.1.2",
+    "docusaurus-plugin-llms": "^0.3.0",
     "docusaurus-plugin-typedoc": "1.4.0",
     "prettier": "^3.5.3",
     "typedoc": "0.28.5",
