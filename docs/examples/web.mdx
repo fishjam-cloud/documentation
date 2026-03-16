@@ -1,0 +1,184 @@
+---
+type: explanation
+sidebar_position: 1
+---
+
+# Web Examples
+
+_Runnable reference apps demonstrating common Fishjam use cases in React_
+
+Each example is a standalone React application you can run locally and use as a starting point for your own project.
+All examples use `@fishjam-cloud/react-client` and require a Fishjam ID from the [Fishjam Dashboard](https://fishjam.io/app).
+
+| Example                             | What it demonstrates                                                   |
+| ----------------------------------- | ---------------------------------------------------------------------- |
+| [Minimal React](#minimal-react)     | Simplest video call — join a room, camera, mic, screen share           |
+| [Audio Only](#audio-only)           | Voice chat with no video and microphone device selection               |
+| [Text Chat](#text-chat)             | Peer-to-peer messaging over WebRTC data channels                       |
+| [Livestreaming](#livestreaming)     | One broadcaster, many viewers with separate streamer/viewer UIs        |
+| [Minimal Smelter](#minimal-smelter) | Custom video overlays using the Smelter rendering engine               |
+| [Fishjam Chat](#fishjam-chat)       | Full-featured conferencing app with background blur and screen sharing |
+
+---
+
+## Minimal React
+
+The simplest way to get a video call working in the browser — joining a room, displaying your own camera feed, and showing remote participants. Start here if you're new to Fishjam on the web.
+
+**Demonstrates:**
+
+- Wrapping your app in `FishjamProvider`
+- Connecting to a room with `useConnection`
+- Accessing local and remote peers with `usePeers`
+- Enabling camera and microphone with `useCamera` and `useMicrophone`
+- Starting screen sharing with `useScreenShare`
+- Rendering streams with `VideoPlayer` and `AudioPlayer` components
+
+### Running the example
+
+```bash
+cd minimal-react
+yarn install
+yarn dev
+```
+
+The room component uses `usePeers` to retrieve all participants and renders their video streams using `VideoPlayer` and audio with `AudioPlayer`.
+
+Browse the full source: [minimal-react on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web/minimal-react)
+
+---
+
+## Audio Only
+
+A voice-only room with no video — demonstrates how to initialize Fishjam with audio exclusively and let users pick their microphone device before joining.
+
+**Demonstrates:**
+
+- Audio-only initialization with `useInitializeDevices` (`enableVideo: false`)
+- Microphone device selection from available inputs
+- Rendering a peer list with audio playback via `AudioPlayer`
+
+### Running the example
+
+```bash
+cd audio-only
+yarn install
+yarn dev
+```
+
+Setting `enableVideo: false` in `useInitializeDevices` skips camera initialization entirely, keeping the session lightweight for voice-only use cases.
+
+Browse the full source: [audio-only on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web/audio-only)
+
+---
+
+## Text Chat
+
+Demonstrates peer-to-peer text messaging over WebRTC data channels — no separate messaging server required. Messages are sent directly between peers inside the Fishjam room.
+
+**Demonstrates:**
+
+- Initializing a data channel with `useDataChannel`
+- Publishing messages with `publishData`
+- Receiving incoming messages with `subscribeData`
+- Encoding and decoding message payloads with `TextEncoder` and `TextDecoder`
+
+### Running the example
+
+```bash
+cd text-chat
+yarn install
+yarn dev
+```
+
+Messages are `Uint8Array` payloads encoded and decoded with JSON and `TextEncoder`/`TextDecoder`. The `useDataChannel` hook wires together `publishData` for sending and `subscribeData` for receiving.
+
+Browse the full source: [text-chat on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web/text-chat)
+
+---
+
+## Livestreaming
+
+A focused livestreaming example with two separate modes: a streamer who broadcasts video and audio, and a viewer who watches the stream. Token management is handled via the `useSandbox` hook.
+
+**Demonstrates:**
+
+- Broadcasting with `useLivestreamStreamer`
+- Watching a stream with `useLivestreamViewer`
+- Separate broadcaster and viewer UIs within one application
+- Obtaining peer tokens with `useSandbox`
+
+### Running the example
+
+```bash
+cd livestreaming
+yarn install
+yarn dev
+```
+
+The streamer side uses `useLivestreamStreamer` to publish camera and audio tracks, while the viewer side uses `useLivestreamViewer` to connect and render the incoming stream.
+
+Browse the full source: [livestreaming on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web/livestreaming)
+
+---
+
+## Minimal Smelter
+
+Shows how to apply custom video overlays to a camera feed using the Smelter rendering engine — a text label composited directly onto the outgoing video stream.
+
+**Demonstrates:**
+
+- Creating a custom video source with `useCustomSource`
+- Initializing the Smelter engine with `useSmelter`
+- Registering inputs and outputs with `registerInput`/`registerOutput`
+- Compositing a text overlay on top of a live camera feed
+
+### Running the example
+
+```bash
+cd minimal-smelter
+yarn install
+yarn dev
+```
+
+:::important
+Smelter requires WebAssembly support — use a modern browser.
+:::
+
+The `useSmelter` hook manages the Smelter engine lifecycle. `registerInput` connects the local camera feed and `registerOutput` routes the composited result back into Fishjam as a custom track.
+
+Browse the full source: [minimal-smelter on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web/minimal-smelter)
+
+---
+
+## Fishjam Chat
+
+A full-featured conferencing application covering camera, microphone, screen sharing, background blur via a camera track middleware, and a settings panel for device selection.
+
+**Demonstrates:**
+
+- Connecting to a room with `useConnection`
+- Managing camera and microphone with `useCamera` and `useMicrophone`
+- Screen sharing with `useScreenShare`
+- Applying real-time background blur using a MediaPipe camera track middleware
+- Device selection in a settings panel
+
+### Running the example
+
+```bash
+cd fishjam-chat
+yarn install
+yarn dev
+```
+
+Background blur is applied as a camera track middleware that processes each video frame with MediaPipe before the track is sent to other participants. Removing the middleware disables the effect without reconnecting.
+
+Browse the full source: [fishjam-chat on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web/fishjam-chat)
+
+---
+
+## Next steps
+
+- Follow the [React Quick Start](../tutorials/react-quick-start) if you haven't set up a project yet
+- Learn how to [work with data channels](../how-to/client/data-channels)
+- Learn how to [implement screen sharing](../how-to/client/screensharing)
