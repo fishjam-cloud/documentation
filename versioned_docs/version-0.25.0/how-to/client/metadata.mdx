@@ -209,3 +209,71 @@ export function ListAllNames() {
 
   </TabItem>
 </Tabs>
+
+## Track metadata
+
+Each track published by a peer also carries a `TrackMetadata` object. Unlike peer metadata, track metadata is set internally by the SDK and cannot be modified directly by the user.
+
+It contains the following fields:
+
+- **`type`** — the kind of media the track carries: `camera`, `microphone`, `screenShareVideo`, `screenShareAudio`, `customVideo`, or `customAudio`
+- **`paused`** — whether the track is currently muted/disabled
+- **`displayName`** — the peer's display name, used in recordings
+
+You can read track metadata via the `metadata` property on a track, for example to check whether a peer's camera is enabled:
+
+<Tabs groupId="platform">
+  <TabItem value="web" label="React (Web)">
+
+```tsx
+import React from "react";
+import { usePeers } from "@fishjam-cloud/react-client";
+
+export function CameraStatus() {
+  const { remotePeers } = usePeers();
+
+  return (
+    <div>
+      {remotePeers.map((peer) => {
+        const isCameraEnabled = !peer.cameraTrack?.metadata?.paused;
+        return (
+          <span key={peer.id}>
+            {peer.cameraTrack?.metadata?.displayName ?? "Unknown"}: camera is{" "}
+            {isCameraEnabled ? "on" : "off"}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+```
+
+  </TabItem>
+  <TabItem value="mobile" label="React Native (Mobile)">
+
+```tsx
+import React from "react";
+import { Text, View } from "react-native";
+import { usePeers } from "@fishjam-cloud/react-native-client";
+
+export function CameraStatus() {
+  const { remotePeers } = usePeers();
+
+  return (
+    <View>
+      {remotePeers.map((peer) => {
+        const isCameraEnabled = !peer.cameraTrack?.metadata?.paused;
+        return (
+          <Text key={peer.id}>
+            {peer.cameraTrack?.metadata?.displayName ?? "Unknown"}: camera is{" "}
+            {isCameraEnabled ? "on" : "off"}
+          </Text>
+        );
+      })}
+    </View>
+  );
+}
+```
+
+  </TabItem>
+</Tabs>
