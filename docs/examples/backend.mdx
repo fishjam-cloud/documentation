@@ -1,0 +1,79 @@
+---
+type: explanation
+sidebar_position: 2
+---
+
+# Backend Examples
+
+_Runnable reference apps demonstrating headless Fishjam client usage in Node.js_
+
+Each example is a standalone TypeScript application you can run locally and use as a starting point for your own project.
+All examples use `@fishjam-cloud/ts-client` and require a Fishjam ID from the [Fishjam Dashboard](https://fishjam.io/app).
+
+| Example                   | What it demonstrates                                                 |
+| ------------------------- | -------------------------------------------------------------------- |
+| [Minimal](#minimal)       | Headless TypeScript client — screen sharing and track event handling |
+| [Simple App](#simple-app) | Full client test harness — all APIs, simulcast, device enumeration   |
+
+---
+
+## Minimal
+
+The simplest headless Fishjam client — connects to a room, adds a screen-share track, and handles incoming track events. No browser UI required.
+
+**Demonstrates:**
+
+- Instantiating the low-level TypeScript client with `FishjamClient`
+- Connecting to a room with `connect()`
+- Publishing a track with `addTrack()`
+- Reacting to room events with `on('joined')`, `on('trackReady')`, and `on('trackRemoved')` listeners
+
+### Running the example
+
+```bash
+cd minimal
+yarn install
+yarn dev
+```
+
+:::important
+This example runs headless — no browser UI. It prompts for a peer token on startup and connects to a local Fishjam server at `ws://localhost:5002`.
+:::
+
+`FishjamClient` is the low-level client that underpins the React and React Native SDKs. Using it directly gives you full control over the connection lifecycle and event stream without any framework dependency.
+
+Browse the full source: [minimal on GitHub](https://github.com/fishjam-cloud/examples/tree/main/backend/minimal)
+
+---
+
+## Simple App
+
+A comprehensive test harness that exercises the full `FishjamClient` API surface — useful for validating server behaviour, exploring simulcast quality levels, and understanding the complete peer and track lifecycle.
+
+**Demonstrates:**
+
+- Full peer and track lifecycle events (`joined`, `peerJoined`, `peerLeft`, `trackAdded`, `trackReady`, `trackRemoved`)
+- Adding and removing tracks with `addTrack` and `removeTrack`
+- Controlling simulcast quality with `setTargetTrackEncoding`
+- Enumerating available media devices
+- Observing connection state transitions
+
+### Running the example
+
+```bash
+cd simple-app
+yarn install
+yarn dev
+```
+
+`setTargetTrackEncoding` lets you request a specific simulcast layer (`low`, `medium`, or `high`) for a given remote track — useful for testing adaptive quality scenarios without a full UI.
+
+Browse the full source: [simple-app on GitHub](https://github.com/fishjam-cloud/examples/tree/main/backend/simple-app)
+
+---
+
+## Next steps
+
+- Follow the [Backend Quick Start](../tutorials/backend-quick-start) if you haven't set up a project yet
+- Learn about [room types](../explanation/room-types) to choose the right architecture
+- See the [React Quick Start](../tutorials/react-quick-start) to pair a backend client with a browser UI
