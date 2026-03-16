@@ -161,9 +161,6 @@ const config: Config = {
   onBrokenAnchors: "throw",
   onDuplicateRoutes: "throw",
 
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: "en",
     locales: ["en"],
@@ -290,13 +287,11 @@ const config: Config = {
   plugins: [
     [
       require.resolve("docusaurus-lunr-search"),
-      // exclude old versions and next from search
       {
         includeRoutes: [
           "/docs/tutorials/*",
           "/docs/how-to/*",
           "/docs/explanation/*",
-          "/docs/api/*",
         ],
       },
     ],
@@ -337,6 +332,29 @@ const config: Config = {
         tsconfig:
           "./packages/js-server-sdk/packages/js-server-sdk/tsconfig.json",
         ...typedocConfig,
+      },
+    ],
+    [
+      "docusaurus-plugin-llms",
+      {
+        generateLLMsTxt: true,
+        generateLLMsFullTxt: true,
+        processingBatchSize: 8,
+        title: "Fishjam Docs",
+        description:
+          "Fishjam is a multimedia streaming toolkit for building real-time video and audio applications with managed WebRTC infrastructure, client SDKs (React, React Native), and server SDKs (Node.js, Python).",
+        includeOrder: [
+          "tutorials/**/*.{md,mdx}",
+          "how-to/**/*.{md,mdx}",
+          "explanation/**/*.{md,mdx}",
+          "api/**/*.{md,mdx}",
+        ],
+        ignoreFiles: ["**/type-aliases/**", "**/_common/**"],
+        includeUnmatchedLast: false,
+        excludeImports: true,
+        removeDuplicateHeadings: true,
+        rootContent:
+          "Curated index of Fishjam documentation. Start with Tutorials for quick starts, Explanation for concepts, How-to for guides, and API for SDK references.",
       },
     ],
   ],
