@@ -161,6 +161,9 @@ const config: Config = {
   onBrokenAnchors: "throw",
   onDuplicateRoutes: "throw",
 
+  // Even if you don't use internationalization, you can use this field to set
+  // useful metadata like html lang. For example, if your site is Chinese, you
+  // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: "en",
     locales: ["en"],
@@ -287,11 +290,13 @@ const config: Config = {
   plugins: [
     [
       require.resolve("docusaurus-lunr-search"),
+      // exclude old versions and next from search
       {
         includeRoutes: [
           "/docs/tutorials/*",
           "/docs/how-to/*",
           "/docs/explanation/*",
+          "/docs/api/*",
         ],
       },
     ],
