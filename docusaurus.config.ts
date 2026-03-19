@@ -339,6 +339,32 @@ const config: Config = {
         ...typedocConfig,
       },
     ],
+    [
+      "docusaurus-plugin-llms",
+      {
+        generateLLMsTxt: true,
+        generateLLMsFullTxt: true,
+        processingBatchSize: 8,
+        title: "Fishjam Docs",
+        description:
+          "Fishjam is a multimedia streaming toolkit for building real-time video and audio applications with managed WebRTC infrastructure, client SDKs (React, React Native), and server SDKs (Node.js, Python).",
+        includeOrder: [
+          "tutorials/**/*.{md,mdx}",
+          "how-to/**/*.{md,mdx}",
+          "explanation/**/*.{md,mdx}",
+          "api/reference.{md,mdx}",
+          "api/mobile/index.{md,mdx}",
+          "api/web/index.{md,mdx}",
+          "api/server/index.{md,mdx}",
+        ],
+        ignoreFiles: ["**/type-aliases/**", "**/_common/**"],
+        includeUnmatchedLast: false,
+        excludeImports: true,
+        removeDuplicateHeadings: true,
+        rootContent:
+          "Curated index of Fishjam documentation. Start with Tutorials for quick starts, Explanation for concepts, How-to for guides, and API for SDK references.",
+      },
+    ],
   ],
 };
 
