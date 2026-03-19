@@ -151,6 +151,10 @@ Smelter requires WebAssembly support — use a modern browser.
 
 The `useSmelter` hook manages the Smelter engine lifecycle. `registerInput` connects the local camera feed and `registerOutput` routes the composited result back into Fishjam as a custom track.
 
+:::note
+This example requires a **peer token** to connect. You need to obtain one yourself — either via the [Sandbox API](../how-to/features/sandbox-api-testing#step-2-create-a-room-and-get-peer-tokens) for quick testing, or by setting up your own backend with the [Fishjam Server SDK](../tutorials/backend-quick-start).
+:::
+
 Browse the full source: [minimal-smelter on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web-react/minimal-smelter)
 
 ---
