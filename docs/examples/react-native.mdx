@@ -46,7 +46,7 @@ This won't work on the iOS Simulator — the Simulator can't access the camera. 
 
 The room screen uses `usePeers` to retrieve all participants and renders their camera streams in a two-column grid with `RTCView`.
 
-Browse the full source: [minimal-react-native on GitHub](https://github.com/fishjam-cloud/examples/tree/main/mobile/minimal-react-native)
+Browse the full source: [minimal-react-native on GitHub](https://github.com/fishjam-cloud/examples/tree/main/mobile-react-native/minimal-react-native)
 
 ---
 
@@ -77,7 +77,7 @@ Before prebuilding, replace the bundle identifier `io.fishjam.example.fishjamcha
 
 The app uses Expo Router with a bottom tab navigator. Each tab handles its own connection flow independently using `useConnection`.
 
-Browse the full source: [fishjam-chat on GitHub](https://github.com/fishjam-cloud/examples/tree/main/mobile/fishjam-chat)
+Browse the full source: [fishjam-chat on GitHub](https://github.com/fishjam-cloud/examples/tree/main/mobile-react-native/fishjam-chat)
 
 ---
 
@@ -112,7 +112,7 @@ Blur applies only to the local camera feed sent to other participants. Remote pa
 
 The blur hook from `useBackgroundBlur` provides a `middleware` function that is passed directly to `setCameraTrackMiddleware`. Passing `null` disables the effect.
 
-Browse the full source: [blur-example on GitHub](https://github.com/fishjam-cloud/examples/tree/main/mobile/blur-example)
+Browse the full source: [blur-example on GitHub](https://github.com/fishjam-cloud/examples/tree/main/mobile-react-native/blur-example)
 
 ---
 
@@ -142,7 +142,7 @@ Data channels use `reliable` mode by default, which guarantees message delivery 
 
 Messages are `Uint8Array` payloads encoded and decoded with JSON and `TextEncoder`/`TextDecoder`. The `useDataChannel` hook wires together `publishData` for sending and `onDataReceived` for receiving.
 
-Browse the full source: [text-chat on GitHub](https://github.com/fishjam-cloud/examples/tree/main/mobile/text-chat)
+Browse the full source: [text-chat on GitHub](https://github.com/fishjam-cloud/examples/tree/main/mobile-react-native/text-chat)
 
 ---
 
@@ -168,7 +168,7 @@ npx expo run:android  # or run:ios
 
 The streamer side uses `useLivestreamStreamer` and `useInitializeDevices` to start broadcasting, while the viewer side uses `useLivestreamViewer` to connect and render the incoming stream with `RTCView`.
 
-Browse the full source: [video-player on GitHub](https://github.com/fishjam-cloud/examples/tree/main/mobile/video-player)
+Browse the full source: [video-player on GitHub](https://github.com/fishjam-cloud/examples/tree/main/mobile-react-native/video-player)
 
 ---
 

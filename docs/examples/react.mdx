@@ -48,7 +48,7 @@ The room component uses `usePeers` to retrieve all participants and renders thei
 This example requires a **peer token** to connect. You need to obtain one yourself — either via the [Sandbox API](../how-to/features/sandbox-api-testing#step-2-create-a-room-and-get-peer-tokens) for quick testing, or by setting up your own backend with the [Fishjam Server SDK](../tutorials/backend-quick-start).
 :::
 
-Browse the full source: [minimal-react on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web/minimal-react)
+Browse the full source: [minimal-react on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web-react/minimal-react)
 
 ---
 
@@ -72,7 +72,7 @@ yarn dev
 
 Setting `enableVideo: false` in `useInitializeDevices` skips camera initialization entirely, keeping the session lightweight for voice-only use cases.
 
-Browse the full source: [audio-only on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web/audio-only)
+Browse the full source: [audio-only on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web-react/audio-only)
 
 ---
 
@@ -97,7 +97,7 @@ yarn dev
 
 Messages are `Uint8Array` payloads encoded and decoded with JSON and `TextEncoder`/`TextDecoder`. The `useDataChannel` hook wires together `publishData` for sending and `subscribeData` for receiving.
 
-Browse the full source: [text-chat on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web/text-chat)
+Browse the full source: [text-chat on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web-react/text-chat)
 
 ---
 
@@ -122,7 +122,7 @@ yarn dev
 
 The streamer side uses `useLivestreamStreamer` to publish camera and audio tracks, while the viewer side uses `useLivestreamViewer` to connect and render the incoming stream.
 
-Browse the full source: [livestreaming on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web/livestreaming)
+Browse the full source: [livestreaming on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web-react/livestreaming)
 
 ---
 
@@ -151,7 +151,7 @@ Smelter requires WebAssembly support — use a modern browser.
 
 The `useSmelter` hook manages the Smelter engine lifecycle. `registerInput` connects the local camera feed and `registerOutput` routes the composited result back into Fishjam as a custom track.
 
-Browse the full source: [minimal-smelter on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web/minimal-smelter)
+Browse the full source: [minimal-smelter on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web-react/minimal-smelter)
 
 ---
 
@@ -177,7 +177,7 @@ yarn dev
 
 Background blur is applied as a camera track middleware that processes each video frame with MediaPipe before the track is sent to other participants. Removing the middleware disables the effect without reconnecting.
 
-Browse the full source: [fishjam-chat on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web/fishjam-chat)
+Browse the full source: [fishjam-chat on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web-react/fishjam-chat)
 
 ---
 
