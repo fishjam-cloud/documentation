@@ -3,7 +3,7 @@ type: explanation
 sidebar_position: 1
 ---
 
-# Web Examples
+# React Examples
 
 _Runnable reference apps demonstrating common Fishjam use cases in React_
 
@@ -43,6 +43,10 @@ yarn dev
 ```
 
 The room component uses `usePeers` to retrieve all participants and renders their video streams using `VideoPlayer` and audio with `AudioPlayer`.
+
+:::note
+This example requires a **peer token** to connect. You need to obtain one yourself — either via the [Sandbox API](../how-to/features/sandbox-api-testing#step-2-create-a-room-and-get-peer-tokens) for quick testing, or by setting up your own backend with the [Fishjam Server SDK](../tutorials/backend-quick-start).
+:::
 
 Browse the full source: [minimal-react on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web/minimal-react)
 
