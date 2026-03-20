@@ -11,4 +11,9 @@ export const items: CardItem[] = [
     href: "tutorials/react-quick-start",
     icon: "💻",
   },
+  {
+    title: "Examples",
+    href: "examples",
+    icon: "🧪",
+  },
 ];

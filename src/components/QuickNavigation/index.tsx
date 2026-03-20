@@ -10,16 +10,15 @@ export default function QuickNavigation(props: { items: CardItem[] }) {
   return (
     <section className="row">
       {props.items.map((item, index) => (
-        <article key={index} className="col col--6 margin-top--sm">
+        <article
+          key={index}
+          className={clsx("col col--4 margin-top--sm", styles.cardCol)}
+        >
           <Link
             className={clsx("card padding--lg", styles.cardContainer)}
             href={useVersionedLink(item.href)}
           >
-            <Heading
-              as="h3"
-              className={clsx("text--truncate", styles.cardTitle)}
-              title={item.title}
-            >
+            <Heading as="h3" className={styles.cardTitle} title={item.title}>
               <span>{item.icon}</span> {item.title}
             </Heading>
           </Link>
