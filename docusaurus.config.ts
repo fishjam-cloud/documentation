@@ -19,6 +19,7 @@ import {
   SidebarItemsGeneratorVersion,
   SidebarItemCategory,
 } from "@docusaurus/plugin-content-docs/src/sidebars/types.js";
+import { llmsRootContent } from "./src/content/llms-root-content";
 
 function isErrorFromVersionedDocs(options: { meta?: { __raw?: string } }) {
   if (options.meta?.__raw?.includes("loc=")) {
@@ -347,7 +348,7 @@ const config: Config = {
         processingBatchSize: 8,
         title: "Fishjam Docs",
         description:
-          "Fishjam is a multimedia streaming toolkit for building real-time video and audio applications with managed WebRTC infrastructure, client SDKs (React, React Native), and server SDKs (Node.js, Python).",
+          "Fishjam is a low-latency video conferencing and live streaming API created by Software Mansion. It lets developers build real-time video, audio, and data streaming applications using WebRTC without needing any WebRTC expertise.",
         includeOrder: [
           "tutorials/**/*.{md,mdx}",
           "how-to/**/*.{md,mdx}",
@@ -361,8 +362,7 @@ const config: Config = {
         includeUnmatchedLast: false,
         excludeImports: true,
         removeDuplicateHeadings: true,
-        rootContent:
-          "Curated index of Fishjam documentation. Start with Tutorials for quick starts, Explanation for concepts, How-to for guides, and API for SDK references.",
+        rootContent: llmsRootContent,
       },
     ],
   ],
