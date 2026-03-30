@@ -1,6 +1,7 @@
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 import type { UserThemeConfig as DocSearchThemeConfig } from "@docsearch/docusaurus-adapter";
+import type { ScalarOptions } from "@scalar/docusaurus";
 import { BundledLanguage, bundledLanguages } from "shiki";
 import type { MDXPlugin } from "@docusaurus/mdx-loader";
 import rehypeShiki, { RehypeShikiOptions } from "@shikijs/rehype";
@@ -13,7 +14,6 @@ import {
   transformerNotationFocus,
 } from "@shikijs/transformers";
 
-import { rendererClassic, transformerTwoslash } from "@shikijs/twoslash";
 import {
   NormalizedSidebar,
   NormalizedSidebarItem,
@@ -22,6 +22,33 @@ import {
 } from "@docusaurus/plugin-content-docs/src/sidebars/types.js";
 import { llmsRootContent } from "./src/content/llms-root-content";
 import { createRedirects } from "./redirects";
+
+const hasBrokenLocalStorage =
+  typeof globalThis.localStorage === "object" &&
+  typeof globalThis.localStorage?.getItem !== "function";
+
+if (hasBrokenLocalStorage) {
+  const storage = new Map<string, string>();
+  globalThis.localStorage = {
+    getItem: (key: string) => storage.get(key) ?? null,
+    setItem: (key: string, value: string) => {
+      storage.set(key, value);
+    },
+    removeItem: (key: string) => {
+      storage.delete(key);
+    },
+    clear: () => {
+      storage.clear();
+    },
+    key: (index: number) => Array.from(storage.keys())[index] ?? null,
+    get length() {
+      return storage.size;
+    },
+  } as Storage;
+}
+
+const { rendererClassic, transformerTwoslash } =
+  require("@shikijs/twoslash");
 
 function isErrorFromVersionedDocs(options: { meta?: { __raw?: string } }) {
   if (options.meta?.__raw?.includes("loc=")) {
@@ -313,6 +340,17 @@ const config: Config = {
   plugins: [
     ["@docusaurus/plugin-client-redirects", { createRedirects }],
     "@docsearch/docusaurus-adapter",
+    [
+      "@scalar/docusaurus",
+      {
+        label: "Server REST API",
+        route: "/api/rest",
+        showNavLink: false,
+        configuration: {
+          url: "/docs/api/fishjam-server-openapi.yaml",
+        },
+      } as ScalarOptions,
+    ],
     [
       "docusaurus-plugin-typedoc",
       {
