@@ -23,7 +23,7 @@ The notifications can be configured using Webhook or Websocket.
 
 ### REST API
 
-[Server OpenAPI](https://github.com/fishjam-cloud/documentation/tree/main/static/api/fishjam-server-openapi.yaml)
+[Server REST API Reference](/api/rest)
 
 ### Protobufs
 
