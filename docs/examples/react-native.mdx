@@ -13,7 +13,7 @@ All examples use `@fishjam-cloud/react-native-client` and require a Fishjam ID f
 | Example                                   | What it demonstrates                                               |
 | ----------------------------------------- | ------------------------------------------------------------------ |
 | [Minimal Video Room](#minimal-video-room) | Simplest possible video call — the baseline for all other examples |
-| [Fishjam Chat](#fishjam-chat)             | Full-featured video conferencing and livestreaming app             |
+| [Fishjam Chat](#fishjam-chat)             | Full-featured video conferencing and livestreaming app with simulcast |
 | [Background Blur](#background-blur)       | Applying real-time video effects via camera track middleware       |
 | [Text Chat](#text-chat)                   | Peer-to-peer text messaging with WebRTC data channels              |
 | [Video Player](#video-player)             | Livestream broadcaster and viewer with separate UI modes           |
@@ -61,6 +61,7 @@ A full-featured application covering two distinct room types: a video conferenci
 - Environment switching between staging and production
 - Screen sharing from a livestream broadcaster
 - Permission handling with a reusable `useMediaPermissions` hook
+- Selecting received video quality with simulcast (`setReceivedQuality`)
 
 ### Running the example
 
