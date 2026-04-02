@@ -119,11 +119,7 @@ Remote tracks expose `setReceivedQuality`, which tells the server which variant 
 
 ```tsx
 import React from "react";
-import {
-  usePeers,
-  type RemoteTrack,
-  Variant,
-} from "@fishjam-cloud/react-client";
+import { usePeers, type RemoteTrack } from "@fishjam-cloud/react-client";
 
 function VideoPlayer({ stream }: { stream: MediaStream | null }) {
   return <video />;
@@ -158,11 +154,7 @@ function RemoteVideos() {
 
 ```tsx
 import React from "react";
-import {
-  usePeers,
-  type RemoteTrack,
-  Variant,
-} from "@fishjam-cloud/react-native-client";
+import { usePeers, type RemoteTrack } from "@fishjam-cloud/react-native-client";
 import { View, ScrollView } from "react-native";
 
 function RTCView({ stream }: { stream: any }) {
@@ -208,8 +200,6 @@ In practice, you would call `setReceivedQuality` based on your application's sta
 ```tsx
 import React from "react";
 import { type RemoteTrack, Variant } from "@fishjam-cloud/react-client";
-
-// ---cut---
 
 const variants = [
   { label: "Low", value: Variant.VARIANT_LOW },

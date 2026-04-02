@@ -54,8 +54,8 @@ sequenceDiagram
 
 The sender controls which variants to publish via the `sentQualities` option in `FishjamProvider`'s `videoConfig`:
 
-- **All variants** (default): Omit `sentQualities` or pass `[VARIANT_LOW, VARIANT_MEDIUM, VARIANT_HIGH]`
-- **Subset**: Pass only the variants you need, e.g. `[VARIANT_LOW, VARIANT_HIGH]`
+- **All variants** (default): Omit `sentQualities` or pass `[Variant.VARIANT_LOW, Variant.VARIANT_MEDIUM, Variant.VARIANT_HIGH]`
+- **Subset**: Pass only the variants you need, e.g. `[Variant.VARIANT_LOW, Variant.VARIANT_HIGH]`
 - **Disabled**: Pass `false` to send a single quality stream (no simulcast)
 
 ## Receiver Quality Selection
