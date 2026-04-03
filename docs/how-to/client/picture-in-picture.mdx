@@ -86,6 +86,12 @@ Add the `audio` background mode to your `Info.plist`:
 </array>
 ```
 
+:::tip[When do you need `voip`?]
+The `audio` background mode is sufficient for PiP itself. The microphone continues to work in the background with just `audio`, but if your app also needs to keep the **camera** active while in the background (e.g., an ongoing video call), you need the `voip` background mode. See the [Background calls](./background-streaming) guide for setup instructions.
+
+Adding `voip` to `UIBackgroundModes` triggers additional scrutiny during Apple's App Store review — only add it if your app genuinely requires VoIP functionality.
+:::
+
   </TabItem>
 </Tabs>
 
@@ -378,7 +384,11 @@ Picture in Picture is supported on Android 8.0 (API level 26) and above. The sys
 
 #### iOS
 
-Picture in Picture requires the `audio` background mode. When `allowsCameraInBackground` is enabled, the camera continues to capture in PiP mode (iOS 16.0+). Picture in Picture works seamlessly with CallKit for native call integration.
+Picture in Picture on iOS can be used both while the app is in the foreground (as an in-app overlay) and when the app is backgrounded. The `audio` background mode is required for PiP to continue displaying video after the app moves to the background.
+
+With only the `audio` background mode, the microphone continues to work but the outgoing camera track stops when the app is backgrounded. This is sufficient for audio-only calls or receive-only scenarios like livestream viewing. For video calls where the camera needs to keep working in the background, the `voip` background mode is additionally required — see the [Background calls](./background-streaming) guide.
+
+When `allowsCameraInBackground` is enabled together with the `voip` background mode, the camera continues to capture in PiP mode (iOS 16.0+).
 
 ### Active Speaker Detection
 
@@ -386,9 +396,18 @@ The secondary view (right side) automatically displays the remote participant wh
 
 This automatic switching ensures the most relevant video is always displayed in the Picture in Picture window.
 
-### Combining with Background Streaming
+### Combining with Background Calls
 
-Picture in Picture works great with [background streaming](./background-streaming). When both features are enabled, use foreground services on **Android** to keep the call active in the background, and use CallKit integration along with VoIP background mode on **iOS**.
+If your app needs to keep the camera active during a video call while in the background, PiP alone is not enough. Without the `voip` background mode on iOS, PiP displays received video and the microphone continues to work, but the outgoing camera track stops when the app is backgrounded.
+
+To keep a full two-way call active in the background with a PiP overlay, combine PiP with [background calls](./background-streaming):
+
+- **Android**: Enable foreground services alongside PiP.
+- **iOS**: Enable the `voip` background mode alongside PiP.
+
+:::caution
+Adding `voip` to `UIBackgroundModes` triggers additional scrutiny during Apple's App Store review. Only enable it if your app genuinely requires VoIP functionality (active calls in the background). For receive-only scenarios like livestream viewing, the `audio` background mode configured during [PiP installation](#installation) is sufficient.
+:::
 
 Example configuration combining both features:
 
