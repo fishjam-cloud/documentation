@@ -255,7 +255,11 @@ Show video from other peers in the room:
 ```tsx
 import React from "react";
 import { View, Text } from "react-native";
-import { usePeers, RTCView } from "@fishjam-cloud/react-native-client";
+import {
+  usePeers,
+  RTCView,
+  type MediaStream,
+} from "@fishjam-cloud/react-native-client";
 
 function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
   return (
@@ -305,6 +309,7 @@ import {
   useInitializeDevices,
   useSandbox,
   RTCView,
+  type MediaStream,
 } from "@fishjam-cloud/react-native-client";
 
 // Check https://fishjam.io/app/ for your Fishjam ID
