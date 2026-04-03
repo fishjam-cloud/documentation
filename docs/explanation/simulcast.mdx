@@ -12,9 +12,9 @@ Simulcast allows a video sender to encode and transmit the same video at multipl
 
 ## Why Simulcast?
 
-Without simulcast, every receiver gets the same video quality. This creates a trade-off: send high quality (wastes bandwidth for small thumbnails) or send low quality (degrades the experience for full-screen viewers).
+Without simulcast, every receiver gets the same video quality. This creates a trade-off: receive high quality (wastes bandwidth for small thumbnails) or receive low quality (degrades the experience for full-screen viewers).
 
-Simulcast eliminates this trade-off. A sender publishes multiple variants, and each receiver requests only the quality it needs:
+Simulcast solves this on the receiver side -- a sender publishes multiple variants, and each receiver requests only the quality it needs. The trade-off is increased upload bandwidth on the sender, since it encodes and transmits multiple variants simultaneously. If this overhead is not acceptable, the sender can [choose which variants to publish](#sender-configuration) or disable simulcast entirely.
 
 - A **thumbnail grid** can request low quality for all participants
 - A **spotlight view** can request high quality for the active speaker and low for everyone else
