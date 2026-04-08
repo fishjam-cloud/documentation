@@ -148,7 +148,11 @@ const localTrack = localPeer?.tracks.find((t) => t.type === "Video");
 ```tsx
 import React from "react";
 // ---cut---
-import { usePeers, RTCView } from "@fishjam-cloud/react-native-client";
+import {
+  usePeers,
+  RTCView,
+  type MediaStream,
+} from "@fishjam-cloud/react-native-client";
 
 function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
   return (

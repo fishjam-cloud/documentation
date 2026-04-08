@@ -70,7 +70,7 @@ We provide a helper factory to initialize the Google Client.
   
     ```ts
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
-    import * as GeminiIntegration from '@fishjam-cloud/js-server-sdk/gemini';
+    import GeminiIntegration from '@fishjam-cloud/js-server-sdk/gemini';
 
     const fishjamClient = new FishjamClient({
       fishjamId: process.env.FISHJAM_ID!,
@@ -120,7 +120,7 @@ Create a Fishjam agent configured to match the audio format that the Google clie
     const fishjamClient = new FishjamClient({ fishjamId, managementToken });
     
     // ---cut---
-    import * as GeminiIntegration from '@fishjam-cloud/js-server-sdk/gemini';
+    import GeminiIntegration from '@fishjam-cloud/js-server-sdk/gemini';
     
     const room = await fishjamClient.createRoom();
     
@@ -181,7 +181,7 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
 
 
     // ---cut---
-    import * as GeminiIntegration from '@fishjam-cloud/js-server-sdk/gemini';
+    import GeminiIntegration from '@fishjam-cloud/js-server-sdk/gemini';
     import { Modality } from '@google/genai';
 
     const GEMINI_MODEL = 'gemini-2.5-flash-native-audio-preview-12-2025'

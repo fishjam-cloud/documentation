@@ -140,7 +140,7 @@ On iOS, background calls are achieved through CallKit integration. You can use t
 
 ### Manual CallKit Management
 
-Use the [`useCallKit`](../../api/mobile/variables/useCallKit) hook for fine-grained control over CallKit sessions:
+Use the [`useCallKit`](../../api/mobile/functions/useCallKit) hook for fine-grained control over CallKit sessions:
 
 ```tsx
 import { useCallKit } from "@fishjam-cloud/react-native-client";
@@ -165,7 +165,7 @@ const handleLeaveRoom = async () => {
 
 ### Automatic CallKit Management
 
-Use the [`useCallKitService`](../../api/mobile/variables/useCallKitService) hook for automatic session lifecycle management:
+Use the [`useCallKitService`](../../api/mobile/functions/useCallKitService) hook for automatic session lifecycle management:
 
 ```tsx
 import React from "react";
@@ -186,7 +186,7 @@ function CallScreen({ username }: { username: string }) {
 
 ### Listening to CallKit Events
 
-Use the [`useCallKitEvent`](../../api/mobile/variables/useCallKitEvent) hook to respond to user interactions with the native CallKit interface:
+Use the [`useCallKitEvent`](../../api/mobile/functions/useCallKitEvent) hook to respond to user interactions with the native CallKit interface:
 
 ```tsx
 import {
