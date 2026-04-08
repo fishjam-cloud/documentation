@@ -154,12 +154,12 @@ function RemoteVideos() {
 
 ```tsx
 import React from "react";
-import { usePeers, type RemoteTrack } from "@fishjam-cloud/react-native-client";
+import {
+  usePeers,
+  type RemoteTrack,
+  RTCView,
+} from "@fishjam-cloud/react-native-client";
 import { View, ScrollView } from "react-native";
-
-function RTCView({ stream }: { stream: any }) {
-  return <View />;
-}
 
 function QualitySelector({ track }: { track: RemoteTrack }) {
   return <View />;
@@ -175,7 +175,7 @@ function RemoteVideos() {
       {remotePeers.map((peer) =>
         peer.tracks.map((track) => (
           <View key={track.trackId}>
-            <RTCView stream={track.stream} />
+            {track.stream && <RTCView mediaStream={track.stream} />}
             <QualitySelector track={track} />
           </View>
         )),
