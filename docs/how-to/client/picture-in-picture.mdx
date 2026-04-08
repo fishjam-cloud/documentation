@@ -166,6 +166,7 @@ Add the `audio` background mode to your `Info.plist`:
 The `RTCPIPView` component displays video content that can be shown in Picture in Picture mode. Use `startPIP` and `stopPIP` to control PIP manually:
 
 ```tsx
+// @errors: 2739
 import React, { useRef } from "react";
 import { View, Button } from "react-native";
 import {
@@ -207,6 +208,7 @@ By default, Picture in Picture will start automatically when the app goes to the
 You can customize the Picture in Picture behavior using the `pip` prop on `RTCPIPView`:
 
 ```tsx
+// @errors: 2739
 import React, { useRef } from "react";
 import { View } from "react-native";
 import { RTCPIPView, useCamera } from "@fishjam-cloud/react-native-client";
@@ -247,6 +249,7 @@ export function VideoCallScreen() {
 For more control over when Picture in Picture starts and stops, use the `startPIP` and `stopPIP` functions with a ref:
 
 ```tsx
+// @errors: 2739
 import React, { useRef } from "react";
 import { Button, View } from "react-native";
 import {
@@ -294,6 +297,7 @@ export function VideoCallScreen() {
 Here's a complete example showing Picture in Picture with a video call:
 
 ```tsx
+// @errors: 2739
 import React, { useRef } from "react";
 import { FlatList, StyleSheet, View, Text, Button } from "react-native";
 import {
@@ -422,6 +426,7 @@ Example configuration combining both features:
 Use `RTCPIPView` to display the livestream with Picture in Picture support:
 
 ```tsx
+// @errors: 2739
 import React, { useRef, useEffect } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import {
@@ -503,6 +508,7 @@ Configure Picture in Picture behavior using the `pip` prop:
 Here's a complete example showing how to connect to a livestream and display it with Picture in Picture:
 
 ```tsx
+// @errors: 2739
 import React, { useEffect, useRef } from "react";
 import { View, StyleSheet, Text, Button } from "react-native";
 import {

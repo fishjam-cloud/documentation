@@ -146,6 +146,7 @@ const localTrack = localPeer?.tracks.find((t) => t.type === "Video");
 ### After
 
 ```tsx
+// @errors: 2739
 import React from "react";
 // ---cut---
 import { usePeers, RTCView } from "@fishjam-cloud/react-native-client";
@@ -360,6 +361,7 @@ export function VideoCallScreen() {
 ### After
 
 ```tsx
+// @errors: 2739
 import React, { useRef } from "react";
 import { View, Button } from "react-native";
 import {

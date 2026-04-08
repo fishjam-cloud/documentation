@@ -15,14 +15,14 @@ This guide shows how to implement text chat in your application using data chann
 Before implementing text chat, you must be [connected to a room](../client/connecting). Data channels only work after you have successfully joined a room.
 
 :::tip
-For a deeper understanding of how data channels work, including channel types and broadcast behavior, see [Data Channels](../explanation/data-channels).
+For a deeper understanding of how data channels work, including channel types and broadcast behavior, see [Data Channels](../../explanation/data-channels).
 :::
 
 ---
 
 ## Step 1 — Set up the chat hook
 
-Use the [`useDataChannel`](/api/web/functions/useDataChannel) (web) or [`useDataChannel`](/api/mobile/functions/useDataChannel) (mobile) hook to work with data channels. The typical flow is:
+Use the [`useDataChannel`](../../api/web/functions/useDataChannel) (web) or `useDataChannel` (mobile) hook to work with data channels. The typical flow is:
 
 1. Initialize the data channel after connecting to a room
 2. Subscribe to incoming messages
@@ -356,4 +356,4 @@ This ensures no chat messages are lost or arrive out of order.
 - [Data Channels](../../explanation/data-channels) — detailed explanation of channel types and broadcast behavior
 - [Connecting to a room](../../how-to/client/connecting) — prerequisite for using data channels
 - [`useDataChannel` API reference (Web)](../../api/web/functions/useDataChannel)
-- [`useDataChannel` API reference (Mobile)](../../api/mobile/functions/useDataChannel)
+- `useDataChannel` API reference (Mobile)

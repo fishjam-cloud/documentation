@@ -224,6 +224,7 @@ export function ConnectionStatus() {
 Show your own video stream:
 
 ```tsx
+// @errors: 2739
 import React from "react";
 import { Text, View } from "react-native";
 import { RTCView, useCamera } from "@fishjam-cloud/react-native-client";
@@ -253,6 +254,7 @@ export function StreamPreview() {
 Show video from other peers in the room:
 
 ```tsx
+// @errors: 2739
 import React from "react";
 import { View, Text } from "react-native";
 import { usePeers, RTCView } from "@fishjam-cloud/react-native-client";
@@ -295,6 +297,7 @@ export function ParticipantsView() {
 Here's a complete working app:
 
 ```tsx
+// @errors: 2739
 import React, { useState } from "react";
 import { View, Text, Button, ScrollView, StyleSheet } from "react-native";
 import {
