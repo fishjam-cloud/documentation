@@ -40,10 +40,6 @@ components:
       properties:
         data:
           properties:
-            fishjam_address:
-              description: Fishjam instance address where the room was created. This might be different than the address of Fishjam where the request was sent only when running a cluster of Fishjams.
-              example: fishjam1:5003
-              type: string
             room:
               $ref: "#/components/schemas/Room"
           required:
@@ -57,6 +53,8 @@ components:
     Room:
       description: Description of the room state
       properties:
+        compositionInfo:
+          $ref: "#/components/schemas/CompositionInfo"
         config:
           $ref: "#/components/schemas/RoomConfig"
         id:
@@ -84,6 +82,7 @@ components:
       enum:
         - webrtc
         - agent
+        - vapi
       example: webrtc
       title: PeerType
       type: string
@@ -152,6 +151,15 @@ components:
         - data
       title: PeerDetailsResponse
       type: object
+    StreamerDetailsResponse:
+      description: Response containing streamer details
+      properties:
+        data:
+          $ref: "#/components/schemas/Streamer"
+      required:
+        - data
+      title: StreamerDetailsResponse
+      type: object
     AuthToken:
       description: Token for authorizing websocket connection
       example: 5cdac726-57a3-4ecb-b1d5-72a3d62ec242
@@ -191,6 +199,7 @@ components:
       oneOf:
         - $ref: "#/components/schemas/PeerOptionsWebRTC"
         - $ref: "#/components/schemas/PeerOptionsAgent"
+        - $ref: "#/components/schemas/PeerOptionsVapi"
       title: PeerOptions
       type: object
     Streamer:
@@ -220,6 +229,41 @@ components:
         - vp8
       title: VideoCodec
       type: string
+    ViewerDetailsResponse:
+      description: Response containing viewer details
+      properties:
+        data:
+          $ref: "#/components/schemas/Viewer"
+      required:
+        - data
+      title: ViewerDetailsResponse
+      type: object
+    TrackForwardingInfo:
+      description: Information about a track forwarding for a specific peer
+      properties:
+        audioTrackId:
+          description: ID of the forwarded audio track
+          example: track-audio-1
+          nullable: true
+          type: string
+        inputId:
+          description: Input ID used by the composition
+          example: input-1
+          type: string
+        peerId:
+          description: Peer ID
+          example: peer-1
+          type: string
+        videoTrackId:
+          description: ID of the forwarded video track
+          example: track-video-1
+          nullable: true
+          type: string
+      required:
+        - peerId
+        - inputId
+      title: TrackForwardingInfo
+      type: object
     RoomType:
       default: conference
       description: The use-case of the room. If not provided, this defaults to conference.
@@ -252,6 +296,25 @@ components:
       nullable: true
       title: TrackMetadata
       type: object
+    TrackForwarding:
+      additionalProperties: false
+      description: Track forwardings for a room
+      properties:
+        compositionURL:
+          description: URL for the composition
+          nullable: false
+          pattern: ^https?://[^/]+/.*$
+          type: string
+        selector:
+          default: all
+          description: Selects tracks that should be forwarded, currently only "all" is supported
+          nullable: false
+          pattern: ^all$
+          type: string
+      required:
+        - compositionURL
+      title: TrackForwarding
+      type: object
     Subscriptions:
       description: Describes peer's subscriptions in manual mode
       properties:
@@ -277,30 +340,19 @@ components:
       type: string
     ViewerToken:
       description: Token for authorizing broadcaster viewer connection
-      properties:
-        token:
-          example: 5cdac726-57a3-4ecb-b1d5-72a3d62ec242
-          type: string
-      required:
-        - token
+      example: 5cdac72657a34ecbb1d572a3d62ec242
       title: ViewerToken
-      type: object
+      type: string
     Viewer:
       description: Describes viewer status
       properties:
         id:
           description: Assigned viewer id
           type: string
-        status:
-          enum:
-            - connected
-            - disconnected
-          type: string
         token:
           $ref: "#/components/schemas/ViewerToken"
       required:
         - id
-        - status
         - token
       title: Viewer
       type: object
@@ -373,12 +425,57 @@ components:
         - subscriptions
       title: Peer
       type: object
+    CompositionInfo:
+      description: Composition and track forwarding state for the room
+      nullable: true
+      properties:
+        compositionUrl:
+          description: URL of the active composition
+          example: https://rtc.fishjam.io/api/composition/12asdfxcf
+          type: string
+        forwardings:
+          description: List of active track forwardings
+          items:
+            $ref: "#/components/schemas/TrackForwardingInfo"
+          type: array
+      required:
+        - compositionUrl
+        - forwardings
+      title: CompositionInfo
+      type: object
     TrackType:
       enum:
         - audio
         - video
       title: TrackType
       type: string
+    PeerOptionsVapi:
+      additionalProperties: false
+      description: Options specific to the VAPI peer
+      properties:
+        apiKey:
+          description: VAPI API key
+          type: string
+        callId:
+          description: VAPI call ID
+          pattern: ^[a-zA-Z0-9-]+$
+          type: string
+        subscribeMode:
+          $ref: "#/components/schemas/SubscribeMode"
+      required:
+        - apiKey
+        - callId
+      title: PeerOptionsVapi
+      type: object
+    StreamDetailsResponse:
+      description: Response containing stream details
+      properties:
+        data:
+          $ref: "#/components/schemas/Stream"
+      required:
+        - data
+      title: StreamDetailsResponse
+      type: object
     PeerOptionsWebRTC:
       additionalProperties: false
       description: Options specific to the WebRTC peer
@@ -406,10 +503,6 @@ components:
         audioOnly:
           description: True if stream is restricted to audio only
           type: boolean
-        connectedViewers:
-          description: Number of connected viewers
-          minimum: 0
-          type: integer
         id:
           description: Assigned stream id
           type: string
@@ -430,19 +523,13 @@ components:
         - public
         - viewers
         - streamers
-        - connectedViewers
       title: Stream
       type: object
     StreamerToken:
       description: Token for authorizing broadcaster streamer connection
-      properties:
-        token:
-          example: 5cdac726-57a3-4ecb-b1d5-72a3d62ec242
-          type: string
-      required:
-        - token
+      example: 5cdac72657a34ecbb1d572a3d62ec242
       title: StreamerToken
-      type: object
+      type: string
     Track:
       description: Describes media track of a Peer
       properties:
@@ -481,7 +568,7 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
   title: Fishjam Media Server
-  version: 0.25.0
+  version: 0.26.1
 openapi: 3.0.0
 paths:
   /livestream:
@@ -529,7 +616,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Stream"
+                $ref: "#/components/schemas/StreamDetailsResponse"
           description: Stream created successfully
         "400":
           content:
@@ -600,7 +687,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Stream"
+                $ref: "#/components/schemas/StreamDetailsResponse"
           description: Success
         "401":
           content:
@@ -641,7 +728,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Streamer"
+                $ref: "#/components/schemas/StreamerDetailsResponse"
           description: Streamer successfully created
         "401":
           content:
@@ -719,7 +806,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Viewer"
+                $ref: "#/components/schemas/ViewerDetailsResponse"
           description: Viewer successfully created
         "401":
           content:
@@ -834,6 +921,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
           description: Unauthorized
+        "402":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Usage quota exceeded for free tier
         "503":
           content:
             application/json:
@@ -971,6 +1064,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
           description: Unauthorized
+        "402":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Usage quota exceeded for free tier
         "404":
           content:
             application/json:
@@ -1262,6 +1361,50 @@ paths:
       summary: Generate a token that can be used by a streamer to start streaming
       tags:
         - streamer
+  /room/{room_id}/track_forwardings:
+    post:
+      callbacks: {}
+      operationId: create_track_forwarding
+      parameters:
+        - description: Room id
+          in: path
+          name: room_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrackForwarding"
+        description: Track forwardings
+        required: false
+      responses:
+        "201":
+          description: Track forwardings added successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Invalid request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Room doesn't exist
+      security:
+        - authorization: []
+      summary: Creates a track forwarding in a room
+      tags:
+        - track_forwarding
   /room/{room_id}/viewer:
     post:
       callbacks: {}
