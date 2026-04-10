@@ -75,6 +75,9 @@ function compareVersions(a: string, b: string): number {
 export function createRedirects(existingPath: string): string[] | undefined {
   const latestVersion = versions[0];
 
+  // Note: Docusaurus passes paths relative to baseUrl (without the /docs prefix),
+  // e.g. "/next/tutorials/livestreaming" not "/docs/next/tutorials/livestreaming".
+
   // Determine the effective version for this path
   let effectiveVersion: string | null = null;
   let isNext = false;
