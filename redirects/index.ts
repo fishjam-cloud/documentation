@@ -42,6 +42,14 @@ const redirectGroups: RedirectGroup[] = [
       },
     ],
   },
+  {
+    since: "0.26.0",
+    description: "Renamed room-types and public-livestreams in Concepts",
+    rules: [
+      { from: "/explanation/room-types", to: "/explanation/rooms" },
+      { from: "/explanation/public-livestreams", to: "/explanation/livestreams" },
+    ],
+  },
 ];
 
 function compareVersions(a: string, b: string): number {
