@@ -15,6 +15,7 @@ message ServerMessage {
     PEER_TYPE_UNSPECIFIED = 0;
     PEER_TYPE_WEBRTC = 1;
     PEER_TYPE_AGENT = 2;
+    PEER_TYPE_VAPI = 3;
   }
 
   // Notification sent when a peer is added
@@ -168,7 +169,7 @@ message ServerMessage {
     string channel_id = 4;
   }
 
-  // Sent when there is an upsert to track forwardings from Fishjam to Foundry
+  // Sent when there is an upsert to track forwardings from Fishjam to Composition
   message TrackForwarding {
     string room_id = 1;
     string peer_id = 2;
@@ -184,6 +185,20 @@ message ServerMessage {
     string peer_id = 2;
     string composition_url = 3;
     string input_id = 4;
+  }
+
+  // Notification sent when voice activity changes on a track
+  message VadNotification {
+    enum Status {
+      STATUS_UNSPECIFIED = 0;
+      STATUS_SILENCE = 1;
+      STATUS_SPEECH = 2;
+    }
+
+    string room_id = 1;
+    string peer_id = 2;
+    string track_id = 3;
+    Status status = 4;
   }
 
   // Notification sent when streamer successfully connects
@@ -249,6 +264,7 @@ message ServerMessage {
     ChannelRemoved channel_removed = 29;
     TrackForwarding track_forwarding = 30;
     TrackForwardingRemoved track_forwarding_removed = 31;
+    VadNotification vad_notification = 32;
 
     // Streaming
 

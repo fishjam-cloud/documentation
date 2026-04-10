@@ -214,7 +214,8 @@ components:
             - disconnected
           type: string
         token:
-          $ref: "#/components/schemas/StreamerToken"
+          example: 5cdac726-57a3-4ecb-b1d5-72a3d62ec242
+          type: string
       required:
         - id
         - status
@@ -340,9 +341,14 @@ components:
       type: string
     ViewerToken:
       description: Token for authorizing broadcaster viewer connection
-      example: 5cdac72657a34ecbb1d572a3d62ec242
+      properties:
+        token:
+          example: 5cdac726-57a3-4ecb-b1d5-72a3d62ec242
+          type: string
+      required:
+        - token
       title: ViewerToken
-      type: string
+      type: object
     Viewer:
       description: Describes viewer status
       properties:
@@ -350,7 +356,8 @@ components:
           description: Assigned viewer id
           type: string
         token:
-          $ref: "#/components/schemas/ViewerToken"
+          example: 5cdac726-57a3-4ecb-b1d5-72a3d62ec242
+          type: string
       required:
         - id
         - token
@@ -527,9 +534,14 @@ components:
       type: object
     StreamerToken:
       description: Token for authorizing broadcaster streamer connection
-      example: 5cdac72657a34ecbb1d572a3d62ec242
+      properties:
+        token:
+          example: 5cdac726-57a3-4ecb-b1d5-72a3d62ec242
+          type: string
+      required:
+        - token
       title: StreamerToken
-      type: string
+      type: object
     Track:
       description: Describes media track of a Peer
       properties:
@@ -568,7 +580,7 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
   title: Fishjam Media Server
-  version: 0.26.1
+  version: 0.26.4
 openapi: 3.0.0
 paths:
   /livestream:
@@ -1378,7 +1390,7 @@ paths:
             schema:
               $ref: "#/components/schemas/TrackForwarding"
         description: Track forwardings
-        required: false
+        required: true
       responses:
         "201":
           description: Track forwardings added successfully

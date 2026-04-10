@@ -174,12 +174,13 @@ const config: Config = {
     mermaid: true,
     hooks: {
       onBrokenMarkdownLinks: "log",
-    }
+    },
   },
   themes: ["@docusaurus/theme-mermaid"],
 
   future: {
-    v4: true, faster: {
+    v4: true,
+    faster: {
       swcJsLoader: true,
       swcJsMinimizer: true,
     },
@@ -297,10 +298,7 @@ const config: Config = {
   } satisfies Preset.ThemeConfig,
 
   plugins: [
-    [
-      "@docusaurus/plugin-client-redirects",
-      { createRedirects },
-    ],
+    ["@docusaurus/plugin-client-redirects", { createRedirects }],
     [
       require.resolve("docusaurus-lunr-search"),
       // exclude old versions and next from search
