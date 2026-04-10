@@ -47,7 +47,10 @@ const redirectGroups: RedirectGroup[] = [
     description: "Renamed room-types and public-livestreams in Concepts",
     rules: [
       { from: "/explanation/room-types", to: "/explanation/rooms" },
-      { from: "/explanation/public-livestreams", to: "/explanation/livestreams" },
+      {
+        from: "/explanation/public-livestreams",
+        to: "/explanation/livestreams",
+      },
     ],
   },
 ];
