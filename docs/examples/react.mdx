@@ -46,7 +46,7 @@ yarn dev
 The room component uses `usePeers` to retrieve all participants and renders their video streams using `VideoPlayer` and audio with `AudioPlayer`.
 
 :::note
-This example requires a **peer token** to connect. You need to obtain one yourself — either via the [Sandbox API](../how-to/features/sandbox-api-testing#step-2-create-a-room-and-get-peer-tokens) for quick testing, or by setting up your own backend with the [Fishjam Server SDK](../tutorials/backend-quick-start).
+This example requires a **peer token** to connect. You need to obtain one yourself — either via the [Sandbox API](../how-to/backend/sandbox-api-testing#step-2-create-a-room-and-get-peer-tokens) for quick testing, or by setting up your own backend with the [Fishjam Server SDK](../tutorials/backend-quick-start).
 :::
 
 Browse the full source: [minimal-react on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web-react/minimal-react)
@@ -153,7 +153,7 @@ Smelter requires WebAssembly support — use a modern browser.
 The `useSmelter` hook manages the Smelter engine lifecycle. `registerInput` connects the local camera feed and `registerOutput` routes the composited result back into Fishjam as a custom track.
 
 :::note
-This example requires a **peer token** to connect. You need to obtain one yourself — either via the [Sandbox API](../how-to/features/sandbox-api-testing#step-2-create-a-room-and-get-peer-tokens) for quick testing, or by setting up your own backend with the [Fishjam Server SDK](../tutorials/backend-quick-start).
+This example requires a **peer token** to connect. You need to obtain one yourself — either via the [Sandbox API](../how-to/backend/sandbox-api-testing#step-2-create-a-room-and-get-peer-tokens) for quick testing, or by setting up your own backend with the [Fishjam Server SDK](../tutorials/backend-quick-start).
 :::
 
 Browse the full source: [minimal-smelter on GitHub](https://github.com/fishjam-cloud/examples/tree/main/web-react/minimal-smelter)
@@ -189,5 +189,5 @@ Browse the full source: [fishjam-chat on GitHub](https://github.com/fishjam-clou
 ## Next steps
 
 - Follow the [React Quick Start](../tutorials/react-quick-start) if you haven't set up a project yet
-- Learn how to [work with data channels](../how-to/features/text-chat)
+- Learn how to [work with data channels](../how-to/client/text-chat)
 - Learn how to [implement screen sharing](../how-to/client/screensharing)

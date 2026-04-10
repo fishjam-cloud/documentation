@@ -3,7 +3,7 @@ type: explanation
 sidebar_position: 3
 ---
 
-# Room Types Explained
+# Rooms
 
 _Understanding different types of rooms and when to use them_
 
@@ -112,12 +112,25 @@ Livestream rooms are **20% cheaper** than conference rooms for equivalent usage.
 | Sport streaming        | Livestream | Highly scalable and cheaper than conference |
 | Interactive workshop   | Conference | Multiple video sources                      |
 
+## Video Codecs
+
+Fishjam supports the following video codecs:
+
+- **H.264** — A hardware-accelerated codec offering superior performance. Used by default. Its availability varies by device, and it may not perform optimally at lower bitrates.
+- **VP8** — A software-based codec supported across all devices, ensuring maximum compatibility. Ideal for environments lacking hardware acceleration, such as Android emulators.
+
+Fishjam uses H.264 by default, however, to solve an issue with Android emulators, VP8 is set when you're using the Sandbox API.
+
+You can override the default codec by setting the `codec` parameter when [creating a room](../api/server/interfaces/RoomConfig#videocodec) using server SDKs.
+
+We recommend using H.264 for production and VP8 for development as it works with Android emulators.
+
 ## Next Steps
 
 To understand how to use each room type:
 
 - [How to implement livestreaming](../tutorials/livestreaming)
-- [How to create audio-only calls](../how-to/features/audio-only-calls)
+- [How to create audio-only calls](../how-to/backend/audio-only-calls)
 
 To learn about the underlying architecture:
 

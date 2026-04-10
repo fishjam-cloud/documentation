@@ -20,6 +20,7 @@ import {
   SidebarItemCategory,
 } from "@docusaurus/plugin-content-docs/src/sidebars/types.js";
 import { llmsRootContent } from "./src/content/llms-root-content";
+import { createRedirects } from "./redirects";
 
 function isErrorFromVersionedDocs(options: { meta?: { __raw?: string } }) {
   if (options.meta?.__raw?.includes("loc=")) {
@@ -223,7 +224,6 @@ const config: Config = {
         },
       } satisfies Preset.Options,
     ],
-    // require.resolve('@swmansion/t-rex-ui/preset'),
   ],
 
   themeConfig: {
@@ -298,6 +298,10 @@ const config: Config = {
 
   plugins: [
     [
+      "@docusaurus/plugin-client-redirects",
+      { createRedirects },
+    ],
+    [
       require.resolve("docusaurus-lunr-search"),
       // exclude old versions and next from search
       {
@@ -305,6 +309,7 @@ const config: Config = {
           "/docs/tutorials/*",
           "/docs/how-to/*",
           "/docs/explanation/*",
+          "/docs/integrations/*",
           "/docs/api/*",
         ],
       },
@@ -348,31 +353,32 @@ const config: Config = {
         ...typedocConfig,
       },
     ],
-    // [
-    //   "docusaurus-plugin-llms",
-    //   {
-    //     generateLLMsTxt: true,
-    //     generateLLMsFullTxt: true,
-    //     processingBatchSize: 8,
-    //     title: "Fishjam Docs",
-    //     description:
-    //       "Fishjam is a low-latency video conferencing and live streaming API created by Software Mansion. It lets developers build real-time video, audio, and data streaming applications using WebRTC without needing any WebRTC expertise.",
-    //     includeOrder: [
-    //       "tutorials/**/*.{md,mdx}",
-    //       "how-to/**/*.{md,mdx}",
-    //       "explanation/**/*.{md,mdx}",
-    //       "api/reference.{md,mdx}",
-    //       "api/mobile/index.{md,mdx}",
-    //       "api/web/index.{md,mdx}",
-    //       "api/server/index.{md,mdx}",
-    //     ],
-    //     ignoreFiles: ["**/type-aliases/**", "**/_common/**"],
-    //     includeUnmatchedLast: false,
-    //     excludeImports: true,
-    //     removeDuplicateHeadings: true,
-    //     rootContent: llmsRootContent,
-    //   },
-    // ],
+    [
+      "docusaurus-plugin-llms",
+      {
+        generateLLMsTxt: true,
+        generateLLMsFullTxt: true,
+        processingBatchSize: 8,
+        title: "Fishjam Docs",
+        description:
+          "Fishjam is a low-latency video conferencing and live streaming API created by Software Mansion. It lets developers build real-time video, audio, and data streaming applications using WebRTC without needing any WebRTC expertise.",
+        includeOrder: [
+          "tutorials/**/*.{md,mdx}",
+          "how-to/**/*.{md,mdx}",
+          "explanation/**/*.{md,mdx}",
+          "integrations/**/*.{md,mdx}",
+          "api/reference.{md,mdx}",
+          "api/mobile/index.{md,mdx}",
+          "api/web/index.{md,mdx}",
+          "api/server/index.{md,mdx}",
+        ],
+        ignoreFiles: ["**/type-aliases/**", "**/_common/**"],
+        includeUnmatchedLast: false,
+        excludeImports: true,
+        removeDuplicateHeadings: true,
+        rootContent: llmsRootContent,
+      },
+    ],
   ],
 };
 
