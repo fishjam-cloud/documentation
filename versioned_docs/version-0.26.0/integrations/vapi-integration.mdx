@@ -164,7 +164,7 @@ Pass the call ID and your VAPI API key to Fishjam. Fishjam handles the rest.
 
     ```python
     import os
-    from fishjam import FishjamClient
+    from fishjam import FishjamClient, PeerOptionsVapi
 
     fishjam_client = FishjamClient(
         fishjam_id=os.environ["FISHJAM_ID"],
@@ -173,12 +173,9 @@ Pass the call ID and your VAPI API key to Fishjam. Fishjam handles the rest.
 
     room = fishjam_client.create_room()
 
-    # [!code highlight:4]
-    fishjam_client.create_vapi_agent(
-        room.id,
-        call_id=call.id,
-        api_key=os.environ["VAPI_API_KEY"],
-    )
+    # [!code highlight:2]
+    options = PeerOptionsVapi(api_key=os.environ["VAPI_API_KEY"], call_id=call.id)
+    peer = fishjam_client.create_vapi_agent(room.id, options)
     ```
 
   </TabItem>
