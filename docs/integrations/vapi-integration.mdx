@@ -1,0 +1,195 @@
+---
+sidebar_position: 2
+title: VAPI Integration
+description: Add a VAPI voice AI agent to a Fishjam room with a single API call.
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# VAPI Integration
+
+:::info
+This tutorial requires a working Fishjam backend. If you haven't set one up yet, please check the [Backend Quick Start](../tutorials/backend-quick-start).
+:::
+
+This guide shows how to add a [VAPI](https://vapi.ai/) voice AI agent to a Fishjam room.
+Unlike custom agent integrations (such as [Gemini](./gemini-live-integration)), there is no need to build a WebSocket bridge yourself —
+Fishjam connects to VAPI internally. You only need to create a VAPI call and pass its ID to Fishjam.
+
+## Overview
+
+The workflow has two steps:
+
+1. **Create a VAPI call** using the VAPI SDK. This gives you a `callId`.
+2. **Pass the call ID to Fishjam** via `createVapiAgent()` / `create_vapi_agent()`. Fishjam joins the call and streams audio to and from the room.
+
+:::note
+Single-listener limitation
+The VAPI peer listens to only one participant at a time. When that participant disconnects, VAPI automatically connects to another peer in the room. All peers hear VAPI's responses.
+:::
+
+## Prerequisites
+
+You will need:
+
+- **Fishjam Server Credentials:** `fishjamId` and `managementToken`. You can get them at [fishjam.io/app](https://fishjam.io/app).
+- **VAPI Private API Key:** Obtainable from the [VAPI Dashboard](https://dashboard.vapi.ai/).
+- **VAPI Assistant ID** _(optional)_**:** Create an assistant in the [VAPI Dashboard](https://dashboard.vapi.ai/), or provide a transient assistant configuration inline.
+
+### Installation
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript">
+
+    ```bash
+    npm install @fishjam-cloud/js-server-sdk @vapi-ai/server-sdk
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```bash
+    pip install fishjam-server-sdk vapi
+    ```
+
+  </TabItem>
+</Tabs>
+
+## Implementation
+
+### Step 1: Create a VAPI Call
+
+Use the VAPI SDK to create a call with `vapi.websocket` transport and `pcm_s16le` audio at `16000` Hz.
+You can reference an existing assistant by its ID, or create a transient assistant inline by providing the full configuration via the `assistant` field instead of `assistantId`.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript">
+
+    ```ts
+    import { VapiClient, Vapi } from '@vapi-ai/server-sdk';
+
+    const vapiClient = new VapiClient({
+      token: process.env.VAPI_API_KEY!,
+    });
+
+    // [!code highlight:11]
+    const call = await vapiClient.calls.create({
+      assistantId: process.env.VAPI_ASSISTANT_ID!,
+      transport: {
+        provider: 'vapi.websocket',
+        audioFormat: {
+          format: 'pcm_s16le',
+          container: 'raw',
+          sampleRate: 16000,
+        },
+      },
+    }) as Vapi.Call;
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    import os
+    from vapi import Vapi
+
+    vapi_client = Vapi(token=os.environ["VAPI_API_KEY"])
+
+    # [!code highlight:11]
+    call = vapi_client.calls.create(
+        assistant_id=os.environ["VAPI_ASSISTANT_ID"],
+        transport={
+            "provider": "vapi.websocket",
+            "audioFormat": {
+                "format": "pcm_s16le",
+                "container": "raw",
+                "sampleRate": 16000,
+            },
+        },
+    )
+    ```
+
+  </TabItem>
+</Tabs>
+
+### Step 2: Add the VAPI Peer to Fishjam
+
+Pass the call ID and your VAPI API key to Fishjam. Fishjam handles the rest.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript">
+
+    ```ts
+    import { VapiClient, Vapi } from '@vapi-ai/server-sdk';
+
+    const vapiClient = new VapiClient({
+      token: process.env.VAPI_API_KEY!,
+    });
+
+    const call = await vapiClient.calls.create({
+      assistantId: process.env.VAPI_ASSISTANT_ID!,
+      transport: {
+        provider: 'vapi.websocket',
+        audioFormat: {
+          format: 'pcm_s16le',
+          container: 'raw',
+          sampleRate: 16000,
+        },
+      },
+    }) as Vapi.Call;
+
+    // ---cut---
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamClient = new FishjamClient({
+      fishjamId: process.env.FISHJAM_ID!,
+      managementToken: process.env.FISHJAM_TOKEN!,
+    });
+
+    const room = await fishjamClient.createRoom();
+
+    // [!code highlight:4]
+    await fishjamClient.createVapiAgent(room.id, {
+      callId: call.id,
+      apiKey: process.env.VAPI_API_KEY!,
+    });
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    import os
+    from fishjam import FishjamClient
+
+    fishjam_client = FishjamClient(
+        fishjam_id=os.environ["FISHJAM_ID"],
+        management_token=os.environ["FISHJAM_TOKEN"],
+    )
+
+    room = fishjam_client.create_room()
+
+    # [!code highlight:4]
+    fishjam_client.create_vapi_agent(
+        room.id,
+        call_id=call.id,
+        api_key=os.environ["VAPI_API_KEY"],
+    )
+    ```
+
+  </TabItem>
+</Tabs>
+
+## That's it
+
+Once both steps are complete, the VAPI assistant is live in the room — peers can speak to it and hear its responses.
+
+The VAPI peer's lifetime is tied to the underlying WebSocket connection. If there is a prolonged period of silence or the call ends for any other reason, the peer will disconnect and be removed from the room. You can detect this by listening for `PeerDisconnected` and `PeerDeleted` server notifications. If the peer crashes (e.g. due to an invalid transport configuration or call ID), a `PeerCrashed` notification is sent instead. See [Listening to events](../how-to/backend/server-setup#listening-to-events) for how to subscribe to these notifications.
+
+## Billing
+
+The VAPI peer is billed as a single Fishjam peer. VAPI's own usage pricing applies separately — see [VAPI pricing](https://vapi.ai/pricing) for details.

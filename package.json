@@ -41,6 +41,7 @@
     "@swmansion/smelter-web-wasm": "^0.2.1",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "@vapi-ai/server-sdk": "^1.1.0",
     "clsx": "^2.0.0",
     "docusaurus-lunr-search": "3.6.0",
     "expo-camera": "^16.1.8",
