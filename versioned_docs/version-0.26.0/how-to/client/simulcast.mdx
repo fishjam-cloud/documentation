@@ -1,0 +1,285 @@
+---
+title: Simulcast
+sidebar_position: 15
+description: Enable multi-quality video streaming and let receivers choose their preferred quality variant.
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Simulcast
+
+This guide shows how to enable simulcast (multi-quality video streaming) so that senders publish multiple quality variants and receivers can independently choose which variant to receive.
+
+## Prerequisites
+
+Before configuring simulcast, you must be [connected to a room](./connecting) with video enabled.
+
+:::tip
+For a conceptual overview of how simulcast works, including when to use it and how variants flow through the server, see [Simulcast](../../explanation/simulcast).
+:::
+
+---
+
+## Step 1: Configure sent qualities (sender side)
+
+Pass `sentQualities` in the `videoConfig` prop of `FishjamProvider` to control which quality variants the sender publishes.
+
+<Tabs groupId="platform">
+  <TabItem value="web" label="React (Web)">
+
+```tsx
+import React from "react";
+import { FishjamProvider, Variant } from "@fishjam-cloud/react-client";
+
+const fishjamId = "your-fishjam-id";
+
+// ---cut---
+
+function App() {
+  return (
+    <FishjamProvider
+      fishjamId={fishjamId}
+      videoConfig={{
+        sentQualities: [
+          Variant.VARIANT_LOW,
+          Variant.VARIANT_MEDIUM,
+          Variant.VARIANT_HIGH,
+        ],
+      }}
+    >
+      {/* your app */}
+    </FishjamProvider>
+  );
+}
+```
+
+  </TabItem>
+  <TabItem value="mobile" label="React Native (Mobile)">
+
+```tsx
+import React from "react";
+import { FishjamProvider, Variant } from "@fishjam-cloud/react-native-client";
+
+const fishjamId = "your-fishjam-id";
+
+// ---cut---
+
+function App() {
+  return (
+    <FishjamProvider
+      fishjamId={fishjamId}
+      videoConfig={{
+        sentQualities: [
+          Variant.VARIANT_LOW,
+          Variant.VARIANT_MEDIUM,
+          Variant.VARIANT_HIGH,
+        ],
+      }}
+    >
+      {/* your app */}
+    </FishjamProvider>
+  );
+}
+```
+
+  </TabItem>
+</Tabs>
+
+To disable simulcast entirely, pass `false`:
+
+```tsx
+import React from "react";
+import { FishjamProvider } from "@fishjam-cloud/react-client";
+
+const fishjamId = "your-fishjam-id";
+
+// ---cut---
+
+function App() {
+  return (
+    <FishjamProvider
+      fishjamId={fishjamId}
+      videoConfig={{ sentQualities: false }}
+    >
+      {/* your app */}
+    </FishjamProvider>
+  );
+}
+```
+
+---
+
+## Step 2: Select received quality (receiver side)
+
+Remote tracks expose `setReceivedQuality`, which tells the server which variant to forward for that track.
+
+<Tabs groupId="platform">
+  <TabItem value="web" label="React (Web)">
+
+```tsx
+import React from "react";
+import { usePeers, type RemoteTrack } from "@fishjam-cloud/react-client";
+
+function VideoPlayer({ stream }: { stream: MediaStream | null }) {
+  return <video />;
+}
+
+function QualitySelector({ track }: { track: RemoteTrack }) {
+  return <div />;
+}
+
+// ---cut---
+
+function RemoteVideos() {
+  const { remotePeers } = usePeers();
+
+  return (
+    <div>
+      {remotePeers.map((peer) =>
+        peer.tracks.map((track) => (
+          <div key={track.trackId}>
+            <VideoPlayer stream={track.stream} />
+            <QualitySelector track={track} />
+          </div>
+        )),
+      )}
+    </div>
+  );
+}
+```
+
+  </TabItem>
+  <TabItem value="mobile" label="React Native (Mobile)">
+
+```tsx
+import React from "react";
+import {
+  usePeers,
+  type RemoteTrack,
+  RTCView,
+} from "@fishjam-cloud/react-native-client";
+import { View, ScrollView } from "react-native";
+
+function QualitySelector({ track }: { track: RemoteTrack }) {
+  return <View />;
+}
+
+// ---cut---
+
+function RemoteVideos() {
+  const { remotePeers } = usePeers();
+
+  return (
+    <ScrollView>
+      {remotePeers.map((peer) =>
+        peer.tracks.map((track) => (
+          <View key={track.trackId}>
+            {track.stream && <RTCView mediaStream={track.stream} />}
+            <QualitySelector track={track} />
+          </View>
+        )),
+      )}
+    </ScrollView>
+  );
+}
+```
+
+  </TabItem>
+</Tabs>
+
+---
+
+## Step 3: Call `setReceivedQuality` based on your needs
+
+In practice, you would call `setReceivedQuality` based on your application's state. For example, you could request high quality for a full-screen participant and low quality for thumbnails in a grid. The manual quality selector below is a simplified example to illustrate the API:
+
+<Tabs groupId="platform">
+  <TabItem value="web" label="React (Web)">
+
+```tsx
+import React from "react";
+import { type RemoteTrack, Variant } from "@fishjam-cloud/react-client";
+
+const variants = [
+  { label: "Low", value: Variant.VARIANT_LOW },
+  { label: "Medium", value: Variant.VARIANT_MEDIUM },
+  { label: "High", value: Variant.VARIANT_HIGH },
+];
+
+function QualitySelector({ track }: { track: RemoteTrack }) {
+  return (
+    <div>
+      {variants.map(({ label, value }) => (
+        <button key={label} onClick={() => track.setReceivedQuality(value)}>
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+```
+
+  </TabItem>
+  <TabItem value="mobile" label="React Native (Mobile)">
+
+```tsx
+import React from "react";
+import { type RemoteTrack, Variant } from "@fishjam-cloud/react-native-client";
+import { View, Pressable, Text, StyleSheet } from "react-native";
+
+// ---cut---
+
+const variants = [
+  { label: "Low", value: Variant.VARIANT_LOW },
+  { label: "Medium", value: Variant.VARIANT_MEDIUM },
+  { label: "High", value: Variant.VARIANT_HIGH },
+];
+
+function QualitySelector({ track }: { track: RemoteTrack }) {
+  return (
+    <View style={styles.row}>
+      {variants.map(({ label, value }) => (
+        <Pressable
+          key={label}
+          style={styles.pill}
+          onPress={() => track.setReceivedQuality(value)}
+        >
+          <Text>{label}</Text>
+        </Pressable>
+      ))}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  row: { flexDirection: "row", gap: 8, marginTop: 4 },
+  pill: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    backgroundColor: "#e0e0e0",
+  },
+});
+```
+
+  </TabItem>
+</Tabs>
+
+---
+
+## Type differences: `Track` vs `RemoteTrack`
+
+When using `usePeers`, the track types differ between local and remote peers:
+
+- **`localPeer.tracks`** are typed as `Track` (no quality selection methods)
+- **`remotePeers[].tracks`** are typed as `RemoteTrack` (extends `Track` with `setReceivedQuality`)
+
+This means `setReceivedQuality` is only available on tracks from remote peers, which is the correct behavior. You don't need to select a quality variant for your own video.
+
+---
+
+## See also
+
+- [Simulcast explanation](../../explanation/simulcast): conceptual overview of how simulcast works
+- [Connecting to a room](./connecting): prerequisite for using simulcast
