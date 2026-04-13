@@ -25,8 +25,7 @@ The workflow has two steps:
 2. **Pass the call ID to Fishjam** via `createVapiAgent()` / `create_vapi_agent()`. Fishjam joins the call and streams audio to and from the room.
 
 :::note
-Single-listener limitation
-The VAPI peer listens to only one participant at a time. When that participant disconnects, VAPI automatically connects to another peer in the room. All peers hear VAPI's responses.
+The VAPI peer receives audio from only one peer at a time, so this integration works best in 1-on-1 calls. All peers in the room hear VAPI's responses.
 :::
 
 ## Prerequisites
