@@ -20,6 +20,7 @@ import {
   SidebarItemCategory,
 } from "@docusaurus/plugin-content-docs/src/sidebars/types.js";
 import { llmsRootContent } from "./src/content/llms-root-content";
+import { createRedirects } from "./redirects";
 
 function isErrorFromVersionedDocs(options: { meta?: { __raw?: string } }) {
   if (options.meta?.__raw?.includes("loc=")) {
@@ -158,7 +159,6 @@ const config: Config = {
   projectName: "documentation",
 
   onBrokenLinks: "log",
-  onBrokenMarkdownLinks: "log",
   onBrokenAnchors: "throw",
   onDuplicateRoutes: "throw",
 
@@ -172,10 +172,19 @@ const config: Config = {
 
   markdown: {
     mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: "log",
+    },
   },
   themes: ["@docusaurus/theme-mermaid"],
 
-  future: { v4: true, experimental_faster: true },
+  future: {
+    v4: true,
+    faster: {
+      swcJsLoader: true,
+      swcJsMinimizer: true,
+    },
+  },
 
   presets: [
     [
@@ -289,6 +298,7 @@ const config: Config = {
   } satisfies Preset.ThemeConfig,
 
   plugins: [
+    ["@docusaurus/plugin-client-redirects", { createRedirects }],
     [
       require.resolve("docusaurus-lunr-search"),
       // exclude old versions and next from search
@@ -297,6 +307,7 @@ const config: Config = {
           "/docs/tutorials/*",
           "/docs/how-to/*",
           "/docs/explanation/*",
+          "/docs/integrations/*",
           "/docs/api/*",
         ],
       },
@@ -353,6 +364,7 @@ const config: Config = {
           "tutorials/**/*.{md,mdx}",
           "how-to/**/*.{md,mdx}",
           "explanation/**/*.{md,mdx}",
+          "integrations/**/*.{md,mdx}",
           "api/reference.{md,mdx}",
           "api/mobile/index.{md,mdx}",
           "api/web/index.{md,mdx}",

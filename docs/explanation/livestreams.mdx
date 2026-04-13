@@ -1,14 +1,14 @@
 ---
 type: explanation
-title: Private vs Public Livestreams
-sidebar_position: 6
+title: Livestreams
+sidebar_position: 4
 description: Understand the difference between private and public livestreams in Fishjam and how to configure them.
 ---
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
-# Private vs Public Livestreams
+# Livestreams
 
 :::info
 This explanation only applies to Fishjam rooms with type `livestream`.
@@ -109,7 +109,7 @@ Note that for development purposes, you can [use the Sandbox API to generate a v
 
 ### Connecting to a private room
 
-Once you've created a viewer token, you can connect to a room using the Fishjam client SDKs (examples below), or alternatively you can use [WHEP](../how-to/features/whip-whep#private-livestreams).
+Once you've created a viewer token, you can connect to a room using the Fishjam client SDKs (examples below), or alternatively you can use [WHEP](../how-to/backend/whip-whep#private-livestreams).
 
 <Tabs groupId="platform">
   <TabItem value="react" label="React">
@@ -169,7 +169,7 @@ Such an application will benefit from the token-based authorization in [private 
 
 ### Connecting to a public room
 
-Once you've created a room of type `livestream` with the `public` flag enabled, you may start connecting viewers to the stream via the Fishjam client SDKs or [WHEP](../how-to/features/whip-whep#public-livestreams).
+Once you've created a room of type `livestream` with the `public` flag enabled, you may start connecting viewers to the stream via the Fishjam client SDKs or [WHEP](../how-to/backend/whip-whep#public-livestreams).
 
 <Tabs groupId="platform">
   <TabItem value="react" label="React">
