@@ -107,3 +107,5 @@ Memberof
 unmutes
 websocat
 RTCPIP
+VAPI
+vapi

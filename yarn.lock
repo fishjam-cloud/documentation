@@ -7823,6 +7823,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vapi-ai/server-sdk@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@vapi-ai/server-sdk@npm:1.1.0"
+  checksum: 10c0/72eaa4e099455e1a7567c4cb69b34322e6aca21860a3ae6688f45babc0f578bd1dd6c76a3ae2bd4ddc8a8ac63361a0daa5b8a07a3c560ed2b0d880683bb6b0d9
+  languageName: node
+  linkType: hard
+
 "@webassemblyjs/ast@npm:1.14.1, @webassemblyjs/ast@npm:^1.14.1":
   version: 1.14.1
   resolution: "@webassemblyjs/ast@npm:1.14.1"
@@ -11901,6 +11908,7 @@ __metadata:
     "@swmansion/smelter-web-wasm": "npm:^0.2.1"
     "@types/react": "npm:^19.1.8"
     "@types/react-dom": "npm:^19.1.6"
+    "@vapi-ai/server-sdk": "npm:^1.1.0"
     clsx: "npm:^2.0.0"
     cspell: "npm:^9.1.2"
     docusaurus-lunr-search: "npm:3.6.0"
