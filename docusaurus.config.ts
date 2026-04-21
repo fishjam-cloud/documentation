@@ -1,5 +1,6 @@
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
+import type { UserThemeConfig as DocSearchThemeConfig } from "@docsearch/docusaurus-adapter";
 import { BundledLanguage, bundledLanguages } from "shiki";
 import type { MDXPlugin } from "@docusaurus/mdx-loader";
 import rehypeShiki, { RehypeShikiOptions } from "@shikijs/rehype";
@@ -256,11 +257,9 @@ const config: Config = {
       ],
     },
     docsearch: {
-      appId: process.env.ALGOLIA_APP_ID ?? "IBX716Q0KT",
-      apiKey:
-        process.env.ALGOLIA_SEARCH_API_KEY ??
-        "f82ab0ac2d86f5b47932cf65175756c8",
-      indexName: process.env.ALGOLIA_INDEX_NAME ?? "Fishjam",
+      appId: "IBX716Q0KT",
+      apiKey: "5dcaa347f57ca14f8cb59926164dd129",
+      indexName: "Fishjam",
       contextualSearch: true,
       searchPagePath: "search",
       insights: false,
@@ -309,7 +308,7 @@ const config: Config = {
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Software Mansion, Inc. All trademarks and copyrights belong to their respective owners.`,
     },
-  } satisfies Preset.ThemeConfig & { docsearch: unknown },
+  } satisfies Preset.ThemeConfig & DocSearchThemeConfig,
 
   plugins: [
     ["@docusaurus/plugin-client-redirects", { createRedirects }],
