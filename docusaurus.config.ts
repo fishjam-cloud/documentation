@@ -255,6 +255,21 @@ const config: Config = {
         },
       ],
     },
+    docsearch: {
+      appId: process.env.ALGOLIA_APP_ID ?? "IBX716Q0KT",
+      apiKey:
+        process.env.ALGOLIA_SEARCH_API_KEY ??
+        "f82ab0ac2d86f5b47932cf65175756c8",
+      indexName: process.env.ALGOLIA_INDEX_NAME ?? "Fishjam",
+      contextualSearch: true,
+      searchPagePath: "search",
+      insights: false,
+      // TODO: Enable Ask AI once an Algolia Assistant is created
+      // askAi: {
+      //   assistantId: 'YOUR_ALGOLIA_ASSISTANT_ID',
+      //   sidePanel: true,
+      // },
+    },
     footer: {
       links: [
         {
@@ -295,23 +310,11 @@ const config: Config = {
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Software Mansion, Inc. All trademarks and copyrights belong to their respective owners.`,
     },
-  } satisfies Preset.ThemeConfig,
+  } satisfies Preset.ThemeConfig & { docsearch: unknown },
 
   plugins: [
     ["@docusaurus/plugin-client-redirects", { createRedirects }],
-    [
-      require.resolve("docusaurus-lunr-search"),
-      // exclude old versions and next from search
-      {
-        includeRoutes: [
-          "/docs/tutorials/*",
-          "/docs/how-to/*",
-          "/docs/explanation/*",
-          "/docs/integrations/*",
-          "/docs/api/*",
-        ],
-      },
-    ],
+    "@docsearch/docusaurus-adapter",
     [
       "docusaurus-plugin-typedoc",
       {
