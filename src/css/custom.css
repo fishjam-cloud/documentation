@@ -91,4 +91,18 @@ h3 .badge {
   margin-left: 0.75rem;
 }
 
+/* Ask AI sidepanel — fix white color that Docusaurus overrides to transparent */
+.DocSearch-Sidepanel-Container {
+  --docsearch-sidepanel-primary: var(--ifm-color-primary);
+  --docsearch-sidepanel-primary-dark: var(--ifm-color-primary-dark);
+  --docsearch-sidepanel-primary-disabled: var(--ifm-color-primary-lightest);
+  --docsearch-sidepanel-white: #fff;
+}
+
+/* Floating trigger button — keep site branding */
+.DocSearch-SidepanelButton.floating {
+  color: white;
+  background: var(--ifm-color-primary);
+}
+
 @import url("./_shiki.css");

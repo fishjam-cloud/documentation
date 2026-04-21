@@ -1,5 +1,6 @@
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
+import type { UserThemeConfig as DocSearchThemeConfig } from "@docsearch/docusaurus-adapter";
 import { BundledLanguage, bundledLanguages } from "shiki";
 import type { MDXPlugin } from "@docusaurus/mdx-loader";
 import rehypeShiki, { RehypeShikiOptions } from "@shikijs/rehype";
@@ -255,6 +256,18 @@ const config: Config = {
         },
       ],
     },
+    docsearch: {
+      appId: "IBX716Q0KT",
+      apiKey: "5dcaa347f57ca14f8cb59926164dd129",
+      indexName: "Fishjam",
+      contextualSearch: true,
+      searchPagePath: "search",
+      insights: false,
+      askAi: {
+        assistantId: "49fdf088-e614-4b89-86c2-da8c4b566260",
+        agentStudio: true,
+      },
+    },
     footer: {
       links: [
         {
@@ -295,23 +308,11 @@ const config: Config = {
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Software Mansion, Inc. All trademarks and copyrights belong to their respective owners.`,
     },
-  } satisfies Preset.ThemeConfig,
+  } satisfies Preset.ThemeConfig & DocSearchThemeConfig,
 
   plugins: [
     ["@docusaurus/plugin-client-redirects", { createRedirects }],
-    [
-      require.resolve("docusaurus-lunr-search"),
-      // exclude old versions and next from search
-      {
-        includeRoutes: [
-          "/docs/tutorials/*",
-          "/docs/how-to/*",
-          "/docs/explanation/*",
-          "/docs/integrations/*",
-          "/docs/api/*",
-        ],
-      },
-    ],
+    "@docsearch/docusaurus-adapter",
     [
       "docusaurus-plugin-typedoc",
       {
