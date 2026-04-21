@@ -264,11 +264,10 @@ const config: Config = {
       contextualSearch: true,
       searchPagePath: "search",
       insights: false,
-      // TODO: Enable Ask AI once an Algolia Assistant is created
-      // askAi: {
-      //   assistantId: 'YOUR_ALGOLIA_ASSISTANT_ID',
-      //   sidePanel: true,
-      // },
+      askAi: {
+        assistantId: "49fdf088-e614-4b89-86c2-da8c4b566260",
+        agentStudio: true,
+      },
     },
     footer: {
       links: [
