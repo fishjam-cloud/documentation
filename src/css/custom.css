@@ -99,7 +99,8 @@ h3 .badge {
   --docsearch-sidepanel-white: #fff;
 }
 
-/* Floating trigger button — keep site branding and clear the external cookies button sharing this corner */
+/* Floating trigger button — keep site branding
+extra spacing keeps it from overlapping with coockies button */
 .DocSearch-SidepanelButton.floating {
   color: white;
   background: var(--ifm-color-primary);
