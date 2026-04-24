@@ -99,10 +99,18 @@ h3 .badge {
   --docsearch-sidepanel-white: #fff;
 }
 
-/* Floating trigger button — keep site branding */
+/* Floating trigger button — keep site branding
+extra spacing keeps it from overlapping with cookies button */
 .DocSearch-SidepanelButton.floating {
   color: white;
   background: var(--ifm-color-primary);
+  right: 5rem;
+}
+
+@media screen and (min-width: 769px) {
+  .DocSearch-SidepanelButton.floating {
+    right: 4.5rem;
+  }
 }
 
 @import url("./_shiki.css");
