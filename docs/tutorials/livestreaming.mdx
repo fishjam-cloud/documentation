@@ -5,8 +5,8 @@ title: Livestreaming
 description: Set up livestreaming with Fishjam, from sandbox prototyping to production deployment with server SDKs.
 ---
 
-import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
 
 # Livestreaming with Fishjam
 
@@ -21,17 +21,18 @@ In this tutorial we explain how to publish and view streams with the client SDKs
 If you prefer to use WHIP or WHEP directly, then you should read [WHIP/WHEP with Fishjam](../how-to/backend/whip-whep).
 :::
 
-:::info Cost-effective audio livestreams
+::::info[Cost-effective audio livestreams]
 Fishjam supports audio-only livestreams at a reduced cost of $0.20 per 1000 minutes of the streamer and each listener (compared to $0.80 for video livestreams).  
 This is ideal for podcasts, radio-style broadcasts, or any scenario where video isn't necessary.
 See [Audio-only calls](../how-to/backend/audio-only-calls) for more information.
 
-:::
+::::
 
 ## Quickstart with Sandbox API
 
 If you don't have a backend server setup, you can still prototype a livestreaming use-case with the Sandbox API.
 If you want to start by setting up your backend, then you can start by reading [Production Livestreaming with Server SDKs](#production-livestreaming-with-server-sdks).
+For React/React Native apps, copy both the Fishjam ID from the [Dashboard tab](https://fishjam.io/app) and Sandbox API URL from the [Sandbox tab](https://fishjam.io/app/sandbox): the Sandbox API URL is used to get peer tokens, while the Fishjam ID is passed to `FishjamProvider` for media server access.
 
 ### Streamer setup
 
@@ -47,7 +48,8 @@ The easiest way to obtain a sandbox streamer token is by using the Sandbox API i
     ```tsx
     import { useSandbox } from '@fishjam-cloud/react-client';
 
-    const { getSandboxLivestream } = useSandbox();
+    const SANDBOX_API_URL = 'your-sandbox-api-url-here';
+    const { getSandboxLivestream } = useSandbox({ sandboxApiUrl: SANDBOX_API_URL });
     const {
       streamerToken,
       room: { id: roomId },
@@ -64,7 +66,8 @@ The easiest way to obtain a sandbox streamer token is by using the Sandbox API i
     // ---cut---
     import { useSandbox } from '@fishjam-cloud/react-native-client';
 
-    const { getSandboxLivestream } = useSandbox();
+    const SANDBOX_API_URL = 'your-sandbox-api-url-here';
+    const { getSandboxLivestream } = useSandbox({ sandboxApiUrl: SANDBOX_API_URL });
     const { streamerToken } = await getSandboxLivestream('example-room');
     ```
 
@@ -163,9 +166,10 @@ We can now start sending media, which we can obtain from the user's camera, scre
         } from '@fishjam-cloud/react-native-client';
 
         const roomName = 'my-room';
+        const SANDBOX_API_URL = 'your-sandbox-api-url-here';
 
         // Inside your component:
-        const { getSandboxLivestream } = useSandbox();
+        const { getSandboxLivestream } = useSandbox({ sandboxApiUrl: SANDBOX_API_URL });
         const { connect } = useLivestreamStreamer();
         const { cameraStream } = useCamera();
         const { microphoneStream } = useMicrophone();
@@ -223,10 +227,11 @@ We can now start sending media, which we can obtain from the user's camera, scre
         } from '@fishjam-cloud/react-native-client';
 
         const roomName = 'my-room';
+        const SANDBOX_API_URL = 'your-sandbox-api-url-here';
 
         // Inside your component:
         const { initializeDevices } = useInitializeDevices();
-        const { getSandboxLivestream } = useSandbox();
+        const { getSandboxLivestream } = useSandbox({ sandboxApiUrl: SANDBOX_API_URL });
         const { connect } = useLivestreamStreamer();
         const {
           startStreaming: startScreenCapture,
@@ -289,7 +294,8 @@ We obtain a sandbox viewer token using the Sandbox API in the client SDKs:
     ```tsx
     import { useSandbox } from '@fishjam-cloud/react-client';
 
-    const { getSandboxViewerToken } = useSandbox();
+    const SANDBOX_API_URL = 'your-sandbox-api-url-here';
+    const { getSandboxViewerToken } = useSandbox({ sandboxApiUrl: SANDBOX_API_URL });
     const viewerToken = await getSandboxViewerToken('example-room');
     ```
 
@@ -305,7 +311,8 @@ We obtain a sandbox viewer token using the Sandbox API in the client SDKs:
     // ---cut---
     import { useSandbox } from '@fishjam-cloud/react-native-client';
 
-    const { getSandboxViewerToken } = useSandbox();
+    const SANDBOX_API_URL = 'your-sandbox-api-url-here';
+    const { getSandboxViewerToken } = useSandbox({ sandboxApiUrl: SANDBOX_API_URL });
     const viewerToken = await getSandboxViewerToken('example-room');
     ```
 
@@ -345,9 +352,10 @@ We can now begin receiving the stream
     } from '@fishjam-cloud/react-native-client';
 
     const roomName = 'my-room';
+    const SANDBOX_API_URL = 'your-sandbox-api-url-here';
 
     // Inside your component:
-    const { getSandboxViewerToken } = useSandbox();
+    const { getSandboxViewerToken } = useSandbox({ sandboxApiUrl: SANDBOX_API_URL });
     const { connect, stream } = useLivestreamViewer();
 
     const token = await getSandboxViewerToken(roomName);
