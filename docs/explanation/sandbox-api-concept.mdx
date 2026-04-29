@@ -19,6 +19,16 @@ It provides basic room creation and peer management functionality without requir
 - **No authentication**: Simplified access for quick prototyping
 - **Sandbox-only**: Only available in the Sandbox environment
 
+## Sandbox API URL and Fishjam ID
+
+You can find your sandbox credentials in the [Sandbox tab](https://fishjam.io/app/sandbox) of the Fishjam Dashboard.
+
+The **Sandbox API URL** is the room manager endpoint. React SDK helpers such `useSandbox({ sandboxApiUrl })` call this URL to create rooms and obtain peer, streamer, or viewer tokens.
+
+The **Fishjam ID** is required by the React SDK when connecting to Fishjam media server. After the room manager returns a peer token, pass the Fishjam ID to `FishjamProvider` so the client knows which Fishjam environment to connect to.
+
+If your Sandbox API URL is exposed or your credentials are compromised, generate a new URL from the Sandbox tab to invalidate the old one. You can also disable the Sandbox API to stop using the room manager, then enable it again when you want to resume sandbox testing.
+
 ## The Problem Sandbox API Solves
 
 When starting with videoconferencing or livestreaming development, you typically need:

@@ -215,8 +215,8 @@ await joinRoom({ fishjamId: "your-id", peerToken });
 import { useConnection, useSandbox } from "@fishjam-cloud/react-native-client";
 
 const { joinRoom } = useConnection();
-// fishjamId is now provided through FishjamProvider
-const { getSandboxPeerToken } = useSandbox();
+const sandboxApiUrl = "your-sandbox-api-url-here";
+const { getSandboxPeerToken } = useSandbox({ sandboxApiUrl });
 
 const peerToken = await getSandboxPeerToken("roomName", "peerName");
 await joinRoom({ peerToken }); // fishjamId passed through FishjamProvider

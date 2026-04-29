@@ -61,7 +61,8 @@ import express from "express";
 const authenticateUser = {} as any;
 const app = express();
 
-const { getSandboxPeerToken } = useSandbox();
+const sandboxApiUrl = "your-sandbox-api-url-here";
+const { getSandboxPeerToken } = useSandbox({ sandboxApiUrl });
 
 const userToken = "";
 const roomName = "";

@@ -4,8 +4,8 @@ sidebar_position: 1
 description: Step-by-step guide to integrating Fishjam into a React web application with a working video streaming app.
 ---
 
-import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
 
 # React/Web Quick Start
 
@@ -36,11 +36,14 @@ A simple React web app that can join video calls and stream video between partic
 npm install @fishjam-cloud/react-client
 ```
 
-### Get your Fishjam ID
+### Get your Fishjam ID and Sandbox API URL
 
 1. Log in to [Fishjam Dashboard](https://fishjam.io/app)
-2. Navigate to your Sandbox environment
+2. Navigate to the [Sandbox tab](https://fishjam.io/app/sandbox)
 3. Copy your Fishjam ID
+4. Copy your Sandbox API URL from the **Sandbox API** section
+
+The Fishjam ID is required by `FishjamProvider` to connect to the media server. The Sandbox API URL is used by `useSandbox` to request peer tokens from the sandbox room manager.
 
 ### Set up Fishjam context
 
@@ -81,11 +84,15 @@ import {
   useSandbox,
 } from "@fishjam-cloud/react-client";
 
+const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+
 export function JoinRoomButton() {
   const { joinRoom } = useConnection();
   const { selectCamera } = useCamera();
   const { initializeDevices } = useInitializeDevices();
-  const { getSandboxPeerToken } = useSandbox();
+  const { getSandboxPeerToken } = useSandbox({
+    sandboxApiUrl: SANDBOX_API_URL,
+  });
 
   const handleJoinRoom = async () => {
     const roomName = "testRoom";
@@ -196,7 +203,9 @@ import {
 } from "@fishjam-cloud/react-client";
 
 // Check https://fishjam.io/app/ for your Fishjam ID
+// Check https://fishjam.io/app/sandbox for your Sandbox API URL
 const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
 
 // ---cut---
 function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
@@ -215,7 +224,9 @@ function VideoCall() {
   const { cameraStream } = useCamera();
   const { remotePeers } = usePeers();
   const { initializeDevices } = useInitializeDevices();
-  const { getSandboxPeerToken } = useSandbox();
+  const { getSandboxPeerToken } = useSandbox({
+    sandboxApiUrl: SANDBOX_API_URL,
+  });
 
   const [isJoined, setIsJoined] = useState(false);
 
