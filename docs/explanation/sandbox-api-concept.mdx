@@ -10,22 +10,22 @@ The Sandbox API is a development tool that simplifies getting started with Fishj
 
 ## What can the Sandbox API do?
 
-The Sandbox API is an HTTP server that comes with Fishjam's Sandbox environment.
+The Sandbox API is an HTTP server provided by us for development and testing.
 It provides basic room creation and peer management functionality without requiring you to set up your own backend infrastructure.
 
 ### Key Characteristics
 
 - **Development-purposed**: Designed for initial development and testing
 - **No authentication**: Simplified access for quick prototyping
-- **Sandbox-only**: Only available in the Sandbox environment
+- **Testing-only**: Not intended for production use; use your own authenticated backend for production
 
 ## Sandbox API URL and Fishjam ID
 
 You can find your sandbox credentials in the [Sandbox tab](https://fishjam.io/app/sandbox) of the Fishjam Dashboard.
 
-The **Sandbox API URL** is the room manager endpoint. React SDK helpers such `useSandbox({ sandboxApiUrl })` call this URL to create rooms and obtain peer, streamer, or viewer tokens.
+The **Sandbox API URL** is the room manager endpoint. React/React Native SDK helpers such `useSandbox({ sandboxApiUrl })` call this URL to create rooms and obtain peer, streamer, or viewer tokens.
 
-The **Fishjam ID** is required by the React SDK when connecting to Fishjam media server. After the room manager returns a peer token, pass the Fishjam ID to `FishjamProvider` so the client knows which Fishjam environment to connect to.
+The **Fishjam ID** is required by the React/React Native SDK when connecting to the Fishjam media server. After the room manager returns a peer token, pass the Fishjam ID to `FishjamProvider` so the client can connect to your Fishjam media server.
 
 If your Sandbox API URL is exposed or your credentials are compromised, generate a new URL from the Sandbox tab to invalidate the old one. You can also disable the Sandbox API to stop using the room manager, then enable it again when you want to resume sandbox testing.
 
