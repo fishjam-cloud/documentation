@@ -23,11 +23,12 @@ The Sandbox API is a development tool that lets you create rooms and peers for t
 4. In the **Sandbox API** section, copy your **Sandbox API URL**
 
 :::note
-You need both values for React Web apps:
+You need both values for React/React Native apps:
 
-- `SANDBOX_API_URL` is used by the Sandbox API room manager to create rooms and return peer tokens.
-- `FISHJAM_ID` is passed to `FishjamProvider` so the client can connect to the Fishjam media server after it gets a peer token.
-  :::
+- `Sandbox API url` is used by the Sandbox API room manager to create rooms and return peer tokens.
+- `Fishjam ID` is passed to `FishjamProvider` so the client can connect to the Fishjam media server after it gets a peer token.
+
+:::
 
 ## Step 2: Create a room and get peer tokens
 
@@ -43,9 +44,8 @@ You need both values for React Web apps:
     // ---cut---
     import { useSandbox } from '@fishjam-cloud/react-native-client';
 
-// ...
+    // ...
 
-    // fishjamId is provided through FishjamProvider
     const SANDBOX_API_URL = "your-sandbox-api-url-here";
     const { getSandboxPeerToken } = useSandbox({ sandboxApiUrl: SANDBOX_API_URL });
     const peerToken = await getSandboxPeerToken(roomName, peerName);
@@ -62,8 +62,8 @@ You need both values for React Web apps:
     import { useSandbox } from '@fishjam-cloud/react-client';
 
     // ...
-    const SANDBOX_API_URL = "your-sandbox-api-url-here";
 
+    const SANDBOX_API_URL = "your-sandbox-api-url-here";
     const { getSandboxPeerToken } = useSandbox({ sandboxApiUrl: SANDBOX_API_URL });
     const peerToken = await getSandboxPeerToken(roomName, peerName);
     ```
@@ -318,7 +318,6 @@ Manage the Sandbox API from the [Sandbox tab](https://fishjam.io/app/sandbox):
 - If your Sandbox API URL is exposed or credentials are compromised, click **Generate new URL**. This invalidates the old URL.
 - If you want to stop using the room manager, click **Disable Sandbox API**.
 - When you want to use it again, click **Enable Sandbox API**.
-  yyy
   Your `FISHJAM_ID` is still required by `FishjamProvider` to connect to the Fishjam media server. The Sandbox API URL is only used to request room and peer tokens from the room manager.
 
 ## Next steps
