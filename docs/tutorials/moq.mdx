@@ -37,11 +37,11 @@ To start publishing a MoQ stream, you need two things: a _publisher token_ and t
 Fetch a sandbox publisher token from the Room Manager:
 
 ```ts
-const FISHJAM_ID = 'YOUR_FISHJAM_ID';
-const STREAM_NAME = 'my-stream';
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const STREAM_NAME = "my-stream";
 
 const response = await fetch(
-  `https://fishjam.io/api/v1/connect/${FISHJAM_ID}/room-manager/moq/${STREAM_NAME}/publisher`
+  `https://fishjam.io/api/v1/connect/${FISHJAM_ID}/room-manager/moq/${STREAM_NAME}/publisher`,
 );
 const { token: publishToken } = await response.json();
 ```
@@ -58,24 +58,27 @@ Use the token to connect to the Fishjam MoQ relay and start broadcasting:
 
 ```ts
 // @noErrors
-import * as Moq from '@moq/lite';
-import * as Publish from '@moq/publish';
+import * as Moq from "@moq/lite";
+import * as Publish from "@moq/publish";
 
-const FISHJAM_ID = 'YOUR_FISHJAM_ID';
-const STREAM_NAME = 'my-stream';
-const publishToken = '';
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const STREAM_NAME = "my-stream";
+const publishToken = "";
 
 // ---cut---
 // Build the relay URL using the publisher token
 const relayUrl = new URL(
-  `https://relay.fishjam.io/${FISHJAM_ID}?jwt=${publishToken}`
+  `https://relay.fishjam.io/${FISHJAM_ID}?jwt=${publishToken}`,
 );
 
 // Connect to the Fishjam MoQ relay
 const connection = await Moq.Connection.connect(relayUrl);
 
 // Get camera and microphone access
-const camera = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+const camera = await navigator.mediaDevices.getUserMedia({
+  video: true,
+  audio: true,
+});
 
 // Set up a broadcast with video and audio tracks
 const broadcast = new Publish.Broadcast({
@@ -106,11 +109,11 @@ To receive a MoQ stream you need one thing: a _subscriber token_.
 Fetch a sandbox subscriber token from the Room Manager:
 
 ```ts
-const FISHJAM_ID = 'YOUR_FISHJAM_ID';
-const STREAM_NAME = 'my-stream';
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const STREAM_NAME = "my-stream";
 
 const response = await fetch(
-  `https://fishjam.io/api/v1/connect/${FISHJAM_ID}/room-manager/moq/${STREAM_NAME}/subscriber`
+  `https://fishjam.io/api/v1/connect/${FISHJAM_ID}/room-manager/moq/${STREAM_NAME}/subscriber`,
 );
 const { token: subscribeToken } = await response.json();
 ```
@@ -127,17 +130,17 @@ Use the token to connect and receive the stream:
 
 ```ts
 // @noErrors
-import * as Moq from '@moq/lite';
-import * as Watch from '@moq/watch';
+import * as Moq from "@moq/lite";
+import * as Watch from "@moq/watch";
 
-const FISHJAM_ID = 'YOUR_FISHJAM_ID';
-const STREAM_NAME = 'my-stream';
-const subscribeToken = '';
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const STREAM_NAME = "my-stream";
+const subscribeToken = "";
 
 // ---cut---
 // Build the relay URL using the subscriber token
 const relayUrl = new URL(
-  `https://relay.fishjam.io/${FISHJAM_ID}?jwt=${subscribeToken}`
+  `https://relay.fishjam.io/${FISHJAM_ID}?jwt=${subscribeToken}`,
 );
 
 // Connect to the Fishjam MoQ relay
@@ -151,7 +154,7 @@ const broadcast = new Watch.Broadcast({
 });
 
 // Attach to a canvas element — MultiBackend handles decoding and rendering
-const canvas = document.querySelector('canvas')!;
+const canvas = document.querySelector("canvas")!;
 const backend = new Watch.MultiBackend({
   element: canvas,
   broadcast,
@@ -226,7 +229,7 @@ MoQ tokens are path-scoped: a publisher token grants write access to a specific 
 
 Deliver these tokens to your clients, then use them to connect as described in [Connecting and publishing](#connecting-and-publishing) and [Connecting and subscribing](#connecting-and-watching).
 
-:::tip 
+:::tip
 A single token should only grant either `publishPath` _or_ `subscribePath` — not both.
 Broadcast clients receive a publisher token; viewers receive a subscriber token.
 This separation ensures a viewer can never accidentally publish to the stream.
@@ -286,26 +289,29 @@ Then use `Moq.Connection.Reload` on the client — it exposes `announced`, a rea
 
 ```ts
 // @noErrors
-import * as Moq from '@moq/lite';
-import * as Watch from '@moq/watch';
+import * as Moq from "@moq/lite";
+import * as Watch from "@moq/watch";
 
-const FISHJAM_ID = 'YOUR_FISHJAM_ID';
-const ROOM_NAME = 'my-room'
-const namespaceToken = '';
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const ROOM_NAME = "my-room";
+const namespaceToken = "";
 
 // ---cut---
 const relayUrl = new URL(
-  `https://relay.fishjam.io/${FISHJAM_ID}/${ROOM_NAME}?jwt=${namespaceToken}`
+  `https://relay.fishjam.io/${FISHJAM_ID}/${ROOM_NAME}?jwt=${namespaceToken}`,
 );
 
 const connection = new Moq.Connection.Reload({ url: relayUrl, enabled: true });
 
 // Keep references so we can clean up when a stream goes offline
-const slots = new Map<string, {
-  broadcast: Watch.Broadcast;
-  backend: Watch.MultiBackend;
-  canvas: HTMLCanvasElement;
-}>();
+const slots = new Map<
+  string,
+  {
+    broadcast: Watch.Broadcast;
+    backend: Watch.MultiBackend;
+    canvas: HTMLCanvasElement;
+  }
+>();
 
 // Subscribe — callback fires with the full current set whenever it changes
 const stopDiscovery = connection.announced.subscribe((announcedPaths) => {
@@ -332,7 +338,7 @@ const stopDiscovery = connection.announced.subscribe((announcedPaths) => {
       enabled: true,
     });
 
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
     document.body.appendChild(canvas);
 
     const backend = new Watch.MultiBackend({
