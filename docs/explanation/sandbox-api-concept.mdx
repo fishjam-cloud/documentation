@@ -23,11 +23,12 @@ It provides basic room creation and peer management functionality without requir
 
 You can find your sandbox credentials in the [Sandbox tab](https://fishjam.io/app/sandbox) of the Fishjam Dashboard.
 
-The **Sandbox API URL** is the room manager endpoint. React/React Native SDK helpers such as `useSandbox({ sandboxApiUrl })` call this URL to create rooms and obtain peer, streamer, or viewer tokens.
+The **Sandbox API URL** points to our **room manager**: a hosted HTTP backend you can use to test Fishjam without writing your own server. The room manager creates **rooms** and **peers** for conferencing, and supports **livestreaming** by issuing the streamer and viewer credentials. It is a implementation of that kind of backend, built with our **JavaScript server SDK**.
 
-The **Fishjam ID** is required by the React/React Native SDK when connecting to the Fishjam media server. After the room manager returns a peer token, pass the Fishjam ID to `FishjamProvider` so the client can connect to your Fishjam media server.
+The **Fishjam ID** from the [Dashboard tab](https://fishjam.io/app) is passed to `FishjamProvider` so the client can connect to the Fishjam media server after it gets a peer token.
 
 If your Sandbox API URL is exposed or your credentials are compromised, generate a new URL from the Sandbox tab to invalidate the old one. You can also disable the Sandbox API to stop using the room manager, then enable it again when you want to resume sandbox testing.
+If you expose the room manager in a public deployment, your Sandbox API URL can be leaked (for example through client code or network requests). Anyone who obtains that URL can use your room manager credentials to create rooms and peers on your behalf.
 
 ## The Problem Sandbox API Solves
 
