@@ -47,8 +47,7 @@ if (hasBrokenLocalStorage) {
   } as Storage;
 }
 
-const { rendererClassic, transformerTwoslash } =
-  require("@shikijs/twoslash");
+const { rendererClassic, transformerTwoslash } = require("@shikijs/twoslash");
 
 function isErrorFromVersionedDocs(options: { meta?: { __raw?: string } }) {
   if (options.meta?.__raw?.includes("loc=")) {
@@ -364,8 +363,8 @@ const config: Config = {
           persistAuth: true,
           defaultOpenFirstTag: false,
           authentication: {
-            preferredSecurityScheme: "management_token"
-          }
+            preferredSecurityScheme: "management_token",
+          },
         },
       } as ScalarOptions,
     ],
