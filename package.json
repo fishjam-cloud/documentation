@@ -31,7 +31,7 @@
     "@docusaurus/preset-classic": "^3.10.0",
     "@docusaurus/remark-plugin-npm2yarn": "^3.10.0",
     "@docusaurus/theme-mermaid": "^3.10.0",
-    "@docusaurus/utils": "^3.9.2",
+    "@docusaurus/utils": "^3.10.0",
     "@fastify/env": "^5.0.2",
     "@fishjam-cloud/js-server-sdk": "link:./packages/js-server-sdk/packages/js-server-sdk",
     "@fishjam-cloud/react-client": "link:./packages/web-client-sdk/packages/react-client",
