@@ -5,7 +5,6 @@ import type { ScalarOptions } from "@scalar/docusaurus";
 import { BundledLanguage, bundledLanguages } from "shiki";
 import type { MDXPlugin } from "@docusaurus/mdx-loader";
 import rehypeShiki, { RehypeShikiOptions } from "@shikijs/rehype";
-import { removeTwoslashNotations } from "twoslash";
 import {
   transformerMetaHighlight,
   transformerNotationDiff,
@@ -14,6 +13,7 @@ import {
   transformerNotationFocus,
 } from "@shikijs/transformers";
 
+import { rendererClassic, transformerTwoslash } from "@shikijs/twoslash";
 import {
   NormalizedSidebar,
   NormalizedSidebarItem,
@@ -23,31 +23,6 @@ import {
 import { llmsRootContent } from "./src/content/llms-root-content";
 import { createRedirects } from "./redirects";
 
-const hasBrokenLocalStorage =
-  typeof globalThis.localStorage === "object" &&
-  typeof globalThis.localStorage?.getItem !== "function";
-
-if (hasBrokenLocalStorage) {
-  const storage = new Map<string, string>();
-  globalThis.localStorage = {
-    getItem: (key: string) => storage.get(key) ?? null,
-    setItem: (key: string, value: string) => {
-      storage.set(key, value);
-    },
-    removeItem: (key: string) => {
-      storage.delete(key);
-    },
-    clear: () => {
-      storage.clear();
-    },
-    key: (index: number) => Array.from(storage.keys())[index] ?? null,
-    get length() {
-      return storage.size;
-    },
-  } as Storage;
-}
-
-const { rendererClassic, transformerTwoslash } = require("@shikijs/twoslash");
 
 function isErrorFromVersionedDocs(options: { meta?: { __raw?: string } }) {
   if (options.meta?.__raw?.includes("loc=")) {
