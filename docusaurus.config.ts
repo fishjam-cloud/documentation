@@ -23,7 +23,6 @@ import {
 import { llmsRootContent } from "./src/content/llms-root-content";
 import { createRedirects } from "./redirects";
 
-
 function isErrorFromVersionedDocs(options: { meta?: { __raw?: string } }) {
   if (options.meta?.__raw?.includes("loc=")) {
     const locMatch = options.meta.__raw.match(/loc=([^\s]+)/);
