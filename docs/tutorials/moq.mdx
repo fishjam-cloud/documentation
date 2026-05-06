@@ -13,20 +13,20 @@ import TabItem from "@theme/TabItem";
 This section explains how to publish and subscribe to live streams using [Media over QUIC (MoQ)](https://datatracker.ietf.org/wg/moq/about/) with Fishjam.
 MoQ uses QUIC as its transport layer (with a WebSocket fallback), delivering ultra-low latency at scale — making it ideal for interactive broadcasts, live events, and large-audience streams.
 
-Before diving into the tutorial, we recommend getting familiar with the [MoQ Streaming with Fishjam](../explanation/moq-streaming) explenation.
+Before diving into the tutorial, we recommend getting familiar with the [MoQ Streaming with Fishjam](../explanation/moq-streaming) explanation.
 We show how to quickly prototype in [Quickstart with Sandbox API](#quickstart-with-sandbox-api) and how to get ready for production in [Production MoQ with Server SDKs](#production-moq-with-server-sdks).
 
 :::info
 Fishjam supports both WebRTC-based livestreaming (WHIP/WHEP) and MoQ streaming. \
 **MoQ** is a new protocol designed from the ground up for scalable, low-latency delivery to large audiences.\
-**WebRTC** is a mature, battle-tested technology with native browser support, built for low-latency conferencing and interactive streaming.
+**WebRTC** is a mature, battle-tested technology built for low-latency peer-to-peer conferencing and interactive streaming.
 
 See [Livestreaming](./livestreaming) for the WebRTC approach.
 :::
 
-## Quickstart with Sandbox API
+## Quickstart with the Sandbox API
 
-If you don't have a backend server set up, you can prototype a MoQ streaming scenario using the Sandbox API provided by the Room Manager.
+If you don't have a backend server set up, you can prototype a MoQ streaming scenario using the Sandbox API.
 
 ### Publisher setup
 
@@ -98,7 +98,7 @@ const broadcast = new Publish.Broadcast({
 });
 ```
 
-The stream is now live on the MoQ relay!
+The stream is now live on the MoQ relay! Viewers can now start watching the stream by following the steps in [Subscriber setup](#subscriber-setup)
 
 ### Subscriber setup
 
@@ -106,7 +106,7 @@ To receive a MoQ stream you need one thing: a _subscriber token_.
 
 #### Obtaining a subscriber token
 
-Fetch a sandbox subscriber token from the Room Manager:
+Fetch a sandbox subscriber token using the Sandbox API:
 
 ```ts
 const FISHJAM_ID = "YOUR_FISHJAM_ID";
@@ -231,7 +231,7 @@ Deliver these tokens to your clients, then use them to connect as described in [
 
 :::tip
 A single token should only grant either `publishPath` _or_ `subscribePath` — not both.
-Broadcast clients receive a publisher token; viewers receive a subscriber token.
+Streamers receive a publisher token; viewers receive a subscriber token.
 This separation ensures a viewer can never accidentally publish to the stream.
 :::
 
@@ -255,8 +255,15 @@ To do this, generate a subscriber token scoped to the room namespace instead of 
     const fishjamClient = new FishjamClient({ fishjamId, managementToken });
 
     const roomName = 'my-room';
-    // Publishers under this namespace might use paths like:
-    // 'my-room/alice-camera', 'my-room/bob-screen', etc.
+
+    const { token: alicePublisherToken } = await fishjamClient.createMoqToken({
+      publisherPath: roomName + "/alice",
+    });
+
+    const { token: bobPublisherToken } = await fishjamClient.createMoqToken({
+      publisherPath: roomName + "/bob",
+    });
+
 
     const { token: namespaceToken } = await fishjamClient.createMoqToken({
       subscribePath: roomName,
@@ -357,7 +364,7 @@ If you want a better understanding of how MoQ works, see:
 
 - [MoQ Streaming with Fishjam](../explanation/moq-streaming)
 
-If you need a different streaming approach, see:
+If you want to learn about streaming using WebRTC instead of MoQ, see:
 
 - [Livestreaming](./livestreaming)
 - [WHIP/WHEP with Fishjam](../how-to/backend/whip-whep)
