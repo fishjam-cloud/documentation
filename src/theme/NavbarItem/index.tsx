@@ -9,10 +9,9 @@ export default function NavbarItemWrapper(
 ): React.JSX.Element | null {
   const { pathname } = useLocation();
   const isDocsVersionDropdown = props.type === "docsVersionDropdown";
-  const isApiReferencePage = /\/api\/rest(?:\/|$)/.test(pathname);
+  const isApiReferencePage = pathname.startsWith("/api/rest");
 
-  // The Scalar REST reference is unversioned, so hiding the docs version dropdown
-  // here avoids sending users back to Docs when they attempt to switch versions.
+  // The Scalar REST reference is unversioned, so we hide the version dropdown
   if (isDocsVersionDropdown && isApiReferencePage) {
     return null;
   }
