@@ -8,12 +8,12 @@ description: Stream live video and audio over Media over QUIC (MoQ) with Fishjam
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
-# MoQ Streaming with Fishjam
+# MoQ Streaming
 
 This section explains how to publish and subscribe to live streams using [Media over QUIC (MoQ)](https://datatracker.ietf.org/wg/moq/about/) with Fishjam.
 MoQ uses QUIC as its transport layer (with a WebSocket fallback), delivering ultra-low latency at scale — making it ideal for interactive broadcasts, live events, and large-audience streams.
 
-Before diving into the tutorial, we recommend getting familiar with the [MoQ protocol concepts](https://datatracker.ietf.org/wg/moq/about/).
+Before diving into the tutorial, we recommend getting familiar with the [MoQ Streaming with Fishjam](../explanation/moq-streaming) explenation.
 We show how to quickly prototype in [Quickstart with Sandbox API](#quickstart-with-sandbox-api) and how to get ready for production in [Production MoQ with Server SDKs](#production-moq-with-server-sdks).
 
 :::info
@@ -38,10 +38,10 @@ Fetch a sandbox publisher token from the Room Manager:
 
 ```ts
 const FISHJAM_ID = "YOUR_FISHJAM_ID";
-const STREAM_NAME = "my-stream";
+const PUBLISHER_PATH = "stream/alice";
 
 const response = await fetch(
-  `https://fishjam.io/api/v1/connect/${FISHJAM_ID}/room-manager/moq/${STREAM_NAME}/publisher`,
+  `https://fishjam.io/api/v1/connect/${FISHJAM_ID}/room-manager/moq/${PUBLISHER_PATH}/publisher`,
 );
 const { token: publishToken } = await response.json();
 ```
@@ -62,7 +62,7 @@ import * as Moq from "@moq/lite";
 import * as Publish from "@moq/publish";
 
 const FISHJAM_ID = "YOUR_FISHJAM_ID";
-const STREAM_NAME = "my-stream";
+const PUBLISHER_PATH = "stream/alice";
 const publishToken = "";
 
 // ---cut---
@@ -83,7 +83,7 @@ const camera = await navigator.mediaDevices.getUserMedia({
 // Set up a broadcast with video and audio tracks
 const broadcast = new Publish.Broadcast({
   connection,
-  name: Moq.Path.from(STREAM_NAME),
+  name: Moq.Path.from(PUBLISHER_PATH),
   enabled: true,
   video: {
     source: camera.getVideoTracks()[0] as Publish.Video.Source,
@@ -110,10 +110,10 @@ Fetch a sandbox subscriber token from the Room Manager:
 
 ```ts
 const FISHJAM_ID = "YOUR_FISHJAM_ID";
-const STREAM_NAME = "my-stream";
+const SUBSCRIBER_PATH = "stream/alice";
 
 const response = await fetch(
-  `https://fishjam.io/api/v1/connect/${FISHJAM_ID}/room-manager/moq/${STREAM_NAME}/subscriber`,
+  `https://fishjam.io/api/v1/connect/${FISHJAM_ID}/room-manager/moq/${SUBSCRIBER_PATH}/subscriber`,
 );
 const { token: subscribeToken } = await response.json();
 ```
@@ -134,7 +134,7 @@ import * as Moq from "@moq/lite";
 import * as Watch from "@moq/watch";
 
 const FISHJAM_ID = "YOUR_FISHJAM_ID";
-const STREAM_NAME = "my-stream";
+const SUBSCRIBER_PATH = "stream/alice";
 const subscribeToken = "";
 
 // ---cut---
@@ -149,7 +149,7 @@ const connection = await Moq.Connection.connect(relayUrl);
 // Subscribe to the broadcast
 const broadcast = new Watch.Broadcast({
   connection,
-  name: Moq.Path.from(STREAM_NAME),
+  name: Moq.Path.from(SUBSCRIBER_PATH),
   enabled: true,
 });
 
@@ -190,14 +190,14 @@ MoQ tokens are path-scoped: a publisher token grants write access to a specific 
       managementToken,
     });
 
-    const streamPath = 'my-stream';
+    const streamPath = 'stream/alice';
 
-    // Generate a token that allows publishing to 'my-stream'
+    // Generate a token that allows publishing to 'stream/alice'
     const { token: publishToken } = await fishjamClient.createMoqToken({
       publishPath: streamPath,
     });
 
-    // Generate a token that allows subscribing to 'my-stream'
+    // Generate a token that allows subscribing to 'stream/alice'
     const { token: subscribeToken } = await fishjamClient.createMoqToken({
       subscribePath: streamPath,
     });
@@ -215,12 +215,12 @@ MoQ tokens are path-scoped: a publisher token grants write access to a specific 
       management_token=management_token,
     )
 
-    stream_path = 'my-stream'
+    stream_path = 'stream/alice'
 
-    # Generate a token that allows publishing to 'my-stream'
+    # Generate a token that allows publishing to 'stream/alice'
     publish_token = fishjam_client.create_moq_token(publish_path=stream_path)
 
-    # Generate a token that allows subscribing to 'my-stream'
+    # Generate a token that allows subscribing to 'stream/alice'
     subscribe_token = fishjam_client.create_moq_token(subscribe_path=stream_path)
     ```
 
@@ -237,8 +237,8 @@ This separation ensures a viewer can never accidentally publish to the stream.
 
 ### Subscribe to a namespace
 
-You can subscribe not only to a specific stream, but also to an entire namespace — automatically receiving every broadcast published under it.
-This is useful when multiple publishers join a room and you want to render all of their streams without knowing their paths in advance.
+When multiple publishers join a room, you won't know their exact paths in advance.
+Instead of consuming a single path, you can **discover** all broadcasts published under a namespace prefix and subscribe to each one as they appear.
 
 To do this, generate a subscriber token scoped to the room namespace instead of a single stream path.
 
@@ -285,7 +285,7 @@ To do this, generate a subscriber token scoped to the room namespace instead of 
   </TabItem>
 </Tabs>
 
-Then use `Moq.Connection.Reload` on the client — it exposes `announced`, a reactive signal that holds the current set of announced paths and fires a callback whenever it changes:
+Then on the client, call `connection.announced()` to receive a live feed of announce events. Each event tells you whether a path is becoming **active** (a publisher just joined) or going inactive (a publisher disconnected). Loop over them to subscribe and clean up as publishers come and go:
 
 ```ts
 // @noErrors
@@ -301,9 +301,9 @@ const relayUrl = new URL(
   `https://relay.fishjam.io/${FISHJAM_ID}/${ROOM_NAME}?jwt=${namespaceToken}`,
 );
 
-const connection = new Moq.Connection.Reload({ url: relayUrl, enabled: true });
+const connection = await Moq.Connection.connect(relayUrl);
 
-// Keep references so we can clean up when a stream goes offline
+// Keep references so we can clean up when a publisher goes offline
 const slots = new Map<
   string,
   {
@@ -313,28 +313,19 @@ const slots = new Map<
   }
 >();
 
-// Subscribe — callback fires with the full current set whenever it changes
-const stopDiscovery = connection.announced.subscribe((announcedPaths) => {
-  const activePaths = new Set([...announcedPaths].map((p) => p.toString()));
+const announced = connection.announced();
 
-  // Tear down streams that are no longer announced
-  for (const [key, slot] of slots) {
-    if (!activePaths.has(key)) {
-      slot.backend.close();
-      slot.broadcast.enabled.set(false);
-      slot.canvas.remove();
-      slots.delete(key);
-    }
-  }
+while (true) {
+  const entry = await announced.next();
+  if (!entry) break; // connection closed
 
-  // Set up streams that just appeared
-  for (const path of announcedPaths) {
-    const key = path.toString();
-    if (slots.has(key)) continue;
+  const key = entry.path.toString();
 
+  if (entry.active) {
+    // New publisher — subscribe and render
     const broadcast = new Watch.Broadcast({
-      connection: connection.established,
-      name: path,
+      connection,
+      name: entry.path,
       enabled: true,
     });
 
@@ -348,20 +339,23 @@ const stopDiscovery = connection.announced.subscribe((announcedPaths) => {
     });
 
     slots.set(key, { broadcast, backend, canvas });
+  } else {
+    // Publisher disconnected — tear down its slot
+    const slot = slots.get(key);
+    if (!slot) continue;
+    slot.backend.close();
+    slot.broadcast.close();
+    slot.canvas.remove();
+    slots.delete(key);
   }
-});
-
-// To stop discovery and tear down all streams:
-// stopDiscovery();
-// connection.close();
+}
 ```
 
 ## See also
 
 If you want a better understanding of how MoQ works, see:
 
-- [MoQ IETF Working Group](https://datatracker.ietf.org/wg/moq/about/)
-- Blog Post etc.
+- [MoQ Streaming with Fishjam](../explanation/moq-streaming)
 
 If you need a different streaming approach, see:
 
