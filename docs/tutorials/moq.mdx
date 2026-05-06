@@ -13,7 +13,10 @@ import TabItem from "@theme/TabItem";
 This section explains how to publish and subscribe to live streams using [Media over QUIC (MoQ)](https://datatracker.ietf.org/wg/moq/about/) with Fishjam.
 MoQ uses QUIC as its transport layer (with a WebSocket fallback), delivering ultra-low latency at scale — making it ideal for interactive broadcasts, live events, and large-audience streams.
 
-Before diving into the tutorial, we recommend getting familiar with the [MoQ Streaming with Fishjam](../explanation/moq-streaming) explanation.
+:::info
+If you're new to MoQ, then we recommend getting familiar with the [MoQ Streaming with Fishjam](../explanation/moq-streaming) explanation.
+:::
+
 We show how to quickly prototype in [Quickstart with Sandbox API](#quickstart-with-sandbox-api) and how to get ready for production in [Production MoQ with Server SDKs](#production-moq-with-server-sdks).
 
 :::info
@@ -27,6 +30,10 @@ See [Livestreaming](./livestreaming) for the WebRTC approach.
 ## Quickstart with the Sandbox API
 
 If you don't have a backend server set up, you can prototype a MoQ streaming scenario using the Sandbox API.
+
+:::tip
+MoQ is a protocol with a well-defined negotiation, so in theory any compliant MoQ client should work. That said, we recommend using the [`@moq`](https://github.com/moq-dev/moq) client libraries — the reference TypeScript implementation maintained alongside the protocol. For more details, see the [documentation](https://doc.moq.dev/js/).
+:::
 
 ### Publisher setup
 
@@ -87,9 +94,7 @@ const broadcast = new Publish.Broadcast({
   enabled: true,
   video: {
     source: camera.getVideoTracks()[0] as Publish.Video.Source,
-    // Set up two layers
     hd: { enabled: true },
-    sd: { enabled: true },
   },
   audio: {
     enabled: true,
@@ -257,11 +262,11 @@ To do this, generate a subscriber token scoped to the room namespace instead of 
     const roomName = 'my-room';
 
     const { token: alicePublisherToken } = await fishjamClient.createMoqToken({
-      publisherPath: roomName + "/alice",
+      publishPath: roomName + "/alice",
     });
 
     const { token: bobPublisherToken } = await fishjamClient.createMoqToken({
-      publisherPath: roomName + "/bob",
+      publishPath: roomName + "/bob",
     });
 
 
