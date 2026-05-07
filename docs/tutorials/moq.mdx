@@ -17,7 +17,7 @@ MoQ uses QUIC as its transport layer (with a WebSocket fallback), delivering ult
 If you're new to MoQ, then we recommend getting familiar with the [MoQ Streaming with Fishjam](../explanation/moq-streaming) explanation.
 :::
 
-We show how to quickly prototype in [Quickstart with Sandbox API](#quickstart-with-sandbox-api) and how to get ready for production in [Production MoQ with Server SDKs](#production-moq-with-server-sdks).
+We show how to quickly prototype in [Quickstart with the Sandbox API](#quickstart-with-the-sandbox-api) and how to get ready for production in [Production MoQ with Server SDKs](#production-moq-with-server-sdks).
 
 :::info
 Fishjam supports both WebRTC-based livestreaming (WHIP/WHEP) and MoQ streaming. \
@@ -171,7 +171,7 @@ That's it! The stream will appear in the canvas once the publisher starts broadc
 
 ## Production MoQ with Server SDKs
 
-The [Quickstart with Sandbox API](#quickstart-with-sandbox-api) shows how to get MoQ streaming up and running quickly.
+The [Quickstart with the Sandbox API](#quickstart-with-the-sandbox-api) shows how to get MoQ streaming up and running quickly.
 In a production scenario, your backend generates tokens with proper authorization, allowing you to control who can publish and who can subscribe.
 
 MoQ tokens are path-scoped: a publisher token grants write access to a specific path, and a subscriber token grants read access. Your backend needs to:
