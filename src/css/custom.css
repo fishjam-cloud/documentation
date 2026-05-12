@@ -28,15 +28,19 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
 html[data-theme="light"] body {
   color: #221f1c;
 }
+
 html[data-theme="light"] footer.footer {
   background-color: #fcf4e4;
 }
+
 html[data-theme="light"] nav.navbar--fixed-top {
   background-color: #fcf4e4;
 }
+
 html[data-theme="light"] header.heroBanner_src-pages-index-module {
   background-color: #9bdcfb;
   color: #221f1c;
@@ -62,6 +66,10 @@ html[data-theme="light"] header.heroBanner_src-pages-index-module {
   letter-spacing: 0.5px;
   margin-left: 0.5rem;
   vertical-align: middle;
+}
+
+.scalar-api-reference .badge {
+  text-transform: unset;
 }
 
 .badge--web {
@@ -114,3 +122,28 @@ extra spacing keeps it from overlapping with cookies button */
 }
 
 @import url("./_shiki.css");
+
+/* Align the Scalar API reference typography with the rest of the docs. */
+:root {
+  --scalar-font-size-1: var(--ifm-h3-font-size);
+  --scalar-font-size-2: var(--ifm-h4-font-size);
+  --scalar-font-size-3: 0.9375rem;
+  --scalar-font-size-4: 0.9rem;
+  --scalar-font-size-5: 0.85rem;
+  --scalar-font-size-6: 0.8rem;
+  --scalar-font-size-7: 0.75rem;
+
+  --scalar-paragraph: 0.9375rem;
+  --scalar-small: 0.9rem;
+  --scalar-mini: 0.75rem;
+
+  --scalar-heading-1: var(--ifm-h1-font-size);
+  --scalar-heading-2: var(--ifm-h2-font-size);
+  --scalar-heading-3: var(--ifm-h3-font-size);
+  --scalar-heading-4: var(--ifm-h4-font-size);
+  --scalar-heading-5: var(--ifm-h5-font-size);
+  --scalar-heading-6: var(--ifm-h6-font-size);
+
+  --scalar-font: var(--ifm-font-family-base);
+  --scalar-font-code: var(--ifm-font-family-monospace);
+}
