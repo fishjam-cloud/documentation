@@ -1,10 +1,10 @@
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 import type { UserThemeConfig as DocSearchThemeConfig } from "@docsearch/docusaurus-adapter";
+import type { ScalarOptions } from "@scalar/docusaurus";
 import { BundledLanguage, bundledLanguages } from "shiki";
 import type { MDXPlugin } from "@docusaurus/mdx-loader";
 import rehypeShiki, { RehypeShikiOptions } from "@shikijs/rehype";
-import { removeTwoslashNotations } from "twoslash";
 import {
   transformerMetaHighlight,
   transformerNotationDiff,
@@ -242,6 +242,21 @@ const config: Config = {
       },
       items: [
         {
+          type: "doc",
+          docId: "index",
+          label: "Docs",
+          position: "left",
+        },
+        {
+          to: "/api/rest",
+          label: "API Reference",
+          position: "left",
+        },
+        {
+          type: "docsVersionDropdown",
+          position: "right",
+        },
+        {
           href: "https://fishjam.io/app/",
           label: "Fishjam Dashboard",
           position: "right",
@@ -250,9 +265,6 @@ const config: Config = {
           href: "https://github.com/fishjam-cloud",
           label: "GitHub",
           position: "right",
-        },
-        {
-          type: "docsVersionDropdown",
         },
       ],
     },
@@ -313,6 +325,23 @@ const config: Config = {
   plugins: [
     ["@docusaurus/plugin-client-redirects", { createRedirects }],
     "@docsearch/docusaurus-adapter",
+    [
+      "@scalar/docusaurus",
+      {
+        label: "Server REST API",
+        route: "/api/rest",
+        showNavLink: false,
+        configuration: {
+          url: "/docs/api/fishjam-server-openapi.yaml",
+          hideSearch: true,
+          persistAuth: true,
+          defaultOpenFirstTag: false,
+          authentication: {
+            preferredSecurityScheme: "management_token",
+          },
+        },
+      } as ScalarOptions,
+    ],
     [
       "docusaurus-plugin-typedoc",
       {
