@@ -23,14 +23,14 @@ It provides basic room creation and peer management functionality without requir
 
 You can find your sandbox credentials in the [Sandbox tab](https://fishjam.io/app/sandbox) of the Fishjam Dashboard.
 
-The **Sandbox API URL** points to our **room manager**: a hosted HTTP backend you can use to test Fishjam without writing your own server. The room manager creates [**rooms**](../explanation/rooms) and **peers** for conferencing, and supports [**livestreaming**](../explanation/livestreams) by issuing the streamer and viewer credentials. It is a implementation of that kind of backend, built with our [**JavaScript server SDK**](../api/server).
+The **Sandbox API** is a hosted HTTP backend you can use to test Fishjam without writing your own server. It creates [**rooms**](../explanation/rooms) and **peers** for conferencing, and supports [**livestreaming**](../explanation/livestreams) by issuing the streamer and viewer credentials. It's an example implementation of what you need to build using our [**JavaScript server SDK**](../api/server) to go to production.
 
 You can use your sandbox credentials by passing them to the `useSandbox` hook in the client SDK, which will create rooms and peer tokens for you, or by calling the Sandbox API URL directly from your client and using the returned `peerToken` to connect to Fishjam.
 
 The **Fishjam ID** from the [Dashboard tab](https://fishjam.io/app) is passed to `FishjamProvider` so the client can connect to the Fishjam media server after it gets a peer token.
 
 If your Sandbox API URL is exposed or your credentials are compromised, generate a new URL from the Sandbox tab to invalidate the old one. You can also disable the Sandbox API and enable it again when you want to resume sandbox testing.
-If you expose the room manager in a public deployment, your Sandbox API URL can be leaked (for example through client code or network requests). Anyone who obtains that URL can use your room manager credentials to create rooms and peers on your behalf.
+If you expose your Sandbox API URL in a public deployment, it can leak (for example through client code or network requests). Anyone who obtains that URL can create rooms and peers on your behalf.
 
 ## The Problem Sandbox API Solves
 

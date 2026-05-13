@@ -24,7 +24,7 @@ The Sandbox API is a development tool that lets you create rooms and peers for t
 :::note
 You need both values for React/React Native apps:
 
-- `Sandbox API url` is used by the Sandbox API room manager to create rooms and return peer tokens.
+- `Sandbox API url` is used to call the Sandbox API to create test rooms and return peer tokens.
 - `Fishjam ID` is passed to `FishjamProvider` so the client can connect to the Fishjam media server after it gets a peer token.
 
 :::
@@ -315,9 +315,9 @@ Only use the Sandbox API for development and testing.
 Manage the Sandbox API from the [Sandbox tab](https://fishjam.io/app/sandbox):
 
 - If your Sandbox API URL is exposed or credentials are compromised, click **Generate new URL**. This invalidates the old URL.
-- If you want to stop using the room manager, click **Disable Sandbox API**.
+- If you want to stop using it, click **Disable Sandbox API**.
 - When you want to use it again, click **Enable Sandbox API**.
-  Your `FISHJAM_ID` is still required by `FishjamProvider` to connect to the Fishjam media server. The Sandbox API URL is only used to request room and peer tokens from the room manager.
+  Your `FISHJAM_ID` is still required by `FishjamProvider` to connect to the Fishjam media server. The Sandbox API URL is only used to request test room and peer tokens.
 
 ## Next steps
 
