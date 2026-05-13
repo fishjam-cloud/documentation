@@ -3,8 +3,8 @@ type: how-to
 description: Deploy your Fishjam backend safely to production, moving from sandbox to a production-ready setup.
 ---
 
-import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
 
 # How to Deploy Fishjam to Production
 
@@ -15,27 +15,29 @@ This guide covers the essential steps to move from development (using the Sandbo
 ## Prerequisites
 
 - Working Fishjam backend (see [Backend Quick Start](../../tutorials/backend-quick-start))
-- Production Fishjam environment (not Sandbox)
+- A Fishjam account on the **Standard Jar** plan (recommended for production deployments)
 - Domain and SSL certificates for your backend
 - Production database and infrastructure
 
-## Step 1: Set up production Fishjam environment
+## Step 1: Get your Fishjam credentials
 
-### Get production credentials
+### Get credentials from the dashboard
 
 1. Log in to [Fishjam Dashboard](https://fishjam.io/app)
-2. Create or select your **Production** environment (not Sandbox)
-3. Copy your production **Fishjam ID** and **Management Token**
-4. Note: These are different from your sandbox credentials
+2. Copy your **Fishjam ID** and **Management Token** from the dashboard
+
+:::tip
+The **Standard Jar** plan is recommended for production deployments. With the **Mini Jar** plan, you can still develop and test using the Sandbox API, but production deployments should use the Standard Jar plan to get full access and reliability guarantees.
+:::
 
 ### Environment variables setup
 
-Create production environment variables:
+Create your environment variables:
 
 ```bash
-# Production Fishjam credentials
-FISHJAM_ID="your-production-fishjam-id"
-FISHJAM_MANAGEMENT_TOKEN="your-production-management-token"
+# Fishjam credentials
+FISHJAM_ID="your-fishjam-id"
+FISHJAM_MANAGEMENT_TOKEN="your-management-token"
 
 # Your application settings
 NODE_ENV="production"
@@ -47,7 +49,7 @@ JWT_SECRET="your-secure-jwt-secret"
 CORS_ORIGIN="https://yourdomain.com"
 ```
 
-## Step 2: Implement proper authentication
+## Step 2: Replace Sandbox API with proper authentication
 
 ### Replace Sandbox API calls
 
@@ -61,7 +63,8 @@ import express from "express";
 const authenticateUser = {} as any;
 const app = express();
 
-const { getSandboxPeerToken } = useSandbox();
+const sandboxApiUrl = "your-sandbox-api-url-here";
+const { getSandboxPeerToken } = useSandbox({ sandboxApiUrl });
 
 const userToken = "";
 const roomName = "";

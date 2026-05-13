@@ -4,8 +4,8 @@ sidebar_position: 0
 description: Step-by-step guide to integrating Fishjam into a React Native application with a working video streaming app.
 ---
 
-import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
 
 # React Native Quick Start
 
@@ -130,11 +130,14 @@ cd ios && pod install
   </TabItem>
 </Tabs>
 
-### Get your Fishjam ID
+### Get your Fishjam ID and Sandbox API URL
 
 1. Log in to [Fishjam Dashboard](https://fishjam.io/app)
-2. Navigate to your Sandbox environment
-3. Copy your Fishjam ID
+2. Copy your Fishjam ID
+3. Navigate to the [Sandbox tab](https://fishjam.io/app/sandbox)
+4. Copy your Sandbox API URL from the **Sandbox API** section
+
+The Fishjam ID is required by `FishjamProvider` to connect to the media server. The Sandbox API URL is used by `useSandbox` to request test peer tokens from the sandbox.
 
 ### Set up Fishjam context
 
@@ -179,17 +182,21 @@ import {
   useInitializeDevices,
 } from "@fishjam-cloud/react-native-client";
 
+const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+
 export function JoinRoomButton() {
   const { joinRoom } = useConnection();
   const { initializeDevices } = useInitializeDevices();
-  const { getSandboxPeerToken } = useSandbox();
+  const { getSandboxPeerToken } = useSandbox({
+    sandboxApiUrl: SANDBOX_API_URL,
+  });
 
   const handleJoinRoom = async () => {
     const roomName = "testRoom";
     const peerName = "testUser";
 
-    // In sandbox environment, you can get the peer token from our sandbox API
-    // In production environment, you need to get it from your backend
+    // For testing with the Sandbox API, use getSandboxPeerToken
+    // For production apps, get the peerToken from your own backend instead
     const peerToken = await getSandboxPeerToken(roomName, peerName);
 
     // Start camera by selecting the first available camera
@@ -312,8 +319,8 @@ import {
   type MediaStream,
 } from "@fishjam-cloud/react-native-client";
 
-// Check https://fishjam.io/app/ for your Fishjam ID
 const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
 
 // ---cut---
 function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
@@ -335,7 +342,9 @@ function VideoCall() {
   const { cameraStream } = useCamera();
   const { remotePeers } = usePeers();
   const { initializeDevices } = useInitializeDevices();
-  const { getSandboxPeerToken } = useSandbox();
+  const { getSandboxPeerToken } = useSandbox({
+    sandboxApiUrl: SANDBOX_API_URL,
+  });
 
   const [isJoined, setIsJoined] = useState(false);
 
@@ -346,8 +355,8 @@ function VideoCall() {
     // Initialize devices first
     await initializeDevices();
 
-    // In sandbox environment, you can get the peer token from our sandbox API
-    // In production environment, you need to get it from your backend
+    // For testing with the Sandbox API, use getSandboxPeerToken
+    // For production apps, get the peerToken from your own backend instead
     const peerToken = await getSandboxPeerToken(roomName, peerName);
 
     await joinRoom({ peerToken });

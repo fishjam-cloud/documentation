@@ -5,8 +5,8 @@ sidebar_label: "Picture in Picture 📱"
 description: Display video in a floating PiP window when the user backgrounds the app on Android or iOS.
 ---
 
-import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
 
 # Picture in Picture <span className="badge badge--mobile">Mobile</span>
 
@@ -450,10 +450,14 @@ import {
   useSandbox,
 } from "@fishjam-cloud/react-native-client";
 
+const SANDBOX_API_URL = "your-sandbox-api-url-here";
+
 export function LivestreamScreen() {
   const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
   const { connect, stream } = useLivestreamViewer();
-  const { getSandboxViewerToken } = useSandbox();
+  const { getSandboxViewerToken } = useSandbox({
+    sandboxApiUrl: SANDBOX_API_URL,
+  });
 
   useEffect(() => {
     const connectToStream = async () => {
@@ -533,9 +537,13 @@ import {
   stopPIP,
 } from "@fishjam-cloud/react-native-client";
 
+const SANDBOX_API_URL = "your-sandbox-api-url-here";
+
 export function LivestreamViewerScreen() {
   const pipViewRef = useRef<React.ElementRef<typeof RTCPIPView>>(null);
-  const { getSandboxViewerToken } = useSandbox();
+  const { getSandboxViewerToken } = useSandbox({
+    sandboxApiUrl: SANDBOX_API_URL,
+  });
   const { connect, disconnect, stream } = useLivestreamViewer();
 
   useEffect(() => {
