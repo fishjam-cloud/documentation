@@ -1,0 +1,181 @@
+---
+type: explanation
+sidebar_position: 0
+---
+
+# React Native Examples
+
+_Runnable reference apps demonstrating common Fishjam use cases in React Native_
+
+Each example is a standalone Expo application you can run locally and use as a starting point for your own project.
+All examples use `@fishjam-cloud/react-native-client` and require a Fishjam ID from the [Fishjam Dashboard](https://fishjam.io/app).
+
+| Example                                   | What it demonstrates                                                  |
+| ----------------------------------------- | --------------------------------------------------------------------- |
+| [Minimal Video Room](#minimal-video-room) | Simplest possible video call — the baseline for all other examples    |
+| [Fishjam Chat](#fishjam-chat)             | Full-featured video conferencing and livestreaming app with simulcast |
+| [Background Blur](#background-blur)       | Applying real-time video effects via camera track middleware          |
+| [Text Chat](#text-chat)                   | Peer-to-peer text messaging with WebRTC data channels                 |
+| [Video Player](#video-player)             | Livestream broadcaster and viewer with separate UI modes              |
+
+---
+
+## Minimal Video Room
+
+The simplest way to get video calling working — joining a room, displaying your own camera feed, and showing remote participants. Start here if you're new to Fishjam.
+
+**Demonstrates:**
+
+- Wrapping your app in `FishjamProvider`
+- Connecting to a room with `useConnection`
+- Accessing local and remote peers with `usePeers`
+- Rendering video streams with `RTCView`
+
+### Running the example
+
+```bash
+cd minimal-react-native
+yarn install
+npx expo prebuild
+npx expo run:android  # or run:ios
+```
+
+:::important
+This won't work on the iOS Simulator — the Simulator can't access the camera. Test on a real device.
+:::
+
+The room screen uses `usePeers` to retrieve all participants and renders their camera streams in a two-column grid with `RTCView`.
+
+Browse the full source: [minimal-react-native on GitHub](https://github.com/fishjam-cloud/examples/tree/main/mobile-react-native/minimal-react-native)
+
+---
+
+## Fishjam Chat
+
+A full-featured application covering two distinct room types: a video conferencing room (conference call with multiple participants) and a livestream room (one broadcaster, many viewers). It is the most complete example and the best reference for production-like architecture.
+
+**Demonstrates:**
+
+- Tab-based navigation between VideoRoom and Livestream features
+- Pre-call room preview before joining
+- Environment switching between staging and production
+- Screen sharing from a livestream broadcaster
+- Permission handling with a reusable `useMediaPermissions` hook
+- Selecting received video quality with simulcast (`setReceivedQuality`)
+
+### Running the example
+
+```bash
+cd fishjam-chat
+yarn install
+npx expo prebuild
+npx expo run:android  # or run:ios
+```
+
+:::important
+Before prebuilding, replace the bundle identifier `io.fishjam.example.fishjamchat` with your own in `app.json` (both the Android package name and iOS bundle identifier fields).
+:::
+
+The app uses Expo Router with a bottom tab navigator. Each tab handles its own connection flow independently using `useConnection`.
+
+Browse the full source: [fishjam-chat on GitHub](https://github.com/fishjam-cloud/examples/tree/main/mobile-react-native/fishjam-chat)
+
+---
+
+## Background Blur
+
+Demonstrates how to apply real-time background blur to a local camera feed using camera track middleware. Blur can be toggled on and off during an active call without reconnecting.
+
+**Demonstrates:**
+
+- Installing and using `@fishjam-cloud/react-native-webrtc-background-blur`
+- Applying a video effect with `setCameraTrackMiddleware`
+- Removing an effect by passing `null` to `setCameraTrackMiddleware`
+
+### Running the example
+
+Install the additional blur package first:
+
+```bash npm2yarn
+npm install @fishjam-cloud/react-native-webrtc-background-blur
+```
+
+```bash
+cd blur-example
+yarn install
+npx expo prebuild
+npx expo run:android  # or run:ios
+```
+
+:::info
+Blur applies only to the local camera feed sent to other participants. Remote participants' video is unaffected.
+:::
+
+The blur hook from `useBackgroundBlur` provides a `middleware` function that is passed directly to `setCameraTrackMiddleware`. Passing `null` disables the effect.
+
+Browse the full source: [blur-example on GitHub](https://github.com/fishjam-cloud/examples/tree/main/mobile-react-native/blur-example)
+
+---
+
+## Text Chat
+
+Demonstrates peer-to-peer text messaging over WebRTC data channels — no separate messaging server required. Messages are sent directly between peers inside the Fishjam room.
+
+**Demonstrates:**
+
+- Initializing a data channel with `useDataChannel`
+- Publishing messages with `publishData`
+- Receiving incoming messages via the `onDataReceived` callback
+- Encoding and decoding message payloads with JSON
+
+### Running the example
+
+```bash
+cd text-chat
+yarn install
+npx expo prebuild
+npx expo run:android  # or run:ios
+```
+
+:::info
+Data channels use `reliable` mode by default, which guarantees message delivery and ordering — similar to TCP.
+:::
+
+Messages are `Uint8Array` payloads encoded and decoded with JSON and `TextEncoder`/`TextDecoder`. The `useDataChannel` hook wires together `publishData` for sending and `onDataReceived` for receiving.
+
+Browse the full source: [text-chat on GitHub](https://github.com/fishjam-cloud/examples/tree/main/mobile-react-native/text-chat)
+
+---
+
+## Video Player
+
+A focused livestreaming example with two separate modes: a streamer who broadcasts video and audio, and a viewer who watches the stream. Unlike Fishjam Chat, this example uses a single `App.tsx` entry point with a simple role selector screen.
+
+**Demonstrates:**
+
+- Broadcasting with `useLivestreamStreamer`
+- Watching a stream with `useLivestreamViewer`
+- Initializing camera and microphone with `useInitializeDevices`
+- Toggling camera and microphone tracks during an active stream
+
+### Running the example
+
+```bash
+cd video-player
+yarn install
+npx expo prebuild
+npx expo run:android  # or run:ios
+```
+
+The streamer side uses `useLivestreamStreamer` and `useInitializeDevices` to start broadcasting, while the viewer side uses `useLivestreamViewer` to connect and render the incoming stream with `RTCView`.
+
+Browse the full source: [video-player on GitHub](https://github.com/fishjam-cloud/examples/tree/main/mobile-react-native/video-player)
+
+---
+
+## Next steps
+
+- Follow the [React Native Quick Start](../tutorials/react-native-quick-start) if you haven't set up a project yet
+- Learn how to [handle screen sharing](../how-to/client/screensharing)
+- Learn how to [implement background streaming](../how-to/client/background-streaming)
+- Learn how to [work with data channels](../how-to/client/text-chat)
