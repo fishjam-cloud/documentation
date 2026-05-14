@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Fishjam Room Manager
-  version: 0.25.0
+  version: 0.27.0
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
@@ -110,8 +110,12 @@ components:
       default: "false"
       description: Determines if livestream is public or private
     viewerToken:
-      type: string
-      description: Token used to authenticate viewer to a livestream
+      type: object
+      properties:
+        token:
+          type: string
+      required:
+        - token
     streamerTokenResponse:
       type: object
       properties:
@@ -131,6 +135,17 @@ components:
       required:
         - streamerToken
         - room
+    moqToken:
+      type: object
+      properties:
+        token:
+          type: string
+      required:
+        - token
+    streamName:
+      type: string
+      minLength: 1
+      maxLength: 100
   parameters: {}
 paths:
   /room-manager:
@@ -229,6 +244,54 @@ paths:
                 $ref: "#/components/schemas/streamerTokenResponse"
         default:
           description: Failed to get livestream streamer token
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /room-manager/moq/{streamName}/publisher:
+    get:
+      summary: Get publisher token for a MoQ stream
+      operationId: publisherToken
+      security: []
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/streamName"
+          required: true
+          name: streamName
+          in: path
+      responses:
+        "200":
+          description: Get MoQ publisher token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/moqToken"
+        default:
+          description: Failed to get MoQ publisher token
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
+  /room-manager/moq/{streamName}/subscriber:
+    get:
+      summary: Get subscriber token for a MoQ stream
+      operationId: subscriberToken
+      security: []
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/streamName"
+          required: true
+          name: streamName
+          in: path
+      responses:
+        "200":
+          description: Get MoQ subscriber token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/moqToken"
+        default:
+          description: Failed to get MoQ subscriber token
           content:
             text/plain:
               schema:

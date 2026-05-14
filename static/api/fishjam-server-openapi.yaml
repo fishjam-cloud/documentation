@@ -120,6 +120,17 @@ components:
           type: string
       title: StreamConfig
       type: object
+    MoqToken:
+      description: Token for authorizing a MoQ relay connection
+      properties:
+        token:
+          description: JWT token for MoQ relay
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb290IjoiZmlzaGphbSIsInB1dCI6WyJteS1zdHJlYW0iXSwiZ2V0IjpbXSwiaWF0IjoxNzEzMzYwMDAwLCJleHAiOjE3MTMzNjM2MDB9.abc123
+          type: string
+      required:
+        - token
+      title: MoqToken
+      type: object
     Error:
       description: Error message
       properties:
@@ -270,6 +281,22 @@ components:
         - peerId
         - inputId
       title: TrackForwardingInfo
+      type: object
+    MoqTokenConfig:
+      additionalProperties: false
+      description: MoQ token configuration
+      properties:
+        publishPath:
+          description: Path under the root the token grants publish access to
+          example: my-stream
+          nullable: true
+          type: string
+        subscribePath:
+          description: Path under the root the token grants subscribe access to
+          example: my-stream
+          nullable: true
+          type: string
+      title: MoqTokenConfig
       type: object
     RoomType:
       default: conference
@@ -611,7 +638,7 @@ info:
 
     You can learn more about our SDKs in our [SDK Docs](http://fishjam.swmansion.com/docs/how-to/backend/server-setup)
   title: Fishjam API
-  version: 0.26.4
+  version: 0.27.0
 openapi: 3.0.0
 paths:
   /livestream:
@@ -918,6 +945,48 @@ paths:
       summary: Delete a viewer
       tags:
         - Viewers
+  /moq/token:
+    post:
+      callbacks: {}
+      description: Issue a short-lived JWT for a Media over QUIC client.
+      operationId: create_moq_token
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MoqTokenConfig"
+        required: false
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MoqToken"
+          description: MoQ token successfully created
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Invalid request structure
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Service temporarily unavailable
+      security:
+        - management_token: []
+      summary: Create a MoQ token
+      tags:
+        - MoQ
   /room:
     get:
       callbacks: {}
@@ -1556,3 +1625,10 @@ tags:
       Only the `"all"` selector is currently supported, which forwards every
       active track in the room.
     name: Track Forwardings
+  - description: |
+      Issue short-lived JWT tokens that authorize **Media over QUIC** relay
+      clients to publish and/or subscribe under a scoped path.
+
+      A token grants access to its `publishPath` and/or `subscribePath` for one
+      hour; clients must request a fresh token after that window.
+    name: MoQ
