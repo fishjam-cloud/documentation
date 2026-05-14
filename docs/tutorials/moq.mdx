@@ -45,10 +45,11 @@ Fetch a sandbox publisher token from the Room Manager:
 
 ```ts
 const FISHJAM_ID = "YOUR_FISHJAM_ID";
-const PUBLISHER_PATH = "stream/alice";
+const PUBLISHER_PATH = "stream-alice";
+const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
 
 const response = await fetch(
-  `https://fishjam.io/api/v1/connect/${FISHJAM_ID}/room-manager/moq/${PUBLISHER_PATH}/publisher`,
+  `${SANDBOX_API_URL}/moq/${PUBLISHER_PATH}/publisher`,
 );
 const { token: publishToken } = await response.json();
 ```
@@ -69,7 +70,7 @@ import * as Moq from "@moq/lite";
 import * as Publish from "@moq/publish";
 
 const FISHJAM_ID = "YOUR_FISHJAM_ID";
-const PUBLISHER_PATH = "stream/alice";
+const PUBLISHER_PATH = "stream-alice";
 const publishToken = "";
 
 // ---cut---
@@ -112,10 +113,11 @@ Fetch a sandbox subscriber token using the Sandbox API:
 
 ```ts
 const FISHJAM_ID = "YOUR_FISHJAM_ID";
-const SUBSCRIBER_PATH = "stream/alice";
+const SUBSCRIBER_PATH = "stream-alice";
+const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
 
 const response = await fetch(
-  `https://fishjam.io/api/v1/connect/${FISHJAM_ID}/room-manager/moq/${SUBSCRIBER_PATH}/subscriber`,
+  `${SANDBOX_API_URL}/moq/${SUBSCRIBER_PATH}/subscriber`,
 );
 const { token: subscribeToken } = await response.json();
 ```
@@ -142,7 +144,7 @@ import * as Moq from "@moq/lite";
 import * as Watch from "@moq/watch";
 
 const FISHJAM_ID = "YOUR_FISHJAM_ID";
-const SUBSCRIBER_PATH = "stream/alice";
+const SUBSCRIBER_PATH = "stream-alice";
 const subscribeToken = "";
 
 // ---cut---
@@ -182,22 +184,26 @@ That's it! The stream will appear in the canvas once the publisher starts broadc
 
 If you don't need fine-grained control over the rendering pipeline, the `@moq/watch` package ships a ready-to-use custom element that wraps connection, subscription, decoding, and rendering behind a single HTML tag.
 
-Import once to register the element:
+Import once to register the elements — `@moq/watch/element` registers `<moq-watch>` (which renders the stream) and `@moq/watch/ui` registers `<moq-watch-ui>` (which decorates a child `<moq-watch>` with play/pause, volume, latency, and buffer controls):
 
 ```ts
 import "@moq/watch/element";
+import "@moq/watch/ui";
 ```
 
-Then drop `<moq-watch>` into your HTML — pass the relay URL (with the JWT token in the query string) and the broadcast path:
+Then drop `<moq-watch-ui>` wrapping `<moq-watch>` into your HTML — pass the relay URL (with the JWT token in the query string) and the broadcast path:
 
 ```html
-<moq-watch
-  url="https://relay.fishjam.io/YOUR_FISHJAM_ID?jwt=YOUR_TOKEN"
-  name="stream/alice"
-  latency="real-time"
-  reload
->
-</moq-watch>
+<moq-watch-ui>
+  <moq-watch
+    url="https://relay.fishjam.io/YOUR_FISHJAM_ID?jwt=YOUR_TOKEN"
+    name="stream-alice"
+    latency="real-time"
+    reload
+  >
+    <canvas></canvas>
+  </moq-watch>
+</moq-watch-ui>
 ```
 
 The element observes attributes like `url`, `name`, `paused`, `muted`, `volume`, `latency`, and `reload`, so you can drive playback from JavaScript by updating them at runtime.
@@ -228,14 +234,14 @@ MoQ tokens are path-scoped: a publisher token grants write access to a specific 
       managementToken,
     });
 
-    const streamPath = 'stream/alice';
+    const streamPath = 'stream-alice';
 
-    // Generate a token that allows publishing to 'stream/alice'
+    // Generate a token that allows publishing to 'stream-alice'
     const { token: publishToken } = await fishjamClient.createMoqToken({
       publishPath: streamPath,
     });
 
-    // Generate a token that allows subscribing to 'stream/alice'
+    // Generate a token that allows subscribing to 'stream-alice'
     const { token: subscribeToken } = await fishjamClient.createMoqToken({
       subscribePath: streamPath,
     });
@@ -253,12 +259,12 @@ MoQ tokens are path-scoped: a publisher token grants write access to a specific 
       management_token=management_token,
     )
 
-    stream_path = 'stream/alice'
+    stream_path = 'stream-alice'
 
-    # Generate a token that allows publishing to 'stream/alice'
+    # Generate a token that allows publishing to 'stream-alice'
     publish_token = fishjam_client.create_moq_token(publish_path=stream_path)
 
-    # Generate a token that allows subscribing to 'stream/alice'
+    # Generate a token that allows subscribing to 'stream-alice'
     subscribe_token = fishjam_client.create_moq_token(subscribe_path=stream_path)
     ```
 
@@ -336,25 +342,30 @@ Then on the client, read connection.announced — a reactive Set of the paths cu
 // @noErrors
 import * as Moq from "@moq/lite";
 import { Effect, Signal } from "@moq/signals";
-import { Watch } from "@moq/hang";
+import * as Watch from "@moq/watch";
+
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const namespaceToken = "token";
 
 // ---cut---
 // Reload manages the WebTransport session: it connects, auto-reconnects on drop,
 // and exposes `announced` as a reactive Set<Path> of publishers currently online.
 const connection = new Moq.Connection.Reload({
-  url: new Signal(new URL("https://relay.example.com/room")),
+  url: new Signal(
+    new URL(`https://moq.fishjam.work/${FISHJAM_ID}?jwt=${namespaceToken}`),
+  ),
   enabled: new Signal(true),
 });
 
 // Tracks which broadcasts already have a tile, so we don't mount duplicates
 // when the Effect below re-runs on every announce change.
-const seen = new Set<string>();
+const mountedStreams = new Set<string>();
 
 new Effect().run((effect) => {
   for (const path of effect.get(connection.announced)) {
     const key = path.toString();
-    if (seen.has(key)) continue;
-    seen.add(key);
+    if (mountedStreams.has(key)) continue;
+    mountedStreams.add(key);
 
     const canvas = document.createElement("canvas");
     document.body.appendChild(canvas);
