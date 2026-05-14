@@ -81,11 +81,8 @@ const relayUrl = new URL(
 // Connect to the Fishjam MoQ relay
 const connection = await Moq.Connection.connect(relayUrl);
 
-// Get camera and microphone access
-const camera = await navigator.mediaDevices.getUserMedia({
-  video: true,
-  audio: true,
-});
+const camera = new Publish.Source.Camera({ enabled: true });
+const microphone = new Publish.Source.Microphone({ enabled: true });
 
 // Set up a broadcast with video and audio tracks
 const broadcast = new Publish.Broadcast({
@@ -93,12 +90,12 @@ const broadcast = new Publish.Broadcast({
   name: Moq.Path.from(PUBLISHER_PATH),
   enabled: true,
   video: {
-    source: camera.getVideoTracks()[0] as Publish.Video.Source,
+    source: camera.source,
     hd: { enabled: true },
   },
   audio: {
     enabled: true,
-    source: camera.getAudioTracks()[0] as Publish.Audio.Source,
+    source: microphone.source,
   },
 });
 ```
@@ -131,7 +128,13 @@ Install the MoQ packages:
 npm install @moq/lite @moq/watch
 ```
 
-Use the token to connect and receive the stream:
+Add a `<canvas>` element to your page — `MultiBackend` will paint decoded frames onto it:
+
+```html
+<canvas id="remote"></canvas>
+```
+
+Then use the token to connect and render the stream onto that canvas:
 
 ```ts
 // @noErrors
@@ -158,8 +161,9 @@ const broadcast = new Watch.Broadcast({
   enabled: true,
 });
 
-// Attach to a canvas element — MultiBackend handles decoding and rendering
-const canvas = document.querySelector("canvas")!;
+// Grab the canvas from the DOM and hand it to MultiBackend,
+// which handles decoding and rendering of both video and audio
+const canvas = document.getElementById("remote") as HTMLCanvasElement;
 const backend = new Watch.MultiBackend({
   element: canvas,
   broadcast,
@@ -167,7 +171,36 @@ const backend = new Watch.MultiBackend({
 });
 ```
 
+:::info
+**Why `<canvas>`?** \
+Watch.MultiBackend renders to a `<canvas>` so it can decode frames directly through the WebCodecs API, which natively supports the codecs MoQ delivers. A `<video>` element is also supported, but it relies on Media Source Extensions and requires remuxing each stream into fMP4 first.
+:::
+
 That's it! The stream will appear in the canvas once the publisher starts broadcasting.
+
+#### Using the `<moq-watch>` web component
+
+If you don't need fine-grained control over the rendering pipeline, the `@moq/watch` package ships a ready-to-use custom element that wraps connection, subscription, decoding, and rendering behind a single HTML tag.
+
+Import once to register the element:
+
+```ts
+import "@moq/watch/element";
+```
+
+Then drop `<moq-watch>` into your HTML — pass the relay URL (with the JWT token in the query string) and the broadcast path:
+
+```html
+<moq-watch
+  url="https://relay.fishjam.io/YOUR_FISHJAM_ID?jwt=YOUR_TOKEN"
+  name="stream/alice"
+  latency="real-time"
+  reload
+>
+</moq-watch>
+```
+
+The element observes attributes like `url`, `name`, `paused`, `muted`, `volume`, `latency`, and `reload`, so you can drive playback from JavaScript by updating them at runtime.
 
 ## Production MoQ with Server SDKs
 
@@ -297,70 +330,46 @@ To do this, generate a subscriber token scoped to the room namespace instead of 
   </TabItem>
 </Tabs>
 
-Then on the client, call `connection.announced()` to receive a live feed of announce events. Each event tells you whether a path is becoming **active** (a publisher just joined) or going inactive (a publisher disconnected). Loop over them to subscribe and clean up as publishers come and go:
+Then on the client, read connection.announced — a reactive Set of the paths currently being published. Wrap the read in an Effect, and the callback re-runs every time a publisher joins or leaves, with the Set reflecting the live state. Iterate it to subscribe to any path you haven't seen yet:
 
 ```ts
 // @noErrors
 import * as Moq from "@moq/lite";
-import * as Watch from "@moq/watch";
-
-const FISHJAM_ID = "YOUR_FISHJAM_ID";
-const ROOM_NAME = "my-room";
-const namespaceToken = "";
+import { Effect, Signal } from "@moq/signals";
+import { Watch } from "@moq/hang";
 
 // ---cut---
-const relayUrl = new URL(
-  `https://relay.fishjam.io/${FISHJAM_ID}/${ROOM_NAME}?jwt=${namespaceToken}`,
-);
+// Reload manages the WebTransport session: it connects, auto-reconnects on drop,
+// and exposes `announced` as a reactive Set<Path> of publishers currently online.
+const connection = new Moq.Connection.Reload({
+  url: new Signal(new URL("https://relay.example.com/room")),
+  enabled: new Signal(true),
+});
 
-const connection = await Moq.Connection.connect(relayUrl);
+// Tracks which broadcasts already have a tile, so we don't mount duplicates
+// when the Effect below re-runs on every announce change.
+const seen = new Set<string>();
 
-// Keep references so we can clean up when a publisher goes offline
-const slots = new Map<
-  string,
-  {
-    broadcast: Watch.Broadcast;
-    backend: Watch.MultiBackend;
-    canvas: HTMLCanvasElement;
-  }
->();
-
-const announced = connection.announced();
-
-while (true) {
-  const entry = await announced.next();
-  if (!entry) break; // connection closed
-
-  const key = entry.path.toString();
-
-  if (entry.active) {
-    // New publisher — subscribe and render
-    const broadcast = new Watch.Broadcast({
-      connection,
-      name: entry.path,
-      enabled: true,
-    });
+new Effect().run((effect) => {
+  for (const path of effect.get(connection.announced)) {
+    const key = path.toString();
+    if (seen.has(key)) continue;
+    seen.add(key);
 
     const canvas = document.createElement("canvas");
     document.body.appendChild(canvas);
 
-    const backend = new Watch.MultiBackend({
+    new Watch.MultiBackend({
+      connection: connection.established,
+      broadcast: new Watch.Broadcast({
+        connection: connection.established,
+        name: path,
+        enabled: true,
+      }),
       element: canvas,
-      broadcast,
-      paused: false,
     });
-
-    slots.set(key, { broadcast, backend, canvas });
-  } else {
-    // Publisher disconnected — tear down its slot
-    const slot = slots.get(key);
-    if (!slot) continue;
-    slot.backend.close();
-    slot.broadcast.close();
-    slot.canvas.remove();
-    slots.delete(key);
   }
-}
+});
 ```
 
 ## See also
