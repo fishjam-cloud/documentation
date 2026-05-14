@@ -50,6 +50,8 @@ if [ -f package.json ]; then
     corepack yarn update-modules
     echo "Update API"
     corepack yarn update-api
+    echo "Generate Python docs"
+    corepack yarn generate:python:docs
     echo "Docosaurus version"
     corepack yarn docusaurus docs:version "$VERSION"
 
