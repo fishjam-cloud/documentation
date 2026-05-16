@@ -1,0 +1,395 @@
+---
+type: tutorial
+sidebar_position: 5
+title: MoQ Streaming
+description: Stream live video and audio over Media over QUIC (MoQ) with Fishjam, from sandbox prototyping to production deployment.
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# MoQ Streaming
+
+This section explains how to publish and subscribe to live streams using [Media over QUIC (MoQ)](https://datatracker.ietf.org/wg/moq/about/) with Fishjam.
+MoQ uses QUIC as its transport layer (with a WebSocket fallback), delivering ultra-low latency at scale — making it ideal for interactive broadcasts, live events, and large-audience streams.
+
+:::info
+If you're new to MoQ, then we recommend getting familiar with the [MoQ Streaming with Fishjam](../explanation/moq-streaming) explanation.
+:::
+
+We show how to quickly prototype in [Quickstart with the Sandbox API](#quickstart-with-the-sandbox-api) and how to get ready for production in [Production MoQ with Server SDKs](#production-moq-with-server-sdks).
+
+:::info
+Fishjam supports both WebRTC-based livestreaming (WHIP/WHEP) and MoQ streaming. \
+**MoQ** is a new protocol designed from the ground up for scalable, low-latency delivery to large audiences.\
+**WebRTC** is a mature, battle-tested technology built for low-latency peer-to-peer conferencing and interactive streaming.
+
+See [Livestreaming](./livestreaming) for the WebRTC approach.
+:::
+
+## Quickstart with the Sandbox API
+
+If you don't have a backend server set up, you can prototype a MoQ streaming scenario using the Sandbox API.
+
+:::tip
+MoQ is a protocol with a well-defined negotiation, so in theory any compliant MoQ client should work. That said, we recommend using the [`@moq`](https://github.com/moq-dev/moq) client libraries — the reference TypeScript implementation maintained alongside the protocol. For more details, see the [documentation](https://doc.moq.dev/js/).
+:::
+
+### Publisher setup
+
+To start publishing a MoQ stream, you need two things: a _publisher token_ and the relay URL.
+
+#### Obtaining a publisher token
+
+Fetch a sandbox publisher token from the Room Manager:
+
+```ts
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const PUBLISHER_PATH = "stream-alice";
+const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+
+const response = await fetch(
+  `${SANDBOX_API_URL}/moq/${PUBLISHER_PATH}/publisher`,
+);
+const { token: publishToken } = await response.json();
+```
+
+#### Connecting and publishing
+
+Install the MoQ packages:
+
+```bash npm2yarn
+npm install @moq/lite @moq/publish
+```
+
+Use the token to connect to the Fishjam MoQ relay and start broadcasting:
+
+```ts
+// @noErrors
+import * as Moq from "@moq/lite";
+import * as Publish from "@moq/publish";
+
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const PUBLISHER_PATH = "stream-alice";
+const publishToken = "";
+
+// ---cut---
+// Build the relay URL using the publisher token
+const relayUrl = new URL(
+  `https://relay.fishjam.io/${FISHJAM_ID}?jwt=${publishToken}`,
+);
+
+// Connect to the Fishjam MoQ relay
+const connection = await Moq.Connection.connect(relayUrl);
+
+const camera = new Publish.Source.Camera({ enabled: true });
+const microphone = new Publish.Source.Microphone({ enabled: true });
+
+// Set up a broadcast with video and audio tracks
+const broadcast = new Publish.Broadcast({
+  connection,
+  name: Moq.Path.from(PUBLISHER_PATH),
+  enabled: true,
+  video: {
+    source: camera.source,
+    hd: { enabled: true },
+  },
+  audio: {
+    enabled: true,
+    source: microphone.source,
+  },
+});
+```
+
+The stream is now live on the MoQ relay! Viewers can now start watching the stream by following the steps in [Subscriber setup](#subscriber-setup)
+
+### Subscriber setup
+
+To receive a MoQ stream you need one thing: a _subscriber token_.
+
+#### Obtaining a subscriber token
+
+Fetch a sandbox subscriber token using the Sandbox API:
+
+```ts
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const SUBSCRIBER_PATH = "stream-alice";
+const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+
+const response = await fetch(
+  `${SANDBOX_API_URL}/moq/${SUBSCRIBER_PATH}/subscriber`,
+);
+const { token: subscribeToken } = await response.json();
+```
+
+#### Connecting and subscribing
+
+Install the MoQ packages:
+
+```bash npm2yarn
+npm install @moq/lite @moq/watch
+```
+
+Add a `<canvas>` element to your page — `MultiBackend` will paint decoded frames onto it:
+
+```html
+<canvas id="remote"></canvas>
+```
+
+Then use the token to connect and render the stream onto that canvas:
+
+```ts
+// @noErrors
+import * as Moq from "@moq/lite";
+import * as Watch from "@moq/watch";
+
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const SUBSCRIBER_PATH = "stream-alice";
+const subscribeToken = "";
+
+// ---cut---
+// Build the relay URL using the subscriber token
+const relayUrl = new URL(
+  `https://relay.fishjam.io/${FISHJAM_ID}?jwt=${subscribeToken}`,
+);
+
+// Connect to the Fishjam MoQ relay
+const connection = await Moq.Connection.connect(relayUrl);
+
+// Subscribe to the broadcast
+const broadcast = new Watch.Broadcast({
+  connection,
+  name: Moq.Path.from(SUBSCRIBER_PATH),
+  enabled: true,
+});
+
+// Grab the canvas from the DOM and hand it to MultiBackend,
+// which handles decoding and rendering of both video and audio
+const canvas = document.getElementById("remote") as HTMLCanvasElement;
+const backend = new Watch.MultiBackend({
+  element: canvas,
+  broadcast,
+  paused: false,
+});
+```
+
+:::info
+**Why `<canvas>`?** \
+Watch.MultiBackend renders to a `<canvas>` so it can decode frames directly through the WebCodecs API, which natively supports the codecs MoQ delivers. A `<video>` element is also supported, but it relies on Media Source Extensions and requires remuxing each stream into fMP4 first.
+:::
+
+That's it! The stream will appear in the canvas once the publisher starts broadcasting.
+
+#### Using the `<moq-watch>` web component
+
+If you don't need fine-grained control over the rendering pipeline, the `@moq/watch` package ships a ready-to-use custom element that wraps connection, subscription, decoding, and rendering behind a single HTML tag.
+
+Import once to register the elements — `@moq/watch/element` registers `<moq-watch>` (which renders the stream) and `@moq/watch/ui` registers `<moq-watch-ui>` (which decorates a child `<moq-watch>` with play/pause, volume, latency, and buffer controls):
+
+```ts
+import "@moq/watch/element";
+import "@moq/watch/ui";
+```
+
+Then drop `<moq-watch-ui>` wrapping `<moq-watch>` into your HTML — pass the relay URL (with the JWT token in the query string) and the broadcast path:
+
+```html
+<moq-watch-ui>
+  <moq-watch
+    url="https://relay.fishjam.io/YOUR_FISHJAM_ID?jwt=YOUR_TOKEN"
+    name="stream-alice"
+    latency="real-time"
+    reload
+  >
+    <canvas></canvas>
+  </moq-watch>
+</moq-watch-ui>
+```
+
+The element observes attributes like `url`, `name`, `paused`, `muted`, `volume`, `latency`, and `reload`, so you can drive playback from JavaScript by updating them at runtime.
+
+## Production MoQ with Server SDKs
+
+The [Quickstart with the Sandbox API](#quickstart-with-the-sandbox-api) shows how to get MoQ streaming up and running quickly.
+In a production scenario, your backend generates tokens with proper authorization, allowing you to control who can publish and who can subscribe.
+
+MoQ tokens are path-scoped: a publisher token grants write access to a specific path, and a subscriber token grants read access. Your backend needs to:
+
+1. Generate a publisher token for the path your broadcaster will use.
+2. Generate a subscriber token for the path your viewers will use.
+3. Deliver each token to the appropriate client.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript">
+
+    ```ts
+    const fishjamId = '';
+    const managementToken = '';
+
+    // ---cut---
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamClient = new FishjamClient({
+      fishjamId,
+      managementToken,
+    });
+
+    const streamPath = 'stream-alice';
+
+    // Generate a token that allows publishing to 'stream-alice'
+    const { token: publishToken } = await fishjamClient.createMoqToken({
+      publishPath: streamPath,
+    });
+
+    // Generate a token that allows subscribing to 'stream-alice'
+    const { token: subscribeToken } = await fishjamClient.createMoqToken({
+      subscribePath: streamPath,
+    });
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    from fishjam import FishjamClient
+
+    fishjam_client = FishjamClient(
+      fishjam_id=fishjam_id,
+      management_token=management_token,
+    )
+
+    stream_path = 'stream-alice'
+
+    # Generate a token that allows publishing to 'stream-alice'
+    publish_token = fishjam_client.create_moq_token(publish_path=stream_path)
+
+    # Generate a token that allows subscribing to 'stream-alice'
+    subscribe_token = fishjam_client.create_moq_token(subscribe_path=stream_path)
+    ```
+
+  </TabItem>
+</Tabs>
+
+Deliver these tokens to your clients, then use them to connect as described in [Connecting and publishing](#connecting-and-publishing) and [Connecting and subscribing](#connecting-and-subscribing).
+
+:::tip
+A single token should only grant either `publishPath` _or_ `subscribePath` — not both.
+Streamers receive a publisher token; viewers receive a subscriber token.
+This separation ensures a viewer can never accidentally publish to the stream.
+:::
+
+### Subscribe to a namespace
+
+When multiple publishers join a room, you won't know their exact paths in advance.
+Instead of consuming a single path, you can **discover** all broadcasts published under a namespace prefix and subscribe to each one as they appear.
+
+To do this, generate a subscriber token scoped to the room namespace instead of a single stream path.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript">
+
+    ```ts
+    const fishjamId = '';
+    const managementToken = '';
+
+    // ---cut---
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamClient = new FishjamClient({ fishjamId, managementToken });
+
+    const roomName = 'my-room';
+
+    const { token: alicePublisherToken } = await fishjamClient.createMoqToken({
+      publishPath: roomName + "/alice",
+    });
+
+    const { token: bobPublisherToken } = await fishjamClient.createMoqToken({
+      publishPath: roomName + "/bob",
+    });
+
+
+    const { token: namespaceToken } = await fishjamClient.createMoqToken({
+      subscribePath: roomName,
+    });
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    from fishjam import FishjamClient
+
+    fishjam_client = FishjamClient(
+      fishjam_id=fishjam_id,
+      management_token=management_token,
+    )
+
+    room_name = 'my-room'
+    # Publishers under this namespace might use paths like:
+    # 'my-room/alice-camera', 'my-room/bob-screen', etc.
+
+    namespace_token = fishjam_client.create_moq_token(subscribe_path=room_name)
+    ```
+
+  </TabItem>
+</Tabs>
+
+Then on the client, read connection.announced — a reactive Set of the paths currently being published. Wrap the read in an Effect, and the callback re-runs every time a publisher joins or leaves, with the Set reflecting the live state. Iterate it to subscribe to any path you haven't seen yet:
+
+```ts
+// @noErrors
+import * as Moq from "@moq/lite";
+import { Effect, Signal } from "@moq/signals";
+import * as Watch from "@moq/watch";
+
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const namespaceToken = "token";
+
+// ---cut---
+// Reload manages the WebTransport session: it connects, auto-reconnects on drop,
+// and exposes `announced` as a reactive Set<Path> of publishers currently online.
+const connection = new Moq.Connection.Reload({
+  url: new Signal(
+    new URL(`https://moq.fishjam.work/${FISHJAM_ID}?jwt=${namespaceToken}`),
+  ),
+  enabled: new Signal(true),
+});
+
+// Tracks which broadcasts already have a tile, so we don't mount duplicates
+// when the Effect below re-runs on every announce change.
+const mountedStreams = new Set<string>();
+
+new Effect().run((effect) => {
+  for (const path of effect.get(connection.announced)) {
+    const key = path.toString();
+    if (mountedStreams.has(key)) continue;
+    mountedStreams.add(key);
+
+    const canvas = document.createElement("canvas");
+    document.body.appendChild(canvas);
+
+    new Watch.MultiBackend({
+      connection: connection.established,
+      broadcast: new Watch.Broadcast({
+        connection: connection.established,
+        name: path,
+        enabled: true,
+      }),
+      element: canvas,
+    });
+  }
+});
+```
+
+## See also
+
+If you want a better understanding of how MoQ works, see:
+
+- [MoQ Streaming with Fishjam](../explanation/moq-streaming)
+
+If you want to learn about streaming using WebRTC instead of MoQ, see:
+
+- [Livestreaming](./livestreaming)
+- [WHIP/WHEP with Fishjam](../how-to/backend/whip-whep)
