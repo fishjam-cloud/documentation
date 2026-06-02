@@ -377,10 +377,14 @@ After you're done using an agent, you can disconnect it from the room.
   <TabItem value="python" label="Python">
 
     ```python
+    import asyncio
+
     async def run():
         # the agent will disconnect once you exit the context
         async with agent.connect() as session:
             pass
+
+    asyncio.run(run())
     ```
 
   </TabItem>

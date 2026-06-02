@@ -76,7 +76,7 @@ You can read about this in detail in [Production Livestreaming with Server SDKs]
     fishjam_client = FishjamClient(
       fishjam_id=fishjam_id,
       management_token=management_token,
-    );
+    )
 
     room = fishjam_client.create_room(RoomOptions(room_type="livestream"))
     streamer_token = fishjam_client.create_livestream_streamer_token(room.id) # [!code highlight]
@@ -155,7 +155,7 @@ You can read about this in detail in [Production Livestreaming with Server SDKs]
     fishjam_client = FishjamClient(
       fishjam_id=fishjam_id,
       management_token=management_token,
-    );
+    )
 
     room = fishjam_client.create_room(RoomOptions(room_type="livestream", public=False))
 
