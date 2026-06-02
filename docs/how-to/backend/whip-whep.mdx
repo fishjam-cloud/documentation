@@ -71,14 +71,14 @@ You can read about this in detail in [Production Livestreaming with Server SDKs]
   <TabItem value="python" label="Python">
 
     ```python
-    from fishjam import FishjamClient
+    from fishjam import FishjamClient, RoomOptions
 
     fishjam_client = FishjamClient(
       fishjam_id=fishjam_id,
       management_token=management_token,
     );
 
-    room = fishjam_client.create_room(room_type="livestream")
+    room = fishjam_client.create_room(RoomOptions(room_type="livestream"))
     streamer_token = fishjam_client.create_livestream_streamer_token(room.id) # [!code highlight]
     ```
 
@@ -150,14 +150,14 @@ You can read about this in detail in [Production Livestreaming with Server SDKs]
   <TabItem value="python" label="Python">
 
     ```python
-    from fishjam import FishjamClient
+    from fishjam import FishjamClient, RoomOptions
 
     fishjam_client = FishjamClient(
       fishjam_id=fishjam_id,
       management_token=management_token,
     );
 
-    room = fishjam_client.create_room(room_type="livestream", public=False)
+    room = fishjam_client.create_room(RoomOptions(room_type="livestream", public=False))
 
     # ...
 
