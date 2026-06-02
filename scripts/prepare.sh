@@ -8,7 +8,7 @@ cd $ROOTDIR
 
 printf "Synchronising submodules... "
 git submodule sync --recursive >>/dev/null
-git submodule update --init --recursive --remote >>/dev/null
+git submodule update --init --recursive >>/dev/null
 
 # cd packages/web-client-sdk/
 # yarn && yarn build
