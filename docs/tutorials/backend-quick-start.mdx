@@ -354,6 +354,7 @@ Build a simple HTTP endpoint that your client apps can call:
     ```python
     import os
     from fastapi import FastAPI, HTTPException
+    from pydantic import BaseModel
     from fishjam import FishjamClient, PeerOptions
 
     app = FastAPI()

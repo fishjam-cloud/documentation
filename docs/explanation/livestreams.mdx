@@ -41,15 +41,15 @@ By default, created livestreams are `private`, to prevent possible bugs.
   <TabItem value="python" label="Python">
 
     ```python
-    from fishjam import FishjamClient
+    from fishjam import FishjamClient, RoomOptions
 
     fishjam_client = FishjamClient(
       fishjam_id=fishjam_id,
       management_token=management_token,
-    );
+    )
 
-    private_room = fishjam_client.create_room(room_type="livestream") # [!code highlight]
-    public_room = fishjam_client.create_room(room_type="livestream", public=True) # [!code highlight]
+    private_room = fishjam_client.create_room(RoomOptions(room_type="livestream")) # [!code highlight]
+    public_room = fishjam_client.create_room(RoomOptions(room_type="livestream", public=True)) # [!code highlight]
     ```
 
   </TabItem>
@@ -93,14 +93,14 @@ Note that for development purposes, you can [use the Sandbox API to generate a v
   <TabItem value="python" label="Python">
 
     ```python
-    from fishjam import FishjamClient
+    from fishjam import FishjamClient, RoomOptions
 
     fishjam_client = FishjamClient(
       fishjam_id=fishjam_id,
       management_token=management_token,
-    );
+    )
 
-    private_room = fishjam_client.create_room(room_type="livestream")
+    private_room = fishjam_client.create_room(RoomOptions(room_type="livestream"))
     viewer_token = fishjam_client.create_livestream_viewer_token(private_room.id) # [!code highlight]
     ```
 

@@ -227,50 +227,53 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
     Now we connect the websocket loops. We need to forward incoming Fishjam audio to Google, and forward incoming Google audio to Fishjam.
     ```python
     import asyncio
-    from fishjam.integrations.gemini import GeminiIntegration
     from google.genai.types import Blob, Modality
+    from fishjam.integrations.gemini import GeminiIntegration
 
     GEMINI_MODEL = "gemini-2.5-flash-native-audio-preview-12-2025"
 
-    async with agent.connect() as fishjam_session:
+    async def run():
+        async with agent.connect() as fishjam_session:
 
-        # Use our preset to match the required audio format (24kHz)
-        outgoing_track = await fishjam_session.add_track(GeminiIntegration.GEMINI_OUTPUT_AUDIO_SETTINGS)
+            # Use our preset to match the required audio format (24kHz)
+            outgoing_track = await fishjam_session.add_track(GeminiIntegration.GEMINI_OUTPUT_AUDIO_SETTINGS)
 
-        async with gen_ai.aio.live.connect(
-            model=GEMINI_MODEL,
-            config={"response_modalities": [Modality.AUDIO]}
-        ) as gemini_session:
+            async with gen_ai.aio.live.connect(
+                model=GEMINI_MODEL,
+                config={"response_modalities": [Modality.AUDIO]}
+            ) as gemini_session:
 
-            # Fishjam -> Google
-            async def forward_audio_to_gemini():
-                async for track_data in fishjam_session.receive():
-                    await gemini_session.send_realtime_input(audio=Blob(
-                        mime_type=GeminiIntegration.GEMINI_AUDIO_MIME_TYPE,
-                        data=track_data.data
-                    ))
+                # Fishjam -> Google
+                async def forward_audio_to_gemini():
+                    async for track_data in fishjam_session.receive():
+                        await gemini_session.send_realtime_input(audio=Blob(
+                            mime_type=GeminiIntegration.GEMINI_AUDIO_MIME_TYPE,
+                            data=track_data.data
+                        ))
 
-            # Google -> Fishjam
-            async def forward_audio_to_fishjam():
-                async for msg in gemini_session.receive():
-                    server_content = msg.server_content
+                # Google -> Fishjam
+                async def forward_audio_to_fishjam():
+                    async for msg in gemini_session.receive():
+                        server_content = msg.server_content
 
-                    if server_content is None:
-                        continue
+                        if server_content is None:
+                            continue
 
-                    if server_content.interrupted:
-                        await outgoing_track.interrupt()
+                        if server_content.interrupted:
+                            await outgoing_track.interrupt()
 
-                    if server_content.model_turn and server_content.model_turn.parts:
-                        for part in server_content.model_turn.parts:
-                            if part.inline_data and part.inline_data.data:
-                                await outgoing_track.send_chunk(part.inline_data.data)
+                        if server_content.model_turn and server_content.model_turn.parts:
+                            for part in server_content.model_turn.parts:
+                                if part.inline_data and part.inline_data.data:
+                                    await outgoing_track.send_chunk(part.inline_data.data)
 
-            # Run both loops concurrently
-            await asyncio.gather(
-                forward_audio_to_gemini(),
-                forward_audio_to_fishjam()
-            )
+                # Run both loops concurrently
+                await asyncio.gather(
+                    forward_audio_to_gemini(),
+                    forward_audio_to_fishjam()
+                )
+
+    asyncio.run(run())
     ```
 
   </TabItem>
