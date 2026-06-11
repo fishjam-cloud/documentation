@@ -73,13 +73,13 @@ They are required to proceed. Now, we are ready to dive into the code.
     // ---cut---
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 
-    const fishjamClient = await FishjamClient.create({
+    let fishjamClient = await FishjamClient.create({
       fishjamId: process.env.FISHJAM_ID!,
       managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN!,
     });
 
     // The above is roughly equivalent to:
-    const fishjamClient = new FishjamClient({ ... });
+    fishjamClient = new FishjamClient({ ... });
     await fishjamClient.checkCredentials();
     ```
 
