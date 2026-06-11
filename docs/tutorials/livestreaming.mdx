@@ -429,15 +429,15 @@ Our backend needs to do three things to be ready for streaming:
   <TabItem value="python" label="Python">
 
     ```python
-    from fishjam import FishjamClient
+    from fishjam import FishjamClient, RoomOptions
 
     fishjam_client = FishjamClient(
       fishjam_id=fishjam_id,
       management_token=management_token,
-    );
+    )
 
     # 1.
-    room = fishjam_client.create_room(room_type="livestream")
+    room = fishjam_client.create_room(RoomOptions(room_type="livestream"))
     # 2.
     streamer_token = fishjam_client.create_livestream_streamer_token(room.id)
     # 3.

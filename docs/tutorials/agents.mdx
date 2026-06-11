@@ -108,19 +108,23 @@ However, it's likely that in your scenario you'll want to use the [Selective Sub
   <TabItem value="python" label="Python">
 
     ```python
-    from fishjam import FishjamClient
-    from fishjam.agent import AgentResponseTrackData
+    import asyncio
+    from fishjam import FishjamClient, AgentOptions
+    from fishjam.agent import IncomingTrackData
 
     fishjam_client = FishjamClient(fishjam_id, management_token)
 
     agent_options = AgentOptions(subscribe_mode="auto")
-    agent = fishjam_client.create_agent(room_id)
+    agent = fishjam_client.create_agent(room_id, agent_options)
 
-    # the agent will disconnect once you exit the context
-    async with agent.connect() as session:
-      async for track_data in session.receive():
-        # process the incoming data
-        pass
+    async def run():
+        # the agent will disconnect once you exit the context
+        async with agent.connect() as session:
+            async for track_data in session.receive():
+                # process the incoming data
+                pass
+
+    asyncio.run(run())
     ```
 
   </TabItem>
@@ -239,28 +243,33 @@ You can interrupt the currently played audio chunk. See the example below.
   <TabItem value="python" label="Python">
 
     ```python
-    from fishjam import FishjamClient
-    from fishjam.agent import AgentResponseTrackData, OutgoingAudioTrackOptions, TrackEncoding
+    import asyncio
+    from fishjam import FishjamClient, AgentOptions
+    from fishjam.agent import OutgoingAudioTrackOptions
+    from fishjam.events import TrackEncoding
 
     fishjam_client = FishjamClient(fishjam_id, management_token)
 
     agent_options = AgentOptions(subscribe_mode="auto")
 
-    agent = fishjam_client.create_agent(room_id)
+    agent = fishjam_client.create_agent(room_id, agent_options)
 
-    track_options = OutgoingAudioTrackOptions(encoding=TrackEncoding.PCM16)
+    track_options = OutgoingAudioTrackOptions(encoding=TrackEncoding.TRACK_ENCODING_PCM16)
 
-    # the agent will disconnect once you exit the context
-    async with agent.connect() as session:
-        outgoing_track = session.create_track(track_options)
+    async def run():
+        # the agent will disconnect once you exit the context
+        async with agent.connect() as session:
+            outgoing_track = await session.add_track(track_options)
 
-        # that's a dummy chatbot
-        async for chatbot_data in chatbot.receive():
-            outgoing_track.send_chunk(chatbot_data)
+            # that's a dummy chatbot
+            async for chatbot_data in chatbot.receive():
+                await outgoing_track.send_chunk(chatbot_data)
 
-        # you're able to interrupt the currently played audio chunk
-        # [!code highlight:1]
-        ongoing_track.interrupt()
+            # you're able to interrupt the currently played audio chunk
+            # [!code highlight:1]
+            await outgoing_track.interrupt()
+
+    asyncio.run(run())
     ```
 
   </TabItem>
@@ -321,18 +330,21 @@ Video frame capture is rate-limited to one frame per second per track.
 
     agent = fishjam_client.create_agent(room_id)
 
-    async with agent.connect() as session:
-        # Request a frame
-        # [!code highlight:1]
-        await session.capture_image(track_id)
+    async def run():
+        async with agent.connect() as session:
+            # Request a frame
+            # [!code highlight:1]
+            await session.capture_image(track_id)
 
-        # Captured frames arrive as IncomingTrackImage messages
-        async for message in session.receive():
-            match message:
-                case IncomingTrackImage() as msg if msg.track_id == track_id:
-                    data = msg.data
-                    # process the image data
-                    pass
+            # Captured frames arrive as IncomingTrackImage messages
+            async for message in session.receive():
+                match message:
+                    case IncomingTrackImage() as msg if msg.track_id == track_id:
+                        data = msg.data
+                        # process the image data
+                        pass
+
+    asyncio.run(run())
     ```
 
   </TabItem>
@@ -365,9 +377,14 @@ After you're done using an agent, you can disconnect it from the room.
   <TabItem value="python" label="Python">
 
     ```python
-    # the agent will disconnect once you exit the context
-    async with agent.connect() as session:
-        pass
+    import asyncio
+
+    async def run():
+        # the agent will disconnect once you exit the context
+        async with agent.connect() as session:
+            pass
+
+    asyncio.run(run())
     ```
 
   </TabItem>
