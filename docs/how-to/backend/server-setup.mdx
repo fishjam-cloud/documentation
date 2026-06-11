@@ -61,7 +61,7 @@ Let's setup everything you need to start communicating with a Fishjam instance.
 First of all, view your app in the [**Fishjam developer panel**](https://fishjam.io/app) and copy your **Fishjam ID** and the **Management Token**.  
 They are required to proceed. Now, we are ready to dive into the code.
 
-The verifying factory constructs the client and pings the Fishjam backend with the supplied credentials, so a bad `fishjamId` or `managementToken` fails at startup instead of on the first room operation.
+`FishjamClient.create` constructs the client and pings the Fishjam backend with the supplied credentials, so a bad `fishjamId` or `managementToken` fails at startup instead of on the first room operation.
 
 <Tabs groupId="language">
   <TabItem value="ts" label="Typescript">
@@ -77,6 +77,10 @@ The verifying factory constructs the client and pings the Fishjam backend with t
       fishjamId: process.env.FISHJAM_ID!,
       managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN!,
     });
+
+    // The above is roughly equivalent to:
+    //   const fishjamClient = new FishjamClient({ ... });
+    //   await fishjamClient.checkCredentials();
     ```
 
   </TabItem>
@@ -91,49 +95,16 @@ The verifying factory constructs the client and pings the Fishjam backend with t
         fishjam_id=os.environ["FISHJAM_ID"],
         management_token=os.environ["FISHJAM_MANAGEMENT_TOKEN"],
     )
+
+    # The above is roughly equivalent to:
+    #   fishjam_client = FishjamClient(...)
+    #   fishjam_client.check_credentials()
     ```
 
   </TabItem>
 </Tabs>
 
 If you need synchronous construction (for example inside a framework plugin that is not async), use the plain constructor and verify separately. The constructor only checks that the fields are non-empty; it does not contact the backend.
-
-<Tabs groupId="language">
-  <TabItem value="ts" label="Typescript">
-
-    ```ts
-    process.env.FISHJAM_ID = "aaa";
-    process.env.FISHJAM_MANAGEMENT_TOKEN = "bbb";
-
-    // ---cut---
-    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
-
-    const fishjamClient = new FishjamClient({
-      fishjamId: process.env.FISHJAM_ID!,
-      managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN!,
-    });
-
-    await fishjamClient.checkCredentials();
-    ```
-
-  </TabItem>
-
-  <TabItem value="python" label="Python">
-
-    ```python
-    import os
-    from fishjam import FishjamClient
-
-    fishjam_client = FishjamClient(
-        fishjam_id=os.environ["FISHJAM_ID"],
-        management_token=os.environ["FISHJAM_MANAGEMENT_TOKEN"],
-    )
-
-    fishjam_client.check_credentials()
-    ```
-
-  </TabItem>
-</Tabs>
 
 ### Managing rooms
 
