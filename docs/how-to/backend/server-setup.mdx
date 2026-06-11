@@ -104,8 +104,6 @@ They are required to proceed. Now, we are ready to dive into the code.
   </TabItem>
 </Tabs>
 
-If you need synchronous construction (for example inside a framework plugin that is not async), use the plain constructor and verify separately. The constructor only checks that the fields are non-empty; it does not contact the backend.
-
 ### Managing rooms
 
 Create a room to get the `roomId` and be able to start adding peers.
