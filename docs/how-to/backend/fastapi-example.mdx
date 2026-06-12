@@ -44,29 +44,32 @@ There are two options for obtaining these.
 
 ### Webhooks
 
-To receive and parse Fishjam protobuf messages, create a dependable function that parses the request body using the `receive_binary` function from the `fishjam` package.
-Then, you will be able to use pattern matching to respond to different kinds of events.
+To receive and parse Fishjam protobuf messages, create a dependable function that decodes the request body using the `decode_server_notifications` function from the `fishjam` package.
+It returns a list of notifications and transparently unwraps batched payloads (rooms created with `batch_webhook_notifications=True`), so you can iterate over the result and use pattern matching to respond to different kinds of events.
+
+:::note
+`decode_server_notifications` replaces the now-deprecated `receive_binary`. It always returns a list — a single notification comes back as a one-element list — which lets the same handler work whether or not batching is enabled.
+:::
 
 ```python
-from fastapi import Depends, FastAPI, HTTPException, Request
-from fishjam import  receive_binary
+from fastapi import Depends, FastAPI, Request
+from fishjam import decode_server_notifications
 from fishjam.events import ServerMessagePeerAdded
 
 app = FastAPI()
 
-async def parse_fishjam_message(request: Request):
+async def parse_fishjam_notifications(request: Request):
     binary = await request.body()
-    if message := receive_binary(binary):
-        return message
-    raise HTTPException(status_code=400, detail="Invalid Fishjam message")
+    return decode_server_notifications(binary)
 
 @app.post("/fishjam-webhook")
-async def fishjam_webhook(fishjam_message = Depends(parse_fishjam_message)):
-    match fishjam_message:
-        case ServerMessagePeerAdded():
-            print(f"Peer added: {fishjam_message.peer_id}")
-        case _:
-            ...
+async def fishjam_webhook(notifications = Depends(parse_fishjam_notifications)):
+    for notification in notifications:
+        match notification:
+            case ServerMessagePeerAdded():
+                print(f"Peer added: {notification.peer_id}")
+            case _:
+                ...
 ```
 
 ### SDK Notifier
