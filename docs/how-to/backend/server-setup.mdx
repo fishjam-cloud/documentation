@@ -79,7 +79,10 @@ They are required to proceed. Now, we are ready to dive into the code.
     });
 
     // The above is roughly equivalent to:
-    fishjamClient = new FishjamClient({ ... });
+    fishjamClient = new FishjamClient({
+      fishjamId: process.env.FISHJAM_ID!,
+      managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN!,
+    });
     await fishjamClient.checkCredentials();
     ```
 
