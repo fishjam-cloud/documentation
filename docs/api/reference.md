@@ -38,6 +38,8 @@ in the `RoomConfig` options when creating a room.
 The HTTP POST to the `webhookUrl` uses "application/x-protobuf" content type.
 The body is binary data, that represents encoded `ServerMessage`.
 
+Setting `batchWebhookNotifications` to `true` in the `RoomConfig` is recommended: Fishjam then coalesces multiple notifications into a single `NotificationBatch` `ServerMessage`, so one POST may carry several notifications. This delivers notifications faster and with fewer requests. The SDK decoders (`decodeServerNotifications` / `decode_server_notifications`) unwrap the batch for you, returning the notifications as a list.
+
 For more information see also [server setup documentation](../how-to/backend/server-setup#webhooks)
 
 #### Websocket
