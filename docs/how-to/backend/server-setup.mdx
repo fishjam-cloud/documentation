@@ -61,9 +61,11 @@ Let's setup everything you need to start communicating with a Fishjam instance.
 First of all, view your app in the [**Fishjam developer panel**](https://fishjam.io/app) and copy your **Fishjam ID** and the **Management Token**.  
 They are required to proceed. Now, we are ready to dive into the code.
 
+`FishjamClient.create` constructs the client and pings the Fishjam backend with the supplied credentials, so a bad `fishjamId` or `managementToken` fails at startup instead of on the first room operation.
+
 <Tabs groupId="language">
   <TabItem value="ts" label="Typescript">
-  
+
     ```ts
     process.env.FISHJAM_ID = "aaa";
     process.env.FISHJAM_MANAGEMENT_TOKEN = "bbb";
@@ -71,10 +73,17 @@ They are required to proceed. Now, we are ready to dive into the code.
     // ---cut---
     import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
 
-    const fishjamId = process.env.FISHJAM_ID;
-    const managementToken = process.env.FISHJAM_MANAGEMENT_TOKEN;
+    let fishjamClient = await FishjamClient.create({
+      fishjamId: process.env.FISHJAM_ID!,
+      managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN!,
+    });
 
-    const fishjamClient = new FishjamClient({ fishjamId, managementToken });
+    // The above is roughly equivalent to:
+    fishjamClient = new FishjamClient({
+      fishjamId: process.env.FISHJAM_ID!,
+      managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN!,
+    });
+    await fishjamClient.checkCredentials();
     ```
 
   </TabItem>
@@ -85,10 +94,14 @@ They are required to proceed. Now, we are ready to dive into the code.
     import os
     from fishjam import FishjamClient
 
-    fishjam_id = os.environ["FISHJAM_ID"]
-    management_token = os.environ["FISHJAM_MANAGEMENT_TOKEN"]
+    fishjam_client = FishjamClient.create_and_verify(
+        fishjam_id=os.environ["FISHJAM_ID"],
+        management_token=os.environ["FISHJAM_MANAGEMENT_TOKEN"],
+    )
 
-    fishjam_client = FishjamClient(fishjam_id, management_token)
+    # The above is roughly equivalent to:
+    fishjam_client = FishjamClient(...)
+    fishjam_client.check_credentials()
     ```
 
   </TabItem>
