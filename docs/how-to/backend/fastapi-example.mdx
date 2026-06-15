@@ -44,7 +44,7 @@ There are two options for obtaining these.
 
 ### Webhooks
 
-To receive and parse Fishjam protobuf messages, create a dependable function that decodes the request body using the `decode_server_notifications` function from the `fishjam` package.
+To receive and parse Fishjam protobuf messages, create a dependency function that decodes the request body using the `decode_server_notifications` function from the `fishjam` package.
 It returns a list of notifications and transparently unwraps batched payloads (rooms created with `batch_webhook_notifications=True`), so you can iterate over the result and use pattern matching to respond to different kinds of events.
 
 :::note
