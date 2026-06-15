@@ -226,7 +226,9 @@ There are two options to obtain these.
 
 ### Webhooks
 
-Simply pass the your webhook url as a `webhookUrl` parameter when creating a room.
+Simply pass your webhook URL as a `webhookUrl` parameter when creating a room.
+
+We recommend also enabling **notification batching** via `batchWebhookNotifications`. Fishjam then coalesces several notifications into a single request, delivering them faster and with fewer HTTP requests — which improves your backend's response time under load.
 
 <Tabs groupId="language">
   <TabItem value="ts" label="Typescript">
@@ -240,7 +242,7 @@ Simply pass the your webhook url as a `webhookUrl` parameter when creating a roo
     });
     // ---cut---
     const webhookUrl = "https://example.com/";
-    await fishjamClient.createRoom({ webhookUrl });
+    await fishjamClient.createRoom({ webhookUrl, batchWebhookNotifications: true });
     ```
 
   </TabItem>
@@ -250,7 +252,10 @@ Simply pass the your webhook url as a `webhookUrl` parameter when creating a roo
     ```python
     from fishjam import RoomOptions
 
-    options = RoomOptions(webhook_url="https://example.com/")
+    options = RoomOptions(
+        webhook_url="https://example.com/",
+        batch_webhook_notifications=True,
+    )
 
     fishjam_client.create_room(options)
     ```
@@ -258,6 +263,63 @@ Simply pass the your webhook url as a `webhookUrl` parameter when creating a roo
   </TabItem>
 
 </Tabs>
+
+On the receiving side, decode the raw request body with `decodeServerNotifications` (Node) or `decode_server_notifications` (Python), then iterate the result and react to the events you care about. Both decoders return a list of notifications and transparently unwrap a batch — a single notification simply comes back as a one-element list, so the same handler works whether or not batching is enabled.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+    ```ts
+    import { decodeServerNotifications } from '@fishjam-cloud/js-server-sdk';
+
+    declare const rawBody: Buffer;
+    // ---cut---
+    for (const { type, notification } of decodeServerNotifications(rawBody)) {
+      switch (type) {
+        case 'peerConnected':
+          console.log(`Peer ${notification.peerId} joined room ${notification.roomId}`);
+          break;
+        case 'peerDisconnected':
+          console.log(`Peer ${notification.peerId} left room ${notification.roomId}`);
+          break;
+        case 'roomCreated':
+          console.log(`Room ${notification.roomId} created`);
+          break;
+        default:
+          break;
+      }
+    }
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    from fishjam import decode_server_notifications
+    from fishjam.events import (
+        ServerMessagePeerConnected,
+        ServerMessagePeerDisconnected,
+        ServerMessageRoomCreated,
+    )
+
+    for notification in decode_server_notifications(raw_body):
+        match notification:
+            case ServerMessagePeerConnected():
+                print(f"Peer {notification.peer_id} joined room {notification.room_id}")
+            case ServerMessagePeerDisconnected():
+                print(f"Peer {notification.peer_id} left room {notification.room_id}")
+            case ServerMessageRoomCreated():
+                print(f"Room {notification.room_id} created")
+            case _:
+                ...
+    ```
+
+  </TabItem>
+
+</Tabs>
+
+See the [Fastify](../../how-to/backend/fastify-example#webhooks) and [FastAPI](../../how-to/backend/fastapi-example#webhooks) examples for a full webhook handler wired into a web framework.
 
 ### SDK Notifier
 

@@ -26,10 +26,6 @@ This guide covers the essential steps to move from development (using the Sandbo
 1. Log in to [Fishjam Dashboard](https://fishjam.io/app)
 2. Copy your **Fishjam ID** and **Management Token** from the dashboard
 
-:::tip
-The **Standard Jar** plan is recommended for production deployments. With the **Mini Jar** plan, you can still develop and test using the Sandbox API, but production deployments should use the Standard Jar plan to get full access and reliability guarantees.
-:::
-
 ### Environment variables setup
 
 Create your environment variables:
@@ -87,83 +83,141 @@ const response = await fetch("https://your-backend.com/api/join-room", {
 
 ### Implement user authentication
 
-```typescript
-// @noErrors: 2339
-const jwt = {} as any;
-import { FishjamClient, Room } from "@fishjam-cloud/js-server-sdk";
-import express from "express";
+Wire up the Fishjam client and your own authentication. The middleware below verifies the caller and attaches the user, so the next handler can mint a peer token for them.
 
-const app = express();
-const getUserById = async (userId: string) => ({
-  id: userId,
-  name: "User",
-  avatar: "",
-  role: "user",
-});
-const getOrCreateRoom = async (roomName: string) =>
-  ({ id: "room-id" }) as unknown as Room;
-const canUserJoinRoom = (user: any, room: any) => true;
-process.env.FISHJAM_ID = "";
-process.env.FISHJAM_MANAGEMENT_TOKEN = "";
-process.env.JWT_SECRET = "";
+<Tabs groupId="language">
+  <TabItem value="ts" label="Node.js / TypeScript">
 
-// ---cut---
-const fishjamClient = new FishjamClient({
-  fishjamId: process.env.FISHJAM_ID!,
-  managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN!,
-});
+    ```typescript
+    // @noErrors: 2339
+    const jwt = {} as any;
+    import { FishjamClient } from "@fishjam-cloud/js-server-sdk";
+    import express from "express";
 
-// Authentication middleware
-const authenticateUser = async (
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction,
-) => {
-  try {
-    const token = req.headers.authorization?.replace("Bearer ", "");
-    if (!token) {
-      return res.status(401).json({ error: "Authentication required" });
-    }
+    process.env.FISHJAM_ID = "";
+    process.env.FISHJAM_MANAGEMENT_TOKEN = "";
+    process.env.JWT_SECRET = "";
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await getUserById(decoded.userId);
-    next();
-  } catch (error) {
-    res.status(401).json({ error: "Invalid token" });
-  }
-};
-
-// Protected endpoint for joining rooms
-app.post("/api/join-room", authenticateUser, async (req, res) => {
-  try {
-    const { roomName } = req.body;
-    const user = req.user;
-
-    // Create or get room
-    const room = await getOrCreateRoom(roomName);
-
-    // Verify user has permission to join this room
-    if (!canUserJoinRoom(user, room)) {
-      return res.status(403).json({ error: "Access denied" });
-    }
-
-    // Create peer with user metadata
-    const { peer, peerToken } = await fishjamClient.createPeer(room.id, {
-      metadata: {
-        userId: user.id,
-        name: user.name,
-        avatar: user.avatar,
-        role: user.role,
-      },
+    // ---cut---
+    const fishjamClient = new FishjamClient({
+      fishjamId: process.env.FISHJAM_ID!,
+      managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN!,
     });
 
-    res.json({ peerToken });
-  } catch (error) {
-    console.error("Join room error:", error);
-    res.status(500).json({ error: "Failed to join room" });
-  }
-});
-```
+    const app = express();
+    app.use(express.json()); // parse JSON request bodies
+
+    // Your own auth (JWT, session, ...)
+    const authenticateUser = async (
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction,
+    ) => {
+      const token = req.headers.authorization?.replace("Bearer ", "");
+      if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+      req.user = jwt.verify(token, process.env.JWT_SECRET);
+      next();
+    };
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    import os
+    import jwt
+    from fastapi import Body, Depends, FastAPI, Header, HTTPException
+    from fishjam import FishjamClient, PeerOptions
+
+    app = FastAPI()
+
+    fishjam_client = FishjamClient(
+        fishjam_id=os.environ["FISHJAM_ID"],
+        management_token=os.environ["FISHJAM_MANAGEMENT_TOKEN"],
+    )
+
+    # Your own auth (JWT, session, ...)
+    async def authenticate_user(authorization: str = Header()):
+        token = authorization.removeprefix("Bearer ")
+        try:
+            return jwt.decode(token, os.environ["JWT_SECRET"], algorithms=["HS256"])
+        except jwt.InvalidTokenError:
+            raise HTTPException(status_code=401, detail="Unauthorized")
+    ```
+
+  </TabItem>
+</Tabs>
+
+### Create a room and add a peer
+
+Now expose the endpoint your client calls to join the room. Fishjam rooms are identified by an `id`, so keep a mapping from your own room name to the Fishjam room id and create the room lazily on first join. Then add a peer tagged with the authenticated user and return its peer token.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Node.js / TypeScript">
+
+    ```typescript
+    // @noErrors: 2339
+    import { FishjamClient, RoomId } from "@fishjam-cloud/js-server-sdk";
+    import express from "express";
+
+    const app = express();
+    declare const fishjamClient: FishjamClient;
+    declare const authenticateUser: express.RequestHandler;
+
+    // ---cut---
+    // Map your room name to a Fishjam room id (use your database in production)
+    const roomIds = new Map<string, RoomId>();
+
+    const getOrCreateRoom = async (roomName: string): Promise<RoomId> => {
+      const existing = roomIds.get(roomName);
+      if (existing) return existing;
+
+      const room = await fishjamClient.createRoom();
+      roomIds.set(roomName, room.id);
+      return room.id;
+    };
+
+    // Mint a Fishjam peer token for the authenticated user
+    app.post("/api/join-room", authenticateUser, async (req, res) => {
+      const { roomName } = req.body;
+      const roomId = await getOrCreateRoom(roomName);
+
+      const { peerToken } = await fishjamClient.createPeer(roomId, {
+        metadata: { userId: req.user.userId },
+      });
+      res.json({ peerToken });
+    });
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    # Map your room name to a Fishjam room id (use your database in production)
+    room_ids: dict[str, str] = {}
+
+    def get_or_create_room(room_name: str) -> str:
+        room_id = room_ids.get(room_name)
+        if room_id is not None:
+            return room_id
+        room = fishjam_client.create_room()
+        room_ids[room_name] = room.id
+        return room.id
+
+    # Mint a Fishjam peer token for the authenticated user
+    @app.post("/api/join-room")
+    async def join_room(room_name: str = Body(embed=True), user=Depends(authenticate_user)):
+        room_id = get_or_create_room(room_name)
+        options = PeerOptions(metadata={"userId": user["userId"]})
+        _, peer_token = fishjam_client.create_peer(room_id, options)
+        return {"peerToken": peer_token}
+    ```
+
+  </TabItem>
+</Tabs>
 
 ## (Optional) Step 3: Handle webhooks and events
 
@@ -172,85 +226,128 @@ All you need for this is a single api endpoint:
 
 ### Webhook endpoint
 
-```typescript
-import express from "express";
-const crypto = {} as any;
-const app = express();
+Fishjam delivers notifications as a binary `application/x-protobuf` body. Read the raw body and decode it with the SDK, then react to the events you care about.
 
-const handlePeerConnected = {} as any;
-const handlePeerDisconnected = {} as any;
-const handleRoomEmpty = {} as any;
+<Tabs groupId="language">
+  <TabItem value="ts" label="Node.js / TypeScript">
 
-// ---cut---
-// Webhook signature verification
-const verifyWebhookSignature = (
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction,
-) => {
-  const signature = req.headers["x-fishjam-signature"];
-  const payload = JSON.stringify(req.body);
+    ```typescript
+    import express from "express";
+    import { decodeServerNotifications } from "@fishjam-cloud/js-server-sdk";
 
-  const expectedSignature = crypto
-    .createHmac("sha256", process.env.WEBHOOK_SECRET)
-    .update(payload, "utf8")
-    .digest("hex");
+    const app = express();
+    const handlePeerConnected = {} as any;
+    const handlePeerDisconnected = {} as any;
+    const handleRoomDeleted = {} as any;
 
-  if (signature !== expectedSignature) {
-    return res.status(401).json({ error: "Invalid signature" });
-  }
+    // ---cut---
+    app.post(
+      "/api/webhooks/fishjam",
+      express.raw({ type: "application/x-protobuf" }),
+      (req: express.Request, res: express.Response) => {
+        for (const { type, notification } of decodeServerNotifications(req.body)) {
+          switch (type) {
+            case "peerConnected":
+              handlePeerConnected(notification);
+              break;
+            case "peerDisconnected":
+              handlePeerDisconnected(notification);
+              break;
+            case "roomDeleted":
+              handleRoomDeleted(notification);
+              break;
+            default:
+              break;
+          }
+        }
 
-  next();
-};
+        res.status(200).json({ received: true });
+      },
+    );
+    ```
 
-// Webhook handler
-app.post(
-  "/api/webhooks/fishjam",
-  express.raw({ type: "application/json" }),
-  verifyWebhookSignature,
-  (req: express.Request, res: express.Response) => {
-    const event = req.body;
+  </TabItem>
 
-    switch (event.type) {
-      case "peer_connected":
-        handlePeerConnected(event.data);
-        break;
-      case "peer_disconnected":
-        handlePeerDisconnected(event.data);
-        break;
-      case "room_empty":
-        handleRoomEmpty(event.data);
-        break;
-      default:
-        console.log("Unhandled event type:", event.type);
-    }
+  <TabItem value="python" label="Python">
 
-    res.status(200).json({ received: true });
-  },
-);
-```
+    ```python
+    from fastapi import FastAPI, Request
+    from fishjam import decode_server_notifications
+    from fishjam.events import (
+        ServerMessagePeerConnected,
+        ServerMessagePeerDisconnected,
+        ServerMessageRoomDeleted,
+    )
+
+    app = FastAPI()
+
+    @app.post("/api/webhooks/fishjam")
+    async def fishjam_webhook(request: Request):
+        for notification in decode_server_notifications(await request.body()):
+            match notification:
+                case ServerMessagePeerConnected():
+                    handle_peer_connected(notification)
+                case ServerMessagePeerDisconnected():
+                    handle_peer_disconnected(notification)
+                case ServerMessageRoomDeleted():
+                    handle_room_deleted(notification)
+                case _:
+                    ...
+        return {"received": True}
+    ```
+
+  </TabItem>
+</Tabs>
 
 ### Enabling webhooks
 
-Now, with your endpoint setup, all you need to do is supply your webhook endpoint to Fishjam when creating a room:
+Now, with your endpoint setup, all you need to do is supply your webhook endpoint to Fishjam when creating a room. We also recommend enabling `batchWebhookNotifications`, which delivers notifications faster and with fewer HTTP requests for a better backend response time under load:
 
-```typescript
-import { FishjamClient } from "@fishjam-cloud/js-server-sdk";
-const fishjamClient = {} as any;
+<Tabs groupId="language">
+  <TabItem value="ts" label="Node.js / TypeScript">
 
-// ---cut---
-const createRoomWithWebhooks = async (
-  roomName: string,
-  roomType = "conference",
-) => {
-  const room = await fishjamClient.createRoom({
-    roomType,
-    webhookUrl: `${process.env.BASE_URL}/api/webhooks/fishjam`,
-  });
+    ```typescript
+    import { FishjamClient } from "@fishjam-cloud/js-server-sdk";
+    const fishjamClient = {} as any;
 
-  return room;
-};
-```
+    // ---cut---
+    const createRoomWithWebhooks = async (roomType = "conference") => {
+      const room = await fishjamClient.createRoom({
+        roomType,
+        webhookUrl: `${process.env.BASE_URL}/api/webhooks/fishjam`,
+        // Coalesce notifications into batches for faster delivery and fewer requests
+        batchWebhookNotifications: true,
+      });
+
+      return room;
+    };
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    import os
+    from fishjam import FishjamClient, RoomOptions
+
+    fishjam_client = FishjamClient(
+        fishjam_id=os.environ["FISHJAM_ID"],
+        management_token=os.environ["FISHJAM_MANAGEMENT_TOKEN"],
+    )
+
+    def create_room_with_webhooks(room_type="conference"):
+        options = RoomOptions(
+            room_type=room_type,
+            webhook_url=f"{os.environ['BASE_URL']}/api/webhooks/fishjam",
+            # Coalesce notifications into batches for faster delivery and fewer requests
+            batch_webhook_notifications=True,
+        )
+        return fishjam_client.create_room(options)
+    ```
+
+  </TabItem>
+</Tabs>
 
 ## Common production issues
 
