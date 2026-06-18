@@ -1,11 +1,11 @@
 ---
 type: explanation
-sidebar_position: 6
-title: Media over QUIC (MoQ)
+sidebar_position: 1
+title: MoQ with Fishjam
 description: Understand how Media over QUIC (MoQ) works in Fishjam — the relay model, publish/subscribe architecture, paths, and token-based access control.
 ---
 
-# MoQ Streaming with Fishjam
+# MoQ with Fishjam
 
 _How Media over QUIC (MoQ) works in Fishjam_
 
@@ -22,7 +22,7 @@ A few properties make MoQ stand out:
 - **Relay-based architecture.** The relay is a first-class part of the MoQ protocol, not an add-on. Because relaying is built into the protocol's design, scaling delivery to large audiences is a native capability.
 
 :::info
-Fishjam also supports WebRTC-based livestreaming (WHIP/WHEP). See [Livestreams](./livestreams) for that approach.
+Fishjam also supports WebRTC-based livestreaming (WHIP/WHEP). See [Livestreams](../../explanation/livestreams) for that approach.
 :::
 
 ## How MoQ Works in Fishjam
@@ -116,7 +116,7 @@ To get a subscriber token, call:
 GET https://fishjam.io/api/v1/connect/{FISHJAM_ID}/room-manager/moq/{SUBSCRIBER-PATH}/subscriber
 ```
 
-The Sandbox API is **not intended for production** — it has no authentication and is only available in the Sandbox environment. See [What is the Sandbox API?](./sandbox-api-concept) for more context.
+The Sandbox API is **not intended for production** — it has no authentication and is only available in the Sandbox environment. See [What is the Sandbox API?](../../explanation/sandbox-api-concept) for more context.
 
 ### Fishjam Server SDK (production)
 
@@ -129,11 +129,11 @@ The SDK's `createMoqToken` method accepts either a `publishPath` or a `subscribe
 
 Your backend then delivers each token to the appropriate client (publisher or viewer), which uses it to connect to the relay.
 
-See the [MoQ Streaming tutorial](../tutorials/moq) for working code examples of both approaches.
+See the [Web Publishing](../tutorials/web-publishing) and [Web Subscribing](../tutorials/web-subscribing) tutorials (or their [React Native](../tutorials/react-native-publishing) [counterparts](../tutorials/react-native-subscribing)) for working code examples.
 
 ## See also
 
-- [MoQ Streaming tutorial](../tutorials/moq) — step-by-step guide to publishing and subscribing
-- [What is the Sandbox API?](./sandbox-api-concept) — when and why to use the Sandbox API
-- [Security & Token Model](./security-tokens) — broader overview of Fishjam's token system
-- [Livestreams](./livestreams) — WebRTC-based livestreaming with WHIP/WHEP
+- [Web Publishing](../tutorials/web-publishing) / [Web Subscribing](../tutorials/web-subscribing) — step-by-step guides to publishing and subscribing
+- [What is the Sandbox API?](../../explanation/sandbox-api-concept) — when and why to use the Sandbox API
+- [Security & Token Model](../../explanation/security-tokens) — broader overview of Fishjam's token system
+- [Livestreams](../../explanation/livestreams) — WebRTC-based livestreaming with WHIP/WHEP

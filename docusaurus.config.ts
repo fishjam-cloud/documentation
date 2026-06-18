@@ -207,10 +207,18 @@ const config: Config = {
             defaultSidebarItemsGenerator,
             ...args
           }) {
-            return injectTypeDocSidebar(
-              args.version,
-              await defaultSidebarItemsGenerator(args),
+            const items = await defaultSidebarItemsGenerator(args);
+            // The MoQ docs live in their own top-bar tab (moqSidebar), so drop
+            // their category from the main Docs sidebar to avoid duplication.
+            const withoutMoq = items.filter(
+              (item) =>
+                !(
+                  item.type === "category" &&
+                  (item as { customProps?: { topNavSection?: string } })
+                    .customProps?.topNavSection === "moq"
+                ),
             );
+            return injectTypeDocSidebar(args.version, withoutMoq);
           },
         },
         theme: {
@@ -244,8 +252,17 @@ const config: Config = {
         {
           type: "doc",
           docId: "index",
-          label: "Docs",
+          label: "Guides",
           position: "left",
+        },
+        {
+          // MoQ lives in the "next" (current) docs only for now. Point at the
+          // /next/ path so the tab resolves until the next version is cut, at
+          // which point this should become "/moq/streaming".
+          to: "/next/moq/concepts/moq-with-fishjam",
+          label: "MoQ",
+          position: "left",
+          activeBasePath: "/next/moq",
         },
         {
           to: "/api/rest",

@@ -9,6 +9,40 @@ interface RedirectGroup {
 
 const redirectGroups: RedirectGroup[] = [
   {
+    since: "0.27.0",
+    description:
+      "MoQ docs grouped into a dedicated MoQ section with Concepts/Tutorials",
+    rules: [
+      {
+        from: "/tutorials/moq",
+        to: "/moq/tutorials/web-publishing",
+      },
+      {
+        from: "/tutorials/moq-react-native",
+        to: "/moq/tutorials/react-native-publishing",
+      },
+      {
+        from: "/explanation/moq-streaming",
+        to: "/moq/concepts/moq-with-fishjam",
+      },
+      // Intermediate paths from earlier MoQ-section moves (next-only, never released).
+      { from: "/moq/streaming", to: "/moq/concepts/moq-with-fishjam" },
+      { from: "/moq/livestreaming", to: "/moq/tutorials/web-publishing" },
+      {
+        from: "/moq/react-native",
+        to: "/moq/tutorials/react-native-publishing",
+      },
+      {
+        from: "/moq/tutorials/web-livestreaming",
+        to: "/moq/tutorials/web-publishing",
+      },
+      {
+        from: "/moq/tutorials/react-native-livestreaming",
+        to: "/moq/tutorials/react-native-publishing",
+      },
+    ],
+  },
+  {
     since: "0.26.0",
     description: "Gemini Live moved from Tutorials to Integrations",
     rules: [
