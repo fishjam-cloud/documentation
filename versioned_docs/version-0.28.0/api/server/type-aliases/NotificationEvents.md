@@ -1,0 +1,5 @@
+# Type Alias: NotificationEvents
+
+> **NotificationEvents** = `{ [K in ExpectedEvents]: (message: { channelAdded: Notification<"channelAdded">; channelRemoved: Notification<"channelRemoved">; peerAdded: Notification<"peerAdded">; peerConnected: Notification<"peerConnected">; peerCrashed: Notification<"peerCrashed">; peerDeleted: Notification<"peerDeleted">; peerDisconnected: Notification<"peerDisconnected">; peerMetadataUpdated: Notification<"peerMetadataUpdated">; roomCrashed: Notification<"roomCrashed">; roomCreated: Notification<"roomCreated">; roomDeleted: Notification<"roomDeleted">; streamerConnected: Notification<"streamerConnected">; streamerDisconnected: Notification<"streamerDisconnected">; trackAdded: Notification<"trackAdded">; trackMetadataUpdated: Notification<"trackMetadataUpdated">; trackRemoved: Notification<"trackRemoved">; viewerConnected: Notification<"viewerConnected">; viewerDisconnected: Notification<"viewerDisconnected"> }[K]) => void }`
+
+Defined in: [js-server-sdk/src/notifications.ts:171](https://github.com/fishjam-cloud/js-server-sdk/blob/d70af8c6517be3f35a70de3a0c4ad33de743db55/packages/js-server-sdk/src/notifications.ts#L171)

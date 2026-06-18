@@ -1,0 +1,104 @@
+---
+sidebar_position: 1
+title: FastAPI
+description: Example FastAPI server integration using the Fishjam Python SDK.
+---
+
+# FastAPI example
+
+The example assumes you've already installed [**our SDK**](https://github.com/fishjam-cloud/python-server-sdk) and you're ready to go.  
+If you wish to see more general info, visit [**Set up your server**](../../how-to/backend/server-setup) article.
+
+## Minimal setup
+
+The same way as in the [**FastAPI docs**](https://fastapi.tiangolo.com/tutorial/first-steps/), the code below can be copied and run immediately.
+Just make sure you set `FISHJAM_ID` and `FISHJAM_MANAGEMENT_TOKEN` environment variables.
+The `Depends` function allows the `FishjamClient` to be provided to the route function as a dependency, which avoids code duplication and allows easy mocking.
+
+```python
+import os
+from typing import Annotated
+from fastapi import Depends, FastAPI
+from fishjam import FishjamClient
+
+
+app = FastAPI()
+
+def fishjam_client():
+    fishjam_id = os.environ["FISHJAM_ID"]
+    management_token = os.environ["FISHJAM_MANAGEMENT_TOKEN"]
+    return FishjamClient(fishjam_id=fishjam_id, management_token=management_token)
+
+
+@app.get("/")
+async def get_rooms(fishjam_client: Annotated[FishjamClient, Depends(fishjam_client)]):
+    rooms = fishjam_client.get_all_rooms()
+    return {"rooms": rooms}
+```
+
+## Listening to events
+
+Fishjam instance is a stateful server that is emitting messages upon certain events.
+You can listen for those messages and react as you prefer.
+There are two options for obtaining these.
+
+### Webhooks
+
+To receive and parse Fishjam protobuf messages, create a dependency function that decodes the request body using the `decode_server_notifications` function from the `fishjam` package.
+It returns a list of notifications and transparently unwraps batched payloads (rooms created with `batch_webhook_notifications=True`), so you can iterate over the result and use pattern matching to respond to different kinds of events.
+
+:::note
+`decode_server_notifications` replaces the now-deprecated `receive_binary`. It always returns a list — a single notification comes back as a one-element list — which lets the same handler work whether or not batching is enabled.
+:::
+
+```python
+from fastapi import Depends, FastAPI, Request
+from fishjam import decode_server_notifications
+from fishjam.events import ServerMessagePeerAdded
+
+app = FastAPI()
+
+async def parse_fishjam_notifications(request: Request):
+    binary = await request.body()
+    return decode_server_notifications(binary)
+
+@app.post("/fishjam-webhook")
+async def fishjam_webhook(notifications = Depends(parse_fishjam_notifications)):
+    for notification in notifications:
+        match notification:
+            case ServerMessagePeerAdded():
+                print(f"Peer added: {notification.peer_id}")
+            case _:
+                ...
+```
+
+### SDK Notifier
+
+Use the `asyncio` library to run the SDK notifier.
+It doesn't interact with the FastAPI library per se, just start the event loop and it will run alongside the server.
+
+```python
+import asyncio
+from fishjam import FishjamNotifier
+from fishjam.events import ServerMessagePeerAdded
+
+notifier = FishjamNotifier(fishjam_id=fishjam_id, management_token=management_token)
+
+@notifier.on_server_notification
+def handle_notification(notification):
+    match notification:
+        case ServerMessagePeerAdded():
+            print(f"Peer added: {notification.peer_id}")
+        case _:
+            ...
+
+async def run_notifier():
+  notifier_task = asyncio.create_task(notifier.connect())
+
+  # Wait for the notifier to be ready to receive messages
+  await notifier.wait_ready()
+
+  await notifier_task
+
+asyncio.run(run_notifier())
+```
