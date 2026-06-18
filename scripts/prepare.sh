@@ -26,6 +26,11 @@ cd packages/web-client-sdk/packages/react-client/
 yarn && yarn build
 
 cd $ROOTDIR
+cd packages/web-client-sdk/packages/react-native-webrtc/
+npm install
+npm run prepare
+
+cd $ROOTDIR
 cd packages/web-client-sdk/packages/mobile-client/
 yarn && yarn build
 
