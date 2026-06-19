@@ -36,4 +36,4 @@ The ID of your Fishjam instance. It is used by your backend server to add peers 
 
 ### Sandbox API
 
-A simple testing API allowing you to test Fishjam features without requiring you to add any functionalities to your backend. As the name suggests, it's available **only** in the Sandbox environment. You can find more details [here](/how-to/features/sandbox-api-testing).
+A simple testing API allowing you to test Fishjam features without requiring you to add any functionalities to your backend. As the name suggests, it's available **only** in the Sandbox environment. You can find more details [here](/how-to/backend/sandbox-api-testing).

@@ -1,0 +1,379 @@
+---
+sidebar_position: 0
+description: Install and configure a Fishjam server SDK for Node.js or Python, or integrate via the bare REST API.
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Set up your server
+
+## Install the SDK
+
+Install the SDK for the language of your choice. We provide libraries for [**Node**](https://github.com/fishjam-cloud/js-server-sdk) and [**Python**](https://github.com/fishjam-cloud/python-server-sdk).  
+It's also possible to use the bare REST API, in this case you can skip this step.
+
+<Tabs groupId="sdk">
+  <TabItem value="npm" label="npm">
+  
+    ```bash
+    npm install @fishjam-cloud/js-server-sdk
+    ```
+
+  </TabItem>
+
+  <TabItem value="yarn" label="yarn">
+
+    ```bash
+    yarn add @fishjam-cloud/js-server-sdk
+    ```
+
+  </TabItem>
+
+  <TabItem value="pip" label="pip">
+
+    ```bash
+    pip install fishjam-server-sdk
+    ```
+
+  </TabItem>
+
+  <TabItem value="poetry" label="poetry">
+
+    ```bash
+    poetry add fishjam-server-sdk
+    ```
+
+  </TabItem>
+  
+  <TabItem value="uv" label="uv">
+
+    ```bash
+    uv add fishjam-server-sdk
+    ```
+
+  </TabItem>
+</Tabs>
+
+## Setup your client
+
+Let's setup everything you need to start communicating with a Fishjam instance.  
+First of all, view your app in the [**Fishjam developer panel**](https://fishjam.io/app) and copy your **Fishjam ID** and the **Management Token**.  
+They are required to proceed. Now, we are ready to dive into the code.
+
+`FishjamClient.create` constructs the client and pings the Fishjam backend with the supplied credentials, so a bad `fishjamId` or `managementToken` fails at startup instead of on the first room operation.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+    ```ts
+    process.env.FISHJAM_ID = "aaa";
+    process.env.FISHJAM_MANAGEMENT_TOKEN = "bbb";
+
+    // ---cut---
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    let fishjamClient = await FishjamClient.create({
+      fishjamId: process.env.FISHJAM_ID!,
+      managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN!,
+    });
+
+    // The above is roughly equivalent to:
+    fishjamClient = new FishjamClient({
+      fishjamId: process.env.FISHJAM_ID!,
+      managementToken: process.env.FISHJAM_MANAGEMENT_TOKEN!,
+    });
+    await fishjamClient.checkCredentials();
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    import os
+    from fishjam import FishjamClient
+
+    fishjam_client = FishjamClient.create_and_verify(
+        fishjam_id=os.environ["FISHJAM_ID"],
+        management_token=os.environ["FISHJAM_MANAGEMENT_TOKEN"],
+    )
+
+    # The above is roughly equivalent to:
+    fishjam_client = FishjamClient(...)
+    fishjam_client.check_credentials()
+    ```
+
+  </TabItem>
+</Tabs>
+
+### Managing rooms
+
+Create a room to get the `roomId` and be able to start adding peers.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+    const fishjamClient = new FishjamClient({
+
+        fishjamId: "https://fishjam.io",
+        managementToken: "bbb",
+    });
+    // ---cut---
+    const createdRoom = await fishjamClient.createRoom();
+
+    const theSameRoom = await fishjamClient.getRoom(createdRoom.id);
+
+    await fishjamClient.deleteRoom(theSameRoom.id)
+
+    // puff, it's gone!
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    created_room = fishjam_client.create_room()
+
+    the_same_room = fishjam_client.get_room(created_room.id)
+
+    fishjam_client.delete_room(the_same_room.id)
+
+    # puff, it's gone!
+    ```
+
+  </TabItem>
+
+ </Tabs>
+
+### Managing peers
+
+Create a peer to obtain the peer token allowing your user to join the room.
+At any time you can terminate user's access by deleting the peer.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+    const fishjamClient = new FishjamClient({
+        fishjamId: "https://fishjam.io",
+        managementToken: "bbb",
+    });
+    const created_room = await fishjamClient.createRoom();
+    // ---cut---
+    const { peer, peerToken } = await fishjamClient.createPeer(created_room.id);
+
+    await fishjamClient.deletePeer(created_room.id, peer.id);
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    peer, token = fishjam_client.create_peer(room_id)
+
+    fishjam_client.delete_peer(room_id, peer.id)
+    ```
+
+  </TabItem>
+
+ </Tabs>
+
+#### Metadata
+
+When creating a peer, you can also assign metadata to that peer, which can be read later with the [client SDK](../../how-to/client/metadata). This metadata can be only set when creating the peer and can't be updated later.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+    const fishjamClient = new FishjamClient({
+        fishjamId: "https://fishjam.io",
+        managementToken: "bbb",
+    });
+    const created_room = await fishjamClient.createRoom();
+    // ---cut---
+    const { peer, peerToken } = await fishjamClient.createPeer(created_room.id, {
+      metadata: { realName: 'Tom Reeves' },
+    });
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```py
+    options = PeerOptions(
+      metadata={"realName": "Tom Reeves"},
+    )
+    peer, token = self.fishjam_client.create_peer(room_id, options=options)
+    ```
+
+  </TabItem>
+</Tabs>
+
+## Listening to events
+
+Fishjam instance is a stateful server that is emitting messages upon certain events.  
+You can listen for those messages and react as you prefer.  
+There are two options to obtain these.
+
+### Webhooks
+
+Simply pass your webhook URL as a `webhookUrl` parameter when creating a room.
+
+We recommend also enabling **notification batching** via `batchWebhookNotifications`. Fishjam then coalesces several notifications into a single request, delivering them faster and with fewer HTTP requests — which improves your backend's response time under load.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamClient = new FishjamClient({
+        fishjamId: "https://fishjam.io",
+        managementToken: "bbb",
+    });
+    // ---cut---
+    const webhookUrl = "https://example.com/";
+    await fishjamClient.createRoom({ webhookUrl, batchWebhookNotifications: true });
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    from fishjam import RoomOptions
+
+    options = RoomOptions(
+        webhook_url="https://example.com/",
+        batch_webhook_notifications=True,
+    )
+
+    fishjam_client.create_room(options)
+    ```
+
+  </TabItem>
+
+</Tabs>
+
+On the receiving side, decode the raw request body with `decodeServerNotifications` (Node) or `decode_server_notifications` (Python), then iterate the result and react to the events you care about. Both decoders return a list of notifications and transparently unwrap a batch — a single notification simply comes back as a one-element list, so the same handler works whether or not batching is enabled.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+    ```ts
+    import { decodeServerNotifications } from '@fishjam-cloud/js-server-sdk';
+
+    declare const rawBody: Buffer;
+    // ---cut---
+    for (const { type, notification } of decodeServerNotifications(rawBody)) {
+      switch (type) {
+        case 'peerConnected':
+          console.log(`Peer ${notification.peerId} joined room ${notification.roomId}`);
+          break;
+        case 'peerDisconnected':
+          console.log(`Peer ${notification.peerId} left room ${notification.roomId}`);
+          break;
+        case 'roomCreated':
+          console.log(`Room ${notification.roomId} created`);
+          break;
+        default:
+          break;
+      }
+    }
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    from fishjam import decode_server_notifications
+    from fishjam.events import (
+        ServerMessagePeerConnected,
+        ServerMessagePeerDisconnected,
+        ServerMessageRoomCreated,
+    )
+
+    for notification in decode_server_notifications(raw_body):
+        match notification:
+            case ServerMessagePeerConnected():
+                print(f"Peer {notification.peer_id} joined room {notification.room_id}")
+            case ServerMessagePeerDisconnected():
+                print(f"Peer {notification.peer_id} left room {notification.room_id}")
+            case ServerMessageRoomCreated():
+                print(f"Room {notification.room_id} created")
+            case _:
+                ...
+    ```
+
+  </TabItem>
+
+</Tabs>
+
+See the [Fastify](../../how-to/backend/fastify-example#webhooks) and [FastAPI](../../how-to/backend/fastapi-example#webhooks) examples for a full webhook handler wired into a web framework.
+
+### SDK Notifier
+
+Our SDKs come equipped with a Notifier allowing you to subscribe for messages.
+It sets up a websocket connection with a Fishjam instance and provides a simple interface allowing you to handle messages.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+  
+    ```ts
+    const fishjamId = "https://fishjam.io";
+    const managementToken = "bbb";
+    // ---cut---
+    import { FishjamWSNotifier } from '@fishjam-cloud/js-server-sdk';
+
+    const onClose = console.log;
+    const onError = console.error;
+    const onConnectionFailed = console.error;
+
+    const fishjamNotifier = new FishjamWSNotifier({ fishjamId, managementToken }, onError, onClose);
+
+    fishjamNotifier.on('roomCreated', console.log);
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    import asyncio
+    from fishjam import FishjamNotifier
+    from fishjam.events import ServerMessageRoomCreated
+
+    notifier = FishjamNotifier(fishjam_id, management_token)
+
+    @notifier.on_server_notification
+    def handle_notification(notification):
+        match notification:
+            case ServerMessageRoomCreated():
+                print(notification)
+            case _:
+                ...
+
+    async def run_notifier():
+      notifier_task = asyncio.create_task(notifier.connect())
+
+      # Wait for notifier to be ready to receive messages
+      await notifier.wait_ready()
+
+      await notifier_task
+
+    asyncio.run(run_notifier())
+    ```
+
+  </TabItem>
+
+</Tabs>

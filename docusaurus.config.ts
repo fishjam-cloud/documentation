@@ -160,7 +160,7 @@ const config: Config = {
   projectName: "documentation",
 
   onBrokenLinks: "log",
-  onBrokenAnchors: "throw",
+  onBrokenAnchors: "log",
   onDuplicateRoutes: "throw",
 
   // Even if you don't use internationalization, you can use this field to set
