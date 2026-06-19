@@ -256,13 +256,12 @@ const config: Config = {
           position: "left",
         },
         {
-          // MoQ lives in the "next" (current) docs only for now. Point at the
-          // /next/ path so the tab resolves until the next version is cut, at
-          // which point this should become "/moq/streaming".
-          to: "/next/moq/concepts/moq-with-fishjam",
+          // MoQ is versioned alongside the rest of the docs. Point at the
+          // default (latest released) version so the tab resolves to /moq.
+          to: "/moq/concepts/moq-with-fishjam",
           label: "MoQ",
           position: "left",
-          activeBasePath: "/next/moq",
+          activeBasePath: "/moq",
         },
         {
           to: "/api/rest",
