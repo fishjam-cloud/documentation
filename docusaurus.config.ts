@@ -252,7 +252,7 @@ const config: Config = {
         {
           type: "doc",
           docId: "index",
-          label: "Guides",
+          label: "WebRTC",
           position: "left",
         },
         {

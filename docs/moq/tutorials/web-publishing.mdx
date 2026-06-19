@@ -19,7 +19,7 @@ If you're new to MoQ, then we recommend getting familiar with the [MoQ with Fish
 To start publishing a MoQ stream, you need two things: a _publisher token_ and the relay URL. We show how to quickly prototype with the [Sandbox API](#quickstart-with-the-sandbox-api) and how to get ready for [production](#production-with-server-sdks).
 
 :::tip
-MoQ is a protocol with a well-defined negotiation, so in theory any compliant MoQ client should work. That said, we recommend using the [`@moq`](https://github.com/moq-dev/moq) client libraries — the reference TypeScript implementation maintained alongside the protocol. For more details, see the [documentation](https://doc.moq.dev/js/).
+MoQ is a protocol with a well-defined negotiation, so in theory any compliant MoQ client should work. That said, we recommend using the `@moq` client libraries — the reference TypeScript implementation maintained alongside the protocol. For more details, see the [documentation](https://doc.moq.dev/lib/js/).
 :::
 
 ## Quickstart with the Sandbox API
@@ -28,18 +28,54 @@ If you don't have a backend server set up, you can prototype publishing using th
 
 ### Obtaining a publisher token
 
-Fetch a sandbox publisher token from the Room Manager:
+For more on what the Sandbox API is and its limitations, see [What is the Sandbox API?](../../explanation/sandbox-api-concept).
 
-```ts
-const FISHJAM_ID = "YOUR_FISHJAM_ID";
-const PUBLISHER_PATH = "stream-alice";
-const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+:::info
+To obtain a MoQ token you'll need your Fishjam ID and Sandbox API URL. If you don't have them already, see [Sandbox API URL and Fishjam ID](../../explanation/sandbox-api-concept#sandbox-api-url-and-fishjam-id).
+:::
 
-const response = await fetch(
-  `${SANDBOX_API_URL}/moq/${PUBLISHER_PATH}/publisher`,
-);
-const { token: publishToken } = await response.json();
-```
+<Tabs groupId="sandbox-token">
+  <TabItem value="react" label="React">
+
+    If you're using React, the `useSandbox` hook from `@fishjam-cloud/react-client` wraps the Sandbox API request for you:
+
+    ```tsx
+    // @noErrors
+    import { useSandbox } from "@fishjam-cloud/react-client";
+
+    const FISHJAM_ID = "YOUR_FISHJAM_ID";
+    const PUBLISHER_PATH = "stream-alice";
+    const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+
+    // Inside a React component:
+    const { getSandboxMoqPublisherToken } = useSandbox({
+      sandboxApiUrl: SANDBOX_API_URL,
+    });
+
+    // Request a publisher token scoped to the publisher path
+    const publishToken = await getSandboxMoqPublisherToken(PUBLISHER_PATH);
+    ```
+
+  </TabItem>
+
+  <TabItem value="ts" label="TS">
+
+    If you don't want to use React or pull in the whole client library just for the `useSandbox` hook, you can call the Sandbox API directly with `fetch`:
+
+    ```ts
+    // @noErrors
+    const FISHJAM_ID = "YOUR_FISHJAM_ID";
+    const PUBLISHER_PATH = "stream-alice";
+    const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+
+    const response = await fetch(
+      `${SANDBOX_API_URL}/moq/${PUBLISHER_PATH}/publisher`,
+    );
+    const { token: publishToken } = await response.json();
+    ```
+
+  </TabItem>
+</Tabs>
 
 ### Connecting and publishing
 
@@ -141,12 +177,6 @@ A **publisher token** grants write access to a specific path. Generate one on yo
 </Tabs>
 
 Deliver this token to the broadcasting client, then use it to connect as described in [Connecting and publishing](#connecting-and-publishing).
-
-:::tip
-A single token should only grant either `publishPath` _or_ `subscribePath` — not both.
-Streamers receive a publisher token; viewers receive a subscriber token.
-This separation ensures a viewer can never accidentally publish to the stream.
-:::
 
 ## See also
 

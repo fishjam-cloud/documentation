@@ -19,7 +19,7 @@ If you're new to MoQ, then we recommend getting familiar with the [MoQ with Fish
 To receive a MoQ stream you need one thing: a _subscriber token_. We show how to quickly prototype with the [Sandbox API](#quickstart-with-the-sandbox-api) and how to get ready for [production](#production-with-server-sdks).
 
 :::tip
-MoQ is a protocol with a well-defined negotiation, so in theory any compliant MoQ client should work. That said, we recommend using the [`@moq`](https://github.com/moq-dev/moq) client libraries — the reference TypeScript implementation maintained alongside the protocol. For more details, see the [documentation](https://doc.moq.dev/js/).
+MoQ is a protocol with a well-defined negotiation, so in theory any compliant MoQ client should work. That said, we recommend using the [`@moq`](https://github.com/moq-dev/moq) client libraries — the reference TypeScript implementation maintained alongside the protocol. For more details, see the [documentation](https://doc.moq.dev/lib/js/).
 :::
 
 ## Quickstart with the Sandbox API
@@ -28,18 +28,54 @@ If you don't have a backend server set up, you can prototype subscribing using t
 
 ### Obtaining a subscriber token
 
-Fetch a sandbox subscriber token using the Sandbox API:
+For more on what the Sandbox API is and its limitations, see [What is the Sandbox API?](../../explanation/sandbox-api-concept).
 
-```ts
-const FISHJAM_ID = "YOUR_FISHJAM_ID";
-const SUBSCRIBER_PATH = "stream-alice";
-const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+:::info
+To obtain a MoQ token you'll need your Fishjam ID and Sandbox API URL. If you don't have them already, see [Sandbox API URL and Fishjam ID](../../explanation/sandbox-api-concept#sandbox-api-url-and-fishjam-id).
+:::
 
-const response = await fetch(
-  `${SANDBOX_API_URL}/moq/${SUBSCRIBER_PATH}/subscriber`,
-);
-const { token: subscribeToken } = await response.json();
-```
+<Tabs groupId="sandbox-token">
+  <TabItem value="react" label="React">
+
+    If you're using React, the `useSandbox` hook from `@fishjam-cloud/react-client` wraps the Sandbox API request for you:
+
+    ```tsx
+    // @noErrors
+    import { useSandbox } from "@fishjam-cloud/react-client";
+
+    const FISHJAM_ID = "YOUR_FISHJAM_ID";
+    const SUBSCRIBER_PATH = "stream-alice";
+    const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+
+    // Inside a React component:
+    const { getSandboxMoqSubscriberToken } = useSandbox({
+      sandboxApiUrl: SANDBOX_API_URL,
+    });
+
+    // Request a subscriber token scoped to the subscriber path
+    const subscribeToken = await getSandboxMoqSubscriberToken(SUBSCRIBER_PATH);
+    ```
+
+  </TabItem>
+
+  <TabItem value="ts" label="TS">
+
+    If you don't want to use React or pull in the whole client library just for the `useSandbox` hook, you can call the Sandbox API directly with `fetch`:
+
+    ```ts
+    // @noErrors
+    const FISHJAM_ID = "YOUR_FISHJAM_ID";
+    const SUBSCRIBER_PATH = "stream-alice";
+    const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+
+    const response = await fetch(
+      `${SANDBOX_API_URL}/moq/${SUBSCRIBER_PATH}/subscriber`,
+    );
+    const { token: subscribeToken } = await response.json();
+    ```
+
+  </TabItem>
+</Tabs>
 
 ### Connecting and subscribing
 
@@ -179,12 +215,6 @@ A **subscriber token** grants read access to a specific path. Generate one on yo
 
 Deliver this token to the viewing client, then use it to connect as described in [Connecting and subscribing](#connecting-and-subscribing).
 
-:::tip
-A single token should only grant either `publishPath` _or_ `subscribePath` — not both.
-Streamers receive a publisher token; viewers receive a subscriber token.
-This separation ensures a viewer can never accidentally publish to the stream.
-:::
-
 ### Subscribe to a namespace
 
 When multiple publishers join a room, you won't know their exact paths in advance.
@@ -233,8 +263,14 @@ To do this, generate a subscriber token scoped to the room namespace instead of 
     )
 
     room_name = 'my-room'
-    # Publishers under this namespace might use paths like:
-    # 'my-room/alice-camera', 'my-room/bob-screen', etc.
+
+    alice_publisher_token = fishjam_client.create_moq_token(
+      publish_path=room_name + "/alice",
+    )
+
+    bob_publisher_token = fishjam_client.create_moq_token(
+      publish_path=room_name + "/bob",
+    )
 
     namespace_token = fishjam_client.create_moq_token(subscribe_path=room_name)
     ```

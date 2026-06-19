@@ -12,7 +12,7 @@ import TabItem from "@theme/TabItem";
 
 This tutorial explains how to **subscribe** to a live stream and render it in a **React Native mobile app** using [Media over QUIC (MoQ)](https://datatracker.ietf.org/wg/moq/about/) with Fishjam. To broadcast a stream instead, see [React Native Publishing](./react-native-publishing).
 
-It uses [`react-native-moq`](https://github.com/software-mansion/react-native-moq) — React Native bindings for MoQKit, with a small, reactive hooks-based API. For the web equivalent, see [Web Subscribing](./web-subscribing).
+It uses [`react-native-moq`](https://github.com/software-mansion-labs/react-native-moq) — React Native bindings for MoQKit, with a small, reactive hooks-based API. For the web equivalent, see [Web Subscribing](./web-subscribing).
 
 :::info
 If you're new to MoQ, then we recommend getting familiar with the [MoQ with Fishjam](../concepts/moq-with-fishjam) explanation.
@@ -57,18 +57,54 @@ MoQ is a protocol with a well-defined negotiation, so a publisher and a subscrib
 
 ### Obtaining a subscriber token
 
-Fetch a sandbox subscriber token using the Sandbox API:
+For more on what the Sandbox API is and its limitations, see [What is the Sandbox API?](../../explanation/sandbox-api-concept).
 
-```ts
-const FISHJAM_ID = "YOUR_FISHJAM_ID";
-const SUBSCRIBER_PATH = "stream-alice";
-const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+:::info
+To obtain a MoQ token you'll need your Fishjam ID and Sandbox API URL. If you don't have them already, see [Sandbox API URL and Fishjam ID](../../explanation/sandbox-api-concept#sandbox-api-url-and-fishjam-id).
+:::
 
-const response = await fetch(
-  `${SANDBOX_API_URL}/moq/${SUBSCRIBER_PATH}/subscriber`,
-);
-const { token: subscribeToken } = await response.json();
-```
+<Tabs groupId="sandbox-token">
+  <TabItem value="react" label="React Native">
+
+    The `useSandbox` hook from `@fishjam-cloud/react-native-client` wraps the Sandbox API request for you:
+
+    ```tsx
+    // @noErrors
+    import { useSandbox } from "@fishjam-cloud/react-native-client";
+
+    const FISHJAM_ID = "YOUR_FISHJAM_ID";
+    const SUBSCRIBER_PATH = "stream-alice";
+    const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+
+    // Inside a React component:
+    const { getSandboxMoqSubscriberToken } = useSandbox({
+      sandboxApiUrl: SANDBOX_API_URL,
+    });
+
+    // Request a subscriber token scoped to the subscriber path
+    const subscribeToken = await getSandboxMoqSubscriberToken(SUBSCRIBER_PATH);
+    ```
+
+  </TabItem>
+
+  <TabItem value="ts" label="TS">
+
+    If you don't want to pull in the whole client library just for the `useSandbox` hook, you can call the Sandbox API directly with `fetch`:
+
+    ```ts
+    // @noErrors
+    const FISHJAM_ID = "YOUR_FISHJAM_ID";
+    const SUBSCRIBER_PATH = "stream-alice";
+    const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+
+    const response = await fetch(
+      `${SANDBOX_API_URL}/moq/${SUBSCRIBER_PATH}/subscriber`,
+    );
+    const { token: subscribeToken } = await response.json();
+    ```
+
+  </TabItem>
+</Tabs>
 
 ### Connecting and subscribing
 
@@ -134,7 +170,7 @@ That's it! The stream appears in the `<VideoView>` once the publisher starts bro
 Unlike the web, where `Watch.MultiBackend` decodes frames through WebCodecs and paints them onto a `<canvas>`, the React Native player decodes and renders natively. You just hand the `player` to a `<VideoView>` and size it like any other view.
 :::
 
-For audio-only streaming, use [`useAudioPlayer(broadcast)`](https://github.com/software-mansion/react-native-moq/blob/main/docs/API.md#useaudioplayerbroadcast-setup) instead of `useVideoPlayer` — the video track is never subscribed, so no video bandwidth is consumed.
+For audio-only streaming, use [`useAudioPlayer(broadcast)`](https://github.com/software-mansion-labs/react-native-moq/blob/main/docs/API.md#useaudioplayerbroadcast-setup) instead of `useVideoPlayer` — the video track is never subscribed, so no video bandwidth is consumed.
 
 ### Using the `<VideoPlayerView>` component
 
@@ -156,7 +192,7 @@ function BroadcastPlayer({ broadcast }: { broadcast: BroadcastInfo }) {
 }
 ```
 
-It exposes imperative `enterFullscreen()` / `exitFullscreen()` methods on its ref, and the chrome is fully customizable. See [Default UI components](https://github.com/software-mansion/react-native-moq/blob/main/docs/API.md#default-ui-components-react-native-moq-ui) in the API reference.
+It exposes imperative `enterFullscreen()` / `exitFullscreen()` methods on its ref, and the chrome is fully customizable. See [Default UI components](https://github.com/software-mansion-labs/react-native-moq/blob/main/docs/API.md#default-ui-components-react-native-moq-ui) in the API reference.
 
 ## Production with Server SDKs
 
@@ -210,12 +246,6 @@ A **subscriber token** grants read access to a specific path. Generate one on yo
 
 Deliver this token to the mobile client, then use it to build the relay URL and connect as described in [Connecting and subscribing](#connecting-and-subscribing).
 
-:::tip
-A single token should only grant either `publishPath` _or_ `subscribePath` — not both.
-Streamers receive a publisher token; viewers receive a subscriber token.
-This separation ensures a viewer can never accidentally publish to the stream.
-:::
-
 ### Subscribe to a namespace
 
 When multiple publishers join a room, you won't know their exact paths in advance.
@@ -237,6 +267,15 @@ To do this, generate a subscriber token scoped to the room namespace instead of 
 
     const roomName = 'my-room';
 
+    const { token: alicePublisherToken } = await fishjamClient.createMoqToken({
+      publishPath: roomName + "/alice",
+    });
+
+    const { token: bobPublisherToken } = await fishjamClient.createMoqToken({
+      publishPath: roomName + "/bob",
+    });
+
+
     const { token: namespaceToken } = await fishjamClient.createMoqToken({
       subscribePath: roomName,
     });
@@ -255,8 +294,14 @@ To do this, generate a subscriber token scoped to the room namespace instead of 
     )
 
     room_name = 'my-room'
-    # Publishers under this namespace might use paths like:
-    # 'my-room/alice-camera', 'my-room/bob-screen', etc.
+
+    alice_publisher_token = fishjam_client.create_moq_token(
+      publish_path=room_name + "/alice",
+    )
+
+    bob_publisher_token = fishjam_client.create_moq_token(
+      publish_path=room_name + "/bob",
+    )
 
     namespace_token = fishjam_client.create_moq_token(subscribe_path=room_name)
     ```
