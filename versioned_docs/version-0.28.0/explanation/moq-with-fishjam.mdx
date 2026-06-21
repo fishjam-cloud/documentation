@@ -9,6 +9,12 @@ description: Understand how Media over QUIC (MoQ) works in Fishjam — the relay
 
 _How Media over QUIC (MoQ) works in Fishjam_
 
+:::warning[MoQ is a standalone feature]
+MoQ runs as a **separate delivery path** in Fishjam — it handles publishing and subscribing to a live broadcast over the MoQ relay, and the rest of Fishjam's feature set does not apply to a MoQ stream. In particular, a MoQ broadcast is not part of a WebRTC [room](./rooms), so you cannot use features like [Agents](../tutorials/agents), [data channels](./data-channels), and others that are part of the Fishjam WebRTC ecosystem.
+
+What MoQ supports is covered end to end in the [MoQ tutorials](../tutorials/moq/web-publishing).
+:::
+
 ## What is MoQ?
 
 [Media over QUIC (MoQ)](https://datatracker.ietf.org/wg/moq/about/) is a new internet standard for live media delivery, designed from the ground up for **scalable, low-latency streaming to large audiences**.
