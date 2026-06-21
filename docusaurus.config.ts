@@ -208,17 +208,7 @@ const config: Config = {
             ...args
           }) {
             const items = await defaultSidebarItemsGenerator(args);
-            // The MoQ docs live in their own top-bar tab (moqSidebar), so drop
-            // their category from the main Docs sidebar to avoid duplication.
-            const withoutMoq = items.filter(
-              (item) =>
-                !(
-                  item.type === "category" &&
-                  (item as { customProps?: { topNavSection?: string } })
-                    .customProps?.topNavSection === "moq"
-                ),
-            );
-            return injectTypeDocSidebar(args.version, withoutMoq);
+            return injectTypeDocSidebar(args.version, items);
           },
         },
         theme: {
@@ -252,16 +242,8 @@ const config: Config = {
         {
           type: "doc",
           docId: "index",
-          label: "WebRTC",
+          label: "Docs",
           position: "left",
-        },
-        {
-          // MoQ is versioned alongside the rest of the docs. Point at the
-          // default (latest released) version so the tab resolves to /moq.
-          to: "/moq/concepts/moq-with-fishjam",
-          label: "MoQ",
-          position: "left",
-          activeBasePath: "/moq",
         },
         {
           to: "/api/rest",

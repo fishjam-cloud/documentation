@@ -11,34 +11,43 @@ const redirectGroups: RedirectGroup[] = [
   {
     since: "0.27.0",
     description:
-      "MoQ docs grouped into a dedicated MoQ section with Concepts/Tutorials",
+      "MoQ tutorials nested under Tutorials; MoQ concept moved into Concepts",
     rules: [
       {
         from: "/tutorials/moq",
-        to: "/moq/tutorials/web-publishing",
+        to: "/tutorials/moq/web-publishing",
       },
       {
         from: "/tutorials/moq-react-native",
-        to: "/moq/tutorials/react-native-publishing",
+        to: "/tutorials/moq/react-native-publishing",
       },
       {
         from: "/explanation/moq-streaming",
-        to: "/moq/concepts/moq-with-fishjam",
+        to: "/explanation/moq-with-fishjam",
       },
-      // Intermediate paths from earlier MoQ-section moves (next-only, never released).
-      { from: "/moq/streaming", to: "/moq/concepts/moq-with-fishjam" },
-      { from: "/moq/livestreaming", to: "/moq/tutorials/web-publishing" },
-      {
-        from: "/moq/react-native",
-        to: "/moq/tutorials/react-native-publishing",
-      },
+      // Paths from the earlier dedicated MoQ section (next-only / 0.28.0), now
+      // folded back into Tutorials and Concepts.
+      { from: "/moq/streaming", to: "/explanation/moq-with-fishjam" },
+      { from: "/moq/concepts/moq-with-fishjam", to: "/explanation/moq-with-fishjam" },
+      { from: "/moq/livestreaming", to: "/tutorials/moq/web-publishing" },
+      { from: "/moq/react-native", to: "/tutorials/moq/react-native-publishing" },
+      { from: "/moq/tutorials/web-publishing", to: "/tutorials/moq/web-publishing" },
+      { from: "/moq/tutorials/web-subscribing", to: "/tutorials/moq/web-subscribing" },
       {
         from: "/moq/tutorials/web-livestreaming",
-        to: "/moq/tutorials/web-publishing",
+        to: "/tutorials/moq/web-publishing",
+      },
+      {
+        from: "/moq/tutorials/react-native-publishing",
+        to: "/tutorials/moq/react-native-publishing",
+      },
+      {
+        from: "/moq/tutorials/react-native-subscribing",
+        to: "/tutorials/moq/react-native-subscribing",
       },
       {
         from: "/moq/tutorials/react-native-livestreaming",
-        to: "/moq/tutorials/react-native-publishing",
+        to: "/tutorials/moq/react-native-publishing",
       },
     ],
   },
