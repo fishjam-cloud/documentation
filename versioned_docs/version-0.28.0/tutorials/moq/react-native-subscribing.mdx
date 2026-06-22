@@ -1,0 +1,360 @@
+---
+type: tutorial
+sidebar_position: 4
+title: React Native Subscribing
+description: Subscribe to and render a live Media over QUIC (MoQ) broadcast in a React Native mobile app with Fishjam, from sandbox prototyping to production.
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# React Native Subscribing
+
+This tutorial explains how to **subscribe** to a live stream and render it in a **React Native mobile app** using [Media over QUIC (MoQ)](https://datatracker.ietf.org/wg/moq/about/) with Fishjam. To broadcast a stream instead, see [React Native Publishing](./react-native-publishing).
+
+It uses [`react-native-moq`](https://github.com/software-mansion-labs/react-native-moq) — React Native bindings for MoQKit, with a small, reactive hooks-based API. For the web equivalent, see [Web Subscribing](./web-subscribing).
+
+:::info
+If you're new to MoQ, then we recommend getting familiar with the [MoQ with Fishjam](../../explanation/moq-with-fishjam) explanation.
+:::
+
+## Requirements
+
+`react-native-moq` targets the React Native **New Architecture** (Fabric / TurboModules):
+
+- iOS 16+
+- Android API 30+
+
+## Installation
+
+```bash npm2yarn
+npm install react-native-moq
+```
+
+Then install the iOS pods:
+
+```sh
+cd ios && pod install
+```
+
+:::tip
+The ready-made player chrome — `<VideoPlayerView>` with fullscreen controls, a volume slider, and matching context hooks — lives in a separate package so apps that build their own UI don't pay for it:
+
+```bash npm2yarn
+npm install react-native-moq-ui @react-native-vector-icons/material-icons
+```
+
+This tutorial uses the bare `<VideoView>` from the core package, but `<VideoPlayerView>` is a drop-in replacement if you want controls out of the box.
+:::
+
+## Quickstart with the Sandbox API
+
+If you don't have a backend server set up, you can prototype subscribing using the [Sandbox API](../../explanation/sandbox-api-concept).
+
+:::tip
+MoQ is a protocol with a well-defined negotiation, so a publisher and a subscriber don't need to use the same client library. A stream published from the browser with [`@moq/publish`](./web-publishing) can be watched with `react-native-moq`, and vice versa.
+:::
+
+### Obtaining a subscriber token
+
+For more on what the Sandbox API is and its limitations, see [What is the Sandbox API?](../../explanation/sandbox-api-concept).
+
+:::info
+To obtain a MoQ token you'll need your Fishjam ID and Sandbox API URL. If you don't have them already, see [Sandbox API URL and Fishjam ID](../../explanation/sandbox-api-concept#sandbox-api-url-and-fishjam-id).
+:::
+
+<Tabs groupId="sandbox-token">
+  <TabItem value="react" label="React Native">
+
+    The `useSandbox` hook from `@fishjam-cloud/react-native-client` wraps the Sandbox API request for you:
+
+    ```tsx
+    // @noErrors
+    import { useSandbox } from "@fishjam-cloud/react-native-client";
+
+    const FISHJAM_ID = "YOUR_FISHJAM_ID";
+    const SUBSCRIBER_PATH = "stream-alice";
+    const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+
+    // Inside a React component:
+    const { getSandboxMoqSubscriberToken } = useSandbox({
+      sandboxApiUrl: SANDBOX_API_URL,
+    });
+
+    // Request a subscriber token scoped to the subscriber path
+    const subscribeToken = await getSandboxMoqSubscriberToken(SUBSCRIBER_PATH);
+    ```
+
+  </TabItem>
+
+  <TabItem value="ts" label="TS">
+
+    If you don't want to pull in the whole client library just for the `useSandbox` hook, you can call the Sandbox API directly with `fetch`:
+
+    ```ts
+    // @noErrors
+    const FISHJAM_ID = "YOUR_FISHJAM_ID";
+    const SUBSCRIBER_PATH = "stream-alice";
+    const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+
+    const response = await fetch(
+      `${SANDBOX_API_URL}/moq/${SUBSCRIBER_PATH}/subscriber`,
+    );
+    const { token: subscribeToken } = await response.json();
+    ```
+
+  </TabItem>
+</Tabs>
+
+### Connecting and subscribing
+
+Open a session, discover the broadcast under its path with `useBroadcasts`, and render it with `<VideoView>`. `useVideoPlayer` turns a discovered broadcast into a reactive player; the decoding and rendering pipeline is handled natively — no canvas, no manual WebCodecs setup:
+
+```tsx
+// @noErrors
+import { Button } from "react-native";
+import {
+  VideoView,
+  useBroadcasts,
+  useSession,
+  useVideoPlayer,
+} from "react-native-moq";
+import type { BroadcastInfo } from "react-native-moq";
+
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const SUBSCRIBER_PATH = "stream-alice";
+const subscribeToken = ""; // from the step above
+
+// Build the relay URL using the subscriber token
+const relayUrl = `https://relay.fishjam.io/${FISHJAM_ID}?jwt=${subscribeToken}`;
+
+function WatchScreen() {
+  // Connect to the Fishjam MoQ relay on mount
+  const session = useSession(relayUrl, (s) => s.connect());
+
+  // Discover broadcasts under the subscriber path
+  const broadcasts = useBroadcasts(session, SUBSCRIBER_PATH);
+
+  return (
+    <>
+      {broadcasts.map((broadcast) => (
+        <BroadcastPlayer key={broadcast.path} broadcast={broadcast} />
+      ))}
+    </>
+  );
+}
+
+function BroadcastPlayer({ broadcast }: { broadcast: BroadcastInfo }) {
+  // Create a reactive player and start playback
+  const player = useVideoPlayer(broadcast, (p) => p.play());
+
+  return (
+    <>
+      <VideoView
+        player={player}
+        style={{ width: "100%", aspectRatio: 16 / 9 }}
+      />
+      <Button
+        title={player.isPlaying ? "Pause" : "Resume"}
+        onPress={player.isPlaying ? player.pause : player.play}
+      />
+    </>
+  );
+}
+```
+
+That's it! The stream appears in the `<VideoView>` once the publisher starts broadcasting, and `useBroadcasts` re-populates automatically on reconnect.
+
+:::info
+**No canvas needed.** \
+Unlike the web, where `Watch.MultiBackend` decodes frames through WebCodecs and paints them onto a `<canvas>`, the React Native player decodes and renders natively. You just hand the `player` to a `<VideoView>` and size it like any other view.
+:::
+
+For audio-only streaming, use [`useAudioPlayer(broadcast)`](https://github.com/software-mansion-labs/react-native-moq/blob/main/docs/API.md#useaudioplayerbroadcast-setup) instead of `useVideoPlayer` — the video track is never subscribed, so no video bandwidth is consumed.
+
+### Using the `<VideoPlayerView>` component
+
+If you don't need fine-grained control over the rendering surface, the `react-native-moq-ui` package ships a ready-to-use `<VideoPlayerView>` that wraps `<VideoView>` with platform-styled play/pause, a volume slider, and a fullscreen modal — the React Native counterpart of the web `<moq-watch-ui>` element.
+
+```tsx
+// @noErrors
+import { VideoPlayerView } from "react-native-moq-ui";
+
+function BroadcastPlayer({ broadcast }: { broadcast: BroadcastInfo }) {
+  const player = useVideoPlayer(broadcast, (p) => p.play());
+
+  return (
+    <VideoPlayerView
+      player={player}
+      style={{ width: "100%", aspectRatio: 16 / 9 }}
+    />
+  );
+}
+```
+
+It exposes imperative `enterFullscreen()` / `exitFullscreen()` methods on its ref, and the chrome is fully customizable. See [Default UI components](https://github.com/software-mansion-labs/react-native-moq/blob/main/docs/API.md#default-ui-components-react-native-moq-ui) in the API reference.
+
+## Production with Server SDKs
+
+The [Quickstart](#quickstart-with-the-sandbox-api) gets you watching quickly. In production, your backend generates tokens with proper authorization, so you control who can subscribe.
+
+A **subscriber token** grants read access to a specific path. Generate one on your backend and deliver it to the viewing client:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript">
+
+    ```ts
+    const fishjamId = '';
+    const managementToken = '';
+
+    // ---cut---
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamClient = new FishjamClient({
+      fishjamId,
+      managementToken,
+    });
+
+    const streamPath = 'stream-alice';
+
+    // Generate a token that allows subscribing to 'stream-alice'
+    const { token: subscribeToken } = await fishjamClient.createMoqToken({
+      subscribePath: streamPath,
+    });
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    from fishjam import FishjamClient
+
+    fishjam_client = FishjamClient(
+      fishjam_id=fishjam_id,
+      management_token=management_token,
+    )
+
+    stream_path = 'stream-alice'
+
+    # Generate a token that allows subscribing to 'stream-alice'
+    subscribe_token = fishjam_client.create_moq_token(subscribe_path=stream_path)
+    ```
+
+  </TabItem>
+</Tabs>
+
+Deliver this token to the mobile client, then use it to build the relay URL and connect as described in [Connecting and subscribing](#connecting-and-subscribing).
+
+### Subscribe to a namespace
+
+When multiple publishers join a room, you won't know their exact paths in advance.
+Instead of consuming a single path, you can **discover** all broadcasts published under a namespace prefix and subscribe to each one as they appear.
+
+To do this, generate a subscriber token scoped to the room namespace instead of a single stream path.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript">
+
+    ```ts
+    const fishjamId = '';
+    const managementToken = '';
+
+    // ---cut---
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamClient = new FishjamClient({ fishjamId, managementToken });
+
+    const roomName = 'my-room';
+
+    const { token: alicePublisherToken } = await fishjamClient.createMoqToken({
+      publishPath: roomName + "/alice",
+    });
+
+    const { token: bobPublisherToken } = await fishjamClient.createMoqToken({
+      publishPath: roomName + "/bob",
+    });
+
+
+    const { token: namespaceToken } = await fishjamClient.createMoqToken({
+      subscribePath: roomName,
+    });
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    from fishjam import FishjamClient
+
+    fishjam_client = FishjamClient(
+      fishjam_id=fishjam_id,
+      management_token=management_token,
+    )
+
+    room_name = 'my-room'
+
+    alice_publisher_token = fishjam_client.create_moq_token(
+      publish_path=room_name + "/alice",
+    )
+
+    bob_publisher_token = fishjam_client.create_moq_token(
+      publish_path=room_name + "/bob",
+    )
+
+    namespace_token = fishjam_client.create_moq_token(subscribe_path=room_name)
+    ```
+
+  </TabItem>
+</Tabs>
+
+On the client, pass the namespace token's relay URL to `useSession`, then call `useBroadcasts(session, roomName)` with the room prefix. It returns a reactive `BroadcastInfo[]` that re-renders every time a publisher joins or leaves — no manual diffing of an announce set. Map over it to mount a player per broadcast:
+
+```tsx
+// @noErrors
+import {
+  VideoView,
+  useBroadcasts,
+  useSession,
+  useVideoPlayer,
+} from "react-native-moq";
+import type { BroadcastInfo } from "react-native-moq";
+
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const ROOM_NAME = "my-room";
+const namespaceToken = "token";
+
+const relayUrl = `https://relay.fishjam.io/${FISHJAM_ID}?jwt=${namespaceToken}`;
+
+function RoomGrid() {
+  const session = useSession(relayUrl, (s) => s.connect());
+
+  // Every broadcast published under the 'my-room' prefix, kept live
+  const broadcasts = useBroadcasts(session, ROOM_NAME);
+
+  return (
+    <>
+      {broadcasts.map((broadcast) => (
+        <Tile key={broadcast.path} broadcast={broadcast} />
+      ))}
+    </>
+  );
+}
+
+function Tile({ broadcast }: { broadcast: BroadcastInfo }) {
+  const player = useVideoPlayer(broadcast, (p) => p.play());
+  return (
+    <VideoView player={player} style={{ width: "100%", aspectRatio: 16 / 9 }} />
+  );
+}
+```
+
+Because `useBroadcasts` starts the native subscription on mount and tears it down on unmount, players appear and disappear in lockstep with the publishers in the room — React's reconciliation handles mounting and unmounting tiles for you.
+
+## See also
+
+- [React Native Publishing](./react-native-publishing) — broadcast a MoQ stream from mobile
+- [Web Subscribing](./web-subscribing) — subscribe from the browser instead
+- [MoQ with Fishjam](../../explanation/moq-with-fishjam) — how MoQ works in Fishjam
+- [Livestreaming](../../tutorials/livestreaming) — the WebRTC (WHIP/WHEP) approach

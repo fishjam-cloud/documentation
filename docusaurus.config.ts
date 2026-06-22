@@ -207,10 +207,8 @@ const config: Config = {
             defaultSidebarItemsGenerator,
             ...args
           }) {
-            return injectTypeDocSidebar(
-              args.version,
-              await defaultSidebarItemsGenerator(args),
-            );
+            const items = await defaultSidebarItemsGenerator(args);
+            return injectTypeDocSidebar(args.version, items);
           },
         },
         theme: {

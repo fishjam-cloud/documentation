@@ -1,13 +1,19 @@
 ---
 type: explanation
-sidebar_position: 6
-title: Media over QUIC (MoQ)
+sidebar_position: 9
+title: Media over QUIC in Fishjam
 description: Understand how Media over QUIC (MoQ) works in Fishjam — the relay model, publish/subscribe architecture, paths, and token-based access control.
 ---
 
-# MoQ Streaming with Fishjam
+# Media over QUIC in Fishjam
 
 _How Media over QUIC (MoQ) works in Fishjam_
+
+:::warning[MoQ is a standalone feature]
+MoQ runs as a **separate delivery path** in Fishjam — it handles publishing and subscribing to a live broadcast over the MoQ relay, and the rest of Fishjam's feature set does not apply to a MoQ stream. In particular, a MoQ broadcast is not part of a WebRTC [room](./rooms), so you cannot use features like [Agents](../tutorials/agents), [data channels](./data-channels), and others that are part of the Fishjam WebRTC ecosystem.
+
+What MoQ supports is covered end to end in the [MoQ tutorials](../tutorials/moq/web-publishing).
+:::
 
 ## What is MoQ?
 
@@ -129,11 +135,11 @@ The SDK's `createMoqToken` method accepts either a `publishPath` or a `subscribe
 
 Your backend then delivers each token to the appropriate client (publisher or viewer), which uses it to connect to the relay.
 
-See the [MoQ Streaming tutorial](../tutorials/moq) for working code examples of both approaches.
+See the [Web Publishing](../tutorials/moq/web-publishing) and [Web Subscribing](../tutorials/moq/web-subscribing) tutorials (or their [React Native](../tutorials/moq/react-native-publishing) [counterparts](../tutorials/moq/react-native-subscribing)) for working code examples.
 
 ## See also
 
-- [MoQ Streaming tutorial](../tutorials/moq) — step-by-step guide to publishing and subscribing
+- [Web Publishing](../tutorials/moq/web-publishing) / [Web Subscribing](../tutorials/moq/web-subscribing) — step-by-step guides to publishing and subscribing
 - [What is the Sandbox API?](./sandbox-api-concept) — when and why to use the Sandbox API
 - [Security & Token Model](./security-tokens) — broader overview of Fishjam's token system
 - [Livestreams](./livestreams) — WebRTC-based livestreaming with WHIP/WHEP

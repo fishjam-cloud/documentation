@@ -1,0 +1,230 @@
+---
+type: tutorial
+sidebar_position: 3
+title: React Native Publishing
+description: Publish a live video and audio broadcast over Media over QUIC (MoQ) from a React Native mobile app with Fishjam, from sandbox prototyping to production.
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# React Native Publishing
+
+This tutorial explains how to **publish** a live stream from a **React Native mobile app** using [Media over QUIC (MoQ)](https://datatracker.ietf.org/wg/moq/about/) with Fishjam. To watch a stream instead, see [React Native Subscribing](./react-native-subscribing).
+
+It uses [`react-native-moq`](https://github.com/software-mansion-labs/react-native-moq) — React Native bindings for MoQKit, with a small, reactive hooks-based API. For the web equivalent, see [Web Publishing](./web-publishing).
+
+:::info
+If you're new to MoQ, then we recommend getting familiar with the [MoQ with Fishjam](../../explanation/moq-with-fishjam) explanation.
+:::
+
+## Requirements
+
+`react-native-moq` targets the React Native **New Architecture** (Fabric / TurboModules):
+
+- iOS 16+
+- Android API 30+
+
+## Installation
+
+```bash npm2yarn
+npm install react-native-moq
+```
+
+Then install the iOS pods:
+
+```sh
+cd ios && pod install
+```
+
+Publishing captures the camera and microphone, so the host app is responsible for runtime permissions: request `CAMERA` / `RECORD_AUDIO` on Android, and add `NSCameraUsageDescription` / `NSMicrophoneUsageDescription` to `Info.plist` on iOS. The library does not request these for you.
+
+:::tip
+MoQ is a protocol with a well-defined negotiation, so a publisher and a subscriber don't need to use the same client library. A React Native app published with `react-native-moq` can be watched in the browser with [`@moq/watch`](./web-subscribing#connecting-and-subscribing), and vice versa.
+:::
+
+## Quickstart with the Sandbox API
+
+If you don't have a backend server set up, you can prototype publishing using the [Sandbox API](../../explanation/sandbox-api-concept).
+
+### Obtaining a publisher token
+
+For more on what the Sandbox API is and its limitations, see [What is the Sandbox API?](../../explanation/sandbox-api-concept).
+
+:::info
+To obtain a MoQ token you'll need your Fishjam ID and Sandbox API URL. If you don't have them already, see [Sandbox API URL and Fishjam ID](../../explanation/sandbox-api-concept#sandbox-api-url-and-fishjam-id).
+:::
+
+<Tabs groupId="sandbox-token">
+  <TabItem value="react" label="React Native">
+
+    The `useSandbox` hook from `@fishjam-cloud/react-native-client` wraps the Sandbox API request for you:
+
+    ```tsx
+    // @noErrors
+    import { useSandbox } from "@fishjam-cloud/react-native-client";
+
+    const FISHJAM_ID = "YOUR_FISHJAM_ID";
+    const PUBLISHER_PATH = "stream-alice";
+    const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+
+    // Inside a React component:
+    const { getSandboxMoqPublisherToken } = useSandbox({
+      sandboxApiUrl: SANDBOX_API_URL,
+    });
+
+    // Request a publisher token scoped to the publisher path
+    const publishToken = await getSandboxMoqPublisherToken(PUBLISHER_PATH);
+    ```
+
+  </TabItem>
+
+  <TabItem value="ts" label="TS">
+
+    If you don't want to pull in the whole client library just for the `useSandbox` hook, you can call the Sandbox API directly with `fetch`:
+
+    ```ts
+    // @noErrors
+    const FISHJAM_ID = "YOUR_FISHJAM_ID";
+    const PUBLISHER_PATH = "stream-alice";
+    const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+
+    const response = await fetch(
+      `${SANDBOX_API_URL}/moq/${PUBLISHER_PATH}/publisher`,
+    );
+    const { token: publishToken } = await response.json();
+    ```
+
+  </TabItem>
+</Tabs>
+
+### Connecting and publishing
+
+`react-native-moq` is hooks-based. You open a session against the relay, capture the camera and microphone, and hand them to a publisher.
+
+Build the relay URL using the publisher token, open the session, and publish the camera + microphone tracks:
+
+```tsx
+// @noErrors
+import { useEffect } from "react";
+import { Button, PermissionsAndroid, Platform } from "react-native";
+import {
+  PublisherView,
+  useCamera,
+  useMicrophone,
+  usePublisher,
+  useSession,
+} from "react-native-moq";
+
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const PUBLISHER_PATH = "stream-alice";
+const publishToken = ""; // from the step above
+
+// Build the relay URL using the publisher token
+const relayUrl = `https://relay.fishjam.io/${FISHJAM_ID}?jwt=${publishToken}`;
+
+function PublishScreen() {
+  // Open the MoQ session against the Fishjam relay
+  const session = useSession(relayUrl, (s) => s.connect());
+  const camera = useCamera({ position: "front" });
+  const microphone = useMicrophone();
+  const publisher = usePublisher(session);
+
+  // Request camera + mic permissions on Android (iOS handles it automatically when Info.plist is configured)
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+      ]);
+    }
+  }, []);
+
+  const isPublishing = publisher.state === "publishing";
+
+  return (
+    <>
+      <PublisherView camera={camera} style={{ aspectRatio: 9 / 16 }} />
+      <Button title="Flip" onPress={camera.flip} />
+      <Button
+        title={isPublishing ? "Stop" : "Publish"}
+        disabled={session.state !== "connected" && !isPublishing}
+        onPress={() => {
+          if (isPublishing) publisher.stop();
+          else
+            publisher.publish({
+              path: PUBLISHER_PATH,
+              tracks: [camera, microphone],
+            });
+        }}
+      />
+    </>
+  );
+}
+```
+
+Once `publisher.state === "publishing"`, the stream is live on the MoQ relay! Viewers can start watching by following [React Native Subscribing](./react-native-subscribing).
+
+:::info
+**Why a separate `useSession` and `publish()`?** \
+The session owns the connection to the relay; the publisher reuses it. Because publishing rides on top of an open session, the same connection can subscribe and publish at once — pair `usePublisher(session)` with `useBroadcasts(session, prefix)` to do both.
+:::
+
+## Production with Server SDKs
+
+The [Quickstart](#quickstart-with-the-sandbox-api) gets you publishing quickly. In production, your backend generates tokens with proper authorization, so you control who can publish.
+
+A **publisher token** grants write access to a specific path. Generate one on your backend and deliver it to the broadcasting client:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript">
+
+    ```ts
+    const fishjamId = '';
+    const managementToken = '';
+
+    // ---cut---
+    import { FishjamClient } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamClient = new FishjamClient({
+      fishjamId,
+      managementToken,
+    });
+
+    const streamPath = 'stream-alice';
+
+    // Generate a token that allows publishing to 'stream-alice'
+    const { token: publishToken } = await fishjamClient.createMoqToken({
+      publishPath: streamPath,
+    });
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    from fishjam import FishjamClient
+
+    fishjam_client = FishjamClient(
+      fishjam_id=fishjam_id,
+      management_token=management_token,
+    )
+
+    stream_path = 'stream-alice'
+
+    # Generate a token that allows publishing to 'stream-alice'
+    publish_token = fishjam_client.create_moq_token(publish_path=stream_path)
+    ```
+
+  </TabItem>
+</Tabs>
+
+Deliver this token to the mobile client, then use it to build the relay URL and connect as described in [Connecting and publishing](#connecting-and-publishing).
+
+## See also
+
+- [React Native Subscribing](./react-native-subscribing) — watch a MoQ stream on mobile
+- [Web Publishing](./web-publishing) — publish from the browser instead
+- [MoQ with Fishjam](../../explanation/moq-with-fishjam) — how MoQ works in Fishjam
+- [Livestreaming](../../tutorials/livestreaming) — the WebRTC (WHIP/WHEP) approach
