@@ -14,10 +14,6 @@ const redirectGroups: RedirectGroup[] = [
       "MoQ tutorials nested under Tutorials; MoQ concept moved into Concepts",
     rules: [
       {
-        from: "/tutorials/moq",
-        to: "/tutorials/moq/web-publishing",
-      },
-      {
         from: "/tutorials/moq-react-native",
         to: "/tutorials/moq/react-native-publishing",
       },
