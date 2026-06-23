@@ -110,3 +110,5 @@ RTCPIP
 VAPI
 vapi
 remuxing
+swmansion
+SimCam
