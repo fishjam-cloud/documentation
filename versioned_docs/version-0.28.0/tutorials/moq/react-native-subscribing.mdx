@@ -55,12 +55,12 @@ If you don't have a backend server set up, you can prototype subscribing using t
 MoQ is a protocol with a well-defined negotiation, so a publisher and a subscriber don't need to use the same client library. A stream published from the browser with [`@moq/publish`](./web-publishing) can be watched with `react-native-moq`, and vice versa.
 :::
 
-### Obtaining a subscriber token
+### Obtaining a subscriber connection URL
 
 For more on what the Sandbox API is and its limitations, see [What is the Sandbox API?](../../explanation/sandbox-api-concept).
 
 :::info
-To obtain a MoQ token you'll need your Fishjam ID and Sandbox API URL. If you don't have them already, see [Sandbox API URL and Fishjam ID](../../explanation/sandbox-api-concept#sandbox-api-url-and-fishjam-id).
+To obtain a MoQ connection URL you'll need your Sandbox API URL. If you don't have it already, see [Sandbox API URL](../../explanation/sandbox-api-concept#sandbox-api-url-and-fishjam-id).
 :::
 
 <Tabs groupId="sandbox-token">
@@ -72,17 +72,16 @@ To obtain a MoQ token you'll need your Fishjam ID and Sandbox API URL. If you do
     // @noErrors
     import { useSandbox } from "@fishjam-cloud/react-native-client";
 
-    const FISHJAM_ID = "YOUR_FISHJAM_ID";
     const SUBSCRIBER_PATH = "stream-alice";
     const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
 
     // Inside a React component:
-    const { getSandboxMoqSubscriberToken } = useSandbox({
+    const { getSandboxMoqSubscriberAccess } = useSandbox({
       sandboxApiUrl: SANDBOX_API_URL,
     });
 
-    // Request a subscriber token scoped to the subscriber path
-    const subscribeToken = await getSandboxMoqSubscriberToken(SUBSCRIBER_PATH);
+    // Request a subscriber connection URL scoped to the subscriber path
+    const { connection_url: subscribeUrl } = await getSandboxMoqSubscriberAccess(SUBSCRIBER_PATH);
     ```
 
   </TabItem>
@@ -93,14 +92,13 @@ To obtain a MoQ token you'll need your Fishjam ID and Sandbox API URL. If you do
 
     ```ts
     // @noErrors
-    const FISHJAM_ID = "YOUR_FISHJAM_ID";
     const SUBSCRIBER_PATH = "stream-alice";
     const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
 
     const response = await fetch(
       `${SANDBOX_API_URL}/moq/${SUBSCRIBER_PATH}/subscriber`,
     );
-    const { token: subscribeToken } = await response.json();
+    const { connection_url: subscribeUrl } = await response.json();
     ```
 
   </TabItem>
@@ -121,16 +119,12 @@ import {
 } from "react-native-moq";
 import type { BroadcastInfo } from "react-native-moq";
 
-const FISHJAM_ID = "YOUR_FISHJAM_ID";
 const SUBSCRIBER_PATH = "stream-alice";
-const subscribeToken = ""; // from the step above
-
-// Build the relay URL using the subscriber token
-const relayUrl = `https://relay.fishjam.io/${FISHJAM_ID}?jwt=${subscribeToken}`;
+const subscribeUrl = ""; // from the step above
 
 function WatchScreen() {
-  // Connect to the Fishjam MoQ relay on mount
-  const session = useSession(relayUrl, (s) => s.connect());
+  // Connect to the Fishjam MoQ relay on mount using the subscriber connection URL
+  const session = useSession(subscribeUrl, (s) => s.connect());
 
   // Discover broadcasts under the subscriber path
   const broadcasts = useBroadcasts(session, SUBSCRIBER_PATH);
@@ -198,7 +192,7 @@ It exposes imperative `enterFullscreen()` / `exitFullscreen()` methods on its re
 
 The [Quickstart](#quickstart-with-the-sandbox-api) gets you watching quickly. In production, your backend generates tokens with proper authorization, so you control who can subscribe.
 
-A **subscriber token** grants read access to a specific path. Generate one on your backend and deliver it to the viewing client:
+A **subscriber connection URL** grants read access to a specific path. Generate one on your backend and deliver it to the viewing client:
 
 <Tabs groupId="language">
   <TabItem value="ts" label="TypeScript">
@@ -217,8 +211,8 @@ A **subscriber token** grants read access to a specific path. Generate one on yo
 
     const streamPath = 'stream-alice';
 
-    // Generate a token that allows subscribing to 'stream-alice'
-    const { token: subscribeToken } = await fishjamClient.createMoqToken({
+    // Generate a connection URL that allows subscribing to 'stream-alice'
+    const { connection_url: subscribeUrl } = await fishjamClient.createMoqAccess({
       subscribePath: streamPath,
     });
     ```
@@ -237,21 +231,21 @@ A **subscriber token** grants read access to a specific path. Generate one on yo
 
     stream_path = 'stream-alice'
 
-    # Generate a token that allows subscribing to 'stream-alice'
-    subscribe_token = fishjam_client.create_moq_token(subscribe_path=stream_path)
+    # Generate a connection URL that allows subscribing to 'stream-alice'
+    subscribe_url = fishjam_client.create_moq_access(subscribe_path=stream_path).connection_url
     ```
 
   </TabItem>
 </Tabs>
 
-Deliver this token to the mobile client, then use it to build the relay URL and connect as described in [Connecting and subscribing](#connecting-and-subscribing).
+Deliver this connection URL to the mobile client, then use it to connect as described in [Connecting and subscribing](#connecting-and-subscribing).
 
 ### Subscribe to a namespace
 
 When multiple publishers join a room, you won't know their exact paths in advance.
 Instead of consuming a single path, you can **discover** all broadcasts published under a namespace prefix and subscribe to each one as they appear.
 
-To do this, generate a subscriber token scoped to the room namespace instead of a single stream path.
+To do this, generate a subscriber connection URL scoped to the room namespace instead of a single stream path.
 
 <Tabs groupId="language">
   <TabItem value="ts" label="TypeScript">
@@ -267,16 +261,16 @@ To do this, generate a subscriber token scoped to the room namespace instead of 
 
     const roomName = 'my-room';
 
-    const { token: alicePublisherToken } = await fishjamClient.createMoqToken({
+    const { connection_url: alicePublisherUrl } = await fishjamClient.createMoqAccess({
       publishPath: roomName + "/alice",
     });
 
-    const { token: bobPublisherToken } = await fishjamClient.createMoqToken({
+    const { connection_url: bobPublisherUrl } = await fishjamClient.createMoqAccess({
       publishPath: roomName + "/bob",
     });
 
 
-    const { token: namespaceToken } = await fishjamClient.createMoqToken({
+    const { connection_url: namespaceUrl } = await fishjamClient.createMoqAccess({
       subscribePath: roomName,
     });
     ```
@@ -295,21 +289,21 @@ To do this, generate a subscriber token scoped to the room namespace instead of 
 
     room_name = 'my-room'
 
-    alice_publisher_token = fishjam_client.create_moq_token(
+    alice_publisher_url = fishjam_client.create_moq_access(
       publish_path=room_name + "/alice",
-    )
+    ).connection_url
 
-    bob_publisher_token = fishjam_client.create_moq_token(
+    bob_publisher_url = fishjam_client.create_moq_access(
       publish_path=room_name + "/bob",
-    )
+    ).connection_url
 
-    namespace_token = fishjam_client.create_moq_token(subscribe_path=room_name)
+    namespace_url = fishjam_client.create_moq_access(subscribe_path=room_name).connection_url
     ```
 
   </TabItem>
 </Tabs>
 
-On the client, pass the namespace token's relay URL to `useSession`, then call `useBroadcasts(session, roomName)` with the room prefix. It returns a reactive `BroadcastInfo[]` that re-renders every time a publisher joins or leaves — no manual diffing of an announce set. Map over it to mount a player per broadcast:
+On the client, pass the namespace connection URL to `useSession`, then call `useBroadcasts(session, roomName)` with the room prefix. It returns a reactive `BroadcastInfo[]` that re-renders every time a publisher joins or leaves — no manual diffing of an announce set. Map over it to mount a player per broadcast:
 
 ```tsx
 // @noErrors
@@ -321,14 +315,11 @@ import {
 } from "react-native-moq";
 import type { BroadcastInfo } from "react-native-moq";
 
-const FISHJAM_ID = "YOUR_FISHJAM_ID";
 const ROOM_NAME = "my-room";
-const namespaceToken = "token";
-
-const relayUrl = `https://relay.fishjam.io/${FISHJAM_ID}?jwt=${namespaceToken}`;
+const namespaceUrl = "";
 
 function RoomGrid() {
-  const session = useSession(relayUrl, (s) => s.connect());
+  const session = useSession(namespaceUrl, (s) => s.connect());
 
   // Every broadcast published under the 'my-room' prefix, kept live
   const broadcasts = useBroadcasts(session, ROOM_NAME);

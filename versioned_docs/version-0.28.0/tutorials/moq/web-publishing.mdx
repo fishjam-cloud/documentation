@@ -16,7 +16,7 @@ This tutorial explains how to **publish** a live stream from the browser using [
 If you're new to MoQ, then we recommend getting familiar with the [MoQ with Fishjam](../../explanation/moq-with-fishjam) explanation.
 :::
 
-To start publishing a MoQ stream, you need two things: a _publisher token_ and the relay URL. We show how to quickly prototype with the [Sandbox API](#quickstart-with-the-sandbox-api) and how to get ready for [production](#production-with-server-sdks).
+To start publishing a MoQ stream, you need a _publisher connection URL_ — the relay URL with a publisher token embedded as a `?jwt=` query parameter. We show how to quickly prototype with the [Sandbox API](#quickstart-with-the-sandbox-api) and how to get ready for [production](#production-with-server-sdks).
 
 :::tip
 MoQ is a protocol with a well-defined negotiation, so in theory any compliant MoQ client should work. That said, we recommend using the `@moq` client libraries — the reference TypeScript implementation maintained alongside the protocol. For more details, see the [documentation](https://doc.moq.dev/lib/js/).
@@ -26,12 +26,12 @@ MoQ is a protocol with a well-defined negotiation, so in theory any compliant Mo
 
 If you don't have a backend server set up, you can prototype publishing using the [Sandbox API](../../explanation/sandbox-api-concept).
 
-### Obtaining a publisher token
+### Obtaining a publisher connection URL
 
 For more on what the Sandbox API is and its limitations, see [What is the Sandbox API?](../../explanation/sandbox-api-concept).
 
 :::info
-To obtain a MoQ token you'll need your Fishjam ID and Sandbox API URL. If you don't have them already, see [Sandbox API URL and Fishjam ID](../../explanation/sandbox-api-concept#sandbox-api-url-and-fishjam-id).
+To obtain a MoQ connection URL you'll need your Sandbox API URL. If you don't have it already, see [Sandbox API URL](../../explanation/sandbox-api-concept#sandbox-api-url-and-fishjam-id).
 :::
 
 <Tabs groupId="sandbox-token">
@@ -43,17 +43,16 @@ To obtain a MoQ token you'll need your Fishjam ID and Sandbox API URL. If you do
     // @noErrors
     import { useSandbox } from "@fishjam-cloud/react-client";
 
-    const FISHJAM_ID = "YOUR_FISHJAM_ID";
     const PUBLISHER_PATH = "stream-alice";
     const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
 
     // Inside a React component:
-    const { getSandboxMoqPublisherToken } = useSandbox({
+    const { getSandboxMoqPublisherAccess } = useSandbox({
       sandboxApiUrl: SANDBOX_API_URL,
     });
 
-    // Request a publisher token scoped to the publisher path
-    const publishToken = await getSandboxMoqPublisherToken(PUBLISHER_PATH);
+    // Request a publisher connection URL scoped to the publisher path
+    const { connection_url: publishUrl } = await getSandboxMoqPublisherAccess(PUBLISHER_PATH);
     ```
 
   </TabItem>
@@ -64,14 +63,13 @@ To obtain a MoQ token you'll need your Fishjam ID and Sandbox API URL. If you do
 
     ```ts
     // @noErrors
-    const FISHJAM_ID = "YOUR_FISHJAM_ID";
     const PUBLISHER_PATH = "stream-alice";
     const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
 
     const response = await fetch(
       `${SANDBOX_API_URL}/moq/${PUBLISHER_PATH}/publisher`,
     );
-    const { token: publishToken } = await response.json();
+    const { connection_url: publishUrl } = await response.json();
     ```
 
   </TabItem>
@@ -85,25 +83,19 @@ Install the MoQ packages:
 npm install @moq/lite @moq/publish
 ```
 
-Use the token to connect to the Fishjam MoQ relay and start broadcasting:
+Use the connection URL to connect to the Fishjam MoQ relay and start broadcasting:
 
 ```ts
 // @noErrors
 import * as Moq from "@moq/lite";
 import * as Publish from "@moq/publish";
 
-const FISHJAM_ID = "YOUR_FISHJAM_ID";
 const PUBLISHER_PATH = "stream-alice";
-const publishToken = "";
+const publishUrl = "";
 
 // ---cut---
-// Build the relay URL using the publisher token
-const relayUrl = new URL(
-  `https://relay.fishjam.io/${FISHJAM_ID}?jwt=${publishToken}`,
-);
-
-// Connect to the Fishjam MoQ relay
-const connection = await Moq.Connection.connect(relayUrl);
+// Connect to the Fishjam MoQ relay using the publisher connection URL
+const connection = await Moq.Connection.connect(new URL(publishUrl));
 
 const camera = new Publish.Source.Camera({ enabled: true });
 const microphone = new Publish.Source.Microphone({ enabled: true });
@@ -130,7 +122,7 @@ The stream is now live on the MoQ relay! Viewers can now start watching it — f
 
 The [Quickstart](#quickstart-with-the-sandbox-api) gets you publishing quickly. In production, your backend generates tokens with proper authorization, so you control who can publish.
 
-A **publisher token** grants write access to a specific path. Generate one on your backend and deliver it to the broadcasting client:
+A **publisher connection URL** grants write access to a specific path. Generate one on your backend and deliver it to the broadcasting client:
 
 <Tabs groupId="language">
   <TabItem value="ts" label="TypeScript">
@@ -149,8 +141,8 @@ A **publisher token** grants write access to a specific path. Generate one on yo
 
     const streamPath = 'stream-alice';
 
-    // Generate a token that allows publishing to 'stream-alice'
-    const { token: publishToken } = await fishjamClient.createMoqToken({
+    // Generate a connection URL that allows publishing to 'stream-alice'
+    const { connection_url: publishUrl } = await fishjamClient.createMoqAccess({
       publishPath: streamPath,
     });
     ```
@@ -169,14 +161,14 @@ A **publisher token** grants write access to a specific path. Generate one on yo
 
     stream_path = 'stream-alice'
 
-    # Generate a token that allows publishing to 'stream-alice'
-    publish_token = fishjam_client.create_moq_token(publish_path=stream_path)
+    # Generate a connection URL that allows publishing to 'stream-alice'
+    publish_url = fishjam_client.create_moq_access(publish_path=stream_path).connection_url
     ```
 
   </TabItem>
 </Tabs>
 
-Deliver this token to the broadcasting client, then use it to connect as described in [Connecting and publishing](#connecting-and-publishing).
+Deliver this connection URL to the broadcasting client, then use it to connect as described in [Connecting and publishing](#connecting-and-publishing).
 
 ## See also
 

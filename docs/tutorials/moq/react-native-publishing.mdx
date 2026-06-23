@@ -47,12 +47,12 @@ MoQ is a protocol with a well-defined negotiation, so a publisher and a subscrib
 
 If you don't have a backend server set up, you can prototype publishing using the [Sandbox API](../../explanation/sandbox-api-concept).
 
-### Obtaining a publisher token
+### Obtaining a publisher connection URL
 
 For more on what the Sandbox API is and its limitations, see [What is the Sandbox API?](../../explanation/sandbox-api-concept).
 
 :::info
-To obtain a MoQ token you'll need your Fishjam ID and Sandbox API URL. If you don't have them already, see [Sandbox API URL and Fishjam ID](../../explanation/sandbox-api-concept#sandbox-api-url-and-fishjam-id).
+To obtain a MoQ connection URL you'll need your Sandbox API URL. If you don't have it already, see [Sandbox API URL](../../explanation/sandbox-api-concept#sandbox-api-url-and-fishjam-id).
 :::
 
 <Tabs groupId="sandbox-token">
@@ -64,17 +64,16 @@ To obtain a MoQ token you'll need your Fishjam ID and Sandbox API URL. If you do
     // @noErrors
     import { useSandbox } from "@fishjam-cloud/react-native-client";
 
-    const FISHJAM_ID = "YOUR_FISHJAM_ID";
     const PUBLISHER_PATH = "stream-alice";
     const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
 
     // Inside a React component:
-    const { getSandboxMoqPublisherToken } = useSandbox({
+    const { getSandboxMoqPublisherAccess } = useSandbox({
       sandboxApiUrl: SANDBOX_API_URL,
     });
 
-    // Request a publisher token scoped to the publisher path
-    const publishToken = await getSandboxMoqPublisherToken(PUBLISHER_PATH);
+    // Request a publisher connection URL scoped to the publisher path
+    const { connection_url: publishUrl } = await getSandboxMoqPublisherAccess(PUBLISHER_PATH);
     ```
 
   </TabItem>
@@ -85,14 +84,13 @@ To obtain a MoQ token you'll need your Fishjam ID and Sandbox API URL. If you do
 
     ```ts
     // @noErrors
-    const FISHJAM_ID = "YOUR_FISHJAM_ID";
     const PUBLISHER_PATH = "stream-alice";
     const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
 
     const response = await fetch(
       `${SANDBOX_API_URL}/moq/${PUBLISHER_PATH}/publisher`,
     );
-    const { token: publishToken } = await response.json();
+    const { connection_url: publishUrl } = await response.json();
     ```
 
   </TabItem>
@@ -102,7 +100,7 @@ To obtain a MoQ token you'll need your Fishjam ID and Sandbox API URL. If you do
 
 `react-native-moq` is hooks-based. You open a session against the relay, capture the camera and microphone, and hand them to a publisher.
 
-Build the relay URL using the publisher token, open the session, and publish the camera + microphone tracks:
+Open the session with the publisher connection URL, capture the camera and microphone, and publish the tracks:
 
 ```tsx
 // @noErrors
@@ -116,16 +114,12 @@ import {
   useSession,
 } from "react-native-moq";
 
-const FISHJAM_ID = "YOUR_FISHJAM_ID";
 const PUBLISHER_PATH = "stream-alice";
-const publishToken = ""; // from the step above
-
-// Build the relay URL using the publisher token
-const relayUrl = `https://relay.fishjam.io/${FISHJAM_ID}?jwt=${publishToken}`;
+const publishUrl = ""; // from the step above
 
 function PublishScreen() {
-  // Open the MoQ session against the Fishjam relay
-  const session = useSession(relayUrl, (s) => s.connect());
+  // Open the MoQ session against the Fishjam relay using the publisher connection URL
+  const session = useSession(publishUrl, (s) => s.connect());
   const camera = useCamera({ position: "front" });
   const microphone = useMicrophone();
   const publisher = usePublisher(session);
@@ -174,7 +168,7 @@ The session owns the connection to the relay; the publisher reuses it. Because p
 
 The [Quickstart](#quickstart-with-the-sandbox-api) gets you publishing quickly. In production, your backend generates tokens with proper authorization, so you control who can publish.
 
-A **publisher token** grants write access to a specific path. Generate one on your backend and deliver it to the broadcasting client:
+A **publisher connection URL** grants write access to a specific path. Generate one on your backend and deliver it to the broadcasting client:
 
 <Tabs groupId="language">
   <TabItem value="ts" label="TypeScript">
@@ -193,8 +187,8 @@ A **publisher token** grants write access to a specific path. Generate one on yo
 
     const streamPath = 'stream-alice';
 
-    // Generate a token that allows publishing to 'stream-alice'
-    const { token: publishToken } = await fishjamClient.createMoqToken({
+    // Generate a connection URL that allows publishing to 'stream-alice'
+    const { connection_url: publishUrl } = await fishjamClient.createMoqAccess({
       publishPath: streamPath,
     });
     ```
@@ -213,14 +207,14 @@ A **publisher token** grants write access to a specific path. Generate one on yo
 
     stream_path = 'stream-alice'
 
-    # Generate a token that allows publishing to 'stream-alice'
-    publish_token = fishjam_client.create_moq_token(publish_path=stream_path)
+    # Generate a connection URL that allows publishing to 'stream-alice'
+    publish_url = fishjam_client.create_moq_access(publish_path=stream_path).connection_url
     ```
 
   </TabItem>
 </Tabs>
 
-Deliver this token to the mobile client, then use it to build the relay URL and connect as described in [Connecting and publishing](#connecting-and-publishing).
+Deliver this connection URL to the mobile client, then use it to connect as described in [Connecting and publishing](#connecting-and-publishing).
 
 ## See also
 
