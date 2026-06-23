@@ -98,11 +98,11 @@ Access to the relay is controlled by **MoQ tokens** — short-lived JWTs that ar
 | Publisher token  | Write access to a specific path    | Streamer          |
 | Subscriber token | Read access to a path or namespace | Viewer            |
 
-A token is attached to the relay URL as a query parameter (`?jwt=<token>`). The relay validates the token and enforces its scope before allowing any media to flow. Both the Sandbox API and the Server SDK hand you this full **connection URL** (the relay URL with the token already embedded), so the client connects to it directly without assembling anything.
+A token is attached to the relay URL as a query parameter (`?jwt=<token>`). The relay validates the token and enforces its scope before allowing any media to flow. Both the Sandbox API and the Server SDK hand you the authenticated **connection URL** (the relay URL with the token already embedded), so the client can just take it as is and connect.
 
 Keeping publisher and subscriber tokens separate ensures that a viewer can never accidentally publish to the stream, and a publisher cannot subscribe to paths it does not own.
 
-## Getting Connection URLs
+## Where to get the Connection URL from?
 
 There are two ways to obtain a MoQ connection URL, depending on where you are in the development lifecycle.
 
@@ -122,6 +122,12 @@ To get a subscriber connection URL, call:
 GET https://fishjam.io/api/v1/connect/{FISHJAM_ID}/room-manager/moq/{SUBSCRIBER-PATH}/subscriber
 ```
 
+To get a full-access connection URL — one that can both publish to and subscribe on the path — call:
+
+```
+GET https://fishjam.io/api/v1/connect/{FISHJAM_ID}/room-manager/moq/{PATH}/full-access
+```
+
 Each returns a JSON object with a `connection_url` field — the relay URL with the JWT embedded as `?jwt=` — alongside the raw `token`.
 
 The Sandbox API is **not intended for production** — it has no authentication and is only available in the Sandbox environment. See [What is the Sandbox API?](./sandbox-api-concept) for more context.
@@ -130,10 +136,11 @@ The Sandbox API is **not intended for production** — it has no authentication 
 
 In production, your backend generates connection URLs using the **Fishjam Server SDK**. This gives you full control over who can publish and who can subscribe.
 
-The SDK's `createMoqAccess` method accepts either a `publishPath` or a `subscribePath` and returns the MoQ access details — a `connection_url` (the relay URL with the JWT embedded) alongside the raw `token`:
+The SDK's `createMoqAccess` method accepts a `publishPath`, a `subscribePath`, or both, and returns the MoQ access details — a `connection_url` (the relay URL with the JWT embedded) alongside the raw `token`:
 
 - `publishPath` — returns a publisher connection URL scoped to that path.
 - `subscribePath` — returns a subscriber connection URL scoped to that path or namespace prefix.
+- both `publishPath` and `subscribePath` — returns a full-access connection URL that can publish and subscribe on those paths.
 
 Your backend then delivers each connection URL to the appropriate client (publisher or viewer), which uses it to connect to the relay.
 
