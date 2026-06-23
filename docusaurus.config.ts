@@ -233,7 +233,6 @@ const config: Config = {
       disableSwitch: true,
     },
     navbar: {
-      title: "Fishjam ",
       logo: {
         alt: "Fishjam",
         src: "img/logo.svg",
