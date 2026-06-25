@@ -258,6 +258,62 @@ export function MicrophoneControl() {
 }
 ```
 
+## Audio processing: noise cancellation and auto gain
+
+When capturing a microphone, the browser (Web) or OS (Mobile) applies audio processing — **echo cancellation**, **noise suppression** (noise cancellation) and **auto gain control** — to make speech clearer. These are enabled by default and are the right choice for most voice and meeting use cases.
+
+Turn them off only when you need the raw, unprocessed signal — for example capturing music or an instrument, or running your own audio processing — since these filters can distort non-speech audio.
+
+<Tabs groupId="platform">
+  <TabItem value="web" label="React (Web)">
+
+On Web, audio processing follows the browser's defaults (noise suppression, auto gain control and echo cancellation are on by default). To set them explicitly, pass [`constraints`](../../api/web/interfaces/FishjamProviderProps#constraints) to `FishjamProvider`. The `audio` field accepts standard [`MediaTrackConstraints`](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints).
+
+```tsx
+import { FishjamProvider } from "@fishjam-cloud/react-client";
+
+export function App({ fishjamId }: { fishjamId: string }) {
+  return (
+    <FishjamProvider
+      fishjamId={fishjamId}
+      constraints={{
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true, // noise cancellation
+          autoGainControl: true,
+        },
+      }}
+    >
+      {/* your app */}
+    </FishjamProvider>
+  );
+}
+```
+
+To capture raw audio (for example, music), disable them:
+
+```tsx
+constraints={{
+  audio: {
+    echoCancellation: false,
+    noiseSuppression: false,
+    autoGainControl: false,
+  },
+}}
+```
+
+:::note
+These constraints are applied when `FishjamProvider` creates the microphone track. `selectMicrophone` and `startMicrophone` reuse the same constraints — they don't accept per-call overrides.
+:::
+
+  </TabItem>
+  <TabItem value="mobile" label="React Native (Mobile)">
+
+On Mobile, echo cancellation, noise suppression and auto gain control are enabled by default in the native audio pipeline and aren't currently configurable from JavaScript.
+
+  </TabItem>
+</Tabs>
+
 ## Managing Permissions (Mobile only)
 
 The SDK provides built-in hooks for querying and requesting device permissions: `useCameraPermissions` and `useMicrophonePermissions` from `@fishjam-cloud/react-native-client`.
