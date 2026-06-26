@@ -152,7 +152,7 @@ Create a Fishjam agent configured to match the audio format that the Google clie
 
 ### Step 3: Connect the Streams
 
-:::warning Encoding
+:::warning[Encoding]
 Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. Ensure you convert between them correctly as shown below.
 :::
 
@@ -278,3 +278,50 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
 
   </TabItem>
 </Tabs>
+
+## Troubleshooting Gemini API keys
+
+If your agent joins the room but silently does nothing — no audio, no transcription, and no error — the problem is almost always the Gemini API key.
+
+:::warning Errors are asynchronous, not thrown
+`createClient` is a thin synchronous wrapper around Google's `GoogleGenAI` and makes no network call, so an invalid or unauthorized key is **not** rejected when you create the client. The key is only exercised later, when `live.connect()` opens the Live websocket. Authentication and access failures then surface through the Live session callbacks (`onerror` / `onclose`) — never as a thrown exception.
+:::
+
+Always implement the `onerror` and `onclose` callbacks and log the close code and reason. That is where the real error message appears:
+
+```ts
+import GeminiIntegration from "@fishjam-cloud/js-server-sdk/gemini";
+import { Modality, type LiveServerMessage } from "@google/genai";
+
+const genAi = GeminiIntegration.createClient({
+  apiKey: process.env.GOOGLE_API_KEY!,
+});
+const GEMINI_MODEL = "gemini-2.5-flash-native-audio-preview-12-2025";
+const handleMessage = (msg: LiveServerMessage) => {};
+
+// ---cut---
+const session = await genAi.live.connect({
+  model: GEMINI_MODEL,
+  config: { responseModalities: [Modality.AUDIO] },
+  callbacks: {
+    onopen: () => console.log("Gemini Live connected"),
+    onerror: (e) => console.error("Gemini Live error:", e),
+    onclose: (e) =>
+      console.error(`Gemini Live closed: code=${e.code} reason=${e.reason}`),
+    onmessage: handleMessage,
+  },
+});
+```
+
+### Common reasons a key doesn't work
+
+- Wrong or mistyped key, or a key from the wrong Google Cloud project.
+- The Gemini API is not enabled for the key's project.
+- Region or country restriction — the Gemini API (or its free tier) is not available in your region.
+- Model-specific rejection. The native-audio Live models (e.g. `gemini-2.5-flash-native-audio-preview-*`) can reject an otherwise-valid key: the websocket closes with code `1008` and the message _"Your API key was reported as leaked. Please use another API key."_ (even when the key is not actually leaked), or with code `1011` internal errors. A key that works for other models can still fail here.
+
+### How to fix
+
+- Verify or regenerate your key at [Google AI Studio](https://aistudio.google.com/app/apikey).
+- Confirm the Gemini API is enabled for the key's project and that your region is supported.
+- If you see the `1008` "leaked" message, rotate to a freshly generated key.
