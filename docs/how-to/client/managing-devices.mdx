@@ -270,6 +270,7 @@ Turn them off only when you need the raw, unprocessed signal — for example cap
 On Web, audio processing follows the browser's defaults (noise suppression, auto gain control and echo cancellation are on by default). To set them explicitly, pass [`constraints`](../../api/web/interfaces/FishjamProviderProps#constraints) to `FishjamProvider`. The `audio` field accepts standard [`MediaTrackConstraints`](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints).
 
 ```tsx
+import React from "react";
 import { FishjamProvider } from "@fishjam-cloud/react-client";
 
 export function App({ fishjamId }: { fishjamId: string }) {
@@ -290,17 +291,7 @@ export function App({ fishjamId }: { fishjamId: string }) {
 }
 ```
 
-To capture raw audio (for example, music), disable them:
-
-```tsx
-constraints={{
-  audio: {
-    echoCancellation: false,
-    noiseSuppression: false,
-    autoGainControl: false,
-  },
-}}
-```
+To capture raw audio (for example, music), set `echoCancellation`, `noiseSuppression`, and `autoGainControl` to `false` instead.
 
 :::note
 These constraints are applied when `FishjamProvider` creates the microphone track. `selectMicrophone` and `startMicrophone` reuse the same constraints — they don't accept per-call overrides.
