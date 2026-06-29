@@ -284,10 +284,10 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
 If your agent joins the room but silently does nothing — no audio, no transcription, and no error — the problem is almost always the Gemini API key.
 
 :::warning[API key errors surface asynchronously]
-`createClient` is a thin synchronous wrapper around Google's `GoogleGenAI` and makes no network call, so an invalid or unauthorized key is **not** rejected when you create the client. The key is only exercised later, when `live.connect()` opens the Live websocket. Authentication and access failures then typically surface through the Live session callbacks (`onerror` / `onclose`) rather than as a thrown exception. (Other problems, such as a malformed config, can still reject the awaited `connect()` call — keep a `try/catch` around it too.)
+`createClient` is a thin synchronous wrapper around Google's `GoogleGenAI` and makes no network call, so it does **not** validate your key — an invalid or unauthorized key is not rejected when you create the client. Unless you verify it explicitly (see below), the key is first exercised when `live.connect()` opens the Live websocket, and authentication or access failures then typically surface through the Live session callbacks (`onerror` / `onclose`) rather than as a thrown exception. (Other problems, such as a malformed config, can still reject the awaited `connect()` call — keep a `try/catch` around it too.)
 :::
 
-Always implement the `onerror` and `onclose` callbacks and log the close code and reason. That is where the real error message appears:
+To catch a bad key up front, call `checkCredentials` before connecting: it makes a single network request and throws if the key is rejected, so misconfiguration fails fast instead of silently. Still implement the `onerror` and `onclose` callbacks and log the close code and reason — that is where model-specific rejections (see below) and other Live failures appear:
 
 ```ts
 import GeminiIntegration from "@fishjam-cloud/js-server-sdk/gemini";
