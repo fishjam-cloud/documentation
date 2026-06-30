@@ -5,16 +5,16 @@ import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 
 export default function AskAiSidepanel(): ReactElement {
   const { siteConfig } = useDocusaurusContext();
-  const { appId, apiKey, indexName, askAi } = siteConfig.themeConfig
-    .docsearch as any;
+  const { appId, apiKey, indexName, assistantId, agentStudio } = siteConfig
+    .customFields!.askAi as any;
 
   return (
     <DocSearchSidepanel
       appId={appId}
       apiKey={apiKey}
       indexName={indexName}
-      assistantId={askAi.assistantId}
-      agentStudio={askAi.agentStudio}
+      assistantId={assistantId}
+      agentStudio={agentStudio}
       button={{ variant: "floating" }}
       panel={{ variant: "floating", side: "right" }}
     />

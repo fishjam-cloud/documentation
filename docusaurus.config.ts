@@ -163,6 +163,19 @@ const config: Config = {
   onBrokenAnchors: "log",
   onDuplicateRoutes: "throw",
 
+  // Ask-AI sidepanel config (rendered in src/theme/Root.tsx via @docsearch/react).
+  // Lives here because themeConfig now uses `algolia` (for t-rex's search) rather
+  // than the @docsearch adapter's `docsearch` key.
+  customFields: {
+    askAi: {
+      appId: "IBX716Q0KT",
+      apiKey: "5dcaa347f57ca14f8cb59926164dd129",
+      indexName: "Fishjam",
+      assistantId: "49fdf088-e614-4b89-86c2-da8c4b566260",
+      agentStudio: true,
+    },
+  },
+
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
   // may want to replace "en" with "zh-Hans".
@@ -181,7 +194,10 @@ const config: Config = {
 
   future: {
     v4: true,
-    faster: {
+    // Docusaurus is pinned to 3.9.2 to match @swmansion/t-rex-ui (it imports 3.9-only
+    // theme-common internals). On 3.9.x this key is `experimental_faster`; it became
+    // `faster` in 3.10. Rename back if Docusaurus is ever upgraded.
+    experimental_faster: {
       swcJsLoader: true,
       swcJsMinimizer: true,
     },
@@ -224,6 +240,9 @@ const config: Config = {
         },
       } satisfies Preset.Options,
     ],
+    // Software Mansion premium docs theme. Placed after classic so it can
+    // override theme components. llms:false — we already run docusaurus-plugin-llms.
+    [require.resolve("@swmansion/t-rex-ui/preset"), { llms: false }],
   ],
 
   themeConfig: {
@@ -265,17 +284,19 @@ const config: Config = {
         },
       ],
     },
-    docsearch: {
+    // Search: classic Algolia DocSearch via @docusaurus/theme-search-algolia
+    // (registered in `themes`). t-rex's navbar search bar and search page read
+    // themeConfig.algolia directly. We use this instead of the
+    // @docsearch/docusaurus-adapter plugin because the adapter forbids
+    // themeConfig.algolia alongside its `docsearch` key, and t-rex's navbar search
+    // requires `algolia`. The Ask-AI sidepanel keys moved to customFields.askAi
+    // (consumed by src/theme/Root.tsx -> AskAiSidepanel, which uses @docsearch/react).
+    algolia: {
       appId: "IBX716Q0KT",
       apiKey: "5dcaa347f57ca14f8cb59926164dd129",
       indexName: "Fishjam",
       contextualSearch: true,
       searchPagePath: "search",
-      insights: false,
-      askAi: {
-        assistantId: "49fdf088-e614-4b89-86c2-da8c4b566260",
-        agentStudio: true,
-      },
     },
     footer: {
       links: [
@@ -320,8 +341,32 @@ const config: Config = {
   } satisfies Preset.ThemeConfig & DocSearchThemeConfig,
 
   plugins: [
+    // t-rex-ui ships its theme as untranspiled JSX under node_modules. Docusaurus's
+    // JS rule excludes node_modules from transpilation (it only un-excludes
+    // "docusaurus"-named packages), so the build fails to parse t-rex's theme/*.js
+    // (e.g. theme/MDXContent, theme/DocItem/Layout). Run just that theme dir through
+    // Docusaurus's own JS loader. The core rule already excludes it, so no double
+    // compilation. (t-rex's own docs dodge this because there the theme is a
+    // monorepo workspace, i.e. resolved outside node_modules.)
+    function transpileTRexUiTheme() {
+      return {
+        name: "transpile-t-rex-ui-theme",
+        configureWebpack(_config: unknown, isServer: boolean, utils: any) {
+          return {
+            module: {
+              rules: [
+                {
+                  test: /\.jsx?$/,
+                  include: [/[/\\]@swmansion[/\\]t-rex-ui[/\\]theme[/\\]/],
+                  use: [utils.getJSLoader({ isServer })],
+                },
+              ],
+            },
+          };
+        },
+      };
+    },
     ["@docusaurus/plugin-client-redirects", { createRedirects }],
-    "@docsearch/docusaurus-adapter",
     [
       "@scalar/docusaurus",
       {
