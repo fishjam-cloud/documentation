@@ -281,7 +281,7 @@ Fishjam handles raw bytes, while Google GenAI SDKs often expect Base64 strings. 
 
 ## Troubleshooting Gemini API keys
 
-If your agent joins the room but silently does nothing — no audio, no transcription, and no error — the problem is almost always the Gemini API key.
+If your agent joins the room but silently does nothing — no audio, no transcription, and no error — the issue is often related to the Gemini API key.
 
 :::warning[API key errors surface asynchronously]
 `createClient` is a thin synchronous wrapper around Google's `GoogleGenAI` and makes no network call, so it does **not** validate your key — an invalid or unauthorized key is not rejected when you create the client. Unless you verify it explicitly (see below), the key is first exercised when `live.connect()` opens the Live websocket, and authentication or access failures then typically surface through the Live session callbacks (`onerror` / `onclose`) rather than as a thrown exception. (Other problems, such as a malformed config, can still reject the awaited `connect()` call — keep a `try/catch` around it too.)
