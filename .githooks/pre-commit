@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+# Pre-commit hook mirroring the fast static checks from CI
+# (.github/workflows/static_check.yml) so commits don't reach CI with
+# formatting, spelling, or type errors.
+#
+# `yarn build` is intentionally NOT run here: it recompiles the git
+# submodules and takes minutes, which is too slow for a commit hook.
+# CI still runs the full build.
+#
+# Bypass in an emergency with:  git commit --no-verify
+
+set -e
+
+echo "pre-commit: running static checks (format, spellcheck, typecheck)..."
+
+yarn format:check
+yarn spellcheck
+yarn typecheck
+
+echo "pre-commit: all static checks passed."

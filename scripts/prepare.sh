@@ -6,6 +6,14 @@ ROOTDIR=$(dirname $(dirname "$(readlink -f $0)"))
 echo $ROOTDIR
 cd $ROOTDIR
 
+# For local development only, point git at the committed hooks directory so
+# the pre-commit static checks run (mirrors static_check.yml). Skipped on CI,
+# which runs the checks itself and never commits; the `|| true` keeps a
+# non-git context (e.g. a source tarball) from aborting this script.
+if [ -z "$CI" ]; then
+  git config core.hooksPath .githooks 2>/dev/null || true
+fi
+
 printf "Synchronising submodules... "
 git submodule sync --recursive >>/dev/null
 git submodule update --init --recursive >>/dev/null

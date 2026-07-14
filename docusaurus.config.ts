@@ -239,15 +239,27 @@ const config: Config = {
       },
       items: [
         {
-          type: "doc",
-          docId: "index",
+          to: "/",
           label: "Docs",
           position: "left",
+          // Highlight on all docs pages except the standalone "Build with AI"
+          // page and the API Reference section, which have their own navbar
+          // items below.
+          activeBaseRegex: "^/docs(?=/|$)(?!.*(ai-skill|/api(/|$)))",
         },
         {
           to: "/api/rest",
           label: "API Reference",
           position: "left",
+          // Highlight across the whole /api section (rest, reference, and the
+          // typedoc web/mobile/server pages), not just the linked /api/rest.
+          activeBaseRegex: "/api(/|$)",
+        },
+        {
+          to: "/ai-skill",
+          label: "Build with AI",
+          position: "left",
+          activeBaseRegex: "/ai-skill",
         },
         {
           type: "docsVersionDropdown",
