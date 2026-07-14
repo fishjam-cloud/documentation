@@ -24,7 +24,9 @@ export default function SkillCallout() {
     <aside className={styles.callout}>
       <div className={styles.body}>
         <p className={styles.eyebrow}>✨ Build with AI</p>
-        <p className={styles.heading}>Your coding assistant, fluent in Fishjam</p>
+        <p className={styles.heading}>
+          Your coding assistant, fluent in Fishjam
+        </p>
         <p className={styles.subcopy}>
           Install the Fishjam Skill and your coding assistant writes accurate,
           up-to-date Fishjam code across backend, web, and mobile.
