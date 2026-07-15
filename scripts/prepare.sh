@@ -51,6 +51,14 @@ cd packages/web-client-sdk/packages/mobile-client/
 yarn && yarn build
 
 cd $ROOTDIR
+cd packages/web-client-sdk/packages/react-native-custom-video-source/
+yarn && yarn build
+
+cd $ROOTDIR
+cd packages/web-client-sdk/packages/react-native-vision-camera-source/
+yarn && yarn build
+
+cd $ROOTDIR
 cd packages/js-server-sdk/
 yarn && yarn build
 

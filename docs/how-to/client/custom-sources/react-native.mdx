@@ -1,0 +1,108 @@
+---
+title: "Custom sources in React Native"
+sidebar_position: 2
+sidebar_label: "React Native 📱"
+description: Publish any React Native MediaStream to a Fishjam room with the useCustomSource hook.
+---
+
+# Custom sources in React Native <span className="badge badge--mobile">Mobile</span>
+
+:::note
+This guide is exclusively for **Mobile** (React Native) applications.
+:::
+
+The [`useCustomSource`](../../../api/mobile/functions/useCustomSource) hook from `@fishjam-cloud/react-native-client` is the same hook that is available [on the web](./web), typed for the React Native [`MediaStream`](../../../api/mobile/classes/MediaStream). Your app must be wrapped in [`FishjamProvider`](../../../api/mobile/functions/FishjamProvider).
+
+On React Native, a `MediaStream` for a custom source typically comes from:
+
+- the [Vision Camera integration](./vision-camera) or the [low-level frame API](./low-level-frame-api), whose hooks create the stream for you,
+- any other `MediaStream` you already hold.
+
+## Publish a stream
+
+Set the stream on a stable source ID; set `null` to unpublish. The cleanup function keeps the source in sync with the component lifecycle.
+
+```tsx
+import { useEffect } from "react";
+import {
+  useCustomSource,
+  type MediaStream,
+} from "@fishjam-cloud/react-native-client";
+
+// ---cut---
+export function usePublishStream(stream: MediaStream | null) {
+  const { setStream } = useCustomSource("my-custom-source");
+
+  useEffect(() => {
+    if (!stream) return;
+    setStream(stream);
+    return () => {
+      setStream(null);
+    };
+  }, [stream, setStream]);
+}
+```
+
+:::info[When tracks are actually published]
+
+Tracks are sent to Fishjam only while the peer is connected to a room. A stream set before joining is queued and published as soon as the connection is established, and pending sources are re-published automatically after a reconnect. Calls to `setStream` are serialized internally, so replacing one stream with another in quick succession is safe.
+
+:::
+
+:::important
+
+Custom sources are shared by ID: every `useCustomSource` call with the same source ID returns the same state, so multiple components can control and read one source.
+
+:::
+
+## What about audio?
+
+Custom sources on React Native are video-only today. The publishing contract is shared with the web (a stream's audio track would go out as a `customAudio` track), but React Native currently has no way to produce a custom audio track: there is no audio-frame API, and no equivalent of the web's `captureStream()` or Web Audio. The microphone is already covered by [`useMicrophone`](../../../api/mobile/functions/useMicrophone).
+
+If you need to publish generated or processed audio, that is currently a [web-only capability](./web.mdx).
+
+## Show a self-view
+
+The `stream` returned by the hook renders like any other stream:
+
+```tsx
+import React from "react";
+import { useCustomSource, RTCView } from "@fishjam-cloud/react-native-client";
+
+// ---cut---
+export function SelfView() {
+  const { stream } = useCustomSource("my-custom-source");
+
+  if (!stream) return null;
+  return (
+    <RTCView
+      mediaStream={stream}
+      style={{ height: 200, width: "100%" }}
+      objectFit="cover"
+    />
+  );
+}
+```
+
+## Remove the source
+
+```tsx
+import { useCustomSource } from "@fishjam-cloud/react-native-client";
+// ---cut---
+const { setStream } = useCustomSource("my-custom-source");
+// ...
+await setStream(null);
+```
+
+Removing a source unpublishes its tracks but does not stop them; the producer of the stream owns the tracks and should stop them itself.
+
+## Receiving on other peers
+
+Custom tracks arrive in the `customVideoTracks` and `customAudioTracks` arrays of each peer returned by `usePeers`. See [Receiving custom tracks](./index.mdx#receiving-custom-tracks).
+
+## Related guides
+
+- [Vision Camera](./vision-camera): publish a camera feed with frame processors
+- [WebGPU effects](./webgpu-effects): draw your own content into the published video
+- [Low-level frame API](./low-level-frame-api): publish frames from your own pipeline
+- [How custom sources work](../../../explanation/custom-sources)

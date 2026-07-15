@@ -1,0 +1,137 @@
+---
+title: "Publish a Vision Camera feed"
+sidebar_position: 3
+sidebar_label: "Vision Camera 📱"
+description: Publish a react-native-vision-camera feed to Fishjam, optionally running frame-processor plugins on the published frames.
+---
+
+# Publish a Vision Camera feed <span className="badge badge--mobile">Mobile</span>
+
+:::note
+This guide is exclusively for **Mobile** (React Native) applications.
+:::
+
+`@fishjam-cloud/react-native-vision-camera-source` publishes a [VisionCamera](https://react-native-vision-camera.com) feed to Fishjam. Its hooks work like the other Fishjam source hooks ([`useCamera`](../../../api/mobile/functions/useCamera), [`useScreenShare`](../../../api/mobile/functions/useScreenShare), [`useCustomSource`](../../../api/mobile/functions/useCustomSource)): they create the underlying track, publish it, and clean up on unmount. Each camera frame is handed to Fishjam without copying its pixels.
+
+Use this package when you need VisionCamera capabilities alongside a Fishjam call, such as frame-processor plugins for on-device ML, precise device control, or [your own WebGPU rendering](./webgpu-effects) drawn into the published video. If you only want to stream the camera, use [`useCamera`](../start-streaming) instead.
+
+## Prerequisites
+
+- `react-native-vision-camera` **v5** and `react-native-vision-camera-worklets`
+- [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/) with its Babel plugin configured (required by VisionCamera's frame outputs)
+- `@fishjam-cloud/react-native-client` with your app wrapped in `FishjamProvider` (see [Installation](../installation))
+- The New Architecture; custom video tracks require it
+- A development build ([Expo Go](https://docs.expo.dev/develop/development-builds/introduction/) cannot load these native modules)
+
+## Install
+
+```bash npm2yarn
+npm install @fishjam-cloud/react-native-vision-camera-source react-native-vision-camera react-native-vision-camera-worklets react-native-worklets
+```
+
+Add the worklets Babel plugin as the last entry in your Babel plugins, then restart Metro with a cleared cache:
+
+```js title='babel.config.js'
+module.exports = {
+  presets: ["babel-preset-expo"],
+  plugins: ["react-native-worklets/plugin"],
+};
+```
+
+Camera permission setup (usage strings, requesting at runtime) follows the standard VisionCamera flow; see the [VisionCamera getting started guide](https://react-native-vision-camera.com/docs/guides).
+
+## Publish the camera
+
+Pass the hook's `frameOutput` to VisionCamera's `useCamera` outputs. The returned `stream` is your self-view; the same feed is published to the room under the given source ID.
+
+```tsx
+import React from "react";
+import {
+  useCamera as useVisionCamera,
+  useCameraPermission,
+} from "react-native-vision-camera";
+import { RTCView } from "@fishjam-cloud/react-native-client";
+import { useVisionCameraSource } from "@fishjam-cloud/react-native-vision-camera-source";
+
+export function CameraPublisher() {
+  const { hasPermission } = useCameraPermission();
+
+  const { frameOutput, stream } = useVisionCameraSource("my-camera");
+
+  useVisionCamera({
+    device: "front",
+    isActive: hasPermission,
+    outputs: [frameOutput],
+  });
+
+  if (!stream) return null;
+  return <RTCView mediaStream={stream} style={{ flex: 1 }} objectFit="cover" />;
+}
+```
+
+Frame rotation and timestamps are handled for you: the hook normalizes VisionCamera's per-platform timestamp units onto one monotonic timeline and applies the frame's orientation automatically.
+
+Other peers receive the feed among their [`customVideoTracks`](./index.mdx#receiving-custom-tracks).
+
+:::warning[On-screen drawing is not published]
+
+The published track carries the camera frames exactly as captured. Anything you draw on top of the preview (React Native views, a [Skia](https://shopify.github.io/react-native-skia/) canvas, or any other overlay) appears only in your local UI and is **not** sent to Fishjam. To render content into the published video itself, use [WebGPU effects](./webgpu-effects.mdx) for effects and overlays on the camera feed, or the [low-level frame API](./low-level-frame-api.mdx) when you produce the frames yourself.
+
+:::
+
+## Run frame processors on published frames
+
+Pass an `onFrame` worklet to process every published frame, for example to run a VisionCamera frame-processor plugin for pose detection or other on-device inference. `onFrame` is for reading frames; it cannot draw into the published feed:
+
+```tsx
+import { useCallback } from "react";
+import type { Frame } from "react-native-vision-camera";
+import { useVisionCameraSource } from "@fishjam-cloud/react-native-vision-camera-source";
+
+declare function detectPose(frame: Frame): unknown;
+
+// ---cut---
+const onFrame = useCallback((frame: Frame) => {
+  "worklet";
+  const pose = detectPose(frame); // any VisionCamera frame-processor plugin
+  console.log(pose);
+}, []);
+
+const { frameOutput, stream } = useVisionCameraSource("my-camera", {
+  onFrame,
+});
+```
+
+:::danger[Frame lifetime]
+
+`onFrame` runs **after** the frame has been sent to Fishjam, and the frame is valid only for the duration of your synchronous callback; the hook releases it afterwards. Don't store the frame or its buffers for later use.
+
+:::
+
+:::warning
+
+Keep the identity of `onFrame` stable (`useCallback` or module scope). A new function identity re-registers the frame callback on every render.
+
+:::
+
+## Options
+
+| Option                     | Default      | Description                                                                                         |
+| -------------------------- | ------------ | --------------------------------------------------------------------------------------------------- |
+| `enabled`                  | `true`       | Creates and publishes the track while `true`; tears everything down when `false`.                   |
+| `onFrame`                  | —            | Worklet called with every camera frame after it has been sent.                                      |
+| `onFrameDropped`           | —            | Worklet called with the reason whenever a frame is skipped (for example when the pipeline is busy). |
+| `frameIntervalNanoseconds` | `33_333_333` | Fallback frame spacing used when a frame arrives without a usable native timestamp.                 |
+
+The options also accept VisionCamera's `FrameOutputOptions`. The hook forces `pixelFormat: 'native'` (the copy-free path) and defaults `dropFramesWhileBusy` to `true`.
+
+## Troubleshooting
+
+- **Track creation fails immediately**: custom video tracks require the New Architecture; the returned `error` carries a clear message when the app runs on the old architecture.
+- **No frames flow**: check that `isActive` is `true`, the device permission is granted, and `frameOutput` is included in the `outputs` array of `useCamera`.
+
+## Next steps
+
+- Follow the [Vision Camera tutorial](../../../tutorials/vision-camera) for a step-by-step walkthrough
+- Draw your own content into the feed with [WebGPU effects](./webgpu-effects)
+- API reference: [Vision Camera Source package](../../../api/vision-camera-source/index)

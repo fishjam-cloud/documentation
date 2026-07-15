@@ -1,0 +1,199 @@
+---
+title: "Publish frames with the low-level API"
+sidebar_position: 5
+sidebar_label: "Low-level frame API 📱"
+description: Publish video frames from any source, such as a native ML pipeline or your own renderer, with the generic custom video source layer.
+---
+
+# Publish frames with the low-level API <span className="badge badge--mobile">Mobile</span>
+
+:::note
+This guide is exclusively for **Mobile** (React Native) applications.
+:::
+
+`@fishjam-cloud/react-native-custom-video-source` is the generic layer under the [Vision Camera integration](./vision-camera). Use it directly when your frames come from another source, such as a native ML pipeline or your own renderer. It is built on the raw track primitives of `@fishjam-cloud/react-native-webrtc`, covered [at the end of this guide](#going-lower-raw-track-primitives).
+
+## Pick a mode
+
+The two modes differ in how you produce frames:
+
+| Mode                       | Hook                     | Use it when                                                                                         |
+| -------------------------- | ------------------------ | --------------------------------------------------------------------------------------------------- |
+| **Forwarding**             | `useManagedForwardTrack` | You already have finished native buffers (`CVPixelBufferRef` on iOS, `AHardwareBuffer*` on Android) |
+| **Render-target (pooled)** | `useManagedPooledTrack`  | You render the frames yourself; the hook allocates GPU-shareable surfaces for you to draw into      |
+
+Each hook manages the track's asynchronous lifecycle: creation, the published `stream`, and teardown. Your code only supplies frames.
+
+## Prerequisites
+
+- `@fishjam-cloud/react-native-webrtc` and `@fishjam-cloud/react-native-client`, with your app wrapped in `FishjamProvider`
+- The New Architecture; custom video tracks require it and reject with a clear error on the old architecture
+
+```bash npm2yarn
+npm install @fishjam-cloud/react-native-custom-video-source
+```
+
+## Publish the managed stream
+
+Both hooks return a `stream`. Publish it with [`useCustomSource`](./react-native), like any other custom source:
+
+```tsx
+import { useEffect } from "react";
+import {
+  useCustomSource,
+  type MediaStream,
+} from "@fishjam-cloud/react-native-client";
+
+// ---cut---
+export function usePublishStream(sourceId: string, stream: MediaStream | null) {
+  const { setStream } = useCustomSource(sourceId);
+
+  useEffect(() => {
+    if (!stream) return;
+    setStream(stream);
+    return () => {
+      setStream(null);
+    };
+  }, [stream, setStream]);
+}
+```
+
+## Forward finished buffers
+
+`useManagedForwardTrack` creates and owns the track; hand each buffer pointer to `forwardFrame`:
+
+```tsx
+import { useManagedForwardTrack } from "@fishjam-cloud/react-native-custom-video-source";
+import { forwardFrame } from "@fishjam-cloud/react-native-webrtc";
+
+declare function getNextFrameBuffer(): bigint; // your native pipeline
+
+// ---cut---
+const { track, stream, error } = useManagedForwardTrack(true /* enabled */);
+
+// publish `stream` via useCustomSource, then per frame:
+if (track) {
+  forwardFrame(track, {
+    nativeBuffer: getNextFrameBuffer(),
+  });
+}
+```
+
+Buffer requirements:
+
+- `nativeBuffer` is a retainable, IOSurface-backed `CVPixelBufferRef` (iOS) or an `AHardwareBuffer*` (Android), passed as a `bigint` pointer.
+- The SDK retains the buffer for encoding; you may release your reference immediately after `forwardFrame` returns.
+- `timestampNs` is optional: when omitted, frames are stamped with the native monotonic clock. Pass your own capture timestamps only if you need to align the video with an audio track you also produce.
+- `rotation` (`0 | 90 | 180 | 270`) rotates the frame for the receiver. Don't set it if your buffers are already upright, or the frame gets rotated twice.
+
+:::warning[One worklet runtime per track]
+
+`forwardFrame` and `pushFrame` are worklet-safe, but a track's sink binds to the first worklet runtime that touches it. Feed each track from a single runtime (or from the JS thread) consistently.
+
+:::
+
+## Render into pooled surfaces
+
+`useManagedPooledTrack` allocates a pool of native GPU-shareable surfaces; draw into a slot and hand it back with `pushFrame`:
+
+```tsx
+import { useManagedPooledTrack } from "@fishjam-cloud/react-native-custom-video-source";
+import { pushFrame } from "@fishjam-cloud/react-native-webrtc";
+
+declare function renderInto(surfaceHandle: bigint): void; // your renderer
+declare function nowNanoseconds(): number;
+
+// ---cut---
+const { track, stream, bufferDescriptors, error } = useManagedPooledTrack(
+  true, // enabled
+  720, // width
+  1280, // height
+  3, // poolSize
+);
+
+let nextSlot = 0;
+
+function renderFrame() {
+  if (!track || !bufferDescriptors) return;
+
+  const descriptor = bufferDescriptors[nextSlot];
+  nextSlot = (nextSlot + 1) % bufferDescriptors.length;
+
+  renderInto(descriptor.surfaceHandle);
+  pushFrame(track, {
+    bufferIndex: descriptor.index,
+    timestampNs: nowNanoseconds(),
+  });
+}
+```
+
+Each `WorkletBufferDescriptor` carries `{ index, surfaceHandle, width, height }`. Import each `surfaceHandle` into your GPU once and cache the result per index; don't re-import it every frame.
+
+The surfaces are:
+
+| Platform | Surface type      | Pixel format | Import as    |
+| -------- | ----------------- | ------------ | ------------ |
+| iOS      | `IOSurface`       | BGRA8        | `bgra8unorm` |
+| Android  | `AHardwareBuffer` | RGBA8        | `rgba8unorm` |
+
+Rendering with the wrong format typically shows up as swapped red/blue channels, or the import is rejected outright.
+
+Unlike forwarding, `timestampNs` is required here and must be strictly increasing.
+
+### Synchronize with your GPU
+
+If your renderer works asynchronously, pass a `fence` so the encoder waits for your rendering to finish instead of reading a half-drawn surface:
+
+- **iOS**: `handle` is an `MTLSharedEvent` pointer and `signaledValue` the value your GPU work signals.
+- **Android**: `handle` is a sync file descriptor; pass `0n` as `signaledValue`.
+
+If you render with WebGPU, prefer [`useVisionCameraWebGpuSource`](./webgpu-effects) or the `/webgpu` toolkit of this package; they handle fencing, surface import, and frame lifetimes for you.
+
+## Lifecycle and errors
+
+- `track`, `stream` and `bufferDescriptors` are `null` until asynchronous creation finishes; failures surface in the hook's `error` field rather than throwing.
+- Set `enabled: false` to tear everything down; the hooks stop the tracks (and dispose the pool) in the correct order on unmount too.
+- Changing the pooled dimensions reallocates the pool, so release any GPU objects you imported when `bufferDescriptors` changes.
+
+## Going lower: raw track primitives
+
+The managed hooks wrap four primitives from `@fishjam-cloud/react-native-webrtc`: `createCustomVideoBufferPool`, `createCustomVideoTrack`, `pushFrame` and `forwardFrame`. Use them directly only when a React hook cannot own the lifecycle, for example inside a headless native-driven runtime:
+
+```tsx
+import {
+  createCustomVideoBufferPool,
+  createCustomVideoTrack,
+} from "@fishjam-cloud/react-native-webrtc";
+
+// ---cut---
+const pool = await createCustomVideoBufferPool({
+  width: 720,
+  height: 1280,
+  poolSize: 3,
+});
+const { stream, track } = await createCustomVideoTrack({ pool });
+
+// render into pool.buffers[i].surfaceHandle, then pushFrame(track, ...)
+
+// Teardown; order matters:
+stream.getTracks().forEach((mediaStreamTrack) => mediaStreamTrack.stop());
+await pool.dispose();
+```
+
+When using the primitives directly, you must follow the rules the hooks otherwise enforce:
+
+- A pool binds to exactly one track.
+- Stop the track's stream before disposing the pool; `dispose()` rejects while the track is live.
+- Stopping a track never frees the pool; you own it and must dispose it yourself.
+- `createCustomVideoTrack()` without a pool creates a forwarding track for `forwardFrame`.
+
+## WebGPU render targets
+
+The `/webgpu` entry point of this package is a camera-rendering toolkit for the pooled mode. It provides a shared camera-capable `GPUDevice`, camera sampling from your shaders, a passthrough pipeline, and crop helpers. It is covered in [WebGPU effects](./webgpu-effects).
+
+## Related guides
+
+- [Custom sources in React Native](./react-native): publishing the stream
+- [Vision Camera](./vision-camera): the ready-made camera integration built on this layer
+- [How custom sources work](../../../explanation/custom-sources)
+- API reference: [Custom Video Source package](../../../api/custom-video-source/index)

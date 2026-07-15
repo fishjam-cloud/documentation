@@ -1,35 +1,30 @@
 ---
-title: "Custom sources"
-sidebar_position: 8
-sidebar_label: "Custom sources 🌐"
+title: "Custom sources on the web"
+sidebar_position: 1
+sidebar_label: "Web 🌐"
 description: Stream non-standard video or audio sources (e.g. WebGL, WebGPU, Three.js) through Fishjam in web apps.
 ---
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
-# Custom sources <span className="badge badge--web">Web</span>
+# Custom sources on the web <span className="badge badge--web">Web</span>
 
 :::note
-This guide is exclusively for **Web** (React) applications.
+This guide is exclusively for **Web** (React) applications. For React Native, see [Custom sources in React Native](./react-native).
 :::
 
-:::important
-
-If you only wish to send camera, microphone or screen share output through Fishjam, then you most likely should refer to the documentation in [Streaming media](./start-streaming) and [Managing devices](./managing-devices) instead of this page.
-
-:::
-
-This section demonstrates how to stream non-standard video or audio to other peers in your web app.
+This guide demonstrates how to stream non-standard video or audio to other peers in your web app.
 The utilities in this section allow you to integrate Fishjam with powerful browser APIs such as [WebGL](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API) and [WebGPU](https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API),
-or higher level libraries, which leverage these APIs, such as [Three.js](https://threejs.org/), [Smelter](https://smelter.dev) or [PixiJS](https://pixijs.com/)
+or higher level libraries, which leverage these APIs, such as [Three.js](https://threejs.org/), [Smelter](https://smelter.dev) or [PixiJS](https://pixijs.com/).
+For a complete WebGPU render-and-publish pipeline, see [WebGPU effects](./webgpu-effects.mdx).
 
-## Creating a custom source - [`useCustomSource()`](../../api/web/functions/useCustomSource)
+## Creating a custom source - [`useCustomSource()`](../../../api/web/functions/useCustomSource)
 
 To create a custom source, you only need to do two things:
 
 1. Call the `useCustomSource` hook.
-2. Call the [`setStream`](../../api/web/functions/useCustomSource#setstream) callback provided by the `useCustomSource` hook with a [MediaStream](#how-to-get-a-mediastream-object) object.
+2. Call the [`setStream`](../../../api/web/functions/useCustomSource#setstream) callback provided by the `useCustomSource` hook with a [MediaStream](#how-to-get-a-mediastream-object) object.
 
 #### Usage Example
 
@@ -47,12 +42,12 @@ useEffect(() => {
 
 ### Using a created custom source
 
-Once you have called [`setStream`](../../api/web/functions/useCustomSource#setstream) for a given source ID (in the above example, `"my-custom-source"`), any subsequent calls to `useCustomSource` with the same ID will return the same state.
+Once you have called [`setStream`](../../../api/web/functions/useCustomSource#setstream) for a given source ID (in the above example, `"my-custom-source"`), any subsequent calls to `useCustomSource` with the same ID will return the same state.
 This enables multiple components to control and read a shared custom source.
 
 ### Deleting a custom source
 
-If you wish to remove a custom source, then you should call the [`setStream`](../../api/web/functions/useCustomSource#setstream) callback with `null` as its argument.
+If you wish to remove a custom source, then you should call the [`setStream`](../../../api/web/functions/useCustomSource#setstream) callback with `null` as its argument.
 
 #### Usage Example
 
@@ -180,3 +175,9 @@ If you have a `<video>` or `<audio>` element, then you need to call their [`capt
 
   </TabItem>
  </Tabs>
+
+## Related guides
+
+- [Custom sources overview](./index.mdx): how custom tracks reach other peers
+- [Custom sources in React Native](./react-native)
+- [How custom sources work](../../../explanation/custom-sources)
