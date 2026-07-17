@@ -248,8 +248,9 @@ Fishjam delivers notifications as a binary `application/x-protobuf` body. Read t
       "/api/webhooks/fishjam",
       express.raw({ type: "application/x-protobuf" }),
       (req: express.Request, res: express.Response) => {
-        const signature = req.headers["x-fishjam-signature-256"] as string;
+        const signature = req.headers["x-fishjam-signature-256"];
         if (
+          typeof signature !== "string" ||
           !verifyWebhookSignature(
             req.body,
             signature,

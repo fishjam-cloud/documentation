@@ -336,7 +336,8 @@ Verify the header against the raw body **before** decoding, and reject mismatche
 
     // rawBody: Buffer, signatureHeader: req.headers['x-fishjam-signature-256']
     if (!verifyWebhookSignature(rawBody, signatureHeader, secret)) {
-      throw new Error('Invalid webhook signature'); // reject the request with 401
+      // respond with 401 here — how depends on your framework, see the examples linked below
+      throw new Error('Invalid webhook signature');
     }
 
     // signature is valid — safe to decode
@@ -355,7 +356,8 @@ Verify the header against the raw body **before** decoding, and reject mismatche
 
     # raw_body: bytes, signature_header: request.headers["x-fishjam-signature-256"]
     if not verify_webhook_signature(raw_body, signature_header, secret):
-        raise PermissionError("Invalid webhook signature")  # reject the request with 401
+        # respond with 401 here — how depends on your framework, see the examples linked below
+        raise PermissionError("Invalid webhook signature")
 
     # signature is valid — safe to decode
     notifications = decode_server_notifications(raw_body)
