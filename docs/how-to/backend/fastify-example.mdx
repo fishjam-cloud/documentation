@@ -111,20 +111,18 @@ fastify.listen({ port: 3000 });
 
 ## Listening to events
 
-Fishjam instance is a stateful server that is emitting messages upon certain events.
-You can listen for those messages and react as you prefer.
-There are two options to obtain these.
+Fishjam emits messages upon certain events — see [Listening to events](../../how-to/backend/server-setup#listening-to-events) for how delivery, batching, and signing work.
 
 ### Webhooks
 
-To receive and parse the Fishjam protobuf messages, add a content type parser to your global (or scoped) Fastify instance.
-Use `decodeServerNotifications` to decode the request body: it returns a list of typed notifications and transparently unwraps a [batch](../../how-to/backend/server-setup#webhooks), so rooms created with `batchWebhookNotifications: true` are handled the same as single notifications — a single notification simply arrives as a one-element list.
-Then, you will be able to iterate over the parsed notifications at `request.body`.
+Add a content type parser to your global (or scoped) Fastify instance that [verifies the webhook signature](../../how-to/backend/server-setup#verifying-webhook-signatures) and decodes the body into typed notifications.
+You can then iterate over the parsed notifications at `request.body`.
 
 ```ts title='main.ts'
 import Fastify, { FastifyRequest } from "fastify";
 import {
   decodeServerNotifications,
+  verifyWebhookSignature,
   ServerNotification,
 } from "@fishjam-cloud/js-server-sdk";
 
@@ -133,7 +131,18 @@ const fastify = Fastify();
 fastify.addContentTypeParser(
   "application/x-protobuf",
   { parseAs: "buffer" },
-  async (_: FastifyRequest, body: Buffer) => decodeServerNotifications(body),
+  async (request: FastifyRequest, body: Buffer) => {
+    const signature = request.headers["x-fishjam-signature-256"];
+    if (
+      typeof signature !== "string" ||
+      !verifyWebhookSignature(body, signature, process.env.FISHJAM_WEBHOOK_SECRET!)
+    ) {
+      throw Object.assign(new Error("Invalid webhook signature"), {
+        statusCode: 401,
+      });
+    }
+    return decodeServerNotifications(body);
+  },
 );
 
 fastify.post<{ Body: ServerNotification[] }>("/fishjam-webhook", (request) => {

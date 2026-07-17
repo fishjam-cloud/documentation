@@ -226,9 +226,9 @@ There are two options to obtain these.
 
 ### Webhooks
 
-Simply pass your webhook URL as a `webhookUrl` parameter when creating a room.
+Configure your webhook URL in the **Webhooks** tab of the [Fishjam Dashboard](https://fishjam.io/app). Fishjam then delivers all notifications to that URL.
 
-We recommend also enabling **notification batching** via `batchWebhookNotifications`. Fishjam then coalesces several notifications into a single request, delivering them faster and with fewer HTTP requests — which improves your backend's response time under load.
+We recommend also enabling **notification batching** when creating a room. Fishjam then coalesces several notifications into a single request, delivering them faster and with fewer HTTP requests — which improves your backend's response time under load.
 
 <Tabs groupId="language">
   <TabItem value="ts" label="Typescript">
@@ -241,8 +241,7 @@ We recommend also enabling **notification batching** via `batchWebhookNotificati
         managementToken: "bbb",
     });
     // ---cut---
-    const webhookUrl = "https://example.com/";
-    await fishjamClient.createRoom({ webhookUrl, batchWebhookNotifications: true });
+    await fishjamClient.createRoom({ batchWebhookNotifications: true });
     ```
 
   </TabItem>
@@ -253,7 +252,6 @@ We recommend also enabling **notification batching** via `batchWebhookNotificati
     from fishjam import RoomOptions
 
     options = RoomOptions(
-        webhook_url="https://example.com/",
         batch_webhook_notifications=True,
     )
 
@@ -264,7 +262,7 @@ We recommend also enabling **notification batching** via `batchWebhookNotificati
 
 </Tabs>
 
-On the receiving side, decode the raw request body with `decodeServerNotifications` (Node) or `decode_server_notifications` (Python), then iterate the result and react to the events you care about. Both decoders return a list of notifications and transparently unwrap a batch — a single notification simply comes back as a one-element list, so the same handler works whether or not batching is enabled.
+On the receiving side, decode the raw request body with the SDK's decoder, then iterate the result and react to the events you care about. The decoder returns a list of notifications and transparently unwraps a batch — a single notification simply comes back as a one-element list, so the same handler works whether or not batching is enabled.
 
 <Tabs groupId="language">
   <TabItem value="ts" label="Typescript">
@@ -313,6 +311,54 @@ On the receiving side, decode the raw request body with `decodeServerNotificatio
                 print(f"Room {notification.room_id} created")
             case _:
                 ...
+    ```
+
+  </TabItem>
+
+</Tabs>
+
+#### Verifying webhook signatures
+
+Every webhook request is signed so you can confirm it really came from Fishjam. Each delivery carries an `x-fishjam-signature-256: sha256=<hex>` header — an HMAC-SHA256 of the **raw request body**, keyed with your webhook secret. Find (and rotate) that secret in the **Webhooks** tab of the [Fishjam Dashboard](https://fishjam.io/app).
+
+Verify the header against the raw body **before** decoding, and reject mismatches with `401`. Verification needs the exact bytes Fishjam sent, so read the raw body before any parsing.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+    ```ts
+    declare const rawBody: Buffer;
+    declare const signatureHeader: string;
+    // ---cut---
+    import { verifyWebhookSignature, decodeServerNotifications } from '@fishjam-cloud/js-server-sdk';
+
+    const secret = process.env.FISHJAM_WEBHOOK_SECRET!;
+
+    // rawBody: Buffer, signatureHeader: req.headers['x-fishjam-signature-256']
+    if (!verifyWebhookSignature(rawBody, signatureHeader, secret)) {
+      throw new Error('Invalid webhook signature'); // reject the request with 401
+    }
+
+    // signature is valid — safe to decode
+    const notifications = decodeServerNotifications(rawBody);
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    import os
+    from fishjam import verify_webhook_signature, decode_server_notifications
+
+    secret = os.environ["FISHJAM_WEBHOOK_SECRET"]
+
+    # raw_body: bytes, signature_header: request.headers["x-fishjam-signature-256"]
+    if not verify_webhook_signature(raw_body, signature_header, secret):
+        raise PermissionError("Invalid webhook signature")  # reject the request with 401
+
+    # signature is valid — safe to decode
+    notifications = decode_server_notifications(raw_body)
     ```
 
   </TabItem>
