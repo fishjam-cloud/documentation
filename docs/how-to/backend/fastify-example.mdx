@@ -135,7 +135,11 @@ fastify.addContentTypeParser(
     const signature = request.headers["x-fishjam-signature-256"];
     if (
       typeof signature !== "string" ||
-      !verifyWebhookSignature(body, signature, process.env.FISHJAM_WEBHOOK_SECRET!)
+      !verifyWebhookSignature(
+        body,
+        signature,
+        process.env.FISHJAM_WEBHOOK_SECRET!,
+      )
     ) {
       throw Object.assign(new Error("Invalid webhook signature"), {
         statusCode: 401,
