@@ -11,14 +11,10 @@ description: Publish any React Native MediaStream or app-generated audio to a Fi
 This guide is exclusively for **Mobile** (React Native) applications.
 :::
 
-The [`useCustomSource`](../../../api/mobile/functions/useCustomSource) hook from `@fishjam-cloud/react-native-client` is the same hook that is available [on the web](./web), typed for the React Native [`MediaStream`](../../../api/mobile/classes/MediaStream). Your app must be wrapped in [`FishjamProvider`](../../../api/mobile/functions/FishjamProvider).
+`@fishjam-cloud/react-native-client` provides two hooks for publishing custom sources. Your app must be wrapped in [`FishjamProvider`](../../../api/mobile/functions/FishjamProvider).
 
-On React Native, a `MediaStream` for a custom source typically comes from:
-
-- the [Vision Camera integration](./vision-camera) or the [low-level frame API](./low-level-frame-api), whose hooks create the stream for you,
-- any other `MediaStream` you already hold.
-
-To publish audio your app generates itself, use [`useCustomAudioSource`](#publish-custom-audio) instead; it manages its own stream.
+- [`useCustomSource`](../../../api/mobile/functions/useCustomSource) publishes a `MediaStream`. It is the same hook that is available [on the web](./web), typed for the React Native [`MediaStream`](../../../api/mobile/classes/MediaStream). The stream typically comes from the [Vision Camera integration](./vision-camera) or the [low-level frame API](./low-level-frame-api), whose hooks create it for you, but any `MediaStream` you hold works.
+- [`useCustomAudioSource`](../../../api/mobile/functions/useCustomAudioSource) publishes audio your app generates itself: you push PCM samples and the hook manages the track and its stream. See [Publish custom audio](#publish-custom-audio).
 
 ## Publish a stream
 
@@ -57,9 +53,44 @@ Custom sources are shared by ID: every `useCustomSource` call with the same sour
 
 :::
 
+## Show a self-view
+
+The `stream` returned by `useCustomSource` renders like any other stream:
+
+```tsx
+import React from "react";
+import { useCustomSource, RTCView } from "@fishjam-cloud/react-native-client";
+
+// ---cut---
+export function SelfView() {
+  const { stream } = useCustomSource("my-custom-source");
+
+  if (!stream) return null;
+  return (
+    <RTCView
+      mediaStream={stream}
+      style={{ height: 200, width: "100%" }}
+      objectFit="cover"
+    />
+  );
+}
+```
+
+## Remove the source
+
+```tsx
+import { useCustomSource } from "@fishjam-cloud/react-native-client";
+// ---cut---
+const { setStream } = useCustomSource("my-custom-source");
+// ...
+await setStream(null);
+```
+
+Removing a source unpublishes its tracks but does not stop them; the producer of the stream owns the tracks and should stop them itself.
+
 ## Publish custom audio
 
-React Native has no equivalent of the web's `captureStream()` or Web Audio, so the SDK provides a dedicated hook for audio: [`useCustomAudioSource`](../../../api/mobile/functions/useCustomAudioSource). It creates a custom audio track, publishes it under its source ID, and cleans it up. Your code pushes raw PCM samples with `pushAudioSamples` whenever your source produces them, for example a synthesizer, a decoder, or [`react-native-audio-api`](https://docs.swmansion.com/react-native-audio-api/):
+React Native has no equivalent of the web's `captureStream()` or Web Audio, so audio your app generates does not arrive as a `MediaStream`. The [`useCustomAudioSource`](../../../api/mobile/functions/useCustomAudioSource) hook covers this case: it creates a custom audio track, publishes it under its source ID, and cleans it up. Your code pushes raw PCM samples with `pushAudioSamples` whenever your source produces them, for example a synthesizer, a decoder, or [`react-native-audio-api`](https://docs.swmansion.com/react-native-audio-api/):
 
 ```tsx
 import {
@@ -104,43 +135,6 @@ Notes on pushing samples:
 | `maxBufferedDurationMs` | `60000`               | How much pushed-but-not-yet-sent audio to hold, in milliseconds, before the oldest is dropped.       |
 
 Custom audio tracks require the New Architecture; `startStreaming` reports an `error` on the old architecture.
-
-Remote peers receive the track like any other custom audio track, in the `customAudioTracks` array of `usePeers`.
-
-## Show a self-view
-
-The `stream` returned by the hook renders like any other stream:
-
-```tsx
-import React from "react";
-import { useCustomSource, RTCView } from "@fishjam-cloud/react-native-client";
-
-// ---cut---
-export function SelfView() {
-  const { stream } = useCustomSource("my-custom-source");
-
-  if (!stream) return null;
-  return (
-    <RTCView
-      mediaStream={stream}
-      style={{ height: 200, width: "100%" }}
-      objectFit="cover"
-    />
-  );
-}
-```
-
-## Remove the source
-
-```tsx
-import { useCustomSource } from "@fishjam-cloud/react-native-client";
-// ---cut---
-const { setStream } = useCustomSource("my-custom-source");
-// ...
-await setStream(null);
-```
-
-Removing a source unpublishes its tracks but does not stop them; the producer of the stream owns the tracks and should stop them itself.
 
 ## Receiving on other peers
 

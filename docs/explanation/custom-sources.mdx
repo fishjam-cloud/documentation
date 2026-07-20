@@ -36,8 +36,6 @@ A custom source is a `MediaStream` registered under a stable **source ID** with 
 
 When the stream is published, Fishjam takes its first video track and first audio track (whichever are present) and publishes them with the track metadata types `customVideo` and `customAudio`. The metadata is how the receiving side tells custom tracks apart from camera, microphone and screen-share tracks: `usePeers` groups each peer's tracks by type and exposes custom tracks in the `customVideoTracks` and `customAudioTracks` arrays.
 
-On React Native, `useCustomAudioSource` builds on this same contract: it creates a custom audio track, registers its stream through `useCustomSource`, and publishes it as a `customAudio` track.
-
 ## The publish lifecycle
 
 `setStream` is asynchronous and connection-aware:
@@ -77,12 +75,14 @@ The pipeline also handles:
 
 ### The audio pipeline
 
-A **custom audio track** (created by `createCustomAudioTrack` and wrapped by the [`useCustomAudioSource`](../how-to/client/custom-sources/react-native.mdx#publish-custom-audio) hook) takes raw PCM through `pushAudioSamples`, in any chunk size, from the JS thread or a worklet. The native layer re-paces pushes into the continuous real-time frame stream the encoder expects and inserts silence when the buffer runs dry, so the track behaves like a live microphone: pauses in pushing are fine and the stream never ends. Pushed-but-not-yet-sent audio is buffered up to a configurable duration (one minute by default) and drains in real time. Like the video handles, the audio track handle is worklet-serializable and its push channel is a synchronous JSI binding, which is why custom audio tracks also require the New Architecture.
+A **custom audio track** takes raw PCM through `pushAudioSamples`, in any chunk size, from the JS thread or a worklet. The [`useCustomAudioSource`](../how-to/client/custom-sources/react-native.mdx#publish-custom-audio) hook wraps the underlying `createCustomAudioTrack` and registers the resulting stream through `useCustomSource`, so audio follows the same source-ID contract and publish lifecycle as every other custom source.
+
+The native layer re-paces pushes into the continuous real-time frame stream the encoder expects and inserts silence when the buffer runs dry, so the track behaves like a live microphone: pauses in pushing are fine and the stream never ends. Pushed-but-not-yet-sent audio is buffered up to a configurable duration (one minute by default) and drains in real time. Like the video handles, the audio track handle is worklet-serializable and its push channel is a synchronous JSI binding, which is why custom audio tracks also require the New Architecture.
 
 ## Platform foundations
 
-- **iOS**: surfaces are IOSurface-backed, BGRA8 (`bgra8unorm` as a render target). The WebGPU camera import relies on Metal external-texture features that are only guaranteed on iOS 17+; publishing frames without WebGPU has no such requirement.
-- **Android**: surfaces are `AHardwareBuffer`s, RGBA8 (`rgba8unorm`). The camera arrives as an opaque YCbCr buffer, so the WebGPU toolkit's `sampleCamera` performs the BT.709 limited-range YUV→RGB conversion in-shader.
+- **iOS**: video surfaces are IOSurface-backed, BGRA8 (`bgra8unorm` as a render target). The WebGPU camera import relies on Metal external-texture features that are only guaranteed on iOS 17+; publishing frames without WebGPU has no such requirement.
+- **Android**: video surfaces are `AHardwareBuffer`s, RGBA8 (`rgba8unorm`). The camera arrives as an opaque YCbCr buffer, so the WebGPU toolkit's `sampleCamera` performs the BT.709 limited-range YUV→RGB conversion in-shader.
 
 ## Where to go next
 
