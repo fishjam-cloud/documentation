@@ -11,7 +11,7 @@ description: Publish video frames from any source, such as a native ML pipeline 
 This guide is exclusively for **Mobile** (React Native) applications.
 :::
 
-`@fishjam-cloud/react-native-custom-video-source` is the generic layer under the [Vision Camera integration](./vision-camera). Use it directly when your frames come from another source, such as a native ML pipeline or your own renderer. It is built on the raw track primitives of `@fishjam-cloud/react-native-webrtc`, covered [at the end of this guide](#going-lower-raw-track-primitives).
+`@fishjam-cloud/react-native-custom-video-source` is the generic layer under the [Vision Camera integration](./vision-camera). Use it directly when your frames come from another source, such as a native ML pipeline or your own renderer. It is built on the raw track primitives of `@fishjam-cloud/react-native-webrtc`, covered [at the end of this guide](#raw-track-primitives).
 
 ## Pick a mode
 
@@ -155,7 +155,7 @@ If you render with WebGPU, prefer [`useVisionCameraWebGpuSource`](./webgpu-effec
 - Set `enabled: false` to tear everything down; the hooks stop the tracks (and dispose the pool) in the correct order on unmount too.
 - Changing the pooled dimensions reallocates the pool, so release any GPU objects you imported when `bufferDescriptors` changes.
 
-## Going lower: raw track primitives
+## Raw track primitives
 
 The managed hooks wrap four primitives from `@fishjam-cloud/react-native-webrtc`: `createCustomVideoBufferPool`, `createCustomVideoTrack`, `pushFrame` and `forwardFrame`. Use them directly only when a React hook cannot own the lifecycle, for example inside a headless native-driven runtime:
 
