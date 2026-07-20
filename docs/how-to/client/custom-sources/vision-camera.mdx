@@ -130,11 +130,6 @@ Keep the identity of `onFrame` stable (`useCallback` or module scope). A new fun
 
 The options also accept VisionCamera's `FrameOutputOptions`. The hook forces `pixelFormat: 'native'` (the copy-free path) and defaults `dropFramesWhileBusy` to `true`.
 
-## Troubleshooting
-
-- **Track creation fails immediately**: custom video tracks require the New Architecture; the returned `error` carries a clear message when the app runs on the old architecture.
-- **No frames flow**: check that `isActive` is `true`, the device permission is granted, and `frameOutput` is included in the `outputs` array of `useCamera`.
-
 ## Next steps
 
 - Follow the [Vision Camera tutorial](../../../tutorials/vision-camera) for a step-by-step walkthrough

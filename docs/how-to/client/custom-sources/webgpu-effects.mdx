@@ -479,12 +479,6 @@ The full toolkit is documented in the [Custom Video Source API reference](../../
 - `getOutputSurfaceFormat()` returns the published surface format: `rgba8unorm` on Android, `bgra8unorm` on iOS. Use it for your fragment targets instead of hard-coding a format.
 - The context's `cameraIsMirrored` tells you whether the camera feed is mirrored (typically the front camera).
 
-## Troubleshooting
-
-- **`device` stays `null`**: check `error` from `useCameraWebGpuDevice`; the device on this OS version may lack the required camera-import features (`getRequiredWebGpuCameraFeatures()` lists them, iOS 17+ is expected).
-- **No frames on the iOS Simulator**: the Simulator has no camera; inject one with [SimCam](./../ios-simulator-camera.mdx).
-- **Shader errors mentioning unresolved TGSL functions**: `unplugin-typegpu/babel` is missing from your app's Babel config, so the TypeGPU functions were never compiled to WGSL.
-
 </TabItem>
 </Tabs>
 
