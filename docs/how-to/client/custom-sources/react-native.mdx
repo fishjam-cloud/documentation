@@ -2,7 +2,7 @@
 title: "Custom sources in React Native"
 sidebar_position: 2
 sidebar_label: "React Native 📱"
-description: Publish any React Native MediaStream to a Fishjam room with the useCustomSource hook.
+description: Publish any React Native MediaStream or app-generated audio to a Fishjam room with the useCustomSource and useCustomAudioSource hooks.
 ---
 
 # Custom sources in React Native <span className="badge badge--mobile">Mobile</span>
@@ -17,6 +17,8 @@ On React Native, a `MediaStream` for a custom source typically comes from:
 
 - the [Vision Camera integration](./vision-camera) or the [low-level frame API](./low-level-frame-api), whose hooks create the stream for you,
 - any other `MediaStream` you already hold.
+
+To publish audio your app generates itself, use [`useCustomAudioSource`](#publish-custom-audio) instead; it manages its own stream.
 
 ## Publish a stream
 
@@ -55,11 +57,55 @@ Custom sources are shared by ID: every `useCustomSource` call with the same sour
 
 :::
 
-## What about audio?
+## Publish custom audio
 
-Custom sources on React Native are video-only today. The publishing contract is shared with the web (a stream's audio track would go out as a `customAudio` track), but React Native currently has no way to produce a custom audio track: there is no audio-frame API, and no equivalent of the web's `captureStream()` or Web Audio. The microphone is already covered by [`useMicrophone`](../../../api/mobile/functions/useMicrophone).
+React Native has no equivalent of the web's `captureStream()` or Web Audio, so the SDK provides a dedicated hook for audio: [`useCustomAudioSource`](../../../api/mobile/functions/useCustomAudioSource). It creates a custom audio track, publishes it under its source ID, and cleans it up. Your code pushes raw PCM samples with `pushAudioSamples` whenever your source produces them, for example a synthesizer, a decoder, or [`react-native-audio-api`](https://docs.swmansion.com/react-native-audio-api/):
 
-If you need to publish generated or processed audio, that is currently a [web-only capability](./web.mdx).
+```tsx
+import {
+  useCustomAudioSource,
+  pushAudioSamples,
+} from "@fishjam-cloud/react-native-client";
+
+declare function onAudioChunk(callback: (chunk: Float32Array) => void): void; // your audio source
+
+// ---cut---
+const { startStreaming, stopStreaming, track } = useCustomAudioSource({
+  sampleRateHz: 48000,
+  channelCount: 1,
+});
+
+await startStreaming();
+
+// Whenever your source produces audio:
+onAudioChunk((chunk) => {
+  if (track) pushAudioSamples(track, chunk);
+});
+
+// When done:
+await stopStreaming();
+```
+
+The published track behaves like a live microphone: pushes are re-paced into a continuous stream, and pauses in pushing play as silence. The device microphone is not involved; publishing does not trigger the recording permission, and microphone capture stays with [`useMicrophone`](../../../api/mobile/functions/useMicrophone).
+
+Notes on pushing samples:
+
+- Push any chunk size; the native layer re-frames and paces it. `Float32Array` samples are expected in `[-1, 1]`; `Int16Array` is taken as-is. Stereo tracks take interleaved samples.
+- The `track` handle is plain and worklet-serializable, so samples can be pushed straight from a worklet without hopping through the JS thread.
+- Pushed-but-not-yet-sent audio is buffered up to `maxBufferedDurationMs` and drains in real time, so a long clip (for example a text-to-speech utterance) can be handed over in one call.
+
+### Options
+
+| Option                  | Default               | Description                                                                                          |
+| ----------------------- | --------------------- | ---------------------------------------------------------------------------------------------------- |
+| `sourceId`              | `"customAudioSource"` | Source ID the track is published under. Give each instance that streams at the same time its own ID. |
+| `sampleRateHz`          | `48000`               | Sample rate of the PCM you push; a positive multiple of `100`. Any rate is resampled downstream.     |
+| `channelCount`          | `1`                   | `1` for mono, `2` for interleaved stereo.                                                            |
+| `maxBufferedDurationMs` | `60000`               | How much pushed-but-not-yet-sent audio to hold, in milliseconds, before the oldest is dropped.       |
+
+Custom audio tracks require the New Architecture; `startStreaming` reports an `error` on the old architecture.
+
+Remote peers receive the track like any other custom audio track, in the `customAudioTracks` array of `usePeers`.
 
 ## Show a self-view
 

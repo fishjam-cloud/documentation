@@ -1,12 +1,12 @@
 ---
 title: "How custom sources work"
 sidebar_position: 10
-description: Concepts behind Fishjam custom sources, including track metadata routing, the publish lifecycle, and the zero-copy React Native frame pipeline.
+description: Concepts behind Fishjam custom sources, including track metadata routing, the publish lifecycle, and the React Native video and audio pipelines.
 ---
 
 # How custom sources work
 
-[Custom sources](../how-to/client/custom-sources/index.mdx) let an app publish media that Fishjam did not capture itself. This page explains how custom tracks are modeled and routed, when they are published, and how the React Native frame pipeline moves frames to the encoder without copying pixels.
+[Custom sources](../how-to/client/custom-sources/index.mdx) let an app publish media that Fishjam did not capture itself. This page explains how custom tracks are modeled and routed, when they are published, and how the React Native pipelines move video frames to the encoder without copying pixels and turn pushed PCM into a live audio track.
 
 ## Built-in source, middleware, or custom source?
 
@@ -24,7 +24,7 @@ Capabilities differ slightly per platform:
 | -------------------------------------- | ---------------------------------- | --------------------------------------------------- |
 | Publish any `MediaStream`              | ✅                                 | ✅                                                  |
 | Frame-level video injection            | via `canvas.captureStream()`       | ✅ native buffer forwarding / pooled render targets |
-| Custom audio                           | ✅ any audio track                 | ❌ no way to produce a custom audio track yet       |
+| Custom audio                           | ✅ any audio track                 | ✅ PCM pushed through `useCustomAudioSource`        |
 | GPU rendering into the published video | ✅ WebGPU/WebGL via canvas capture | ✅ WebGPU toolkit with zero-copy camera import      |
 
 ## Streams and source IDs
@@ -34,7 +34,9 @@ A custom source is a `MediaStream` registered under a stable **source ID** with 
 - Every `useCustomSource` call with the same ID, in any component, returns the same state, so one component can produce the stream while another controls or renders it.
 - A peer can publish any number of custom sources, each under its own ID.
 
-When the stream is published, Fishjam takes its first video track and first audio track (whichever are present) and publishes them with the track metadata types `customVideo` and `customAudio`. On React Native only video is available today, because the platform offers no way to create a custom audio track. The metadata is how the receiving side tells custom tracks apart from camera, microphone and screen-share tracks: `usePeers` groups each peer's tracks by type and exposes custom tracks in the `customVideoTracks` and `customAudioTracks` arrays.
+When the stream is published, Fishjam takes its first video track and first audio track (whichever are present) and publishes them with the track metadata types `customVideo` and `customAudio`. The metadata is how the receiving side tells custom tracks apart from camera, microphone and screen-share tracks: `usePeers` groups each peer's tracks by type and exposes custom tracks in the `customVideoTracks` and `customAudioTracks` arrays.
+
+On React Native, `useCustomAudioSource` builds on this same contract: it creates a custom audio track, registers its stream through `useCustomSource`, and publishes it as a `customAudio` track.
 
 ## The publish lifecycle
 
@@ -45,9 +47,11 @@ When the stream is published, Fishjam takes its first video track and first audi
 - Calls to `setStream` are serialized: replacing one stream with another in quick succession cannot interleave, and a failed call does not affect subsequent ones.
 - `setStream(null)` unpublishes and forgets the source. The tracks themselves are not stopped; the producer of the stream owns them.
 
-## The React Native frame pipeline
+## The React Native media pipelines
 
-On the web, the browser can produce a `MediaStream` from a canvas, a media element or Web Audio, so the base hook is all you need. React Native has no such general facility, so the SDK provides one for video, built into `@fishjam-cloud/react-native-webrtc`:
+On the web, the browser can produce a `MediaStream` from a canvas, a media element or Web Audio, so the base hook is all you need. React Native has no such general facility, so the SDK provides its own pipelines, built into `@fishjam-cloud/react-native-webrtc`: custom video tracks fed with frames, and custom audio tracks fed with PCM samples.
+
+### The video frame pipeline
 
 ```mermaid
 flowchart LR
@@ -71,6 +75,10 @@ The pipeline also handles:
 - **One timestamp domain.** Encoders require monotonically increasing timestamps. Forwarded frames without timestamps are stamped from the native monotonic clock, and the VisionCamera adapter normalizes VisionCamera's per-platform timestamp units onto one zero-based nanosecond timeline.
 - **Worklet-friendly handles.** Track handles are plain, worklet-serializable objects, so frames can be pushed straight from a frame-processor worklet without hopping through the JS thread. This synchronous JSI handoff is also why custom video tracks require the New Architecture.
 
+### The audio pipeline
+
+A **custom audio track** (created by `createCustomAudioTrack` and wrapped by the [`useCustomAudioSource`](../how-to/client/custom-sources/react-native.mdx#publish-custom-audio) hook) takes raw PCM through `pushAudioSamples`, in any chunk size, from the JS thread or a worklet. The native layer re-paces pushes into the continuous real-time frame stream the encoder expects and inserts silence when the buffer runs dry, so the track behaves like a live microphone: pauses in pushing are fine and the stream never ends. Pushed-but-not-yet-sent audio is buffered up to a configurable duration (one minute by default) and drains in real time. Like the video handles, the audio track handle is worklet-serializable and its push channel is a synchronous JSI binding, which is why custom audio tracks also require the New Architecture.
+
 ## Platform foundations
 
 - **iOS**: surfaces are IOSurface-backed, BGRA8 (`bgra8unorm` as a render target). The WebGPU camera import relies on Metal external-texture features that are only guaranteed on iOS 17+; publishing frames without WebGPU has no such requirement.
@@ -79,4 +87,4 @@ The pipeline also handles:
 ## Where to go next
 
 - [Custom sources how-to guides](../how-to/client/custom-sources/index.mdx): publish from the web, React Native, Vision Camera, WebGPU, or your own pipeline
-- API reference: [`useCustomSource` (Web)](../api/web/functions/useCustomSource), [`useCustomSource` (React Native)](../api/mobile/functions/useCustomSource), [Vision Camera Source package](../api/vision-camera-source/index), [Custom Video Source package](../api/custom-video-source/index)
+- API reference: [`useCustomSource` (Web)](../api/web/functions/useCustomSource), [`useCustomSource` (React Native)](../api/mobile/functions/useCustomSource), [`useCustomAudioSource` (React Native)](../api/mobile/functions/useCustomAudioSource), [Vision Camera Source package](../api/vision-camera-source/index), [Custom Video Source package](../api/custom-video-source/index)

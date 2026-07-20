@@ -31,7 +31,7 @@ Every custom source follows the same contract: you register a `MediaStream` unde
 
 :::info[Platform support]
 
-On the web you can publish both video and audio from any `MediaStream`. React Native custom sources are video-only today. The platform has no way to produce a custom audio track, so custom audio remains a web-only capability. See [What about audio?](./react-native.mdx#what-about-audio).
+On the web you can publish both video and audio from any `MediaStream`. In React Native, custom video comes from the video guides in this section, and custom audio from the [`useCustomAudioSource`](./react-native.mdx#publish-custom-audio) hook, which publishes PCM samples your app pushes.
 
 :::
 
@@ -112,4 +112,4 @@ Incoming `customAudioTracks` are played back automatically; you don't render any
 ## Further reading
 
 - [How custom sources work](../../../explanation/custom-sources.mdx): concepts behind the pipeline
-- API reference: [`useCustomSource` (Web)](../../../api/web/functions/useCustomSource.md), [`useCustomSource` (React Native)](../../../api/mobile/functions/useCustomSource.md), [Vision Camera Source package](../../../api/vision-camera-source/index.md), [Custom Video Source package](../../../api/custom-video-source/index.md)
+- API reference: [`useCustomSource` (Web)](../../../api/web/functions/useCustomSource.md), [`useCustomSource` (React Native)](../../../api/mobile/functions/useCustomSource.md), [`useCustomAudioSource` (React Native)](../../../api/mobile/functions/useCustomAudioSource.md), [Vision Camera Source package](../../../api/vision-camera-source/index.md), [Custom Video Source package](../../../api/custom-video-source/index.md)
