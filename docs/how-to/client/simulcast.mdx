@@ -175,7 +175,12 @@ function RemoteVideos() {
       {remotePeers.map((peer) =>
         peer.tracks.map((track) => (
           <View key={track.trackId}>
-            {track.stream && <RTCView mediaStream={track.stream} />}
+            {track.stream && (
+              <RTCView
+                mediaStream={track.stream}
+                style={{ height: 200, width: 200 }}
+              />
+            )}
             <QualitySelector track={track} />
           </View>
         )),

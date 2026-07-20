@@ -64,7 +64,13 @@ export function CameraPublisher() {
   });
 
   if (!stream) return null;
-  return <RTCView mediaStream={stream} style={{ flex: 1 }} objectFit="cover" />;
+  return (
+    <RTCView
+      mediaStream={stream}
+      style={{ height: 200, width: 200 }}
+      objectFit="cover"
+    />
+  );
 }
 ```
 
