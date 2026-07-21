@@ -150,7 +150,9 @@ Once you've created a viewer token, you can connect to a room using the Fishjam 
     await connect({ token: viewerToken });
 
     // Render the stream
-    {stream && <RTCView mediaStream={stream} style={{ flex: 1 }} />}
+    {stream && (
+      <RTCView mediaStream={stream} style={{ height: 200, width: 200 }} />
+    )}
     ```
 
   </TabItem>
@@ -210,7 +212,9 @@ Once you've created a room of type `livestream` with the `public` flag enabled, 
     await connect({ streamId: roomId });
 
     // Render the stream
-    {stream && <RTCView mediaStream={stream} style={{ flex: 1 }} />}
+    {stream && (
+      <RTCView mediaStream={stream} style={{ height: 200, width: 200 }} />
+    )}
     ```
 
   </TabItem>

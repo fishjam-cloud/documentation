@@ -3737,6 +3737,24 @@ __metadata:
   languageName: node
   linkType: soft
 
+"@fishjam-cloud/react-native-custom-video-source@link:./packages/web-client-sdk/packages/react-native-custom-video-source::locator=fishjam-docs%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@fishjam-cloud/react-native-custom-video-source@link:./packages/web-client-sdk/packages/react-native-custom-video-source::locator=fishjam-docs%40workspace%3A."
+  languageName: node
+  linkType: soft
+
+"@fishjam-cloud/react-native-vision-camera-source@link:./packages/web-client-sdk/packages/react-native-vision-camera-source::locator=fishjam-docs%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@fishjam-cloud/react-native-vision-camera-source@link:./packages/web-client-sdk/packages/react-native-vision-camera-source::locator=fishjam-docs%40workspace%3A."
+  languageName: node
+  linkType: soft
+
+"@fishjam-cloud/react-native-webrtc@link:./packages/web-client-sdk/packages/react-native-webrtc::locator=fishjam-docs%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@fishjam-cloud/react-native-webrtc@link:./packages/web-client-sdk/packages/react-native-webrtc::locator=fishjam-docs%40workspace%3A."
+  languageName: node
+  linkType: soft
+
 "@gerrit0/mini-shiki@npm:^3.2.2":
   version: 3.7.0
   resolution: "@gerrit0/mini-shiki@npm:3.7.0"
@@ -8091,6 +8109,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@webgpu/types@npm:0.1.65":
+  version: 0.1.65
+  resolution: "@webgpu/types@npm:0.1.65"
+  checksum: 10c0/cc9de41ae18432f292b5e41b1ef1198d200317fd3af424893a75b861fdcff272083e7cb2d51ba79b4deee4d1e93ecec8063d9e6f87d57c69217b48505971c858
+  languageName: node
+  linkType: hard
+
 "@xtuc/ieee754@npm:^1.2.0":
   version: 1.2.0
   resolution: "@xtuc/ieee754@npm:1.2.0"
@@ -11909,6 +11934,9 @@ __metadata:
     "@fishjam-cloud/js-server-sdk": "link:./packages/js-server-sdk/packages/js-server-sdk"
     "@fishjam-cloud/react-client": "link:./packages/web-client-sdk/packages/react-client"
     "@fishjam-cloud/react-native-client": "link:./packages/web-client-sdk/packages/mobile-client"
+    "@fishjam-cloud/react-native-custom-video-source": "link:./packages/web-client-sdk/packages/react-native-custom-video-source"
+    "@fishjam-cloud/react-native-vision-camera-source": "link:./packages/web-client-sdk/packages/react-native-vision-camera-source"
+    "@fishjam-cloud/react-native-webrtc": "link:./packages/web-client-sdk/packages/react-native-webrtc"
     "@google/genai": "npm:^1.35.0"
     "@mdx-js/react": "npm:^3.1.0"
     "@scalar/docusaurus": "npm:^0.8.5"
@@ -11920,6 +11948,7 @@ __metadata:
     "@types/react": "npm:^19.1.8"
     "@types/react-dom": "npm:^19.1.6"
     "@vapi-ai/server-sdk": "npm:^1.1.0"
+    "@webgpu/types": "npm:0.1.65"
     clsx: "npm:^2.0.0"
     cspell: "npm:^9.1.2"
     docusaurus-plugin-llms: "npm:^0.3.0"
@@ -11932,9 +11961,12 @@ __metadata:
     react: "npm:^18.0.0"
     react-dom: "npm:^18.0.0"
     react-native: "npm:^0.80.0"
+    react-native-vision-camera: "npm:5.0.10"
+    react-native-webgpu: "npm:~0.5.15"
     shiki: "npm:^3.6.0"
     typedoc: "npm:0.28.5"
     typedoc-plugin-markdown: "npm:4.7.0"
+    typegpu: "npm:^0.11.8"
     typescript: "npm:~5.8.2"
   languageName: unknown
   linkType: soft
@@ -18165,6 +18197,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-vision-camera@npm:5.0.10":
+  version: 5.0.10
+  resolution: "react-native-vision-camera@npm:5.0.10"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-nitro-image: "*"
+    react-native-nitro-modules: "*"
+  checksum: 10c0/f51164b304bc0f2f72440be3097de6228c8f3c34144a74daa5c813cddba89ca945d8df9cb615fc67da5f59b020a89497de3f78ba427650fa2e7e5170ed6f0fa9
+  languageName: node
+  linkType: hard
+
+"react-native-webgpu@npm:~0.5.15":
+  version: 0.5.18
+  resolution: "react-native-webgpu@npm:0.5.18"
+  peerDependencies:
+    react: "*"
+    react-native: ">=0.81.0"
+    react-native-reanimated: ">=4.2.1"
+    react-native-worklets: ">=0.7.2"
+  peerDependenciesMeta:
+    react-native-reanimated:
+      optional: true
+    react-native-worklets:
+      optional: true
+  checksum: 10c0/49931f06fa3594226c8c477957eadb31add9d0b796256c155c19755390b44a4ab0cbe57203291aac3dc4eaefc0e4b5d1150ce7cb115fdb62c9b26943d0a9b9aa
+  languageName: node
+  linkType: hard
+
 "react-native@npm:^0.80.0":
   version: 0.80.1
   resolution: "react-native@npm:0.80.1"
@@ -20284,6 +20345,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tinyest@npm:~0.3.2":
+  version: 0.3.2
+  resolution: "tinyest@npm:0.3.2"
+  checksum: 10c0/05092ca73224eda2374ad0475522bf9946ab07854d2f6f09e48ebaf73f77a14e32e2be42f73191cef71320036438f8c8986b9a6844b99991d194d11c99f7df8b
+  languageName: node
+  linkType: hard
+
 "tinyexec@npm:^1.0.1":
   version: 1.0.1
   resolution: "tinyexec@npm:1.0.1"
@@ -20403,6 +20471,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tsover-runtime@npm:^0.0.7":
+  version: 0.0.7
+  resolution: "tsover-runtime@npm:0.0.7"
+  checksum: 10c0/62970f91cf18e7a3d2f6ca8ee688455a0326c97bf3ff1d9dccea547b67747e6b9210993dbfc680983e70150cab428ece112533b2430e46c53caf69561531d250
+  languageName: node
+  linkType: hard
+
 "tsyringe@npm:^4.10.0":
   version: 4.10.0
   resolution: "tsyringe@npm:4.10.0"
@@ -20485,6 +20560,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typed-binary@npm:^4.3.3":
+  version: 4.3.3
+  resolution: "typed-binary@npm:4.3.3"
+  checksum: 10c0/fcb7806b430dc8cfc27476d069bdd6687d81066441efca4585d958351ec289fd09060f5182a4c788169b1586eceb78659ffa817727c4bcae8c3fe396a6b0ba6f
+  languageName: node
+  linkType: hard
+
 "typedarray-to-buffer@npm:^3.1.5":
   version: 3.1.5
   resolution: "typedarray-to-buffer@npm:3.1.5"
@@ -20526,6 +20608,19 @@ __metadata:
   bin:
     typedoc: bin/typedoc
   checksum: 10c0/fc8235dbe8f14da24fdb088467b01887b3f1375b27d5caf0276ae405f03aa1f523e94aea52fe8ce1a3d477ae9e3f4f69fdc28614275445a828a77db88784e6ce
+  languageName: node
+  linkType: hard
+
+"typegpu@npm:^0.11.8":
+  version: 0.11.9
+  resolution: "typegpu@npm:0.11.9"
+  dependencies:
+    tinyest: "npm:~0.3.2"
+    tsover-runtime: "npm:^0.0.7"
+    typed-binary: "npm:^4.3.3"
+  bin:
+    typegpu: ./bin.mjs
+  checksum: 10c0/44ba12e1c9af79849d4714390bef2b5521710749940bd2da4dd32d696869e21fc0c43f80beddad315c5605bfbb8910cd3d1a3a42efb26b2d8572265d8d1d5db7
   languageName: node
   linkType: hard
 
