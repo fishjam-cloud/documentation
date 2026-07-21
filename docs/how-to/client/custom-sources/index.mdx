@@ -17,7 +17,7 @@ If you only wish to send plain camera, microphone or screen share output through
 
 :::
 
-Every custom source follows the same contract: you register a `MediaStream` under a stable source ID with the [`useCustomSource`](../../../api/mobile/functions/useCustomSource.md) hook, and Fishjam publishes its video track as a `customVideo` track and its audio track as a `customAudio` track. Other peers receive them like any other track.
+Every custom source follows the same contract: you register a `MediaStream` under a stable source ID with the `useCustomSource` hook ([Web](../../../api/web/functions/useCustomSource.md) · [React Native](../../../api/mobile/functions/useCustomSource.md)), and Fishjam publishes its video track as a `customVideo` track and its audio track as a `customAudio` track. Other peers receive them like any other track.
 
 ## Choose a guide
 
@@ -37,7 +37,7 @@ On the web you can publish both video and audio from any `MediaStream`. In React
 
 ## Receiving custom tracks
 
-Custom tracks published by other peers show up in the [`usePeers`](../../../api/mobile/functions/usePeers.md) hook, bucketed into the `customVideoTracks` and `customAudioTracks` arrays of each peer.
+Custom tracks published by other peers show up in the `usePeers` hook ([Web](../../../api/web/functions/usePeers.md) · [React Native](../../../api/mobile/functions/usePeers.md)), bucketed into the `customVideoTracks` and `customAudioTracks` arrays of each peer.
 
 <Tabs groupId="platform">
   <TabItem value="web" label="React (Web)">

@@ -134,7 +134,7 @@ Notes on pushing samples:
 | `channelCount`          | `1`                   | `1` for mono, `2` for interleaved stereo.                                                            |
 | `maxBufferedDurationMs` | `60000`               | How much pushed-but-not-yet-sent audio to hold, in milliseconds, before the oldest is dropped.       |
 
-Custom audio tracks require the New Architecture; `startStreaming` reports an `error` on the old architecture.
+Custom audio tracks require the New Architecture. On the old architecture `startStreaming` does not throw; it fails internally and the failure surfaces in the hook's `error` field.
 
 ## Receiving on other peers
 
