@@ -226,14 +226,17 @@ All you need for this is a single api endpoint:
 
 ### Webhook endpoint
 
-Fishjam delivers notifications as a binary `application/x-protobuf` body. Read the raw body and decode it with the SDK, then react to the events you care about.
+Fishjam delivers notifications as a binary `application/x-protobuf` body. Read the raw body, [verify the webhook signature](../../how-to/backend/server-setup#verifying-webhook-signatures), and decode it with the SDK, then react to the events you care about. Store your webhook secret as `FISHJAM_WEBHOOK_SECRET`.
 
 <Tabs groupId="language">
   <TabItem value="ts" label="Node.js / TypeScript">
 
     ```typescript
     import express from "express";
-    import { decodeServerNotifications } from "@fishjam-cloud/js-server-sdk";
+    import {
+      decodeServerNotifications,
+      verifyWebhookSignature,
+    } from "@fishjam-cloud/js-server-sdk";
 
     const app = express();
     const handlePeerConnected = {} as any;
@@ -245,6 +248,18 @@ Fishjam delivers notifications as a binary `application/x-protobuf` body. Read t
       "/api/webhooks/fishjam",
       express.raw({ type: "application/x-protobuf" }),
       (req: express.Request, res: express.Response) => {
+        const signature = req.headers["x-fishjam-signature-256"];
+        if (
+          typeof signature !== "string" ||
+          !verifyWebhookSignature(
+            req.body,
+            signature,
+            process.env.FISHJAM_WEBHOOK_SECRET!,
+          )
+        ) {
+          return res.status(401).json({ error: "Invalid signature" });
+        }
+
         for (const { type, notification } of decodeServerNotifications(req.body)) {
           switch (type) {
             case "peerConnected":
@@ -271,8 +286,9 @@ Fishjam delivers notifications as a binary `application/x-protobuf` body. Read t
   <TabItem value="python" label="Python">
 
     ```python
-    from fastapi import FastAPI, Request
-    from fishjam import decode_server_notifications
+    import os
+    from fastapi import FastAPI, HTTPException, Request
+    from fishjam import decode_server_notifications, verify_webhook_signature
     from fishjam.events import (
         ServerMessagePeerConnected,
         ServerMessagePeerDisconnected,
@@ -283,7 +299,12 @@ Fishjam delivers notifications as a binary `application/x-protobuf` body. Read t
 
     @app.post("/api/webhooks/fishjam")
     async def fishjam_webhook(request: Request):
-        for notification in decode_server_notifications(await request.body()):
+        raw_body = await request.body()
+        signature = request.headers.get("x-fishjam-signature-256", "")
+        if not verify_webhook_signature(raw_body, signature, os.environ["FISHJAM_WEBHOOK_SECRET"]):
+            raise HTTPException(status_code=401, detail="Invalid signature")
+
+        for notification in decode_server_notifications(raw_body):
             match notification:
                 case ServerMessagePeerConnected():
                     handle_peer_connected(notification)
@@ -301,7 +322,7 @@ Fishjam delivers notifications as a binary `application/x-protobuf` body. Read t
 
 ### Enabling webhooks
 
-Now, with your endpoint setup, all you need to do is supply your webhook endpoint to Fishjam when creating a room. We also recommend enabling `batchWebhookNotifications`, which delivers notifications faster and with fewer HTTP requests for a better backend response time under load:
+Now, with your endpoint set up, register its URL in the **Webhooks** tab of the [Fishjam Dashboard](https://fishjam.io/app). Fishjam then delivers all notifications to that endpoint. We also recommend enabling [notification batching](../../how-to/backend/server-setup#webhooks) when creating rooms:
 
 <Tabs groupId="language">
   <TabItem value="ts" label="Node.js / TypeScript">
@@ -311,10 +332,9 @@ Now, with your endpoint setup, all you need to do is supply your webhook endpoin
     const fishjamClient = {} as any;
 
     // ---cut---
-    const createRoomWithWebhooks = async (roomType = "conference") => {
+    const createBatchedRoom = async (roomType = "conference") => {
       const room = await fishjamClient.createRoom({
         roomType,
-        webhookUrl: `${process.env.BASE_URL}/api/webhooks/fishjam`,
         // Coalesce notifications into batches for faster delivery and fewer requests
         batchWebhookNotifications: true,
       });
@@ -336,10 +356,9 @@ Now, with your endpoint setup, all you need to do is supply your webhook endpoin
         management_token=os.environ["FISHJAM_MANAGEMENT_TOKEN"],
     )
 
-    def create_room_with_webhooks(room_type="conference"):
+    def create_batched_room(room_type="conference"):
         options = RoomOptions(
             room_type=room_type,
-            webhook_url=f"{os.environ['BASE_URL']}/api/webhooks/fishjam",
             # Coalesce notifications into batches for faster delivery and fewer requests
             batch_webhook_notifications=True,
         )

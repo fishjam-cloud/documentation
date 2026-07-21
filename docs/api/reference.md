@@ -32,13 +32,14 @@ The notifications can be configured using Webhook or Websocket.
 
 #### Webhook
 
-When using webhooks for receiving notifications, the `webhookUrl` must be passed
-in the `RoomConfig` options when creating a room.
+When using webhooks for receiving notifications, configure your webhook URL in
+the **Webhooks** tab of the [Fishjam Dashboard](https://fishjam.io/app).
+Fishjam then delivers all notifications to that URL.
 
-The HTTP POST to the `webhookUrl` uses "application/x-protobuf" content type.
+The HTTP POST to your webhook URL uses "application/x-protobuf" content type.
 The body is binary data, that represents encoded `ServerMessage`.
 
-Setting `batchWebhookNotifications` to `true` in the `RoomConfig` is recommended. Fishjam then coalesces several notifications into one POST: the body is still a single `ServerMessage`, but its `notification_batch` field holds a `NotificationBatch`, which carries the individual notifications as a repeated list of `ServerMessage`s (see `server_notifications.proto`). This delivers notifications faster and with fewer requests. The SDK decoders (`decodeServerNotifications` / `decode_server_notifications`) unwrap the batch for you, returning the notifications as a flat list — so a single notification and a batch are handled the same way.
+Setting `batchWebhookNotifications` to `true` in the `RoomConfig` is recommended. Fishjam then coalesces several notifications into one POST: the body is still a single `ServerMessage`, but its `notification_batch` field holds a `NotificationBatch`, which carries the individual notifications as a repeated list of `ServerMessage`s (see `server_notifications.proto`). This delivers notifications faster and with fewer requests. The SDK decoders unwrap the batch for you.
 
 For more information see also [server setup documentation](../how-to/backend/server-setup#webhooks)
 

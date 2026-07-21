@@ -38,28 +38,29 @@ async def get_rooms(fishjam_client: Annotated[FishjamClient, Depends(fishjam_cli
 
 ## Listening to events
 
-Fishjam instance is a stateful server that is emitting messages upon certain events.
-You can listen for those messages and react as you prefer.
-There are two options for obtaining these.
+Fishjam emits messages upon certain events — see [Listening to events](../../how-to/backend/server-setup#listening-to-events) for how delivery, batching, and signing work.
 
 ### Webhooks
 
-To receive and parse Fishjam protobuf messages, create a dependency function that decodes the request body using the `decode_server_notifications` function from the `fishjam` package.
-It returns a list of notifications and transparently unwraps batched payloads (rooms created with `batch_webhook_notifications=True`), so you can iterate over the result and use pattern matching to respond to different kinds of events.
+Create a dependency function that [verifies the webhook signature](../../how-to/backend/server-setup#verifying-webhook-signatures) and decodes the request body into notifications, then use pattern matching to respond to different kinds of events.
 
 :::note
-`decode_server_notifications` replaces the now-deprecated `receive_binary`. It always returns a list — a single notification comes back as a one-element list — which lets the same handler work whether or not batching is enabled.
+`decode_server_notifications` replaces the now-deprecated `receive_binary`.
 :::
 
 ```python
-from fastapi import Depends, FastAPI, Request
-from fishjam import decode_server_notifications
+import os
+from fastapi import Depends, FastAPI, HTTPException, Request
+from fishjam import decode_server_notifications, verify_webhook_signature
 from fishjam.events import ServerMessagePeerAdded
 
 app = FastAPI()
 
 async def parse_fishjam_notifications(request: Request):
     binary = await request.body()
+    signature = request.headers.get("x-fishjam-signature-256", "")
+    if not verify_webhook_signature(binary, signature, os.environ["FISHJAM_WEBHOOK_SECRET"]):
+        raise HTTPException(status_code=401, detail="Invalid webhook signature")
     return decode_server_notifications(binary)
 
 @app.post("/fishjam-webhook")
