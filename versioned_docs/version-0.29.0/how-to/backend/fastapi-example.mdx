@@ -1,0 +1,105 @@
+---
+sidebar_position: 1
+title: FastAPI
+description: Example FastAPI server integration using the Fishjam Python SDK.
+---
+
+# FastAPI example
+
+The example assumes you've already installed [**our SDK**](https://github.com/fishjam-cloud/python-server-sdk) and you're ready to go.  
+If you wish to see more general info, visit [**Set up your server**](../../how-to/backend/server-setup) article.
+
+## Minimal setup
+
+The same way as in the [**FastAPI docs**](https://fastapi.tiangolo.com/tutorial/first-steps/), the code below can be copied and run immediately.
+Just make sure you set `FISHJAM_ID` and `FISHJAM_MANAGEMENT_TOKEN` environment variables.
+The `Depends` function allows the `FishjamClient` to be provided to the route function as a dependency, which avoids code duplication and allows easy mocking.
+
+```python
+import os
+from typing import Annotated
+from fastapi import Depends, FastAPI
+from fishjam import FishjamClient
+
+
+app = FastAPI()
+
+def fishjam_client():
+    fishjam_id = os.environ["FISHJAM_ID"]
+    management_token = os.environ["FISHJAM_MANAGEMENT_TOKEN"]
+    return FishjamClient(fishjam_id=fishjam_id, management_token=management_token)
+
+
+@app.get("/")
+async def get_rooms(fishjam_client: Annotated[FishjamClient, Depends(fishjam_client)]):
+    rooms = fishjam_client.get_all_rooms()
+    return {"rooms": rooms}
+```
+
+## Listening to events
+
+Fishjam emits messages upon certain events — see [Listening to events](../../how-to/backend/server-setup#listening-to-events) for how delivery, batching, and signing work.
+
+### Webhooks
+
+Create a dependency function that [verifies the webhook signature](../../how-to/backend/server-setup#verifying-webhook-signatures) and decodes the request body into notifications, then use pattern matching to respond to different kinds of events.
+
+:::note
+`decode_server_notifications` replaces the now-deprecated `receive_binary`.
+:::
+
+```python
+import os
+from fastapi import Depends, FastAPI, HTTPException, Request
+from fishjam import decode_server_notifications, verify_webhook_signature
+from fishjam.events import ServerMessagePeerAdded
+
+app = FastAPI()
+
+async def parse_fishjam_notifications(request: Request):
+    binary = await request.body()
+    signature = request.headers.get("x-fishjam-signature-256", "")
+    if not verify_webhook_signature(binary, signature, os.environ["FISHJAM_WEBHOOK_SECRET"]):
+        raise HTTPException(status_code=401, detail="Invalid webhook signature")
+    return decode_server_notifications(binary)
+
+@app.post("/fishjam-webhook")
+async def fishjam_webhook(notifications = Depends(parse_fishjam_notifications)):
+    for notification in notifications:
+        match notification:
+            case ServerMessagePeerAdded():
+                print(f"Peer added: {notification.peer_id}")
+            case _:
+                ...
+```
+
+### SDK Notifier
+
+Use the `asyncio` library to run the SDK notifier.
+It doesn't interact with the FastAPI library per se, just start the event loop and it will run alongside the server.
+
+```python
+import asyncio
+from fishjam import FishjamNotifier
+from fishjam.events import ServerMessagePeerAdded
+
+notifier = FishjamNotifier(fishjam_id=fishjam_id, management_token=management_token)
+
+@notifier.on_server_notification
+def handle_notification(notification):
+    match notification:
+        case ServerMessagePeerAdded():
+            print(f"Peer added: {notification.peer_id}")
+        case _:
+            ...
+
+async def run_notifier():
+  notifier_task = asyncio.create_task(notifier.connect())
+
+  # Wait for the notifier to be ready to receive messages
+  await notifier.wait_ready()
+
+  await notifier_task
+
+asyncio.run(run_notifier())
+```

@@ -1,0 +1,23 @@
+---
+sidebar_position: 17
+sidebar_label: "iOS Simulator Camera 📱"
+description: Use SimCam to test camera features in the iOS Simulator without a physical device.
+---
+
+# iOS Simulator Camera <span className="badge badge--mobile">Mobile</span>
+
+The iOS Simulator has no camera, which means you normally need a physical device to test video streaming with Fishjam.
+
+[SimCam](https://simcam.swmansion.com/) is a macOS app that injects a virtual camera into the simulator. It works through standard AVFoundation APIs, so `@fishjam-cloud/react-native-client` picks it up without any changes to your code.
+
+## What SimCam provides
+
+- **Live camera feed**: your Mac's camera streamed into the simulator
+- **Video file**: a video clip you can replay for consistent test scenarios
+- **QR code**: inject QR codes without holding a phone up to the screen
+
+## Getting started
+
+1. Download and install SimCam from [simcam.swmansion.com](https://simcam.swmansion.com/).
+2. Launch SimCam and pick a camera source.
+3. Run your app in the simulator. The virtual camera shows up just like a real one.
