@@ -1,0 +1,355 @@
+---
+type: tutorial
+sidebar_position: 5
+sidebar_label: "Stream Vision Camera to Fishjam 📱"
+description: Step-by-step guide to publishing a react-native-vision-camera feed to a Fishjam room as a custom video source.
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+# Stream Vision Camera to Fishjam <span className="badge badge--mobile">Mobile</span>
+
+:::note
+This tutorial is exclusively for **Mobile** (React Native) applications.
+:::
+
+This tutorial walks you through publishing a [VisionCamera](https://react-native-vision-camera.com) feed to a Fishjam room, step by step.
+By the end, your camera frames will reach other participants as a custom video track, the same path you'd later use to run frame processors or draw your own effects into the published video.
+
+## What you'll build
+
+A React Native app that joins a room and publishes the device camera through VisionCamera, with a live self-view.
+
+## What you'll learn
+
+- How to install and configure VisionCamera v5 alongside the Fishjam SDK
+- How to publish camera frames with `useVisionCameraSource`
+- How custom video tracks appear to other participants
+
+## Prerequisites
+
+- The [React Native Quick Start](./react-native-quick-start) completed, or an existing app wrapped in `FishjamProvider`
+- A physical device, or the iOS Simulator with a virtual camera from [SimCam](../how-to/client/ios-simulator-camera.mdx)
+- The New Architecture enabled; custom video tracks require it
+
+## Step 1: Install and configure
+
+### Install the packages
+
+```bash npm2yarn
+npm install @fishjam-cloud/react-native-vision-camera-source react-native-vision-camera react-native-vision-camera-worklets react-native-worklets
+```
+
+### Configure the Babel plugin
+
+VisionCamera's frame outputs run as worklets, which need the `react-native-worklets` Babel plugin. Add it as the **last** plugin:
+
+```js title='babel.config.js'
+module.exports = {
+  presets: ["babel-preset-expo"],
+  plugins: ["react-native-worklets/plugin"],
+};
+```
+
+Restart Metro with a cleared cache afterwards (`npx expo start --clear`).
+
+### Configure camera permission
+
+<Tabs groupId="app-type">
+  <TabItem value="expo" label="Expo">
+
+```json title='app.json'
+{
+  "expo": {
+    "android": {
+      "permissions": ["android.permission.CAMERA"]
+    },
+    "ios": {
+      "infoPlist": {
+        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera."
+      }
+    }
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+```xml title='AndroidManifest.xml'
+<uses-permission android:name="android.permission.CAMERA"/>
+```
+
+```xml title='Info.plist'
+<key>NSCameraUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to access your camera.</string>
+```
+
+  </TabItem>
+</Tabs>
+
+### Rebuild the app
+
+<Tabs groupId="app-type">
+  <TabItem value="expo" label="Expo">
+
+```bash
+npx expo prebuild
+npx expo run:ios # or run:android
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+```bash
+cd ios && pod install
+```
+
+  </TabItem>
+</Tabs>
+
+## Step 2: Join a room
+
+As in the [quick start](./react-native-quick-start#step-2-join-a-room-and-start-streaming), join a room with a peer token. This time there is no need to initialize the camera through the Fishjam SDK, since VisionCamera will manage the camera:
+
+```tsx
+import React from "react";
+import { Button } from "react-native";
+import { useConnection, useSandbox } from "@fishjam-cloud/react-native-client";
+
+const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+
+export function JoinRoomButton() {
+  const { joinRoom } = useConnection();
+  const { getSandboxPeerToken } = useSandbox({
+    sandboxApiUrl: SANDBOX_API_URL,
+  });
+
+  const handleJoinRoom = async () => {
+    // For testing with the Sandbox API, use getSandboxPeerToken
+    // For production apps, get the peerToken from your own backend instead
+    const peerToken = await getSandboxPeerToken("testRoom", "streamer");
+    await joinRoom({ peerToken });
+  };
+
+  return <Button title="Join Room" onPress={handleJoinRoom} />;
+}
+```
+
+## Step 3: Publish the camera
+
+`useVisionCameraSource` creates the video track, publishes it under the given source ID, and cleans up on unmount. Plug its `frameOutput` into VisionCamera's `useCamera`:
+
+```tsx
+import React, { useEffect } from "react";
+import { Text } from "react-native";
+import {
+  useCamera as useVisionCamera,
+  useCameraPermission,
+} from "react-native-vision-camera";
+import { RTCView } from "@fishjam-cloud/react-native-client";
+import { useVisionCameraSource } from "@fishjam-cloud/react-native-vision-camera-source";
+
+export function CameraPublisher() {
+  const { hasPermission, canRequestPermission, requestPermission } =
+    useCameraPermission();
+
+  useEffect(() => {
+    if (!hasPermission && canRequestPermission) {
+      requestPermission();
+    }
+  }, [hasPermission, canRequestPermission, requestPermission]);
+
+  const { frameOutput, stream } = useVisionCameraSource("vision-camera");
+
+  useVisionCamera({
+    device: "front",
+    isActive: hasPermission,
+    outputs: [frameOutput],
+  });
+
+  if (!stream) return <Text>Starting camera…</Text>;
+  return (
+    <RTCView
+      mediaStream={stream}
+      style={{ height: 300, width: 300 }}
+      objectFit="cover"
+      mirror={true}
+    />
+  );
+}
+```
+
+The `stream` also serves as your self-view. Frames are handed to Fishjam without copying pixels, and rotation and timestamps are handled for you.
+
+## Step 4: Display it on the other side
+
+Because the feed is a custom source, other participants find it in `customVideoTracks`, not in `cameraTrack`:
+
+```tsx
+import React from "react";
+import { View } from "react-native";
+import { usePeers, RTCView } from "@fishjam-cloud/react-native-client";
+
+export function RemoteStreams() {
+  const { remotePeers } = usePeers();
+
+  return (
+    <View>
+      {remotePeers.map((peer) =>
+        peer.customVideoTracks.map(
+          (track) =>
+            track.stream && (
+              <RTCView
+                key={track.trackId}
+                mediaStream={track.stream}
+                style={{ height: 300, width: 300 }}
+                objectFit="cover"
+              />
+            ),
+        ),
+      )}
+    </View>
+  );
+}
+```
+
+To verify end to end, join the same room from a second device or another client built in the [quick start](./react-native-quick-start), and watch the published feed arrive.
+
+## Complete example
+
+```tsx
+import React, { useEffect, useState } from "react";
+import { Button, StyleSheet, Text, View } from "react-native";
+import {
+  FishjamProvider,
+  RTCView,
+  useConnection,
+  usePeers,
+  useSandbox,
+} from "@fishjam-cloud/react-native-client";
+import {
+  useCamera as useVisionCamera,
+  useCameraPermission,
+} from "react-native-vision-camera";
+import { useVisionCameraSource } from "@fishjam-cloud/react-native-vision-camera-source";
+
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+
+// ---cut---
+function CameraPublisher() {
+  const { hasPermission, canRequestPermission, requestPermission } =
+    useCameraPermission();
+
+  useEffect(() => {
+    if (!hasPermission && canRequestPermission) {
+      requestPermission();
+    }
+  }, [hasPermission, canRequestPermission, requestPermission]);
+
+  const { frameOutput, stream } = useVisionCameraSource("vision-camera");
+
+  useVisionCamera({
+    device: "front",
+    isActive: hasPermission,
+    outputs: [frameOutput],
+  });
+
+  if (!stream) return <Text>Starting camera…</Text>;
+  return (
+    <RTCView
+      mediaStream={stream}
+      style={styles.video}
+      objectFit="cover"
+      mirror={true}
+    />
+  );
+}
+
+function Room() {
+  const { joinRoom, peerStatus } = useConnection();
+  const { remotePeers } = usePeers();
+  const { getSandboxPeerToken } = useSandbox({
+    sandboxApiUrl: SANDBOX_API_URL,
+  });
+  const [isJoined, setIsJoined] = useState(false);
+
+  const handleJoin = async () => {
+    // For testing with the Sandbox API, use getSandboxPeerToken
+    // For production apps, get the peerToken from your own backend instead
+    const peerToken = await getSandboxPeerToken("testRoom", "streamer");
+    await joinRoom({ peerToken });
+    setIsJoined(true);
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Vision Camera × Fishjam</Text>
+      <Text style={styles.status}>Status: {peerStatus}</Text>
+
+      {!isJoined && <Button title="Join Room" onPress={handleJoin} />}
+
+      <Text style={styles.sectionTitle}>Your camera</Text>
+      <CameraPublisher />
+
+      <Text style={styles.sectionTitle}>Other participants</Text>
+      {remotePeers.map((peer) =>
+        peer.customVideoTracks.map(
+          (track) =>
+            track.stream && (
+              <RTCView
+                key={track.trackId}
+                mediaStream={track.stream}
+                style={styles.video}
+                objectFit="cover"
+              />
+            ),
+        ),
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  status: {
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginVertical: 10,
+  },
+  video: {
+    height: 200,
+    width: 200,
+    borderRadius: 8,
+  },
+});
+
+export default function App() {
+  return (
+    <FishjamProvider fishjamId={FISHJAM_ID}>
+      <Room />
+    </FishjamProvider>
+  );
+}
+```
+
+## Next steps
+
+- Run inference on the published frames; see [Publish a Vision Camera feed](../how-to/client/custom-sources/vision-camera#run-frame-processors-on-published-frames)
+- Continue this tutorial with [Draw WebGPU effects into your published camera](./webgpu-effects): a watermark overlay, then your own shaders (see the [WebGPU effects how-to](../how-to/client/custom-sources/webgpu-effects) for reference)
+- Explore the [custom sources overview](../how-to/client/custom-sources/index.mdx) and the [low-level frame API](../how-to/client/custom-sources/low-level-frame-api)
+- Learn [how custom sources work](../explanation/custom-sources) under the hood
