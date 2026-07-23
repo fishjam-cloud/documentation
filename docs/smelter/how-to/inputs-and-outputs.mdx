@@ -1,0 +1,67 @@
+---
+type: how-to
+sidebar_position: 4
+description: Choose the right input and output protocols for a Smelter Cloud composition, from WebRTC to RTMP, HLS, and MP4.
+---
+
+# Choose inputs and outputs
+
+A composition pulls media in through **inputs** and pushes the composed result out through **outputs**. Each is a tagged object whose `type` selects the protocol. This guide summarizes the available types and when to use each.
+
+## Inputs
+
+Register an input with `POST /api/composition/{composition_id}/input/{input_id}/register` and a body whose `type` is one of:
+
+| `type` | Use it when | Key fields |
+| --- | --- | --- |
+| `whip_server` | A WebRTC client should publish **into** the composition. | `bearer_token` (optional; generated and returned if omitted), `video` (optional, default `true`). |
+| `whep_client` | The composition should **pull** a WebRTC stream from a WHEP endpoint. | `endpoint_url` (required), `bearer_token` (optional), `video` (optional). |
+| `rtmp_server` | An encoder (OBS, hardware) should push RTMP in. | `app` (required), `stream_key` (required). |
+| `hls` | The composition should pull an HLS playlist. | `url` (required). |
+| `mp4` | You want to compose a file, optionally looped. | `url` (optional), `loop` (optional). |
+
+For `whip_server`, the register response returns the `bearer_token` a publisher uses to authenticate against the input's WHIP endpoint:
+
+```json
+{ "bearer_token": "<INPUT_PUBLISH_TOKEN>" }
+```
+
+Unregister any input with `POST …/input/{input_id}/unregister`.
+
+## Outputs
+
+Register an output with `POST /api/composition/{composition_id}/output/{output_id}/register` and a body whose `type` is one of:
+
+| `type` | Use it when | Key fields |
+| --- | --- | --- |
+| `whip_client` | Publish the composed result over WebRTC (for example to a Fishjam livestream). | `endpoint_url` (required), `bearer_token` (optional), `video`, `audio`. |
+| `rtmp_client` | Publish to an RTMP destination (for example a social platform). | `url` (required), `video`, `audio`. |
+
+An output's `video` carries the resolution and initial [scene](./../scenes), and `audio` carries the initial audio scene:
+
+```json
+{
+  "type": "whip_client",
+  "endpoint_url": "https://example.com/whip",
+  "video": {
+    "resolution": { "width": 1280, "height": 720 },
+    "initial": { "root": { "type": "tiles", "children": [] } }
+  },
+  "audio": { "initial": { "inputs": [] } }
+}
+```
+
+Other output operations:
+
+- **Update the scene** live with `POST …/output/{output_id}/update` (see [Scenes](./../scenes)).
+- **Force a keyframe** with `POST …/output/{output_id}/request_keyframe`, useful when a new subscriber joins.
+- **Unregister** with `POST …/output/{output_id}/unregister`.
+
+## Renderers
+
+Shared assets you can place in a scene:
+
+- **Images** — register with `POST …/image/{image_id}/register` and an `ImageSpec` whose `asset_type` is `png`, `jpeg`, `svg`, `gif`, or `auto` (each takes a `url`; `svg` also accepts a `resolution`). Reference the image in a scene with `{ "type": "image", "image_id": "<id>" }`.
+- **Fonts** — register with `POST …/font/register` as a multipart request with a single `font` part carrying the font file. The font is then available to `text` components.
+
+See the [API Reference](./../api-reference) for the complete request and response schemas.

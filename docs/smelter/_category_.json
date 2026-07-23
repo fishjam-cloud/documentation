@@ -1,0 +1,11 @@
+{
+  "label": "Smelter Cloud",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "title": "Smelter Cloud",
+    "description": "Hosted real-time video composition. Combine live streams, templates, and overlays into a single output stream, without running any rendering infrastructure yourself.",
+    "slug": "/smelter"
+  },
+  "collapsible": false
+}

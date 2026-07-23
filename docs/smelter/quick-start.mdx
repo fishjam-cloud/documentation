@@ -1,0 +1,140 @@
+---
+type: tutorial
+sidebar_position: 1
+description: Create your first Smelter Cloud composition end to end, from two WHIP inputs to a composed WHIP output you can play back.
+---
+
+# Quick Start
+
+This tutorial walks you through creating your first Smelter Cloud composition. You will compose two live camera streams into a single side-by-side output and play it back.
+
+## What you'll build
+
+A composition with two WebRTC inputs arranged into a tiled layout, published as one WebRTC output.
+
+```
+[camera 1] ──WHIP──▶ ┐
+                     ├─▶ Smelter Cloud (tiles) ──WHIP──▶ [viewer via WHEP]
+[camera 2] ──WHIP──▶ ┘
+```
+
+## What you'll learn
+
+- How to create a composition.
+- How to register inputs and an output with a layout.
+- How to publish to and play back from a composition.
+
+## Prerequisites
+
+- A Fishjam account. Open the [**Fishjam developer panel**](https://fishjam.io/app) and copy your **Management Token** — Smelter Cloud uses the same token as the rest of Fishjam.
+- A WHIP/WHEP client to publish and play streams. Any standard WebRTC tool works.
+
+All requests go to `https://rtc.fishjam.io` and carry your token as a Bearer header:
+
+```bash
+export SMELTER_URL="https://rtc.fishjam.io"
+export TOKEN="<YOUR_FISHJAM_TOKEN>"
+```
+
+## Step 1: Create a composition
+
+```bash
+curl -X POST "$SMELTER_URL/api/composition" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+The response contains the `composition_id` you will use for every subsequent call:
+
+```json
+{ "composition_id": "abc123", "api_url": "https://rtc.fishjam.io" }
+```
+
+By default a composition auto-starts and is cleaned up automatically once it has no inputs. Save the id:
+
+```bash
+export COMPOSITION="abc123"
+```
+
+## Step 2: Register two inputs
+
+Register two `whip_server` inputs. Each one returns a `bearer_token` that a publisher uses to push media in.
+
+```bash
+for INPUT in camera_1 camera_2; do
+  curl -X POST "$SMELTER_URL/api/composition/$COMPOSITION/input/$INPUT/register" \
+    -H "Authorization: Bearer $TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{ "type": "whip_server" }'
+done
+```
+
+Each response returns the token for that input:
+
+```json
+{ "bearer_token": "<INPUT_PUBLISH_TOKEN>" }
+```
+
+## Step 3: Register an output with a layout
+
+Register a `whip_client` output whose scene arranges both inputs in a `tiles` layout and mixes their audio. Replace `endpoint_url` with your WHIP playback destination.
+
+```bash
+curl -X POST "$SMELTER_URL/api/composition/$COMPOSITION/output/main/register" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "whip_client",
+    "endpoint_url": "https://example.com/whip",
+    "video": {
+      "resolution": { "width": 1280, "height": 720 },
+      "initial": {
+        "root": {
+          "type": "tiles",
+          "children": [
+            { "type": "input_stream", "input_id": "camera_1" },
+            { "type": "input_stream", "input_id": "camera_2" }
+          ]
+        }
+      }
+    },
+    "audio": {
+      "initial": {
+        "inputs": [
+          { "input_id": "camera_1" },
+          { "input_id": "camera_2" }
+        ]
+      }
+    }
+  }'
+```
+
+The scene is a tree of components. `tiles` automatically arranges its children into a grid, and each `input_stream` renders one registered input. See [Scenes](./scenes) for the full component model.
+
+## Step 4: Publish and play
+
+Publish a camera to each input's WHIP endpoint using the input token from Step 2:
+
+```
+POST https://rtc.fishjam.io/api/composition/abc123/whip/camera_1
+Authorization: Bearer <INPUT_PUBLISH_TOKEN>
+Content-Type: application/sdp
+```
+
+Your composed output is now flowing to the `endpoint_url` you set in Step 3. Play it back with any WHEP client pointed at that destination.
+
+## Step 5: Clean up
+
+Delete the composition when you are done:
+
+```bash
+curl -X DELETE "$SMELTER_URL/api/composition/$COMPOSITION" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+## Next steps
+
+- [Write and deploy a template](./how-to/write-and-deploy-a-template) to replace the static scene with a live React layout.
+- [Compose a Fishjam room](./how-to/compose-a-fishjam-room) to feed a whole room's peers in automatically.
+- [Choose inputs and outputs](./how-to/inputs-and-outputs) for other protocols like RTMP and HLS.
