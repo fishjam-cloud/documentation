@@ -379,6 +379,21 @@ const config: Config = {
       } as ScalarOptions,
     ],
     [
+      "@scalar/docusaurus",
+      {
+        id: "smelter-cloud-api",
+        label: "Smelter Cloud REST API",
+        route: "/api/smelter-cloud",
+        showNavLink: false,
+        configuration: {
+          url: "/docs/api/smelter-cloud-openapi.yaml",
+          hideSearch: true,
+          persistAuth: true,
+          defaultOpenFirstTag: false,
+        },
+      } as ScalarOptions,
+    ],
+    [
       "docusaurus-plugin-typedoc",
       {
         id: "web-api",

@@ -1,0 +1,11 @@
+{
+  "label": "How-to Guides",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "title": "Smelter Cloud How-to Guides",
+    "description": "Task-oriented guides for composing streams, writing templates, and driving compositions with Smelter Cloud.",
+    "slug": "/smelter/how-to"
+  },
+  "collapsible": false
+}
