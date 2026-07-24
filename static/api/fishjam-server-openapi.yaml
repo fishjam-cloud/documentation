@@ -85,6 +85,44 @@ components:
       example: webrtc
       title: PeerType
       type: string
+    RecordingSource:
+      description: The source for the recording
+      oneOf:
+        - $ref: "#/components/schemas/CompositionSource"
+      title: RecordingSource
+      type: object
+    PeerConfigWebRTC:
+      additionalProperties: false
+      description: Configuration of a webrtc peer
+      properties:
+        options:
+          $ref: "#/components/schemas/PeerOptionsWebRTC"
+        type:
+          description: Peer type
+          enum:
+            - webrtc
+          type: string
+      required:
+        - type
+        - options
+      title: PeerConfigWebRTC
+      type: object
+    MoqAccess:
+      description: Connection details for a MoQ relay client
+      properties:
+        connection_url:
+          description: Relay connection URL with the JWT embedded as a `?jwt=` query parameter. Pass directly to a MoQ client SDK.
+          example: https://relay.fishjam.io/abc123?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+          type: string
+        token:
+          description: JWT authorizing the MoQ relay connection, also embedded in `connection_url`
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb290IjoiZmlzaGphbSIsInB1dCI6WyJteS1zdHJlYW0iXSwiZ2V0IjpbXSwiaWF0IjoxNzEzMzYwMDAwLCJleHAiOjE3MTMzNjM2MDB9.abc123
+          type: string
+      required:
+        - connection_url
+        - token
+      title: MoqAccess
+      type: object
     SubscribeMode:
       default: auto
       description: Configuration of peer's subscribing policy
@@ -114,22 +152,12 @@ components:
           nullable: false
           type: boolean
         webhookUrl:
-          description: Webhook URL for receiving server notifications
+          deprecated: true
+          description: "Deprecated: configure the webhook in the Dashboard instead. Webhook URL for receiving server notifications; overrides the Dashboard-configured webhook URL"
           nullable: true
           pattern: ^https?://[^/]+/.*$
           type: string
       title: StreamConfig
-      type: object
-    MoqToken:
-      description: Token for authorizing a MoQ relay connection
-      properties:
-        token:
-          description: JWT token for MoQ relay
-          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb290IjoiZmlzaGphbSIsInB1dCI6WyJteS1zdHJlYW0iXSwiZ2V0IjpbXSwiaWF0IjoxNzEzMzYwMDAwLCJleHAiOjE3MTMzNjM2MDB9.abc123
-          type: string
-      required:
-        - token
-      title: MoqToken
       type: object
     Error:
       description: Error message
@@ -208,15 +236,39 @@ components:
         - data
       title: StreamsListingResponse
       type: object
-    PeerOptions:
-      additionalProperties: false
-      description: Peer-specific options
-      oneOf:
-        - $ref: "#/components/schemas/PeerOptionsWebRTC"
-        - $ref: "#/components/schemas/PeerOptionsAgent"
-        - $ref: "#/components/schemas/PeerOptionsVapi"
-      title: PeerOptions
+    CompositionSource:
+      description: Recording source coming from composition
+      properties:
+        compositionURL:
+          description: URL of the composition to record
+          maxLength: 255
+          nullable: false
+          pattern: ^https?://[^/]+/.*$
+          type: string
+        outputId:
+          description: Id of the output being recorded
+          maxLength: 255
+          nullable: false
+          type: string
+        scaleRatio:
+          default: 1
+          description: Scale factor for the recording relative to the source output (>0; may upscale or downscale). Defaults to 1.
+          exclusiveMinimum: true
+          minimum: 0
+          type: number
+      required:
+        - compositionURL
+        - outputId
+      title: CompositionSource
       type: object
+    RecordingStatus:
+      description: Lifecycle status of a recording
+      enum:
+        - active
+        - available
+        - failed
+      title: RecordingStatus
+      type: string
     Streamer:
       description: Describes streamer status
       properties:
@@ -238,6 +290,22 @@ components:
         - status
         - token
       title: Streamer
+      type: object
+    PeerConfigAgent:
+      additionalProperties: false
+      description: Configuration of an agent peer
+      properties:
+        options:
+          $ref: "#/components/schemas/PeerOptionsAgent"
+        type:
+          description: Peer type
+          enum:
+            - agent
+          type: string
+      required:
+        - type
+        - options
+      title: PeerConfigAgent
       type: object
     VideoCodec:
       default: h264
@@ -282,22 +350,6 @@ components:
         - inputId
       title: TrackForwardingInfo
       type: object
-    MoqTokenConfig:
-      additionalProperties: false
-      description: MoQ token configuration
-      properties:
-        publishPath:
-          description: Path under the root the token grants publish access to
-          example: my-stream
-          nullable: true
-          type: string
-        subscribePath:
-          description: Path under the root the token grants subscribe access to
-          example: my-stream
-          nullable: true
-          type: string
-      title: MoqTokenConfig
-      type: object
     RoomType:
       default: conference
       description: The use-case of the room. If not provided, this defaults to conference.
@@ -311,17 +363,34 @@ components:
       nullable: false
       title: RoomType
       type: string
-    PeerConfig:
+    MoqAccessConfig:
       additionalProperties: false
-      description: Peer configuration
+      description: MoQ access configuration
       properties:
-        options:
-          $ref: "#/components/schemas/PeerOptions"
-        type:
-          $ref: "#/components/schemas/PeerType"
-      required:
-        - options
-        - type
+        publishPath:
+          description: Path under the root the token grants publish access to
+          example: my-stream
+          nullable: true
+          type: string
+        subscribePath:
+          description: Path under the root the token grants subscribe access to
+          example: my-stream
+          nullable: true
+          type: string
+      title: MoqAccessConfig
+      type: object
+    PeerConfig:
+      description: Peer configuration
+      discriminator:
+        mapping:
+          agent: "#/components/schemas/PeerConfigAgent"
+          vapi: "#/components/schemas/PeerConfigVAPI"
+          webrtc: "#/components/schemas/PeerConfigWebRTC"
+        propertyName: type
+      oneOf:
+        - $ref: "#/components/schemas/PeerConfigWebRTC"
+        - $ref: "#/components/schemas/PeerConfigAgent"
+        - $ref: "#/components/schemas/PeerConfigVAPI"
       title: PeerConfig
       type: object
     TrackMetadata:
@@ -350,6 +419,22 @@ components:
         - compositionURL
       title: TrackForwarding
       type: object
+    PeerConfigVAPI:
+      additionalProperties: false
+      description: Configuration of a VAPI peer
+      properties:
+        options:
+          $ref: "#/components/schemas/PeerOptionsVapi"
+        type:
+          description: Peer type
+          enum:
+            - vapi
+          type: string
+      required:
+        - type
+        - options
+      title: PeerConfigVAPI
+      type: object
     Subscriptions:
       description: Describes peer's subscriptions in manual mode
       properties:
@@ -367,6 +452,21 @@ components:
         - peers
         - tracks
       title: Subscriptions
+      type: object
+    RecordingConfig:
+      additionalProperties: false
+      description: Recording configuration
+      properties:
+        metadata:
+          additionalProperties: true
+          description: Free-form, user-supplied metadata used to organize and filter recordings
+          nullable: true
+          type: object
+        source:
+          $ref: "#/components/schemas/RecordingSource"
+      required:
+        - source
+      title: RecordingConfig
       type: object
     WebsocketURL:
       description: Websocket URL to which peer has to connect
@@ -429,7 +529,8 @@ components:
         videoCodec:
           $ref: "#/components/schemas/VideoCodec"
         webhookUrl:
-          description: URL where Fishjam notifications will be sent
+          deprecated: true
+          description: "Deprecated: configure the webhook in the Dashboard instead. URL where Fishjam notifications will be sent; overrides the Dashboard-configured webhook URL"
           example: https://backend.address.com/fishjam-notifications-endpoint
           nullable: true
           pattern: ^https?://[^/]+/.*$
@@ -575,6 +676,36 @@ components:
         - streamers
       title: Stream
       type: object
+    RecordingDetailsResponse:
+      description: Response containing recording details
+      properties:
+        data:
+          $ref: "#/components/schemas/Recording"
+      required:
+        - data
+      title: RecordingDetailsResponse
+      type: object
+    Recording:
+      description: A recording and its current lifecycle status
+      properties:
+        id:
+          description: Assigned recording id
+          type: string
+        metadata:
+          additionalProperties: true
+          description: Free-form, user-supplied metadata used to organize and filter recordings
+          nullable: true
+          type: object
+        source:
+          $ref: "#/components/schemas/RecordingSource"
+        status:
+          $ref: "#/components/schemas/RecordingStatus"
+      required:
+        - id
+        - source
+        - status
+      title: Recording
+      type: object
     StreamerToken:
       description: Streamer authorization token
       properties:
@@ -615,6 +746,17 @@ components:
       example: pcm16
       title: AudioFormat
       type: string
+    RecordingListResponse:
+      description: Response containing list of recordings
+      properties:
+        data:
+          items:
+            $ref: "#/components/schemas/Recording"
+          type: array
+      required:
+        - data
+      title: RecordingListResponse
+      type: object
   securitySchemes:
     management_token:
       scheme: bearer
@@ -638,7 +780,7 @@ info:
 
     You can learn more about our SDKs in our [SDK Docs](http://fishjam.swmansion.com/docs/how-to/backend/server-setup)
   title: Fishjam API
-  version: 0.27.0
+  version: 0.29.0
 openapi: 3.0.0
 paths:
   /livestream:
@@ -701,6 +843,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
           description: Unauthorized
+        "402":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Usage quota exceeded for free tier
         "503":
           content:
             application/json:
@@ -945,25 +1093,25 @@ paths:
       summary: Delete a viewer
       tags:
         - Viewers
-  /moq/token:
+  /moq/access:
     post:
       callbacks: {}
       description: Issue a short-lived JWT for a Media over QUIC client.
-      operationId: create_moq_token
+      operationId: create_moq_access
       parameters: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/MoqTokenConfig"
+              $ref: "#/components/schemas/MoqAccessConfig"
         required: false
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MoqToken"
-          description: MoQ token successfully created
+                $ref: "#/components/schemas/MoqAccess"
+          description: MoQ access successfully created
         "400":
           content:
             application/json:
@@ -984,9 +1132,156 @@ paths:
           description: Service temporarily unavailable
       security:
         - management_token: []
-      summary: Create a MoQ token
+      summary: Create MoQ access
       tags:
         - MoQ
+  /recordings:
+    get:
+      callbacks: {}
+      description: List recordings for the tenant, optionally filtered by metadata.
+      operationId: list_recordings
+      parameters:
+        - description: Filter by metadata, e.g. `metadata[env]=prod` (nested keys allowed). Returns recordings whose metadata contains all the given pairs. Query values are compared as JSON strings, so non-string metadata values (numbers, booleans) cannot be matched.
+          explode: true
+          in: query
+          name: metadata
+          required: false
+          schema:
+            additionalProperties: true
+            type: object
+          style: deepObject
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecordingListResponse"
+          description: Success
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+      security:
+        - management_token: []
+      summary: List recordings
+      tags:
+        - Recordings
+    post:
+      callbacks: {}
+      description: Create a recording resource. Capturing starts synchronously, so it is returned with status `active`.
+      operationId: create_recording
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordingConfig"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecordingDetailsResponse"
+          description: Recording created successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Invalid request structure
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "402":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Usage quota exceeded for free tier
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Service temporarily unavailable
+      security:
+        - management_token: []
+      summary: Create a recording
+      tags:
+        - Recordings
+  /recordings/{recording_id}:
+    delete:
+      callbacks: {}
+      description: Delete a recording by id.
+      operationId: delete_recording
+      parameters:
+        - description: Recording ID
+          in: path
+          name: recording_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Successfully deleted recording
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Service temporarily unavailable
+      security:
+        - management_token: []
+      summary: Delete a recording
+      tags:
+        - Recordings
+    get:
+      callbacks: {}
+      description: Get a recording by id.
+      operationId: get_recording
+      parameters:
+        - description: Recording ID
+          in: path
+          name: recording_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecordingDetailsResponse"
+          description: Success
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Recording doesn't exist
+      security:
+        - management_token: []
+      summary: Get a recording
+      tags:
+        - Recordings
   /room:
     get:
       callbacks: {}
@@ -1527,6 +1822,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
           description: Room doesn't exist
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Composition is already receiving track forwardings
       security:
         - management_token: []
       summary: Create a track forwarding
@@ -1580,6 +1881,22 @@ paths:
       summary: Create a viewer token
       tags:
         - Viewers
+  /validate:
+    get:
+      callbacks: {}
+      description: Returns 200 if the provided Fishjam Management Token is valid, 404 otherwise.
+      operationId: validate_credentials
+      parameters: []
+      responses:
+        "200":
+          description: Credentials are valid
+        "404":
+          description: Credentials are invalid or missing
+      security:
+        - management_token: []
+      summary: Validate Fishjam Management Token
+      tags:
+        - Credentials
 security: []
 servers:
   - url: https://fishjam.io/api/v1/connect/{fishjamId}
@@ -1625,6 +1942,15 @@ tags:
       Only the `"all"` selector is currently supported, which forwards every
       active track in the room.
     name: Track Forwardings
+  - description: |
+      A **recording** is a saved capture of media output. Creating one synchronously starts
+      capturing, so it is born `active`; follow its `status` as media is finalized
+      (`active` → `available`, or `failed`). A recording stands on its own, independent of the
+      room, stream, or composition it came from, so it stays available after that source ends.
+
+      Set free-form `metadata` when you create a recording; you can then use it to filter
+      recordings when fetching them.
+    name: Recordings
   - description: |
       Issue short-lived JWT tokens that authorize **Media over QUIC** relay
       clients to publish and/or subscribe under a scoped path.

@@ -112,6 +112,13 @@ vapi
 remuxing
 swmansion
 SimCam
+TGSL
+tgpu
+WGSL
+unplugin
+unorm
+bgra
+BGRA
 VoIP
 CallKit
 PushKit

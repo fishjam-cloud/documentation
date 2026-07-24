@@ -36,6 +36,8 @@
     "@fishjam-cloud/js-server-sdk": "link:./packages/js-server-sdk/packages/js-server-sdk",
     "@fishjam-cloud/react-client": "link:./packages/web-client-sdk/packages/react-client",
     "@fishjam-cloud/react-native-client": "link:./packages/web-client-sdk/packages/mobile-client",
+    "@fishjam-cloud/react-native-custom-video-source": "link:./packages/web-client-sdk/packages/react-native-custom-video-source",
+    "@fishjam-cloud/react-native-vision-camera-source": "link:./packages/web-client-sdk/packages/react-native-vision-camera-source",
     "@fishjam-cloud/react-native-webrtc": "link:./packages/web-client-sdk/packages/react-native-webrtc",
     "@mdx-js/react": "^3.1.0",
     "@scalar/docusaurus": "^0.8.5",
@@ -53,7 +55,9 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-native": "^0.80.0",
-    "shiki": "^3.6.0"
+    "react-native-vision-camera": "5.0.10",
+    "shiki": "^3.6.0",
+    "typegpu": "^0.11.8"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.10.0",
@@ -62,10 +66,12 @@
     "@google/genai": "^1.35.0",
     "@shikijs/twoslash": "^3.6.0",
     "@vapi-ai/server-sdk": "^1.1.0",
+    "@webgpu/types": "0.1.65",
     "cspell": "^9.1.2",
     "docusaurus-plugin-llms": "^0.3.0",
     "docusaurus-plugin-typedoc": "1.4.0",
     "prettier": "^3.5.3",
+    "react-native-webgpu": "~0.5.15",
     "typedoc": "0.28.5",
     "typedoc-plugin-markdown": "4.7.0",
     "typescript": "~5.8.2"

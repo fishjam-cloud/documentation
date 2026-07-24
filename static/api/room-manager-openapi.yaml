@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Fishjam Room Manager
-  version: 0.28.0
+  version: 0.29.0
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
@@ -30,6 +30,7 @@ components:
         - conference
         - livestream
         - audio_only
+        - audio_only_livestream
       default: conference
     room:
       type: object
@@ -135,12 +136,22 @@ components:
       required:
         - streamerToken
         - room
-    moqToken:
+    livestreamRoomType:
+      type: string
+      enum:
+        - livestream
+        - audio_only_livestream
+      default: livestream
+      description: Determines whether the livestream carries audio and video or audio only
+    moqAccess:
       type: object
       properties:
+        connection_url:
+          type: string
         token:
           type: string
       required:
+        - connection_url
         - token
     streamName:
       type: string
@@ -235,6 +246,14 @@ paths:
           description: Determines if livestream is public or private
           name: public
           in: query
+        - schema:
+            $ref: "#/components/schemas/livestreamRoomType"
+          required: false
+          description:
+            Determines whether the livestream carries audio and video or audio
+            only
+          name: roomType
+          in: query
       responses:
         "200":
           description: Get livestream streamer token
@@ -250,8 +269,8 @@ paths:
                 $ref: "#/components/schemas/errorResponse"
   /room-manager/moq/{streamName}/publisher:
     get:
-      summary: Get publisher token for a MoQ stream
-      operationId: publisherToken
+      summary: Get publisher access for a MoQ stream
+      operationId: publisherAccess
       security: []
       parameters:
         - schema:
@@ -261,21 +280,21 @@ paths:
           in: path
       responses:
         "200":
-          description: Get MoQ publisher token
+          description: Get MoQ publisher access
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/moqToken"
+                $ref: "#/components/schemas/moqAccess"
         default:
-          description: Failed to get MoQ publisher token
+          description: Failed to get MoQ publisher access
           content:
             text/plain:
               schema:
                 $ref: "#/components/schemas/errorResponse"
   /room-manager/moq/{streamName}/subscriber:
     get:
-      summary: Get subscriber token for a MoQ stream
-      operationId: subscriberToken
+      summary: Get subscriber access for a MoQ stream
+      operationId: subscriberAccess
       security: []
       parameters:
         - schema:
@@ -285,21 +304,21 @@ paths:
           in: path
       responses:
         "200":
-          description: Get MoQ subscriber token
+          description: Get MoQ subscriber access
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/moqToken"
+                $ref: "#/components/schemas/moqAccess"
         default:
-          description: Failed to get MoQ subscriber token
+          description: Failed to get MoQ subscriber access
           content:
             text/plain:
               schema:
                 $ref: "#/components/schemas/errorResponse"
   /room-manager/moq/{streamName}/full-access:
     get:
-      summary: Get full access token for a MoQ stream
-      operationId: fullAccessToken
+      summary: Get full access for a MoQ stream
+      operationId: fullAccess
       security: []
       parameters:
         - schema:
@@ -309,13 +328,13 @@ paths:
           in: path
       responses:
         "200":
-          description: Get MoQ full access token
+          description: Get MoQ full access
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/moqToken"
+                $ref: "#/components/schemas/moqAccess"
         default:
-          description: Failed to get MoQ full access token
+          description: Failed to get MoQ full access
           content:
             text/plain:
               schema:

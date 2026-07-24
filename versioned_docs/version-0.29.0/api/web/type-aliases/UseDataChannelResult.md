@@ -1,0 +1,101 @@
+# Type Alias: UseDataChannelResult
+
+> **UseDataChannelResult** = `object`
+
+Defined in: [react-client/src/types/public.ts:92](https://github.com/fishjam-cloud/web-client-sdk/blob/90ab3e9c91fcc1e76750599611c08dadb447fd27/packages/react-client/src/types/public.ts#L92)
+
+## Properties
+
+### dataChannelError
+
+> **dataChannelError**: `Error` \| `null`
+
+Defined in: [react-client/src/types/public.ts:125](https://github.com/fishjam-cloud/web-client-sdk/blob/90ab3e9c91fcc1e76750599611c08dadb447fd27/packages/react-client/src/types/public.ts#L125)
+
+Error that occurred during data publisher operations, or null if no error.
+
+***
+
+### dataChannelLoading
+
+> **dataChannelLoading**: `boolean`
+
+Defined in: [react-client/src/types/public.ts:121](https://github.com/fishjam-cloud/web-client-sdk/blob/90ab3e9c91fcc1e76750599611c08dadb447fd27/packages/react-client/src/types/public.ts#L121)
+
+Whether data channels are being initialized.
+
+***
+
+### dataChannelReady
+
+> **dataChannelReady**: `boolean`
+
+Defined in: [react-client/src/types/public.ts:117](https://github.com/fishjam-cloud/web-client-sdk/blob/90ab3e9c91fcc1e76750599611c08dadb447fd27/packages/react-client/src/types/public.ts#L117)
+
+Whether data channels are connected and ready to send data.
+Resets to false on disconnect.
+
+***
+
+### initializeDataChannel()
+
+> **initializeDataChannel**: () => `void`
+
+Defined in: [react-client/src/types/public.ts:98](https://github.com/fishjam-cloud/web-client-sdk/blob/90ab3e9c91fcc1e76750599611c08dadb447fd27/packages/react-client/src/types/public.ts#L98)
+
+Initializes the data channel.
+
+Requires that the fishjam client is already connected.
+
+#### Returns
+
+`void`
+
+***
+
+### publishData()
+
+> **publishData**: (`payload`, `options`) => `void`
+
+Defined in: [react-client/src/types/public.ts:104](https://github.com/fishjam-cloud/web-client-sdk/blob/90ab3e9c91fcc1e76750599611c08dadb447fd27/packages/react-client/src/types/public.ts#L104)
+
+Sends binary data through a data channel.
+
+#### Parameters
+
+| Parameter | Type | Description |
+| ------ | ------ | ------ |
+| `payload` | `Uint8Array` | The Uint8Array payload to send (first positional argument) |
+| `options` | [`DataChannelOptions`](../interfaces/DataChannelOptions.md) | Data channel options; specify `reliable: true` for guaranteed delivery or `reliable: false` for low latency |
+
+#### Returns
+
+`void`
+
+***
+
+### subscribeData()
+
+> **subscribeData**: (`callback`, `options`) => () => `void`
+
+Defined in: [react-client/src/types/public.ts:112](https://github.com/fishjam-cloud/web-client-sdk/blob/90ab3e9c91fcc1e76750599611c08dadb447fd27/packages/react-client/src/types/public.ts#L112)
+
+Subscribe to incoming data on a data channel.
+Can be called before or after channel creation.
+
+#### Parameters
+
+| Parameter | Type | Description |
+| ------ | ------ | ------ |
+| `callback` | [`DataCallback`](DataCallback.md) | Function called when data is received |
+| `options` | [`DataChannelOptions`](../interfaces/DataChannelOptions.md) | Specify `reliable: true` or `reliable: false` to choose channel |
+
+#### Returns
+
+Unsubscribe function - call to cancel the subscription
+
+> (): `void`
+
+##### Returns
+
+`void`
