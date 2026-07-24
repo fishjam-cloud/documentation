@@ -57,6 +57,11 @@ checkout_submodule_branch() {
 # The spec is sanitized before publishing: fields marked "Internal use only"
 # are stripped.
 copy_smelter_cloud_openapi() {
+    if ! command -v jq >/dev/null 2>&1; then
+        echo "jq is required to sanitize the smelter-cloud spec. Install jq and re-run." >&2
+        exit 1
+    fi
+
     jq '
         del(.components.schemas.WhipInput.properties.endpoint_override)
         | .components.schemas.Mp4Input.description = "Input stream from an MP4 file."
