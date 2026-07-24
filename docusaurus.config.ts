@@ -275,12 +275,25 @@ const config: Config = {
           activeBaseRegex: "^/docs(?=/|$)(?!.*(ai-skill|/api(/|$)))",
         },
         {
+          type: "dropdown",
           to: "/api/rest",
           label: "API Reference",
           position: "left",
           // Highlight across the whole /api section (rest, reference, and the
           // typedoc web/mobile/server pages), not just the linked /api/rest.
           activeBaseRegex: "/api(/|$)",
+          items: [
+            { to: "/api/rest", label: "Server REST API" },
+            {
+              to: "/api/smelter-cloud/rest",
+              label: "Smelter Cloud REST API",
+            },
+            {
+              type: "doc",
+              docId: "api/reference",
+              label: "SDKs & Protobufs",
+            },
+          ],
         },
         {
           to: "/ai-skill",
@@ -374,6 +387,24 @@ const config: Config = {
           defaultOpenFirstTag: false,
           authentication: {
             preferredSecurityScheme: "management_token",
+          },
+        },
+      } as ScalarOptions,
+    ],
+    [
+      "@scalar/docusaurus",
+      {
+        id: "smelter-cloud-api",
+        label: "Smelter Cloud REST API",
+        route: "/api/smelter-cloud/rest",
+        showNavLink: false,
+        configuration: {
+          url: "/docs/api/smelter-cloud-openapi.json",
+          hideSearch: true,
+          persistAuth: true,
+          defaultOpenFirstTag: false,
+          authentication: {
+            preferredSecurityScheme: "BearerAuth",
           },
         },
       } as ScalarOptions,

@@ -1,0 +1,167 @@
+---
+type: how-to
+sidebar_position: 1
+description: Write a React composition template with the Smelter Cloud composition SDK, bundle it with the CLI, and deploy it as an output.
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Write and deploy a template
+
+A **template** is a React component that describes an output's layout and updates it live as the room changes. Instead of sending a static scene, you write a component, bundle it into a single file with the composition CLI, and upload it when registering an output.
+
+## Scaffold a project
+
+Create a new template project with the CLI:
+
+```bash npm2yarn
+npx @fishjam-cloud/composition-cli init my-template
+cd my-template
+npm install
+```
+
+This generates a ready-to-build project: a `package.json` with `build` and `typecheck` scripts, a TypeScript config, and a starter `src/App.tsx`.
+
+## Write the template
+
+A template **default-exports a React component**. You lay out the composition with layout components from [`@swmansion/smelter`](https://smelter.dev) and read live room state with hooks from `@fishjam-cloud/composition`.
+
+```tsx
+// @jsx: react-jsx
+// ---cut-before---
+import { InputStream, Rescaler, Text, Tiles, View } from "@swmansion/smelter";
+import { usePeers, useSpeakingState } from "@fishjam-cloud/composition";
+import type { PeerWithStreams } from "@fishjam-cloud/composition";
+
+type PeerMetadata = { displayName?: string };
+
+function PeerTile({ peer }: { peer: PeerWithStreams<PeerMetadata> }) {
+  const camera = peer.cameraStream;
+  const cameraOn = camera?.video && !camera.video.paused;
+  const speaking = useSpeakingState(peer.id) === "speech";
+  const name = peer.metadata.peer?.displayName ?? peer.id;
+
+  return (
+    <View style={{ borderWidth: speaking ? 4 : 0, borderColor: "#00cc66ff" }}>
+      {cameraOn ? (
+        <Rescaler>
+          <InputStream inputId={camera.inputId} />
+        </Rescaler>
+      ) : (
+        <View>
+          <Text>{name}</Text>
+        </View>
+      )}
+    </View>
+  );
+}
+
+export default function App() {
+  const peers = usePeers<PeerMetadata>();
+  const connected = peers.filter((peer) => peer.streams.length > 0);
+
+  return (
+    <View style={{ backgroundColor: "#0b1020ff" }}>
+      <Tiles style={{ padding: 8 }}>
+        {connected.map((peer) => (
+          <PeerTile peer={peer} key={peer.id} />
+        ))}
+      </Tiles>
+    </View>
+  );
+}
+```
+
+The key link is `stream.inputId`: you pass it to `<InputStream inputId={…} />` to render that participant's forwarded track.
+
+### Hooks
+
+`@fishjam-cloud/composition` gives you the live room state; the template re-renders automatically when it changes.
+
+| Hook                       | Returns                                                                                                     |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `usePeers()`               | All peers in the linked room, each with its streams (`cameraStream`, `screenShareStream`, `customStreams`). |
+| `usePeer(peerId)`          | A single peer, or `undefined`.                                                                              |
+| `useRoom()`                | The linked room `{ id }`, or `undefined` before a room is linked.                                           |
+| `useSpeakingState(peerId)` | `"speech"` or `"silence"` for active-speaker highlighting.                                                  |
+
+Layout, styling, and every visual component (`View`, `Tiles`, `InputStream`, `Rescaler`, `Text`, `Image`, …) come from `@swmansion/smelter`. Its style model is not CSS: see the [Smelter reference](https://smelter.dev) for the full component and style documentation.
+
+### Two ways to author
+
+- **Composition hooks (recommended)**: use `@fishjam-cloud/composition` for room-aware layouts, as above.
+- **Raw Smelter (advanced)**: a template may skip the hooks entirely and read inputs directly with `@swmansion/smelter` (for example `useInputStreams`). Both are valid because `@swmansion/smelter` is an allowed import.
+
+## Build the bundle
+
+```bash npm2yarn
+npm run build
+```
+
+This bundles and validates your template into a single file (default `dist/App.js`) against the template contract:
+
+- **A single JS bundle**: no CSS or extra emitted files.
+- **Allowed imports only**: `react`, `react/jsx-runtime`, `@swmansion/smelter`, and `@fishjam-cloud/composition`. These are provided by the runtime and stay out of your bundle; anything else fails the build.
+- **A default-exported React component.**
+- **No `import.meta` and no dynamic `import()`** with a non-literal specifier.
+- **Under ~950 KB**: the bundle ceiling after reserving room for the upload.
+- **Loadable**: a smoke test imports the bundle and checks that the default export is a valid React component within a few seconds.
+
+## Deploy the template
+
+A templated output is registered in a **single multipart request** to `POST …/output/{output_id}/template`. Do not call the plain `…/register` endpoint first. The request carries two parts:
+
+- `config`: the same JSON body a regular output registration takes (see [Choose inputs and outputs](./inputs-and-outputs)). Its `video.initial` scene is only a placeholder; the template takes over rendering as soon as it loads.
+- `template`: the built bundle.
+
+<Tabs groupId="language">
+  <TabItem value="curl" label="curl">
+
+```bash
+curl -X POST "$SMELTER_URL/api/composition/$COMPOSITION/output/main/template" \
+  -H "Authorization: Bearer $TOKEN" \
+  -F 'config={
+        "type": "whip_client",
+        "endpoint_url": "https://example.com/whip",
+        "video": {
+          "resolution": { "width": 1280, "height": 720 },
+          "initial": { "root": { "type": "view" } }
+        },
+        "audio": { "initial": { "inputs": [] } }
+      };type=application/json' \
+  -F "template=@dist/App.js"
+```
+
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
+
+```js
+const config = {
+  type: "whip_client",
+  endpoint_url: "https://example.com/whip",
+  video: {
+    resolution: { width: 1280, height: 720 },
+    initial: { root: { type: "view" } },
+  },
+  audio: { initial: { inputs: [] } },
+};
+
+const form = new FormData();
+form.append("config", JSON.stringify(config));
+form.append("template", new Blob([bundle]), "App.js");
+
+await fetch(
+  `${SMELTER_URL}/api/composition/${composition}/output/main/template`,
+  {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: form,
+  },
+);
+```
+
+  </TabItem>
+</Tabs>
+
+To feed a whole Fishjam room's peers into the template, continue with [Compose a Fishjam room](./compose-a-fishjam-room). To update the template's on-screen state at runtime, see [Drive a template with events](./drive-a-template-with-events).

@@ -37,6 +37,38 @@ copy_openapi() {
     fi
 }
 
+# TODO: switch to main once the template-workers branch is merged there.
+# Note: until that merge, the branch's checked-in spec lacks the oneOf variant
+# titles the committed smelter-cloud-openapi.json already carries, so re-running
+# this script before the merge drops them.
+SMELTER_CLOUD_BRANCH="template-workers"
+
+# The smelter-cloud source repo does not tag semver releases yet, so its
+# submodule is checked out at a branch instead of the latest tag.
+checkout_submodule_branch() {
+    local submodule_path
+    submodule_path=api/$1
+
+    cd $CWD/$submodule_path
+    git fetch origin $2
+    git checkout FETCH_HEAD --detach &>/dev/null
+}
+
+# The spec is sanitized before publishing: fields marked "Internal use only"
+# are stripped.
+copy_smelter_cloud_openapi() {
+    if ! command -v jq >/dev/null 2>&1; then
+        echo "jq is required to sanitize the smelter-cloud spec. Install jq and re-run." >&2
+        exit 1
+    fi
+
+    jq '
+        del(.components.schemas.WhipInput.properties.endpoint_override)
+        | .components.schemas.Mp4Input.description = "Input stream from an MP4 file."
+    ' openapi.json >"$ASSETS_DIRECTORY/smelter-cloud-openapi.json"
+    echo "Copied openapi.json of smelter-cloud to the assets directory."
+}
+
 PROTO_FILES="server_notifications agent_notifications notifications/shared"
 copy_protos() {
     for file in $PROTO_FILES; do
@@ -52,5 +84,8 @@ copy_openapi room-manager
 
 checkout_submodule protos
 copy_protos
+
+checkout_submodule_branch smelter-cloud $SMELTER_CLOUD_BRANCH
+copy_smelter_cloud_openapi
 
 echo $'\nSubmodule update and copy complete.'

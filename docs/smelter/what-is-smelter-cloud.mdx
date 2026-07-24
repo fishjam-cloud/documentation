@@ -1,0 +1,51 @@
+---
+type: explanation
+title: What is Smelter Cloud?
+sidebar_position: 0
+description: Understand Smelter Cloud, the hosted real-time video composition service in the Fishjam ecosystem.
+---
+
+# What is Smelter Cloud?
+
+_Understanding hosted real-time video composition in the Fishjam ecosystem_
+
+:::info Beta
+Smelter Cloud is in beta. The API and packages are still evolving, and details on these pages may change.
+:::
+
+Smelter Cloud is a hosted service that composes multiple live media streams into a single output stream in real time. You send it inputs (WebRTC, RTMP, HLS, or MP4), describe how they should be laid out, and it produces one composed output that you can publish anywhere, all without running any rendering infrastructure yourself.
+
+It is built on [Smelter](https://smelter.dev), the open-source real-time video compositing engine by [Software Mansion](https://swmansion.com), and it is part of the [Fishjam](./../explanation/what-is-fishjam) ecosystem: it authenticates with the same Fishjam credentials and can compose the peers of a Fishjam room directly.
+
+## What you can build
+
+- **Multi-party layouts**: arrange the cameras of a conference or livestream into grids, side-by-sides, or picture-in-picture.
+- **Branded streams**: overlay logos, captions, lower-thirds, and backgrounds on top of live video.
+- **React templates**: describe your layout as a React component that reacts to who is speaking, who joined, and custom application events.
+- **Cross-protocol bridging**: take WebRTC inputs and republish the composed result to an RTMP destination, or vice versa.
+
+## Smelter Cloud vs. the Smelter library
+
+The name Smelter refers to two related things, and it is worth knowing which one you are using:
+
+- **Smelter** (the library) runs the compositing engine **on the client**, in the browser via WebAssembly. You install `@swmansion/smelter` and compose streams locally. This is what the [custom sources](./../how-to/client/custom-sources) guide and the [Minimal Smelter example](./../examples/react) describe.
+- **Smelter Cloud** (this section) runs the same engine **as a hosted service**. You call an HTTP API, the composition runs on Fishjam's infrastructure, and you never ship the WebAssembly bundle or manage rendering yourself.
+
+Both use the same layout components and scene model, so knowledge transfers between them. Choose Smelter Cloud when you want server-side composition that scales independently of any single client.
+
+## Core concepts
+
+A **composition** is a single running compositing session. Into it you register:
+
+- **Inputs**: the live media sources being composed (WebRTC via WHIP/WHEP, RTMP, HLS, or MP4).
+- **Outputs**: where the composed result is sent (WebRTC via WHIP, or RTMP). Each output carries a **scene** that describes the layout.
+- **Renderers**: shared assets such as images and fonts you can place in a scene.
+
+An output's scene can either be described directly in the API or rendered by a **template**: a React component, written with the layout components and the [`@fishjam-cloud/composition`](./how-to/write-and-deploy-a-template) hooks, that updates the layout live as the room changes.
+
+## Where to go next
+
+- [Quick Start](./quick-start): create your first composition end to end.
+- [Write and deploy a template](./how-to/write-and-deploy-a-template): build a React layout with the composition SDK.
+- [Compose a Fishjam room](./how-to/compose-a-fishjam-room): turn a room's peers into one composed stream.
+- [Smelter Cloud API](./../api/smelter-cloud): the full REST surface.

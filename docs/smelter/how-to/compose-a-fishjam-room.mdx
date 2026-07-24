@@ -1,0 +1,65 @@
+---
+type: how-to
+sidebar_position: 2
+description: Link a Fishjam room to a Smelter Cloud composition, render its peers with a template, and push the result to a livestream.
+---
+
+# Compose a Fishjam room
+
+Smelter Cloud can compose the peers of a [Fishjam room](./../../explanation/rooms) directly. Linking a room forwards each peer's media into the composition as inputs, so a [template](./write-and-deploy-a-template) can render one tile per participant and push the result to a [livestream](./../../explanation/livestreams).
+
+```
+Fishjam room (peers) ──forwarded──▶ Smelter Cloud (template) ──WHIP──▶ Fishjam livestream ──WHEP──▶ [viewers]
+```
+
+## Prerequisites
+
+- A composition (see [Quick Start](./../quick-start)).
+- A Fishjam room and a [livestream](./../../explanation/livestreams) to publish to. Create both with your Fishjam **Management Token**.
+- A built template bundle (see [Write and deploy a template](./write-and-deploy-a-template)).
+
+## Step 1: Link the room
+
+Link the room to the composition. Each connected peer's tracks then become available to the template as inputs.
+
+```bash
+curl -X POST "$SMELTER_URL/api/composition/$COMPOSITION/room" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fishjam_id": "<YOUR_FISHJAM_ID>",
+    "room_id": "<ROOM_ID>"
+  }'
+```
+
+Your template's `usePeers()` now returns the room's peers, and it re-renders as they join, leave, mute, or start speaking.
+
+## Step 2: Register a templated output to the livestream
+
+Register a templated `whip_client` output that pushes to your Fishjam livestream's WHIP endpoint. The output configuration and the template bundle go together in one multipart request:
+
+```bash
+curl -X POST "$SMELTER_URL/api/composition/$COMPOSITION/output/main/template" \
+  -H "Authorization: Bearer $TOKEN" \
+  -F 'config={
+        "type": "whip_client",
+        "endpoint_url": "<LIVESTREAM_WHIP_URL>",
+        "bearer_token": "<LIVESTREAM_STREAMER_TOKEN>",
+        "video": { "resolution": { "width": 1280, "height": 720 }, "initial": { "root": { "type": "view" } } },
+        "audio": { "initial": { "inputs": [] } }
+      };type=application/json' \
+  -F "template=@dist/App.js"
+```
+
+Viewers can now watch the composed grid through the livestream's WHEP endpoint.
+
+## Step 3: Unlink when done
+
+Unlink the room to stop forwarding its peers into the composition:
+
+```bash
+curl -X DELETE "$SMELTER_URL/api/composition/$COMPOSITION/room" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+Then unregister the output and delete the composition as usual.

@@ -1,0 +1,61 @@
+---
+type: reference
+title: Smelter Cloud API
+description: Smelter Cloud REST API reference, the WebSocket event stream, and the authentication model.
+---
+
+# Smelter Cloud API
+
+Smelter Cloud exposes a REST API for managing compositions, plus a WebSocket stream for engine events. All requests go to `https://rtc.fishjam.io`. For an introduction to the service, see [What is Smelter Cloud?](../smelter/what-is-smelter-cloud)
+
+## REST API
+
+The full REST reference, with every endpoint, request body, and response schema, is published as an OpenAPI document:
+
+- [Smelter Cloud REST API Reference](/api/smelter-cloud/rest)
+- [OpenAPI specification](https://github.com/fishjam-cloud/documentation/blob/main/static/api/smelter-cloud-openapi.json)
+
+The specification is generated from the service's source code and republished together with documentation updates.
+
+## WebSocket event stream
+
+Some engine events (for example, an output finishing) are delivered over a WebSocket rather than HTTP. Connect to:
+
+```
+GET wss://rtc.fishjam.io/api/composition/{composition_id}/ws
+```
+
+Because browsers cannot set an `Authorization` header on a WebSocket, authentication rides on the `Sec-WebSocket-Protocol` header, which must carry **two** subprotocols (order does not matter):
+
+- `json.fishjam.io`: selects the JSON wire format.
+- `bearer.auth.fishjam.io.<token>`: your token, appended to the literal prefix.
+
+```js
+const ws = new WebSocket(
+  `wss://rtc.fishjam.io/api/composition/${compositionId}/ws`,
+  ["json.fishjam.io", `bearer.auth.fishjam.io.${token}`],
+);
+```
+
+Messages are JSON text frames, each with a `type` field identifying the event.
+
+## Authentication
+
+| What you're calling                                                         | How it authenticates                                                                                                                                    |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Control-plane calls (composition, inputs, outputs, renderers, events, room) | `Authorization: Bearer <token>`: your Fishjam **Management Token**, the same token used across Fishjam.                                                 |
+| Publishing to an input (`/whip/{input_id}`)                                 | The **input's** own bearer token, returned when you register a `whip_server` input (or the one you supplied). This is distinct from your account token. |
+| Playing back an output (`/whep/{output_id}`)                                | Optional. Public playback is allowed; add a Bearer token only if you want to require one.                                                               |
+| The WebSocket event stream                                                  | The subprotocol scheme described above.                                                                                                                 |
+
+Get your Management Token from the [**Fishjam developer panel**](https://fishjam.io/app).
+
+## Errors
+
+Every non-2xx response is a JSON object:
+
+```json
+{ "message": "Composition not found", "http_status_code": 404 }
+```
+
+Common statuses are `400` (bad request), `401` (unauthorized), `404` (not found), `500` (server error), and `503` (no capacity, returned by composition creation).
