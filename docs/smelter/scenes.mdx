@@ -29,14 +29,14 @@ A video scene has a single `root` component. Each component has a `type` that de
 
 The available component types are:
 
-| `type` | Purpose |
-| --- | --- |
-| `input_stream` | Renders one registered input. Identified by `input_id`. |
-| `view` | A container you position and style; the basic building block for custom layouts. |
-| `tiles` | Automatically arranges its children into a grid. |
-| `rescaler` | Fits a single child into a target area, preserving aspect ratio. |
-| `text` | Renders a text string. |
-| `image` | Renders a registered image. Identified by `image_id`. |
+| `type`         | Purpose                                                                          |
+| -------------- | -------------------------------------------------------------------------------- |
+| `input_stream` | Renders one registered input. Identified by `input_id`.                          |
+| `view`         | A container you position and style; the basic building block for custom layouts. |
+| `tiles`        | Automatically arranges its children into a grid.                                 |
+| `rescaler`     | Fits a single child into a target area, preserving aspect ratio.                 |
+| `text`         | Renders a text string.                                                           |
+| `image`        | Renders a registered image. Identified by `image_id`.                            |
 
 Components nest freely: a `tiles` of `rescaler`s wrapping `input_stream`s, a `view` with a `text` caption over an `input_stream`, and so on. The styling and full property set of each component come from Smelter itself — see the [Smelter component reference](https://smelter.dev) for every available property.
 
@@ -71,7 +71,7 @@ curl -X POST "$SMELTER_URL/api/composition/$COMPOSITION/output/main/update" \
     "video": {
       "root": {
         "type": "rescaler",
-        "children": [{ "type": "input_stream", "input_id": "camera_1" }]
+        "child": { "type": "input_stream", "input_id": "camera_1" }
       }
     }
   }'
@@ -82,7 +82,10 @@ Only the sides you include are changed; omitting `audio` leaves the audio scene 
 An update can be scheduled instead of applied immediately by adding `schedule_time_ms`, the composition timeline offset in milliseconds at which the change should take effect:
 
 ```json
-{ "video": { "root": { "type": "tiles", "children": [] } }, "schedule_time_ms": 5000 }
+{
+  "video": { "root": { "type": "tiles", "children": [] } },
+  "schedule_time_ms": 5000
+}
 ```
 
 ## Templates instead of static scenes

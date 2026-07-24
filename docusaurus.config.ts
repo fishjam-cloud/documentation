@@ -386,10 +386,13 @@ const config: Config = {
         route: "/api/smelter-cloud",
         showNavLink: false,
         configuration: {
-          url: "/docs/api/smelter-cloud-openapi.yaml",
+          url: "/docs/api/smelter-cloud-openapi.json",
           hideSearch: true,
           persistAuth: true,
           defaultOpenFirstTag: false,
+          authentication: {
+            preferredSecurityScheme: "BearerAuth",
+          },
         },
       } as ScalarOptions,
     ],

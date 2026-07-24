@@ -13,11 +13,9 @@ Smelter Cloud exposes a REST API for managing compositions, plus a WebSocket str
 The full REST reference, with every endpoint, request body, and response schema, is published as an OpenAPI document:
 
 - [Smelter Cloud REST API Reference](/api/smelter-cloud)
-- [OpenAPI specification](https://github.com/fishjam-cloud/documentation/tree/main/static/api/smelter-cloud-openapi.yaml)
+- [OpenAPI specification](https://github.com/fishjam-cloud/documentation/blob/main/static/api/smelter-cloud-openapi.json)
 
-:::note Preview specification
-This reference is a preview and is maintained by hand while the generated specification is being finalized. If a detail here disagrees with the live API, treat the live API as authoritative and let us know.
-:::
+The specification is generated from the service's source code and republished together with documentation updates.
 
 ## WebSocket event stream
 
@@ -43,12 +41,12 @@ Messages are JSON text frames, each with a `type` field identifying the event.
 
 ## Authentication
 
-| What you're calling | How it authenticates |
-| --- | --- |
-| Control-plane calls (composition, inputs, outputs, renderers, events, room) | `Authorization: Bearer <token>` — your Fishjam **Management Token**, the same token used across Fishjam. |
-| Publishing to an input (`/whip/{input_id}`) | The **input's** own bearer token, returned when you register a `whip_server` input (or the one you supplied). This is distinct from your account token. |
-| Playing back an output (`/whep/{output_id}`) | Optional. Public playback is allowed; add a Bearer token only if you want to require one. |
-| The WebSocket event stream | The subprotocol scheme described above. |
+| What you're calling                                                         | How it authenticates                                                                                                                                    |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Control-plane calls (composition, inputs, outputs, renderers, events, room) | `Authorization: Bearer <token>` — your Fishjam **Management Token**, the same token used across Fishjam.                                                |
+| Publishing to an input (`/whip/{input_id}`)                                 | The **input's** own bearer token, returned when you register a `whip_server` input (or the one you supplied). This is distinct from your account token. |
+| Playing back an output (`/whep/{output_id}`)                                | Optional. Public playback is allowed; add a Bearer token only if you want to require one.                                                               |
+| The WebSocket event stream                                                  | The subprotocol scheme described above.                                                                                                                 |
 
 Get your Management Token from the [**Fishjam developer panel**](https://fishjam.io/app).
 

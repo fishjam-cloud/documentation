@@ -13,19 +13,23 @@ Once a [template](./write-and-deploy-a-template) is running, you can push **cust
 Inside a template, subscribe to events with the `eventBus`. Each `on` call returns an unsubscribe function. Event names and payloads are entirely defined by your application.
 
 ```tsx
+// @jsx: react-jsx
+// ---cut-before---
 import { useEffect, useState } from "react";
 import { Text, View } from "@swmansion/smelter";
 import { eventBus } from "@fishjam-cloud/composition";
 
 export default function App() {
-  const [caption, setCaption] = useState(null);
+  const [caption, setCaption] = useState<string | null>(null);
   const [live, setLive] = useState(false);
 
   useEffect(() => {
     const unsubs = [
-      eventBus.on("SET_CAPTION", ({ text }) => setCaption(text)),
+      eventBus.on<{ text: string }>("SET_CAPTION", ({ text }) =>
+        setCaption(text),
+      ),
       eventBus.on("CLEAR_CAPTION", () => setCaption(null)),
-      eventBus.on("SET_LIVE", ({ live }) => setLive(live)),
+      eventBus.on<{ live: boolean }>("SET_LIVE", ({ live }) => setLive(live)),
     ];
     return () => unsubs.forEach((off) => off());
   }, []);

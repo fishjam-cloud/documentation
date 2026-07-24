@@ -36,22 +36,18 @@ Your template's `usePeers()` now returns the room's peers, and it re-renders as 
 
 ## Step 2: Register a templated output to the livestream
 
-Register a `whip_client` output that pushes to your Fishjam livestream's WHIP endpoint, then upload your template bundle to it:
+Register a templated `whip_client` output that pushes to your Fishjam livestream's WHIP endpoint. The output configuration and the template bundle go together in one multipart request:
 
 ```bash
-curl -X POST "$SMELTER_URL/api/composition/$COMPOSITION/output/main/register" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "whip_client",
-    "endpoint_url": "<LIVESTREAM_WHIP_URL>",
-    "bearer_token": "<LIVESTREAM_STREAMER_TOKEN>",
-    "video": { "resolution": { "width": 1280, "height": 720 }, "initial": { "root": { "type": "view" } } },
-    "audio": { "initial": { "inputs": [] } }
-  }'
-
 curl -X POST "$SMELTER_URL/api/composition/$COMPOSITION/output/main/template" \
   -H "Authorization: Bearer $TOKEN" \
+  -F 'config={
+        "type": "whip_client",
+        "endpoint_url": "<LIVESTREAM_WHIP_URL>",
+        "bearer_token": "<LIVESTREAM_STREAMER_TOKEN>",
+        "video": { "resolution": { "width": 1280, "height": 720 }, "initial": { "root": { "type": "view" } } },
+        "audio": { "initial": { "inputs": [] } }
+      };type=application/json' \
   -F "template=@dist/App.js"
 ```
 
