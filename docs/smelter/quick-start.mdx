@@ -78,7 +78,7 @@ Each response returns the token for that input:
 
 ## Step 3: Register an output with a layout
 
-Register a `whip_client` output whose scene arranges both inputs in a `tiles` layout and mixes their audio. Replace `endpoint_url` with your WHIP playback destination.
+Register a `whip_client` output whose scene arranges both inputs in a `tiles` layout and mixes their audio. Replace `endpoint_url` with the WHIP endpoint of the service that should receive the composed stream, for example a [Fishjam livestream](./../explanation/livestreams).
 
 ```bash
 curl -X POST "$SMELTER_URL/api/composition/$COMPOSITION/output/main/register" \
@@ -122,7 +122,7 @@ Authorization: Bearer <INPUT_PUBLISH_TOKEN>
 Content-Type: application/sdp
 ```
 
-Your composed output is now flowing to the `endpoint_url` you set in Step 3. Play it back with any WHEP client pointed at that destination.
+Your composed output is now publishing to the `endpoint_url` you set in Step 3. Play it back through the receiving service's WHEP endpoint with any WHEP client.
 
 ## Step 5: Clean up
 

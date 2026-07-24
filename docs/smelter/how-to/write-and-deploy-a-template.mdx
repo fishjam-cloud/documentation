@@ -40,7 +40,7 @@ function PeerTile({ peer }: { peer: PeerWithStreams<PeerMetadata> }) {
   const camera = peer.cameraStream;
   const cameraOn = camera?.video && !camera.video.paused;
   const speaking = useSpeakingState(peer.id) === "speech";
-  const name = peer.metadata.peer.displayName ?? peer.id;
+  const name = peer.metadata.peer?.displayName ?? peer.id;
 
   return (
     <View style={{ borderWidth: speaking ? 4 : 0, borderColor: "#00cc66ff" }}>
