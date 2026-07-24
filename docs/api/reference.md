@@ -6,7 +6,7 @@ type: reference
 
 Describes APIs for direct interaction with Fishjam.
 
-Fishjam publishes documentation for the Sandbox API and Fishjam Server APIs.
+Fishjam publishes documentation for the Sandbox API, Fishjam Server APIs, and the Smelter Cloud API.
 
 ## Sandbox API
 
@@ -51,3 +51,10 @@ the first message that must be sent is an `AuthRequest`,
 with a valid Management Token.
 
 Next, you can should subscribe to notifications by sending `SubscribeRequest` event with `SERVER_NOTIFICATION` event type.
+
+## Smelter Cloud
+
+[Smelter Cloud](../smelter/what-is-smelter-cloud) (beta) exposes a REST API for managing compositions and a WebSocket stream for engine events.
+
+- [Smelter Cloud API](./smelter-cloud): authentication, the WebSocket event stream, and errors.
+- [Smelter Cloud REST API Reference](/api/smelter-cloud/rest)

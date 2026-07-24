@@ -383,7 +383,7 @@ const config: Config = {
       {
         id: "smelter-cloud-api",
         label: "Smelter Cloud REST API",
-        route: "/api/smelter-cloud",
+        route: "/api/smelter-cloud/rest",
         showNavLink: false,
         configuration: {
           url: "/docs/api/smelter-cloud-openapi.json",
