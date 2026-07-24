@@ -36,7 +36,7 @@ function isErrorFromUncheckedDocs(options: { meta?: { __raw?: string } }) {
       return true;
     }
   }
-  return undefined;
+  return false;
 }
 
 const rehypeShikiPlugin = [

@@ -382,8 +382,6 @@ function Root() {
   return (
     <FishjamProvider fishjamId={fishjamId}>
       <VoipProvider isVideo>
-        {" "}
-        {/* [!code highlight] */}
         <App />
       </VoipProvider>
     </FishjamProvider>
@@ -436,7 +434,8 @@ your app joins it and reports back. Split the work like this:
 
 **The provider tells you** (through `useVoip`):
 
-- `status` is `connecting`: join [`currentCall`](../../api/mobile/type-aliases/CurrentCall)`.roomName`.
+- `status` is `connecting`: join `currentCall.roomName` (see
+  [`CurrentCall`](../../api/mobile/type-aliases/CurrentCall)).
 - `status` left `connecting` / `active`: leave that room.
 - `isOnHold` or `isMuted` changed: apply it to your tracks ([step 9](#9-hold-and-mute)).
 
