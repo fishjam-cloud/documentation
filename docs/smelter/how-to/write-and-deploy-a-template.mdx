@@ -86,12 +86,12 @@ The key link is `stream.inputId`: you pass it to `<InputStream inputId={…} />`
 | `useRoom()`                | The linked room `{ id }`, or `undefined` before a room is linked.                                           |
 | `useSpeakingState(peerId)` | `"speech"` or `"silence"` for active-speaker highlighting.                                                  |
 
-Layout, styling, and every visual component (`View`, `Tiles`, `InputStream`, `Rescaler`, `Text`, `Image`, …) come from `@swmansion/smelter`. Its style model is not CSS — see the [Smelter reference](https://smelter.dev) for the full component and style documentation.
+Layout, styling, and every visual component (`View`, `Tiles`, `InputStream`, `Rescaler`, `Text`, `Image`, …) come from `@swmansion/smelter`. Its style model is not CSS: see the [Smelter reference](https://smelter.dev) for the full component and style documentation.
 
 ### Two ways to author
 
-- **Composition hooks (recommended)** — use `@fishjam-cloud/composition` for room-aware layouts, as above.
-- **Raw Smelter (advanced)** — a template may skip the hooks entirely and read inputs directly with `@swmansion/smelter` (for example `useInputStreams`). Both are valid because `@swmansion/smelter` is an allowed import.
+- **Composition hooks (recommended)**: use `@fishjam-cloud/composition` for room-aware layouts, as above.
+- **Raw Smelter (advanced)**: a template may skip the hooks entirely and read inputs directly with `@swmansion/smelter` (for example `useInputStreams`). Both are valid because `@swmansion/smelter` is an allowed import.
 
 ## Build the bundle
 
@@ -101,19 +101,19 @@ npm run build
 
 This bundles and validates your template into a single file (default `dist/App.js`) against the template contract:
 
-- **A single JS bundle** — no CSS or extra emitted files.
-- **Allowed imports only** — `react`, `react/jsx-runtime`, `@swmansion/smelter`, and `@fishjam-cloud/composition`. These are provided by the runtime and stay out of your bundle; anything else fails the build.
+- **A single JS bundle**: no CSS or extra emitted files.
+- **Allowed imports only**: `react`, `react/jsx-runtime`, `@swmansion/smelter`, and `@fishjam-cloud/composition`. These are provided by the runtime and stay out of your bundle; anything else fails the build.
 - **A default-exported React component.**
 - **No `import.meta` and no dynamic `import()`** with a non-literal specifier.
-- **Under ~950 KB** — the bundle ceiling after reserving room for the upload.
-- **Loadable** — a smoke test imports the bundle and checks that the default export is a valid React component within a few seconds.
+- **Under ~950 KB**: the bundle ceiling after reserving room for the upload.
+- **Loadable**: a smoke test imports the bundle and checks that the default export is a valid React component within a few seconds.
 
 ## Deploy the template
 
-A templated output is registered in a **single multipart request** to `POST …/output/{output_id}/template` — do not call the plain `…/register` endpoint first. The request carries two parts:
+A templated output is registered in a **single multipart request** to `POST …/output/{output_id}/template`. Do not call the plain `…/register` endpoint first. The request carries two parts:
 
-- `config` — the same JSON body a regular output registration takes (see [Choose inputs and outputs](./inputs-and-outputs)). Its `video.initial` scene is only a placeholder; the template takes over rendering as soon as it loads.
-- `template` — the built bundle.
+- `config`: the same JSON body a regular output registration takes (see [Choose inputs and outputs](./inputs-and-outputs)). Its `video.initial` scene is only a placeholder; the template takes over rendering as soon as it loads.
+- `template`: the built bundle.
 
 <Tabs groupId="language">
   <TabItem value="curl" label="curl">

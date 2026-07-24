@@ -27,8 +27,8 @@ GET wss://rtc.fishjam.io/api/composition/{composition_id}/ws
 
 Because browsers cannot set an `Authorization` header on a WebSocket, authentication rides on the `Sec-WebSocket-Protocol` header, which must carry **two** subprotocols (order does not matter):
 
-- `json.fishjam.io` — selects the JSON wire format.
-- `bearer.auth.fishjam.io.<token>` — your token, appended to the literal prefix.
+- `json.fishjam.io`: selects the JSON wire format.
+- `bearer.auth.fishjam.io.<token>`: your token, appended to the literal prefix.
 
 ```js
 const ws = new WebSocket(
@@ -43,7 +43,7 @@ Messages are JSON text frames, each with a `type` field identifying the event.
 
 | What you're calling                                                         | How it authenticates                                                                                                                                    |
 | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Control-plane calls (composition, inputs, outputs, renderers, events, room) | `Authorization: Bearer <token>` — your Fishjam **Management Token**, the same token used across Fishjam.                                                |
+| Control-plane calls (composition, inputs, outputs, renderers, events, room) | `Authorization: Bearer <token>`: your Fishjam **Management Token**, the same token used across Fishjam.                                                 |
 | Publishing to an input (`/whip/{input_id}`)                                 | The **input's** own bearer token, returned when you register a `whip_server` input (or the one you supplied). This is distinct from your account token. |
 | Playing back an output (`/whep/{output_id}`)                                | Optional. Public playback is allowed; add a Bearer token only if you want to require one.                                                               |
 | The WebSocket event stream                                                  | The subprotocol scheme described above.                                                                                                                 |

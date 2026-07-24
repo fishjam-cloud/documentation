@@ -38,7 +38,7 @@ The available component types are:
 | `text`         | Renders a text string.                                                           |
 | `image`        | Renders a registered image. Identified by `image_id`.                            |
 
-Components nest freely: a `tiles` of `rescaler`s wrapping `input_stream`s, a `view` with a `text` caption over an `input_stream`, and so on. The styling and full property set of each component come from Smelter itself — see the [Smelter component reference](https://smelter.dev) for every available property.
+Components nest freely: a `tiles` of `rescaler`s wrapping `input_stream`s, a `view` with a `text` caption over an `input_stream`, and so on. The styling and full property set of each component come from Smelter itself; see the [Smelter component reference](https://smelter.dev) for every available property.
 
 ## The audio scene
 
@@ -90,4 +90,4 @@ An update can be scheduled instead of applied immediately by adding `schedule_ti
 
 ## Templates instead of static scenes
 
-For layouts that react to the room, such as one tile per connected participant or an active-speaker highlight, describe the scene as a **template** — a React component — rather than a static tree. See [Write and deploy a template](./how-to/write-and-deploy-a-template).
+For layouts that react to the room, such as one tile per connected participant or an active-speaker highlight, describe the scene as a **template** (a React component) rather than a static tree. See [Write and deploy a template](./how-to/write-and-deploy-a-template).
