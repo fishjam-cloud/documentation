@@ -36,6 +36,7 @@
     "@fishjam-cloud/js-server-sdk": "link:./packages/js-server-sdk/packages/js-server-sdk",
     "@fishjam-cloud/react-client": "link:./packages/web-client-sdk/packages/react-client",
     "@fishjam-cloud/react-native-client": "link:./packages/web-client-sdk/packages/mobile-client",
+    "@fishjam-cloud/react-native-webrtc": "link:./packages/web-client-sdk/packages/react-native-webrtc",
     "@mdx-js/react": "^3.1.0",
     "@scalar/docusaurus": "^0.8.5",
     "@shikijs/rehype": "^3.6.0",

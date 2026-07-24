@@ -1,0 +1,788 @@
+---
+title: "VoIP calls"
+sidebar_position: 14
+sidebar_label: "VoIP calls 📱"
+description: Receive and place native VoIP calls with CallKit on iOS and Telecom on Android, driven by push notifications, in a React Native app.
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+# VoIP calls <span className="badge badge--mobile">Mobile</span>
+
+:::note
+This guide is exclusively for **Mobile** (React Native) applications.
+:::
+
+Your app can present an incoming Fishjam room as a **native call**: the iOS CallKit
+screen or the Android full-screen incoming-call UI. It rings even when the app is
+backgrounded or killed. A push notification wakes it, and answering the call has your
+app join the room.
+
+Each platform uses its own transport:
+
+- **iOS**: a **VoIP push** over **APNs** wakes the app through **PushKit**, and the
+  SDK reports the call to **CallKit**.
+- **Android**: a **high-priority data message** over **FCM** wakes the app, and the
+  SDK surfaces the call through **Telecom**.
+
+**PushKit**, **CallKit**, and **Telecom** are the operating systems' own native VoIP
+frameworks. The SDK drives them for you, so a single JS API works on both platforms.
+
+:::tip[Working example]
+Everything in this guide is wired together in the
+[voip-call example](https://github.com/fishjam-cloud/web-client-sdk/tree/main/examples/mobile-client/voip-call),
+whose README walks through the native setup in even more detail. To actually run it you
+must generate your own APNs and FCM credentials, since VoIP pushes can't be delivered
+with ours.
+:::
+
+:::info[You need a push sender]
+Delivering the push is your backend's job: it sends a **VoIP push via APNs** (iOS)
+or a **high-priority data message via FCM** (Android) to the device token your app
+reports. This guide covers only the **app** side: wiring, native config, and the JS
+call flow. For a working sender, see our
+[voip-call example server](https://github.com/fishjam-cloud/web-client-sdk/tree/main/examples/mobile-client/voip-call/server).
+
+Wiring up the sending credentials is backend work too. For iOS, connect to APNs with a
+[certificate-based](https://developer.apple.com/documentation/usernotifications/establishing-a-certificate-based-connection-to-apns)
+or [token-based](https://developer.apple.com/documentation/usernotifications/establishing-a-token-based-connection-to-apns)
+connection; for Android,
+[authorize your server to send via FCM](https://firebase.google.com/docs/cloud-messaging/auth-server).
+:::
+
+## How a call flows
+
+1. Your backend sends a VoIP push to the callee's device.
+2. The OS wakes the app, even if it was killed, and the SDK reports the call to
+   CallKit / Telecom. `status` becomes `incoming`.
+3. The user answers on the **system** call UI. `status` becomes `connecting`.
+4. **Your app** joins the Fishjam room and waits for the remote media.
+5. Once media is live, **your app** calls `reportConnected()`. The SDK confirms the
+   connection to the OS, the call timer starts, and `status` becomes `active`.
+
+The SDK tracks the call's state and drives the native call UI; **joining the room and
+reporting back is your app's job**. Step 5 has a **deadline**: an answered call that
+isn't reported connected within `voip.fulfillAnswerCallTimeout` (10s by default) is
+ended by the OS.
+
+## 1. Install the SDK
+
+Install the React Native SDK as described in the
+[Installation guide](./installation#step-1-install-the-package). The exact packages
+differ between Expo and bare React Native.
+
+On **Expo**, also install [`@fishjam-cloud/ios-expo-voip`](https://www.npmjs.com/package/@fishjam-cloud/ios-expo-voip)
+(**iOS only**). It registers PushKit at launch so a VoIP push delivered before the JS
+bundle loads (cold start) can still ring:
+
+```bash
+npx expo install @fishjam-cloud/ios-expo-voip
+```
+
+## 2. Configure the native project
+
+<Tabs groupId="app-type">
+  <TabItem value="expo" label="Expo">
+
+Configure the Fishjam config plugin in your app's `app.json`: turn on iOS background
+mode and Android VoIP, and (optionally) tune the timeouts in the `voip` block:
+
+```json title="app.json"
+{
+  "expo": {
+    "plugins": [
+      [
+        "@fishjam-cloud/react-native-client",
+        {
+          "android": {
+            "enableVoip": true
+          },
+          "ios": {
+            "enableVoIPBackgroundMode": true
+          },
+          "voip": {
+            "incomingCallTimeout": 15,
+            "outgoingCallTimeout": 20,
+            "fulfillAnswerCallTimeout": 5
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+What matters is that the `voip` block is **present**. That's the single switch for
+Recents and the intent wiring. It wires up `@fishjam-cloud/ios-expo-voip` and puts calls
+in the Phone app's **Recents** with [redial](#10-redial-from-recents-ios); there's no
+separate option to turn on. Every value inside it is optional, so `"voip": {}` is enough
+to take the defaults: **45s** incoming ring, **60s** unconnected outgoing, and **10s**
+for the answer handshake. Timeouts are positive seconds; a fractional value is floored,
+and a zero or negative one fails `expo prebuild`.
+
+Because the block is the switch, setting it without
+`@fishjam-cloud/ios-expo-voip` installed fails `expo prebuild` outright, with
+`Fishjam VoIP options are enabled but @fishjam-cloud/ios-expo-voip is not installed`.
+
+**iOS push entitlement.** iOS only issues a VoIP token to an app that declares
+the [`aps-environment`](https://developer.apple.com/documentation/bundleresources/entitlements/aps-environment)
+push entitlement, so add it in `app.json`:
+
+```json title="app.json"
+{
+  "expo": {
+    "ios": {
+      "entitlements": { "aps-environment": "development" }
+    }
+  }
+}
+```
+
+Use `"production"` for TestFlight / App Store builds. For the underlying iOS
+frameworks, see Apple's [PushKit](https://developer.apple.com/documentation/pushkit)
+(VoIP pushes) and [CallKit](https://developer.apple.com/documentation/callkit).
+
+**Android Firebase setup.** VoIP on Android is delivered over
+[Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging). Point
+Expo at your `google-services.json` so Firebase is wired into the build:
+
+```json title="app.json"
+{
+  "expo": {
+    "android": {
+      "package": "io.example.myapp",
+      "googleServicesFile": "./google-services.json"
+    }
+  }
+}
+```
+
+Download `google-services.json` from the [Firebase console](https://console.firebase.google.com/)
+and save it at your project
+root. Its `package_name` must match `android.package` exactly. See
+[Add Firebase to your Android project](https://firebase.google.com/docs/android/setup)
+for the full Firebase setup, and Android's
+[Telecom framework](https://developer.android.com/develop/connectivity/telecom) for
+the call APIs.
+
+:::warning[Both Android fields are required together]
+`enableVoip: true` **and** `googleServicesFile` must both be set. If `enableVoip`
+is on but `googleServicesFile` is missing, `expo prebuild` **succeeds** yet
+Firebase is never wired up and pushes silently never arrive. If Android calls
+don't ring, check this first.
+:::
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+Config plugins only run during `expo prebuild`. In a bare project you own the
+native directories, so apply the changes by hand.
+
+**iOS**
+
+Register [PushKit](https://developer.apple.com/documentation/pushkit) at launch in
+`AppDelegate.swift`. A push can wake the app before any JS runs, so this must happen
+at launch:
+
+```swift title="AppDelegate.swift"
+// in application(_:didFinishLaunchingWithOptions:)
+VoipManager.registerForVoIPPushes()
+```
+
+Expose the pod's Objective-C class to Swift through the target's
+[bridging header](https://developer.apple.com/documentation/swift/importing-objective-c-into-swift).
+An app with a Swift `AppDelegate` already has one at `ios/<app>/<app>-Bridging-Header.h`;
+add the import to it:
+
+```objc title="myapp-Bridging-Header.h"
+#import "VoipManager.h"
+```
+
+If `"VoipManager.h"` doesn't resolve, use the pod-qualified form
+`#import <FishjamReactNativeWebrtc/VoipManager.h>`.
+
+Add the push entitlement ([`aps-environment`](https://developer.apple.com/documentation/bundleresources/entitlements/aps-environment))
+and the VoIP background mode. In Xcode → _Signing & Capabilities_ these are
+**Push Notifications** and **Background Modes → Voice over IP**:
+
+```xml title="Info.plist"
+<key>UIBackgroundModes</key>
+<array>
+  <string>voip</string>
+</array>
+
+<key>NSMicrophoneUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to access your microphone.</string>
+```
+
+Adding the **Push Notifications** capability writes the entitlement for you; if you
+edit the file directly it must contain:
+
+```xml title="myapp.entitlements"
+<key>aps-environment</key>
+<string>development</string>
+```
+
+Use `production` for TestFlight / App Store builds.
+
+**Android**
+
+Apply the [`google-services`](https://firebase.google.com/docs/android/setup#add-config-file)
+Gradle plugin to the **application** module and place `google-services.json` at
+`android/app/google-services.json`:
+
+```groovy title="android/build.gradle"
+buildscript {
+    dependencies {
+        classpath 'com.google.gms:google-services:4.4.1'
+    }
+}
+```
+
+```groovy title="android/app/build.gradle"
+apply plugin: 'com.google.gms.google-services'
+```
+
+Then declare the SDK's VoIP components in `AndroidManifest.xml`:
+
+```xml title="android/app/src/main/AndroidManifest.xml"
+<uses-permission android:name="android.permission.MANAGE_OWN_CALLS"/>
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
+<uses-permission android:name="android.permission.VIBRATE"/>
+
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA"/>
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
+
+<application>
+  <service
+      android:name="com.oney.WebRTCModule.foregroundService.WebRTCForegroundService"
+      android:foregroundServiceType="camera|microphone"
+      android:stopWithTask="true"/>
+
+  <activity
+      android:name="com.oney.WebRTCModule.voip.IncomingCallActivity"
+      android:exported="false"
+      android:showWhenLocked="true"
+      android:turnScreenOn="true"
+      android:launchMode="singleInstance"
+      android:excludeFromRecents="true"
+      android:taskAffinity=""
+      android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"/>
+
+  <receiver
+      android:name="com.oney.WebRTCModule.voip.EndCallNotificationReceiver"
+      android:exported="false"/>
+
+  <service
+      android:name="com.oney.WebRTCModule.voip.PushNotificationService"
+      android:exported="false">
+    <intent-filter android:priority="1">
+      <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+    </intent-filter>
+  </service>
+
+  <meta-data
+      android:name="firebase_messaging_installation_id_enabled"
+      android:value="true"/>
+</application>
+```
+
+The `firebase_messaging_installation_id_enabled` flag is what makes FCM register the app
+instance and hand back the [push token](#4-report-the-device-push-token).
+
+**Timeouts (bare only).** The `voip` timeouts the Expo tab configures are plain native
+values, so set them directly. On iOS add integers to `Info.plist`; on Android add the
+same names as `<meta-data>`, both in seconds:
+
+```xml title="Info.plist"
+<key>VoipIncomingCallTimeout</key><integer>15</integer>
+<key>VoipOutgoingCallTimeout</key><integer>20</integer>
+<key>VoipFulfillAnswerTimeout</key><integer>5</integer>
+```
+
+  </TabItem>
+</Tabs>
+
+:::warning[Already using another FCM push library on Android?]
+Android delivers every FCM message to a **single** messaging service. The SDK's
+service claims that slot, so an app that also uses `expo-notifications` or
+`@react-native-firebase/messaging` would otherwise stop receiving its other pushes.
+Name that library so the SDK relays non-VoIP messages to it:
+
+```json title="app.json"
+[
+  "@fishjam-cloud/react-native-client",
+  {
+    "android": {
+      "enableVoip": true,
+      "voipFallbackMessagingService": "expo-notifications"
+    }
+  }
+]
+```
+
+Accepted values are `"expo-notifications"`, `"@react-native-firebase/messaging"`,
+or a fully-qualified `FirebaseMessagingService` class name. iOS is unaffected: VoIP
+pushes ride PushKit's separate channel.
+
+If you'd rather own the messaging service yourself, set
+`"voipMessagingService": false` instead. The SDK then declares no service at all, and
+you forward calls to it from your own dispatcher with
+`PushNotificationService.handleVoipMessage(context, message)` and
+`PushNotificationService.handleNewToken(token)`.
+:::
+
+:::note[Permissions]
+A call still needs the camera and microphone. Configure those as in the
+[Installation guide](./installation#step-2-configure-app-permissions), and request
+them at runtime with [`useMicrophonePermissions`](../../api/mobile/functions/useMicrophonePermissions)
+/ [`useCameraPermissions`](../../api/mobile/functions/useCameraPermissions) (see
+[Managing devices](./managing-devices#managing-permissions-mobile-only)). On
+**Android 13+** you must additionally request `POST_NOTIFICATIONS`, or the
+incoming-call notification can't be posted:
+
+```ts
+import { PermissionsAndroid, Platform } from "react-native";
+// ---cut---
+async function requestNotificationPermission() {
+  if (Platform.OS === "android" && Number(Platform.Version) >= 33) {
+    await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+    );
+  }
+}
+```
+
+:::
+
+## 3. Mount the VoIP provider
+
+[`VoipProvider`](../../api/mobile/functions/VoipProvider) tracks the call's state from
+the CallKit / Telecom events and exposes it through
+[`useVoip`](../../api/mobile/functions/useVoip). It doesn't touch the connection: joining
+rooms, peer tokens, and media stay in your app (that's [step 5](#5-connect-calls-to-a-room)).
+
+Mount it alongside [`FishjamProvider`](../../api/mobile/functions/FishjamProvider). The
+order doesn't matter to `VoipProvider`, but the hook that bridges the two (step 5) calls
+both `useVoip` and the Fishjam connection hooks, so it must sit **inside both**:
+
+```tsx
+import React, { type ReactElement } from "react";
+import {
+  FishjamProvider,
+  VoipProvider,
+} from "@fishjam-cloud/react-native-client";
+
+declare const fishjamId: string;
+declare function App(): ReactElement;
+// ---cut---
+function Root() {
+  return (
+    <FishjamProvider fishjamId={fishjamId}>
+      <VoipProvider isVideo>
+        {" "}
+        {/* [!code highlight] */}
+        <App />
+      </VoipProvider>
+    </FishjamProvider>
+  );
+}
+```
+
+[`VoipProviderProps`](../../api/mobile/type-aliases/VoipProviderProps) accepts:
+
+| Prop                    | Type                                     | Required | Purpose                                                                                                                                                                                                                                                                                    |
+| ----------------------- | ---------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `isVideo`               | `boolean`                                | —        | Marks outgoing calls as video, which registers the CallKit / Telecom session as video and labels the Android call notification. Incoming calls take their label from the push payload's [`isVideo`](#6-handle-an-incoming-call) instead. Make sure the room type matches. Default `false`. |
+| `onWaitingCallDeclined` | `(payload: VoipIncomingPayload) => void` | —        | A second, waiting call was declined from the native UI. Signal the caller; local state is unchanged.                                                                                                                                                                                       |
+
+## 4. Report the device push token
+
+[`useVoip`](../../api/mobile/functions/useVoip) exposes the device's push token as
+`voipToken`: the VoIP token from APNs on iOS, the FCM token on Android. Send it to your
+backend; it's the push destination:
+
+```tsx
+import { useVoip } from "@fishjam-cloud/react-native-client";
+import { useEffect } from "react";
+import { Platform } from "react-native";
+
+declare function sendVoipTokenToBackend(token: string, platform: string): void;
+// ---cut---
+function DeviceRegistration() {
+  const { voipToken } = useVoip(); // [!code highlight]
+
+  useEffect(() => {
+    if (!voipToken) return;
+    // Persist this token on your backend, keyed by the signed-in user.
+    sendVoipTokenToBackend(voipToken, Platform.OS);
+  }, [voipToken]);
+
+  return null;
+}
+```
+
+A token is only valid with the service that issued it, so record each device's platform
+at registration time and route through APNs or FCM accordingly. Both platforms reissue
+tokens over time, so store the newest value per device rather than the first one you
+saw.
+
+## 5. Connect calls to a room
+
+This is the bridge between the two halves. `VoipProvider` tells you a call needs a room;
+your app joins it and reports back. Split the work like this:
+
+**The provider tells you** (through `useVoip`):
+
+- `status` is `connecting`: join [`currentCall`](../../api/mobile/type-aliases/CurrentCall)`.roomName`.
+- `status` left `connecting` / `active`: leave that room.
+- `isOnHold` or `isMuted` changed: apply it to your tracks ([step 9](#9-hold-and-mute)).
+
+**You tell the provider:**
+
+- `reportConnected()` once media is live, or `reportConnectFailed()` if the join failed.
+- `endCall('remote')` when the other side disappears from the room.
+
+A remote peer appearing in the room is what "media is live" means, so watch
+[`usePeers`](../../api/mobile/functions/usePeers) and report from there. Start your
+microphone (and camera, for a video call) **before** joining, so your tracks are
+published with the join; skip it and the call connects silent. Mint the peer token
+however your backend does; the SDK never sees it:
+
+```tsx
+import {
+  useConnection,
+  useMicrophone,
+  usePeers,
+  useVoip,
+} from "@fishjam-cloud/react-native-client";
+import { useEffect } from "react";
+
+declare function getPeerToken(roomName: string): Promise<string>;
+// ---cut---
+function useVoipRoomConnection() {
+  const { status, currentCall, reportConnected, reportConnectFailed, endCall } =
+    useVoip();
+  const { joinRoom, leaveRoom } = useConnection();
+  const { startMicrophone, stopMicrophone } = useMicrophone();
+  const { remotePeers } = usePeers();
+
+  // Join the room the SDK is asking for; leave it when the call ends.
+  const targetRoom =
+    status === "connecting" || status === "active"
+      ? currentCall?.roomName
+      : undefined;
+
+  useEffect(() => {
+    if (!targetRoom) return;
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const peerToken = await getPeerToken(targetRoom);
+        if (cancelled) return;
+        await startMicrophone(); // publish media with the join // [!code highlight]
+        await joinRoom({ peerToken }); // [!code highlight]
+      } catch {
+        if (!cancelled) await reportConnectFailed(); // [!code highlight]
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      void stopMicrophone();
+      void leaveRoom();
+    };
+  }, [targetRoom]);
+
+  // A remote peer showing up means the call connected; it leaving means they hung up.
+  useEffect(() => {
+    if (status === "connecting" && remotePeers.length > 0) {
+      void reportConnected(); // [!code highlight]
+    } else if (status === "active" && remotePeers.length === 0) {
+      void endCall("remote");
+    }
+  }, [status, remotePeers.length]);
+}
+```
+
+Mount it once, anywhere inside both providers.
+
+:::warning[Report connected before the deadline]
+`reportConnected()` isn't optional; it fulfills CallKit's answer action and starts the
+call timer. The native fulfil deadline (`voip.fulfillAnswerCallTimeout`, 10s by default)
+covers your token fetch **and** room join, so be quick. Miss it and the OS ends the
+call.
+:::
+
+## 6. Handle an incoming call
+
+A push wakes the app, the system UI starts ringing, and `useVoip` moves `status` to
+`'incoming'` with [`currentCall`](../../api/mobile/type-aliases/CurrentCall) populated.
+**Answering happens on the system call UI** (the CallKit screen or Android's full-screen
+activity), not from a button you build. On answer, `status` moves to `'connecting'` and
+the hook from [step 5](#5-connect-calls-to-a-room) joins the room and reports back;
+you don't wire the accept path yourself.
+
+You can still render your own screen off `status` while a call rings (to match your app's
+look), and decline from it with `endCall('rejected')`:
+
+```tsx
+import React, { type ReactElement } from "react";
+import { useVoip } from "@fishjam-cloud/react-native-client";
+
+declare function IncomingCallScreen(props: {
+  name?: string;
+  onReject: () => void;
+}): ReactElement;
+// ---cut---
+function CallUI() {
+  const { status, currentCall, endCall } = useVoip();
+  // status: 'available' | 'incoming' | 'connecting' | 'active' // [!code highlight]
+
+  if (status === "incoming") {
+    return (
+      <IncomingCallScreen
+        name={currentCall?.displayName}
+        onReject={() => endCall("rejected")} // [!code highlight]
+      />
+    );
+  }
+  return null;
+}
+```
+
+:::note[What your backend must put in the push]
+The push carries the call fields the SDK reads, as a
+[`VoipIncomingPayload`](../../api/mobile/type-aliases/VoipIncomingPayload):
+
+| Field         | Required | Purpose                                                                                                                                                         |
+| ------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `roomName`    | ✅       | The Fishjam room both parties join. Android drops a payload without it; iOS still rings, then throws in JS, so always send it.                                  |
+| `displayName` | —        | Label shown in the system call UI. Both platforms fall back to **"Incoming call"**.                                                                             |
+| `handle`      | —        | Stable id of the caller; falls back to `displayName`. This is what iOS Recents hands back for redial, so use a real user id, since a display name isn't unique. |
+| `isVideo`     | —        | Labels the incoming call as video; Android shows "Incoming video call" instead of "Incoming call". Defaults to `false`.                                         |
+| `avatarUrl`   | —        | Android renders it in the incoming-call UI. iOS delivers it to JS only, since CallKit can't show caller images.                                                 |
+
+:::
+
+:::warning[Android: send it as a high-priority data message]
+On Android the push must be a **data message** carrying the discriminator
+`"fishjam": "voip-incoming"`, or the SDK won't treat it as a call. Send it with
+[high priority](https://firebase.google.com/docs/cloud-messaging/android/message-priority).
+For the exact message our example server sends, see
+[`main.ts`](https://github.com/fishjam-cloud/web-client-sdk/blob/main/examples/mobile-client/voip-call/server/main.ts).
+:::
+
+## 7. Place an outgoing call
+
+You mint the room name and ring the callee through **your own** signaling backend, then
+call `startCall(to, roomName)`. `startCall` only registers the call with CallKit /
+Telecom and moves `status` to `'connecting'`. It doesn't ring anyone and doesn't join;
+the hook from [step 5](#5-connect-calls-to-a-room) joins once `status` is `connecting`,
+exactly as it does for an incoming call. The order is yours to choose, and doing signaling
+first means a failed ring never shows a call that can't connect:
+
+```tsx
+import { useVoip } from "@fishjam-cloud/react-native-client";
+import { useCallback } from "react";
+
+declare function ringCallee(to: string, roomName: string): Promise<void>;
+declare function makeRoomName(): string;
+// ---cut---
+function usePlaceCall() {
+  const { startCall } = useVoip();
+
+  return useCallback(
+    async (to: string) => {
+      const roomName = makeRoomName(); // you own the room name
+      await ringCallee(to, roomName); // your signaling rings the callee
+      await startCall(to, roomName); // [!code highlight] registers the native call, status → 'connecting'
+    },
+    [startCall],
+  );
+}
+```
+
+`to` is the callee's stable id, the value your backend looks up to decide who to ring. It
+only affects the **caller's** own device, where the SDK uses it as both the handle and
+the display name, so a raw user id shows up verbatim on their call screen. It never
+reaches the callee: the name **they** see is the
+[`displayName`](#6-handle-an-incoming-call) your backend puts in the push.
+
+If `startCall`'s native session won't start, the provider ends the call as `failed` and
+`status` returns to `'available'`. A failed room join is reported by your hook's
+`reportConnectFailed()` (step 5), which ends it the same way.
+
+## 8. End a call
+
+A call ends from several places: the system call UI, your room-connection hook
+([step 5](#5-connect-calls-to-a-room)) when the remote peer disappears, or your own
+in-call button. To hang up yourself:
+
+```tsx
+import { useVoip } from "@fishjam-cloud/react-native-client";
+// ---cut---
+const { endCall } = useVoip();
+await endCall(); // defaults to 'local'
+```
+
+`endCall` takes a [`CallEndedReason`](../../api/mobile/type-aliases/CallEndedReason)
+saying how the call ended. Whatever ends the call (your `endCall`, the system UI, or your
+hook passing `'remote'` when the peer drops) sets `lastEndedReason`, always **from your
+device's point of view**: whether you ended it (`'local'`) or the other side did
+(`'remote'`), and why. Read it to react to a missed or rejected call, for example with a
+"missed call" notification:
+
+| Reason              | Meaning                                                                                                                                                                                 |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `local`             | This device hung up. Also covers a decline on iOS, which CallKit can't distinguish.                                                                                                     |
+| `rejected`          | The callee actively declined while ringing. Safe to pass on both, but CallKit has no case for it, so iOS ends the call exactly as `local`, and only Android reports it back distinctly. |
+| `missed`            | Rang and was never answered, including a native ring timeout.                                                                                                                           |
+| `remote`            | The other party hung up.                                                                                                                                                                |
+| `answeredElsewhere` | Picked up on another of the user's devices.                                                                                                                                             |
+| `failed`            | Setup failed: token fetch, room join, or the answer deadline.                                                                                                                           |
+
+A push can't express a caller canceling or a callee rejecting, so map those across
+devices over your own signaling channel: when the caller cancels while ringing, the
+callee should end as `missed`; when the callee rejects, the caller should end as
+`rejected`. Reserve `remote` for the other party hanging up a call that was already
+connected.
+
+## 9. Hold and mute
+
+The OS holds your call when a cellular call arrives, and mirrors the system call UI's
+mute button. `useVoip` **reports** both as `isOnHold` and `isMuted`, but doesn't touch
+your tracks. Applying them is your job, alongside the room connection from
+[step 5](#5-connect-calls-to-a-room). Watch the flags and drive your own media hooks:
+
+```tsx
+import { useMicrophone, useVoip } from "@fishjam-cloud/react-native-client";
+import { useEffect } from "react";
+// ---cut---
+function useSyncMute() {
+  const { status, isMuted } = useVoip();
+  const { isMicrophoneOn, toggleMicrophone } = useMicrophone();
+
+  useEffect(() => {
+    if (status !== "active") return; // only while a call is live // [!code highlight]
+    // Mirror the system mute onto your published track.
+    if (isMicrophoneOn === isMuted) void toggleMicrophone();
+  }, [isMuted, status]);
+}
+```
+
+Hold works the same way: when `isOnHold` flips on, stop the mic and camera and remember
+what was live; when it flips off, restore exactly that. To request a hold from your **own**
+button (rather than react to the OS), call `setCallHeld`, then act on `isOnHold` flipping:
+
+```tsx
+import { useVoip } from "@fishjam-cloud/react-native-client";
+// ---cut---
+const { isOnHold, setCallHeld } = useVoip();
+
+await setCallHeld(true); // request a hold; isOnHold flips when the OS applies it // [!code highlight]
+```
+
+In-call A/V beyond this is the normal Fishjam device API ([`useMicrophone`](../../api/mobile/functions/useMicrophone),
+[`useCamera`](../../api/mobile/functions/useCamera)), exactly like any other Fishjam app.
+
+See [Managing devices](./managing-devices) for the full device API.
+
+## 10. Redial from Recents (iOS)
+
+Every call is recorded in the iOS Phone app's **Recents**, and tapping an entry reopens
+your app. The tap arrives as `pendingCallIntent`, carrying only the `handle` to redial, never a
+room. Mint a room and place the call exactly as in [step 7](#7-place-an-outgoing-call),
+then `clearCallIntent()` so it isn't replayed:
+
+```tsx
+import { useVoip } from "@fishjam-cloud/react-native-client";
+import { useEffect } from "react";
+
+declare function usePlaceCall(): (to: string) => Promise<void>;
+declare function useSessionReady(): boolean;
+// ---cut---
+function useRedialFromRecents() {
+  const { pendingCallIntent, clearCallIntent } = useVoip();
+  const placeCall = usePlaceCall();
+  const isReady = useSessionReady();
+
+  useEffect(() => {
+    if (!pendingCallIntent || !isReady) return; // [!code highlight]
+
+    const { handle } = pendingCallIntent;
+    clearCallIntent();
+    void placeCall(handle);
+  }, [pendingCallIntent, isReady, clearCallIntent, placeCall]);
+}
+```
+
+The SDK **holds** `pendingCallIntent` until you clear it, so an intent that arrives
+before your app has restored its session isn't lost. Gate on your own readiness (as
+`isReady` does here) and act on it once you can.
+
+Enabling Recents itself is native setup:
+
+<Tabs groupId="app-type">
+  <TabItem value="expo" label="Expo">
+
+The `voip` block from [step 2](#2-configure-the-native-project) is all this takes; there's
+no option to enable. It sets the `FishjamVoipEnabled` flag and the CallKit intent activity
+types for you.
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+You own the `Info.plist`, so wire up the two halves the Expo plugin sets for you. First,
+the plist: `FishjamVoipEnabled` puts calls in Recents, and `NSUserActivityTypes` declares
+that your app handles the "start call" [intents](https://developer.apple.com/documentation/sirikit/instartcallintent)
+iOS hands back when someone taps a Recents entry. Without those types the tap opens your
+app but no intent is delivered:
+
+```xml title="Info.plist"
+<key>FishjamVoipEnabled</key>
+<true/>
+
+<key>NSUserActivityTypes</key>
+<array>
+  <string>INStartCallIntent</string>
+  <string>INStartAudioCallIntent</string>
+  <string>INStartVideoCallIntent</string>
+</array>
+```
+
+Second, forward that intent to the SDK from your `AppDelegate`. The tap arrives as an
+[`NSUserActivity`](https://developer.apple.com/documentation/foundation/nsuseractivity);
+handing it to `VoipManager` is what turns it into the `pendingCallIntent` your JS reads
+above. Do this **before** React Native's own Linking handler so it isn't consumed as a
+deep link:
+
+```swift title="AppDelegate.swift"
+// in application(_:continue:restorationHandler:), before React Native Linking
+if VoipManager.handleContinueUserActivity(userActivity) {
+  return true
+}
+```
+
+  </TabItem>
+</Tabs>
+
+## 11. Test it
+
+Test on a **real device**: VoIP pushes never reach the iOS Simulator, and Android needs
+**Google Play services** for FCM. Then check the key paths:
+
+- Send a push and confirm the native call screen appears, even when the app is killed.
+- Answer, and the call connects with the OS timer starting once media is live.
+- Let a call ring out and confirm it ends as `missed`.
+- On iOS, the call shows in **Recents** and tapping it redials.
+- Take a cellular call with **Hold & Accept**: your mic and camera pause, then resume.
+
+## Next steps
+
+- [Managing devices](./managing-devices): control the camera and microphone during
+  a call.

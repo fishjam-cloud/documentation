@@ -23,14 +23,20 @@ import {
 import { llmsRootContent } from "./src/content/llms-root-content";
 import { createRedirects } from "./redirects";
 
-function isErrorFromVersionedDocs(options: { meta?: { __raw?: string } }) {
+function twoslashErrorLocation(options: { meta?: { __raw?: string } }) {
   if (options.meta?.__raw?.includes("loc=")) {
-    const locMatch = options.meta.__raw.match(/loc=([^\s]+)/);
-    if (locMatch[1]?.includes("versioned_docs")) {
-      return true;
-    }
+    return options.meta.__raw.match(/loc=([^\s]+)/)?.[1];
   }
-  return false;
+  return undefined;
+}
+
+// Versioned docs are frozen snapshots, and `docs/api/**` is TypeDoc output generated
+// from SDK doc comments (gitignored). Neither is hand-written here, so a bad sample in
+// one must not fail the site build — hand-written pages still throw.
+function isTwoslashErrorIgnored(options: { meta?: { __raw?: string } }) {
+  const loc = twoslashErrorLocation(options);
+  if (!loc) return false;
+  return loc.includes("versioned_docs") || /(^|\/)docs\/api\//.test(loc);
 }
 
 const rehypeShikiPlugin = [
@@ -44,9 +50,8 @@ const rehypeShikiPlugin = [
       transformerTwoslash({
         renderer: rendererClassic(),
         onTwoslashError(error, code, lang, options) {
-          const isVersionedDocs = isErrorFromVersionedDocs(options);
-          if (isVersionedDocs) {
-            return; // Ignore versioned docs
+          if (isTwoslashErrorIgnored(options)) {
+            return;
           }
           throw error;
         },
