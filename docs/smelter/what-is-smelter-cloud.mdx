@@ -29,7 +29,7 @@ It is built on [Smelter](https://smelter.dev), the open-source real-time video c
 The name Smelter refers to two related things, and it is worth knowing which one you are using:
 
 - **Smelter** (the library) runs the compositing engine **on the client**, in the browser via WebAssembly. You install `@swmansion/smelter` and compose streams locally. This is what the [custom sources](./../how-to/client/custom-sources) guide and the [Minimal Smelter example](./../examples/react) describe.
-- **Smelter Cloud** (this section) runs the same engine **as a hosted service**. You call an HTTP API, the composition runs on Smelter's infrastructure, and you never ship the WebAssembly bundle or manage rendering yourself.
+- **Smelter Cloud** (this section) runs the same engine **as a hosted service**. You call an HTTP API, the composition runs on Fishjam's infrastructure, and you never ship the WebAssembly bundle or manage rendering yourself.
 
 Both use the same layout components and scene model, so knowledge transfers between them. Choose Smelter Cloud when you want server-side composition that scales independently of any single client.
 

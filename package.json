@@ -33,6 +33,7 @@
     "@docusaurus/theme-mermaid": "^3.10.0",
     "@docusaurus/utils": "^3.10.0",
     "@fastify/env": "^5.0.2",
+    "@fishjam-cloud/composition": "link:./packages/js-server-sdk/packages/composition",
     "@fishjam-cloud/js-server-sdk": "link:./packages/js-server-sdk/packages/js-server-sdk",
     "@fishjam-cloud/react-client": "link:./packages/web-client-sdk/packages/react-client",
     "@fishjam-cloud/react-native-client": "link:./packages/web-client-sdk/packages/mobile-client",

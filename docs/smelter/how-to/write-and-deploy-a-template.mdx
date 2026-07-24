@@ -28,14 +28,19 @@ This generates a ready-to-build project: a `package.json` with `build` and `type
 A template **default-exports a React component**. You lay out the composition with layout components from [`@swmansion/smelter`](https://smelter.dev) and read live room state with hooks from `@fishjam-cloud/composition`.
 
 ```tsx
+// @jsx: react-jsx
+// ---cut-before---
 import { InputStream, Rescaler, Text, Tiles, View } from "@swmansion/smelter";
 import { usePeers, useSpeakingState } from "@fishjam-cloud/composition";
+import type { PeerWithStreams } from "@fishjam-cloud/composition";
 
-function PeerTile({ peer }) {
+type PeerMetadata = { displayName?: string };
+
+function PeerTile({ peer }: { peer: PeerWithStreams<PeerMetadata> }) {
   const camera = peer.cameraStream;
   const cameraOn = camera?.video && !camera.video.paused;
   const speaking = useSpeakingState(peer.id) === "speech";
-  const name = peer.metadata?.peer?.displayName ?? peer.id;
+  const name = peer.metadata.peer.displayName ?? peer.id;
 
   return (
     <View style={{ borderWidth: speaking ? 4 : 0, borderColor: "#00cc66ff" }}>
@@ -53,7 +58,7 @@ function PeerTile({ peer }) {
 }
 
 export default function App() {
-  const peers = usePeers();
+  const peers = usePeers<PeerMetadata>();
   const connected = peers.filter((peer) => peer.streams.length > 0);
 
   return (
@@ -74,12 +79,12 @@ The key link is `stream.inputId`: you pass it to `<InputStream inputId={…} />`
 
 `@fishjam-cloud/composition` gives you the live room state; the template re-renders automatically when it changes.
 
-| Hook | Returns |
-| --- | --- |
-| `usePeers()` | All peers in the linked room, each with its streams (`cameraStream`, `screenShareStream`, `customStreams`). |
-| `usePeer(peerId)` | A single peer, or `undefined`. |
-| `useRoom()` | The linked room `{ id }`, or `undefined` before a room is linked. |
-| `useSpeakingState(peerId)` | `"speech"` or `"silence"` for active-speaker highlighting. |
+| Hook                       | Returns                                                                                                     |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `usePeers()`               | All peers in the linked room, each with its streams (`cameraStream`, `screenShareStream`, `customStreams`). |
+| `usePeer(peerId)`          | A single peer, or `undefined`.                                                                              |
+| `useRoom()`                | The linked room `{ id }`, or `undefined` before a room is linked.                                           |
+| `useSpeakingState(peerId)` | `"speech"` or `"silence"` for active-speaker highlighting.                                                  |
 
 Layout, styling, and every visual component (`View`, `Tiles`, `InputStream`, `Rescaler`, `Text`, `Image`, …) come from `@swmansion/smelter`. Its style model is not CSS — see the [Smelter reference](https://smelter.dev) for the full component and style documentation.
 
@@ -101,11 +106,14 @@ This bundles and validates your template into a single file (default `dist/App.j
 - **A default-exported React component.**
 - **No `import.meta` and no dynamic `import()`** with a non-literal specifier.
 - **Under ~950 KB** — the bundle ceiling after reserving room for the upload.
-- **Non-blocking** — top-level code must not block the event loop (checked by a smoke test).
+- **Loadable** — a smoke test imports the bundle and checks that the default export is a valid React component within a few seconds.
 
 ## Deploy the template
 
-Register an output and upload the bundle as the `template` field of a multipart request. This replaces the static `video.initial` scene with your template.
+A templated output is registered in a **single multipart request** to `POST …/output/{output_id}/template` — do not call the plain `…/register` endpoint first. The request carries two parts:
+
+- `config` — the same JSON body a regular output registration takes (see [Choose inputs and outputs](./inputs-and-outputs)). Its `video.initial` scene is only a placeholder; the template takes over rendering as soon as it loads.
+- `template` — the built bundle.
 
 <Tabs groupId="language">
   <TabItem value="curl" label="curl">
@@ -113,6 +121,15 @@ Register an output and upload the bundle as the `template` field of a multipart 
 ```bash
 curl -X POST "$SMELTER_URL/api/composition/$COMPOSITION/output/main/template" \
   -H "Authorization: Bearer $TOKEN" \
+  -F 'config={
+        "type": "whip_client",
+        "endpoint_url": "https://example.com/whip",
+        "video": {
+          "resolution": { "width": 1280, "height": 720 },
+          "initial": { "root": { "type": "view" } }
+        },
+        "audio": { "initial": { "inputs": [] } }
+      };type=application/json' \
   -F "template=@dist/App.js"
 ```
 
@@ -120,14 +137,28 @@ curl -X POST "$SMELTER_URL/api/composition/$COMPOSITION/output/main/template" \
   <TabItem value="js" label="JavaScript">
 
 ```js
+const config = {
+  type: "whip_client",
+  endpoint_url: "https://example.com/whip",
+  video: {
+    resolution: { width: 1280, height: 720 },
+    initial: { root: { type: "view" } },
+  },
+  audio: { initial: { inputs: [] } },
+};
+
 const form = new FormData();
+form.append("config", JSON.stringify(config));
 form.append("template", new Blob([bundle]), "App.js");
 
-await fetch(`${SMELTER_URL}/api/composition/${composition}/output/main/template`, {
-  method: "POST",
-  headers: { Authorization: `Bearer ${token}` },
-  body: form,
-});
+await fetch(
+  `${SMELTER_URL}/api/composition/${composition}/output/main/template`,
+  {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: form,
+  },
+);
 ```
 
   </TabItem>
