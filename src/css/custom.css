@@ -6,18 +6,55 @@
 
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
 
-/* You can override the default Infima variables here. */
+/* t-rex-ui design tokens (vendored). Fishjam brand overrides follow below. */
+@import "./trex-theme.css";
 
-/* matches landing site */
+/* ===== Fishjam brand overrides for the vendored t-rex-ui tokens =====
+   t-rex's component tokens reference two base palette scales: navy-light-*
+   (body text, borders, sidebar, footer, search) and purple-light-* (links,
+   active tabs, TOC, card hover, paginator). Remapping just these two scales
+   rebrands the whole theme to Fishjam — navy -> warm near-black neutral,
+   purple -> Fishjam orange — so we don't have to touch every component token. */
 :root {
-  --ifm-font-family-base: "DM Sans", sans-serif;
-  --ifm-color-primary: #dd6460; /* fishjam.orange.60 */
-  --ifm-color-primary-dark: #dd6460;
-  --ifm-color-primary-darker: #dd6460;
-  --ifm-color-primary-darkest: #dd6460;
-  --ifm-color-primary-light: #dd6460;
-  --ifm-color-primary-lighter: #dd6460;
-  --ifm-color-primary-lightest: #dd6460;
+  /* Fonts: Fishjam uses DM Sans; no Aeonik. */
+  --swm-title-landing-font: "DM Sans";
+  --swm-title-font: "DM Sans";
+  --swm-body-font: "DM Sans";
+  --swm-code-font: ui-monospace, SFMono-Regular, "Liberation Mono", Menlo,
+    monospace;
+
+  /* Neutral scale (was SM navy) -> Fishjam warm near-black. */
+  --swm-navy-light-100: #221f1c;
+  --swm-navy-light-80: #46413c;
+  --swm-navy-light-60: #6f6862;
+  --swm-navy-light-40: #9c958d;
+  --swm-navy-light-20: #ddd5c9;
+  --swm-navy-light-10: #f6f1e7;
+  --swm-navy-light-transparent: #46413c40;
+
+  /* Accent scale (was SM purple) -> Fishjam orange. */
+  --swm-purple-light-100: #dd6460; /* fishjam.orange.60 */
+  --swm-purple-light-80: #e58884;
+  --swm-purple-light-60: #ecaaa7;
+  --swm-purple-light-40: #f4cbc9;
+  --swm-purple-light-20: #fce6e1; /* fishjam.orange.20 */
+  --swm-purple-light-transparent: #fce6e140;
+
+  /* Infima primary -> a real Fishjam orange scale (fixes the old flat scale). */
+  --ifm-color-primary: #dd6460;
+  --ifm-color-primary-dark: #d6433d;
+  --ifm-color-primary-darker: #ca3f39;
+  --ifm-color-primary-darkest: #a6342f;
+  --ifm-color-primary-light: #e3857f;
+  --ifm-color-primary-lighter: #e89992;
+  --ifm-color-primary-lightest: #f1c4c0;
+
+  /* Warm Fishjam surfaces: beige navbar/footer (matches the landing site). */
+  --swm-background: #ffffff;
+  --swm-off-background: #f7f3ec;
+  --ifm-navbar-background-color: #fcf4e4;
+  --ifm-footer-background-color: #fcf4e4;
+
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.5);
 }
