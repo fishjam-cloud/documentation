@@ -39,15 +39,6 @@ function isErrorFromUncheckedDocs(options: { meta?: { __raw?: string } }) {
   return undefined;
 }
 
-// Versioned docs are frozen snapshots, and `docs/api/**` is TypeDoc output generated
-// from SDK doc comments (gitignored). Neither is hand-written here, so a bad sample in
-// one must not fail the site build — hand-written pages still throw.
-function isTwoslashErrorIgnored(options: { meta?: { __raw?: string } }) {
-  const loc = twoslashErrorLocation(options);
-  if (!loc) return false;
-  return loc.includes("versioned_docs") || /(^|\/)docs\/api\//.test(loc);
-}
-
 const rehypeShikiPlugin = [
   rehypeShiki,
   {
