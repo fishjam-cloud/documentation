@@ -28,6 +28,9 @@ Each platform uses its own transport:
 
 **PushKit**, **CallKit**, and **Telecom** are the operating systems' own native VoIP
 frameworks. The SDK drives them for you, so a single JS API works on both platforms.
+Registering calls with the OS also gets you **remote surface control** for free: the
+user can handle a call from a Bluetooth headset or Android Auto, and those actions
+reach your app as the same state changes described in this guide.
 
 :::tip[Working example]
 Everything in this guide is wired together in the
