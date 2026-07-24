@@ -53,7 +53,7 @@ An output's `video` carries the resolution and initial [scene](./../scenes), and
 
 Other output operations:
 
-- **Register a templated output** with `POST …/output/{output_id}/template` instead of `…/register` — a multipart request carrying the same configuration plus a template bundle (see [Write and deploy a template](./write-and-deploy-a-template)).
+- **Register a templated output** with `POST …/output/{output_id}/template` instead of `…/register`: a multipart request carrying the same configuration plus a template bundle (see [Write and deploy a template](./write-and-deploy-a-template)).
 - **Update the scene** live with `POST …/output/{output_id}/update` (see [Scenes](./../scenes)).
 - **Force a keyframe** with `POST …/output/{output_id}/request_keyframe`, useful when a new subscriber joins.
 - **Unregister** with `POST …/output/{output_id}/unregister`.
@@ -62,7 +62,7 @@ Other output operations:
 
 Shared assets you can place in a scene:
 
-- **Images** — register with `POST …/image/{image_id}/register` and an `ImageSpec` whose `asset_type` is `png`, `jpeg`, `svg`, `gif`, or `auto` (each takes a `url`; `svg` also accepts a `resolution`). Reference the image in a scene with `{ "type": "image", "image_id": "<id>" }`.
-- **Fonts** — register with `POST …/font/register` as a multipart request with a single `font` part carrying the font file. The font is then available to `text` components.
+- **Images**: register with `POST …/image/{image_id}/register` and an `ImageSpec` whose `asset_type` is `png`, `jpeg`, `svg`, `gif`, or `auto` (each takes a `url`; `svg` also accepts a `resolution`). Reference the image in a scene with `{ "type": "image", "image_id": "<id>" }`.
+- **Fonts**: register with `POST …/font/register` as a multipart request with a single `font` part carrying the font file. The font is then available to `text` components.
 
 See the [API Reference](./../api-reference) for the complete request and response schemas.

@@ -19,10 +19,10 @@ It is built on [Smelter](https://smelter.dev), the open-source real-time video c
 
 ## What you can build
 
-- **Multi-party layouts** — arrange the cameras of a conference or livestream into grids, side-by-sides, or picture-in-picture.
-- **Branded streams** — overlay logos, captions, lower-thirds, and backgrounds on top of live video.
-- **React templates** — describe your layout as a React component that reacts to who is speaking, who joined, and custom application events.
-- **Cross-protocol bridging** — take WebRTC inputs and republish the composed result to an RTMP destination, or vice versa.
+- **Multi-party layouts**: arrange the cameras of a conference or livestream into grids, side-by-sides, or picture-in-picture.
+- **Branded streams**: overlay logos, captions, lower-thirds, and backgrounds on top of live video.
+- **React templates**: describe your layout as a React component that reacts to who is speaking, who joined, and custom application events.
+- **Cross-protocol bridging**: take WebRTC inputs and republish the composed result to an RTMP destination, or vice versa.
 
 ## Smelter Cloud vs. the Smelter library
 
@@ -37,15 +37,15 @@ Both use the same layout components and scene model, so knowledge transfers betw
 
 A **composition** is a single running compositing session. Into it you register:
 
-- **Inputs** — the live media sources being composed (WebRTC via WHIP/WHEP, RTMP, HLS, or MP4).
-- **Outputs** — where the composed result is sent (WebRTC via WHIP, or RTMP). Each output carries a **scene** that describes the layout.
-- **Renderers** — shared assets such as images and fonts you can place in a scene.
+- **Inputs**: the live media sources being composed (WebRTC via WHIP/WHEP, RTMP, HLS, or MP4).
+- **Outputs**: where the composed result is sent (WebRTC via WHIP, or RTMP). Each output carries a **scene** that describes the layout.
+- **Renderers**: shared assets such as images and fonts you can place in a scene.
 
 An output's scene can either be described directly in the API or rendered by a **template**: a React component, written with the layout components and the [`@fishjam-cloud/composition`](./how-to/write-and-deploy-a-template) hooks, that updates the layout live as the room changes.
 
 ## Where to go next
 
-- [Quick Start](./quick-start) — create your first composition end to end.
-- [Write and deploy a template](./how-to/write-and-deploy-a-template) — build a React layout with the composition SDK.
-- [Compose a Fishjam room](./how-to/compose-a-fishjam-room) — turn a room's peers into one composed stream.
-- [API Reference](./api-reference) — the full REST surface.
+- [Quick Start](./quick-start): create your first composition end to end.
+- [Write and deploy a template](./how-to/write-and-deploy-a-template): build a React layout with the composition SDK.
+- [Compose a Fishjam room](./how-to/compose-a-fishjam-room): turn a room's peers into one composed stream.
+- [API Reference](./api-reference): the full REST surface.
