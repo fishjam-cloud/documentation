@@ -32,9 +32,8 @@ frameworks. The SDK drives them for you, so a single JS API works on both platfo
 :::tip[Working example]
 Everything in this guide is wired together in the
 [voip-call example](https://github.com/fishjam-cloud/web-client-sdk/tree/main/examples/mobile-client/voip-call),
-whose README walks through the native setup in even more detail. To actually run it you
-must generate your own APNs and FCM credentials, since VoIP pushes can't be delivered
-with ours.
+whose README covers running it, including the APNs and FCM push credentials you must
+generate yourself.
 :::
 
 :::info[You need a push sender]
@@ -73,8 +72,8 @@ Install the React Native SDK as described in the
 differ between Expo and bare React Native.
 
 On **Expo**, also install [`@fishjam-cloud/ios-expo-voip`](https://www.npmjs.com/package/@fishjam-cloud/ios-expo-voip)
-(**iOS only**). It registers PushKit at launch so a VoIP push delivered before the JS
-bundle loads (cold start) can still ring:
+(**iOS only**). It registers PushKit at launch; without that registration the app never
+receives VoIP pushes at all:
 
 ```bash
 npx expo install @fishjam-cloud/ios-expo-voip
