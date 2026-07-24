@@ -16,3 +16,6 @@
 [submodule "packages/python-server-sdk"]
 	path = packages/python-server-sdk
 	url = https://github.com/fishjam-cloud/python-server-sdk.git
+[submodule "api/smelter-cloud"]
+	path = api/smelter-cloud
+	url = git@github.com:fishjam-cloud/foundry.git
