@@ -65,4 +65,4 @@ Shared assets you can place in a scene:
 - **Images**: register with `POST …/image/{image_id}/register` and an `ImageSpec` whose `asset_type` is `png`, `jpeg`, `svg`, `gif`, or `auto` (each takes a `url`; `svg` also accepts a `resolution`). Reference the image in a scene with `{ "type": "image", "image_id": "<id>" }`.
 - **Fonts**: register with `POST …/font/register` as a multipart request with a single `font` part carrying the font file. The font is then available to `text` components.
 
-See the [API Reference](./../api-reference) for the complete request and response schemas.
+See the [Smelter Cloud API](./../../api/smelter-cloud) reference for the complete request and response schemas.
