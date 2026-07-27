@@ -311,14 +311,8 @@ const config: Config = {
       contextualSearch: true,
       searchPagePath: "search",
       searchParameters: {
-        // For single-word queries, treat an exact match on a whole *word* as
-        // exact, not only a match on the whole attribute. The index default
-        // ("attribute") means a generated API heading that is literally the
-        // query — e.g. an interface field named "token" — counts as exact,
-        // while the "Security & Token Model" concept page does not. Algolia
-        // decides `exact` before `custom`, so weight.pageRank never gets a
-        // say and reference pages bury the guides. Set here rather than in
-        // the index settings because free DocSearch grants no editSettings key.
+        // Without this, generated API headings that are exactly the query
+        // outrank guides before weight.pageRank is ever consulted.
         exactOnSingleWordQuery: "word",
       },
       insights: false,
