@@ -54,7 +54,7 @@ Next, you can should subscribe to notifications by sending `SubscribeRequest` ev
 
 ## Smelter Cloud
 
-[Smelter Cloud](../smelter/what-is-smelter-cloud) (beta) exposes a REST API for managing compositions and a WebSocket stream for engine events.
+[Smelter Cloud](../smelter/what-is-smelter-cloud) (beta) exposes the Composition API: a REST API for managing compositions and a WebSocket stream for engine events.
 
-- [Smelter Cloud API](./smelter-cloud): authentication, the WebSocket event stream, and errors.
-- [Smelter Cloud REST API Reference](/api/smelter-cloud/rest)
+- [Composition API](./smelter-cloud): authentication, the WebSocket event stream, and errors.
+- [Composition REST API Reference](/api/smelter-cloud/rest)
