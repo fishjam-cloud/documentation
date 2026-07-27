@@ -1,0 +1,126 @@
+---
+type: how-to
+sidebar_position: 1
+description: Write a React composition template, bundle it with the CLI, and deploy it as an output.
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Write and deploy a template
+
+A **template** is a React component that describes an output's layout. Instead of sending a static scene, you write a component, bundle it into a single file with the composition CLI, and upload it when registering an output.
+
+## Scaffold a project
+
+Create a new template project with the CLI:
+
+```bash npm2yarn
+npx @fishjam-cloud/composition-cli init my-template
+cd my-template
+npm install
+```
+
+This generates a ready-to-build project: a `package.json` with `build` and `typecheck` scripts, a TypeScript config, and a starter `src/App.tsx`.
+
+## Write the template
+
+A template **default-exports a React component**. You lay out the composition with components from [`@swmansion/smelter`](https://smelter.dev). The example below renders one registered input full-frame (`camera_1` from the [Compositions tutorial](./../../tutorials/compositions)) with a caption on top:
+
+```tsx
+// @jsx: react-jsx
+// ---cut-before---
+import { InputStream, Rescaler, Text, View } from "@swmansion/smelter";
+
+export default function App() {
+  return (
+    <View style={{ backgroundColor: "#0b1020ff" }}>
+      <Rescaler>
+        <InputStream inputId="camera_1" />
+      </Rescaler>
+      <View style={{ bottom: 16, left: 16, height: 40 }}>
+        <Text style={{ fontSize: 32, color: "#ffffff" }}>
+          Hello from a template
+        </Text>
+      </View>
+    </View>
+  );
+}
+```
+
+`<InputStream inputId={…} />` renders one of the composition's registered inputs. Layout, styling, and every visual component (`View`, `Tiles`, `InputStream`, `Rescaler`, `Text`, `Image`, …) come from `@swmansion/smelter`. Its style model is not CSS: see the [Smelter reference](https://smelter.dev) for the full component and style documentation.
+
+Templates really shine when composing a Fishjam room: hooks from `@fishjam-cloud/composition` give the template live room state, so it re-renders as participants join, leave, or speak. See [Compose a Fishjam room](./compose-a-fishjam-room).
+
+## Build the bundle
+
+```bash npm2yarn
+npm run build
+```
+
+This bundles and validates your template into a single file (default `dist/App.js`) against the template contract:
+
+- **A single JS bundle**: no CSS or extra emitted files.
+- **Allowed imports only**: `react`, `react/jsx-runtime`, `@swmansion/smelter`, and `@fishjam-cloud/composition`. These are provided by the runtime and stay out of your bundle; anything else fails the build.
+- **A default-exported React component.**
+- **No `import.meta` and no dynamic `import()`** with a non-literal specifier.
+- **Under ~950 KB**: the bundle ceiling after reserving room for the upload.
+- **Loadable**: a smoke test imports the bundle and checks that the default export is a valid React component within a few seconds.
+
+## Deploy the template
+
+A templated output is registered in a **single multipart request** to `POST …/output/{output_id}/template`. Do not call the plain `…/register` endpoint first. The request carries two parts:
+
+- `config`: the same JSON body a regular output registration takes (see [Choose inputs and outputs](./inputs-and-outputs)). Its `video.initial` scene is only a placeholder; the template takes over rendering as soon as it loads.
+- `template`: the built bundle.
+
+<Tabs groupId="language">
+  <TabItem value="curl" label="curl">
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/template" \
+  -H "Authorization: Bearer $TOKEN" \
+  -F 'config={
+        "type": "whip_client",
+        "endpoint_url": "https://example.com/whip",
+        "video": {
+          "resolution": { "width": 1280, "height": 720 },
+          "initial": { "root": { "type": "view" } }
+        },
+        "audio": { "initial": { "inputs": [] } }
+      };type=application/json' \
+  -F "template=@dist/App.js"
+```
+
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
+
+```js
+const config = {
+  type: "whip_client",
+  endpoint_url: "https://example.com/whip",
+  video: {
+    resolution: { width: 1280, height: 720 },
+    initial: { root: { type: "view" } },
+  },
+  audio: { initial: { inputs: [] } },
+};
+
+const form = new FormData();
+form.append("config", JSON.stringify(config));
+form.append("template", new Blob([bundle]), "App.js");
+
+await fetch(
+  `${COMPOSITION_URL}/api/composition/${composition}/output/main/template`,
+  {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: form,
+  },
+);
+```
+
+  </TabItem>
+</Tabs>
+
+To feed a whole Fishjam room's peers into the template, continue with [Compose a Fishjam room](./compose-a-fishjam-room). To update the template's on-screen state at runtime, see [Drive a template with events](./drive-a-template-with-events).

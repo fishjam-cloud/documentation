@@ -1,0 +1,123 @@
+---
+type: explanation
+title: Compositions
+sidebar_position: 4.5
+description: Understand compositions, the Fishjam feature that mixes multiple live media streams into a single composed output in real time.
+---
+
+# Compositions
+
+_Understanding real-time stream composition in Fishjam_
+
+A **composition** mixes multiple live media streams into a single output stream in real time. You send inputs (WebRTC, RTMP, HLS, or MP4), describe how they should be laid out, and it produces one composed output that you can publish anywhere, all without running any rendering infrastructure yourself.
+
+Compositions are built on [Smelter](https://smelter.dev), the open-source real-time video compositing engine by [Software Mansion](https://swmansion.com), and are a native part of Fishjam: they authenticate with the same Fishjam credentials and can compose the peers of a [Fishjam room](./rooms) directly.
+
+## What you can build
+
+- **Multi-party layouts**: arrange the cameras of a conference or livestream into grids, side-by-sides, or picture-in-picture.
+- **Branded streams**: overlay logos, captions, lower-thirds, and backgrounds on top of live video.
+- **React templates**: describe your layout as a React component that reacts to who is speaking, who joined, and custom application events.
+- **Cross-protocol bridging**: take WebRTC inputs and republish the composed result to an RTMP destination, or vice versa.
+
+## Core concepts
+
+A **composition** is a single running compositing session. Into it you register:
+
+- **Inputs**: the live media sources being composed (WebRTC via WHIP/WHEP, RTMP, HLS, or MP4).
+- **Outputs**: where the composed result is sent (WebRTC via WHIP, or RTMP). Each output carries a **scene** that describes the layout.
+- **Renderers**: shared assets such as images and fonts you can place in a scene.
+
+An output's scene can either be described directly in the API or rendered by a **template**: a React component, written with the layout components and the [`@fishjam-cloud/composition`](./../how-to/compositions/write-and-deploy-a-template) hooks, that updates the layout live as the room changes.
+
+## Scenes
+
+Every video output carries a **scene**: a tree of components that describes how inputs, text, and images are arranged into the composed frame. Audio outputs carry an **audio scene** that describes which inputs are mixed together.
+
+### The video scene tree
+
+A video scene has a single `root` component. Each component has a `type` that determines how it lays out its children.
+
+```json
+{
+  "root": {
+    "type": "tiles",
+    "children": [
+      { "type": "input_stream", "input_id": "camera_1" },
+      { "type": "input_stream", "input_id": "camera_2" }
+    ]
+  }
+}
+```
+
+The available component types are:
+
+| `type`         | Purpose                                                                          |
+| -------------- | -------------------------------------------------------------------------------- |
+| `input_stream` | Renders one registered input. Identified by `input_id`.                          |
+| `view`         | A container you position and style; the basic building block for custom layouts. |
+| `tiles`        | Automatically arranges its children into a grid.                                 |
+| `rescaler`     | Fits a single child into a target area, preserving aspect ratio.                 |
+| `text`         | Renders a text string.                                                           |
+| `image`        | Renders a registered image. Identified by `image_id`.                            |
+
+Components nest freely: a `tiles` of `rescaler`s wrapping `input_stream`s, a `view` with a `text` caption over an `input_stream`, and so on. The styling and full property set of each component come from Smelter itself; see the [Smelter component reference](https://smelter.dev) for every available property.
+
+### The audio scene
+
+An audio scene lists the inputs to mix and, optionally, their relative volume:
+
+```json
+{
+  "inputs": [
+    { "input_id": "camera_1" },
+    { "input_id": "camera_2", "volume": 0.5 }
+  ]
+}
+```
+
+`volume` defaults to `1.0`. Only the inputs you list are audible in the output.
+
+### Setting a scene
+
+You provide the initial scene when you register an output, under `video.initial` (a video scene) and `audio.initial` (an audio scene). See [Choose inputs and outputs](./../how-to/compositions/inputs-and-outputs) for the full output shape.
+
+### Updating a scene live
+
+To change the layout while a composition is running, call the output's update endpoint with the new `video` and/or `audio` scene:
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/update" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "video": {
+      "root": {
+        "type": "rescaler",
+        "child": { "type": "input_stream", "input_id": "camera_1" }
+      }
+    }
+  }'
+```
+
+Only the sides you include are changed; omitting `audio` leaves the audio scene untouched, and vice versa.
+
+An update can be scheduled instead of applied immediately by adding `schedule_time_ms`, the composition timeline offset in milliseconds at which the change should take effect:
+
+```json
+{
+  "video": { "root": { "type": "tiles", "children": [] } },
+  "schedule_time_ms": 5000
+}
+```
+
+### What if I don't want to update the scene on every change?
+
+Pushing a scene update every time a participant joins, leaves, or mutes gets tedious fast. Instead, you can describe the layout once as a **template**: a React component that receives the live room state and re-renders automatically as it changes, cutting manual scene management down to a minimum. See [Write and deploy a template](./../how-to/compositions/write-and-deploy-a-template) to build one.
+
+## Where to go next
+
+- [Compositions tutorial](./../tutorials/compositions): create your first composition end to end.
+- [Write and deploy a template](./../how-to/compositions/write-and-deploy-a-template): build a React layout with the composition SDK.
+- [Compose a Fishjam room](./../how-to/compositions/compose-a-fishjam-room): turn a room's peers into one composed stream.
+- [Composition API](./../api/reference#compositions): the full REST surface.

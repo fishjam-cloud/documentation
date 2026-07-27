@@ -17,13 +17,17 @@
   "paths": {
     "/api/composition": {
       "post": {
-        "tags": ["composition"],
+        "tags": ["Compositions"],
         "operationId": "create_composition",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/CreateCompositionRequest"
+              },
+              "example": {
+                "autostart": false,
+                "cleanup_without_inputs": false
               }
             }
           },
@@ -75,12 +79,13 @@
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "summary": "Create a composition"
       }
     },
     "/api/composition/{composition_id}/output/{output_id}/template": {
       "post": {
-        "tags": ["register_request"],
+        "tags": ["Outputs"],
         "operationId": "register_template_output",
         "parameters": [
           {
@@ -188,12 +193,13 @@
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "summary": "Register a templated output"
       }
     },
     "/api/composition/{composition_id}/room": {
       "post": {
-        "tags": ["composition"],
+        "tags": ["Room forwarding"],
         "operationId": "link_room",
         "parameters": [
           {
@@ -220,6 +226,10 @@
                     "type": "string"
                   }
                 }
+              },
+              "example": {
+                "fishjam_id": "your-fishjam-id",
+                "room_id": "room-uuid"
               }
             }
           },
@@ -274,10 +284,11 @@
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "summary": "Link a Fishjam room"
       },
       "delete": {
-        "tags": ["composition"],
+        "tags": ["Room forwarding"],
         "operationId": "unlink_room",
         "parameters": [
           {
@@ -329,12 +340,13 @@
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "summary": "Unlink a Fishjam room"
       }
     },
     "/api/composition/{composition_id}/event": {
       "post": {
-        "tags": ["composition"],
+        "tags": ["Events"],
         "operationId": "send_composition_event",
         "parameters": [
           {
@@ -364,6 +376,12 @@
                   "data": {
                     "description": "Optional arbitrary JSON payload delivered with the event."
                   }
+                }
+              },
+              "example": {
+                "event_name": "SET_CAPTION",
+                "data": {
+                  "text": "Welcome to the stream"
                 }
               }
             }
@@ -426,12 +444,13 @@
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "summary": "Send an event to templates"
       }
     },
     "/api/composition/{composition_id}/ws": {
       "get": {
-        "tags": ["websocket"],
+        "tags": ["Events"],
         "description": "Open a WebSocket to the composition.",
         "operationId": "ws",
         "parameters": [
@@ -524,12 +543,13 @@
           {
             "WebSocketSubprotocolAuth": []
           }
-        ]
+        ],
+        "summary": "Subscribe to engine events"
       }
     },
     "/api/composition/{composition_id}": {
       "delete": {
-        "tags": ["composition"],
+        "tags": ["Compositions"],
         "operationId": "delete_composition",
         "parameters": [
           {
@@ -581,12 +601,13 @@
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "summary": "Delete a composition"
       }
     },
     "/api/composition/{composition_id}/start": {
       "post": {
-        "tags": ["control_request"],
+        "tags": ["Compositions"],
         "operationId": "start",
         "parameters": [
           {
@@ -645,12 +666,13 @@
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "summary": "Start a composition"
       }
     },
     "/api/composition/{composition_id}/reset": {
       "post": {
-        "tags": ["control_request"],
+        "tags": ["Compositions"],
         "operationId": "reset",
         "parameters": [
           {
@@ -709,12 +731,13 @@
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "summary": "Reset a composition"
       }
     },
     "/api/composition/{composition_id}/input/{input_id}/register": {
       "post": {
-        "tags": ["register_request"],
+        "tags": ["Inputs"],
         "operationId": "register_input",
         "parameters": [
           {
@@ -741,6 +764,9 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/RegisterInput"
+              },
+              "example": {
+                "type": "whip_server"
               }
             }
           },
@@ -802,12 +828,13 @@
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "summary": "Register an input"
       }
     },
     "/api/composition/{composition_id}/output/{output_id}/register": {
       "post": {
-        "tags": ["register_request"],
+        "tags": ["Outputs"],
         "operationId": "register_output",
         "parameters": [
           {
@@ -834,6 +861,43 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/RegisterOutput"
+              },
+              "example": {
+                "type": "whip_client",
+                "endpoint_url": "https://example.com/whip",
+                "video": {
+                  "resolution": {
+                    "width": 1280,
+                    "height": 720
+                  },
+                  "initial": {
+                    "root": {
+                      "type": "tiles",
+                      "children": [
+                        {
+                          "type": "input_stream",
+                          "input_id": "camera_1"
+                        },
+                        {
+                          "type": "input_stream",
+                          "input_id": "camera_2"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "audio": {
+                  "initial": {
+                    "inputs": [
+                      {
+                        "input_id": "camera_1"
+                      },
+                      {
+                        "input_id": "camera_2"
+                      }
+                    ]
+                  }
+                }
               }
             }
           },
@@ -895,12 +959,13 @@
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "summary": "Register an output"
       }
     },
     "/api/composition/{composition_id}/image/{image_id}/register": {
       "post": {
-        "tags": ["register_request"],
+        "tags": ["Renderers"],
         "operationId": "register_image",
         "parameters": [
           {
@@ -988,12 +1053,13 @@
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "summary": "Register an image"
       }
     },
     "/api/composition/{composition_id}/font/register": {
       "post": {
-        "tags": ["register_request"],
+        "tags": ["Renderers"],
         "operationId": "register_font",
         "parameters": [
           {
@@ -1079,12 +1145,13 @@
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "summary": "Register a font"
       }
     },
     "/api/composition/{composition_id}/input/{input_id}/unregister": {
       "post": {
-        "tags": ["unregister_request"],
+        "tags": ["Inputs"],
         "operationId": "unregister_input",
         "parameters": [
           {
@@ -1172,12 +1239,13 @@
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "summary": "Unregister an input"
       }
     },
     "/api/composition/{composition_id}/output/{output_id}/unregister": {
       "post": {
-        "tags": ["unregister_request"],
+        "tags": ["Outputs"],
         "operationId": "unregister_output",
         "parameters": [
           {
@@ -1265,12 +1333,13 @@
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "summary": "Unregister an output"
       }
     },
     "/api/composition/{composition_id}/image/{image_id}/unregister": {
       "post": {
-        "tags": ["unregister_request"],
+        "tags": ["Renderers"],
         "operationId": "unregister_image",
         "parameters": [
           {
@@ -1358,12 +1427,13 @@
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "summary": "Unregister an image"
       }
     },
     "/api/composition/{composition_id}/output/{output_id}/update": {
       "post": {
-        "tags": ["update_request"],
+        "tags": ["Outputs"],
         "operationId": "update_output",
         "parameters": [
           {
@@ -1390,6 +1460,17 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UpdateOutputRequest"
+              },
+              "example": {
+                "video": {
+                  "root": {
+                    "type": "rescaler",
+                    "child": {
+                      "type": "input_stream",
+                      "input_id": "camera_1"
+                    }
+                  }
+                }
               }
             }
           },
@@ -1451,12 +1532,13 @@
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "summary": "Update an output's scene"
       }
     },
     "/api/composition/{composition_id}/output/{output_id}/request_keyframe": {
       "post": {
-        "tags": ["update_request"],
+        "tags": ["Outputs"],
         "operationId": "request_keyframe",
         "parameters": [
           {
@@ -1534,12 +1616,13 @@
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "summary": "Request a keyframe"
       }
     },
     "/api/composition/{composition_id}/whip/{input_id}": {
       "post": {
-        "tags": ["whip_whep"],
+        "tags": ["Media transport"],
         "operationId": "whip_offer",
         "parameters": [
           {
@@ -1636,12 +1719,13 @@
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "summary": "Publish to an input over WHIP"
       }
     },
     "/api/composition/{composition_id}/whep/{output_id}": {
       "post": {
-        "tags": ["whip_whep"],
+        "tags": ["Media transport"],
         "operationId": "whep_offer",
         "parameters": [
           {
@@ -1739,7 +1823,8 @@
           {
             "BearerAuth": []
           }
-        ]
+        ],
+        "summary": "Play an output over WHEP"
       }
     }
   },
@@ -2045,12 +2130,14 @@
       "Framerate": {
         "oneOf": [
           {
-            "type": "string"
+            "type": "string",
+            "title": "Ratio string"
           },
           {
             "type": "integer",
             "format": "int32",
-            "minimum": 0
+            "minimum": 0,
+            "title": "Frames per second"
           }
         ]
       },
@@ -2439,12 +2526,14 @@
       "PortOrPortRange": {
         "oneOf": [
           {
-            "type": "string"
+            "type": "string",
+            "title": "Port range string"
           },
           {
             "type": "integer",
             "format": "int32",
-            "minimum": 0
+            "minimum": 0,
+            "title": "Single port"
           }
         ]
       },
@@ -2759,7 +2848,8 @@
               "bearer_token": {
                 "type": "string"
               }
-            }
+            },
+            "title": "Bearer token"
           },
           {
             "type": "object",
@@ -2774,7 +2864,8 @@
                 "format": "int64",
                 "minimum": 0
               }
-            }
+            },
+            "title": "Media durations"
           },
           {
             "type": "object",
@@ -2784,10 +2875,12 @@
                 "format": "int32",
                 "minimum": 0
               }
-            }
+            },
+            "title": "Port"
           },
           {
-            "type": "object"
+            "type": "object",
+            "title": "Empty"
           }
         ]
       },
@@ -3306,7 +3399,8 @@
             "type": "integer",
             "format": "int64",
             "description": "Average bitrate measured in bits/second. Encoder will try to keep the bitrate around the provided average,\nbut may temporarily increase it by 25%.",
-            "minimum": 0
+            "minimum": 0,
+            "title": "Average bitrate"
           },
           {
             "type": "object",
@@ -3324,7 +3418,8 @@
                 "description": "Max bitrate measured in bits/second.",
                 "minimum": 0
               }
-            }
+            },
+            "title": "Average and max bitrate"
           }
         ]
       },
@@ -3637,5 +3732,35 @@
         "description": "The client MUST send two subprotocols: `json.fishjam.io` and `bearer.auth.fishjam.io.<TOKEN>`."
       }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "Compositions",
+      "description": "A composition is a single running compositing session. Create one, start it, and delete it when you are done."
+    },
+    {
+      "name": "Inputs",
+      "description": "Live media sources being composed: WHIP, WHEP, RTMP, HLS, or MP4."
+    },
+    {
+      "name": "Outputs",
+      "description": "Where the composed result is sent, over WHIP or RTMP. Each output carries a scene or renders a template."
+    },
+    {
+      "name": "Renderers",
+      "description": "Shared assets, such as images and fonts, that scenes can reference."
+    },
+    {
+      "name": "Events",
+      "description": "Custom events delivered to templates, and the WebSocket stream of engine events."
+    },
+    {
+      "name": "Room forwarding",
+      "description": "Links a Fishjam room to the composition. Called by Fishjam automatically when a room's track forwarding is created."
+    },
+    {
+      "name": "Media transport",
+      "description": "WHIP publishing into inputs and WHEP playback of outputs."
+    }
+  ]
 }

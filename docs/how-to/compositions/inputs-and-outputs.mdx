@@ -1,7 +1,7 @@
 ---
 type: how-to
 sidebar_position: 4
-description: Choose the right input and output protocols for a Smelter Cloud composition, from WebRTC to RTMP, HLS, and MP4.
+description: Choose the right input and output protocols for a composition, from WebRTC to RTMP, HLS, and MP4.
 ---
 
 # Choose inputs and outputs
@@ -37,7 +37,7 @@ Register an output with `POST /api/composition/{composition_id}/output/{output_i
 | `whip_client` | Publish the composed result over WebRTC (for example to a Fishjam livestream). | `endpoint_url` (required), `bearer_token` (optional), `video`, `audio`. |
 | `rtmp_client` | Publish to an RTMP destination (for example a social platform).                | `url` (required), `video`, `audio`.                                     |
 
-An output's `video` carries the resolution and initial [scene](./../scenes), and `audio` carries the initial audio scene:
+An output's `video` carries the resolution and initial [scene](./../../explanation/compositions#scenes), and `audio` carries the initial audio scene:
 
 ```json
 {
@@ -54,15 +54,43 @@ An output's `video` carries the resolution and initial [scene](./../scenes), and
 Other output operations:
 
 - **Register a templated output** with `POST …/output/{output_id}/template` instead of `…/register`: a multipart request carrying the same configuration plus a template bundle (see [Write and deploy a template](./write-and-deploy-a-template)).
-- **Update the scene** live with `POST …/output/{output_id}/update` (see [Scenes](./../scenes)).
+- **Update the scene** live with `POST …/output/{output_id}/update` (see [Scenes](./../../explanation/compositions#scenes)).
 - **Force a keyframe** with `POST …/output/{output_id}/request_keyframe`, useful when a new subscriber joins.
 - **Unregister** with `POST …/output/{output_id}/unregister`.
 
 ## Renderers
 
-Shared assets you can place in a scene:
+Renderers are shared assets you register once and then place in any scene.
 
-- **Images**: register with `POST …/image/{image_id}/register` and an `ImageSpec` whose `asset_type` is `png`, `jpeg`, `svg`, `gif`, or `auto` (each takes a `url`; `svg` also accepts a `resolution`). Reference the image in a scene with `{ "type": "image", "image_id": "<id>" }`.
-- **Fonts**: register with `POST …/font/register` as a multipart request with a single `font` part carrying the font file. The font is then available to `text` components.
+### Images
 
-See the [Composition API](./../../api/smelter-cloud) reference for the complete request and response schemas.
+Register an image with `POST …/image/{image_id}/register`:
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/image/logo/register" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "asset_type": "auto", "url": "https://example.com/logo.png" }'
+```
+
+`asset_type` selects the format: `png`, `jpeg`, `svg`, `gif`, or `auto` to detect it from the URL. Each takes a `url`; `svg` also accepts a `resolution`. Place the image in a scene with an `image` component:
+
+```json
+{ "type": "image", "image_id": "logo" }
+```
+
+Unregister with `POST …/image/{image_id}/unregister`.
+
+### Fonts
+
+Register a font with a multipart request carrying the font file in a single `font` part:
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/font/register" \
+  -H "Authorization: Bearer $TOKEN" \
+  -F "font=@BrandFont.ttf"
+```
+
+The font is then available to `text` components.
+
+See the [Composition API](./../../api/reference#compositions) reference for the complete request and response schemas.

@@ -6,7 +6,7 @@ type: reference
 
 Describes APIs for direct interaction with Fishjam.
 
-Fishjam publishes documentation for the Sandbox API, Fishjam Server APIs, and the Smelter Cloud API.
+Fishjam publishes documentation for the Sandbox API, Fishjam Server APIs, and the Composition API.
 
 ## Sandbox API
 
@@ -52,9 +52,55 @@ with a valid Management Token.
 
 Next, you can should subscribe to notifications by sending `SubscribeRequest` event with `SERVER_NOTIFICATION` event type.
 
-## Smelter Cloud
+## Compositions
 
-[Smelter Cloud](../smelter/what-is-smelter-cloud) (beta) exposes the Composition API: a REST API for managing compositions and a WebSocket stream for engine events.
+[Compositions](../explanation/compositions) are managed through the Composition API: a REST API plus a WebSocket stream for engine events. All requests go to `https://rtc.fishjam.io`.
 
-- [Composition API](./smelter-cloud): authentication, the WebSocket event stream, and errors.
-- [Composition REST API Reference](/api/smelter-cloud/rest)
+### REST API
+
+[Composition REST API Reference](/api/compositions)
+
+The [OpenAPI document](https://github.com/fishjam-cloud/documentation/blob/main/static/api/composition-openapi.json) is generated from the service's source code and republished together with documentation updates.
+
+### WebSocket event stream
+
+Some engine events (for example, an output finishing) are delivered over a WebSocket rather than HTTP. Connect to:
+
+```
+GET wss://rtc.fishjam.io/api/composition/{composition_id}/ws
+```
+
+Because browsers cannot set an `Authorization` header on a WebSocket, authentication rides on the `Sec-WebSocket-Protocol` header, which must carry **two** subprotocols (order does not matter):
+
+- `json.fishjam.io`: selects the JSON wire format.
+- `bearer.auth.fishjam.io.<token>`: your token, appended to the literal prefix.
+
+```js
+const ws = new WebSocket(
+  `wss://rtc.fishjam.io/api/composition/${compositionId}/ws`,
+  ["json.fishjam.io", `bearer.auth.fishjam.io.${token}`],
+);
+```
+
+Messages are JSON text frames, each with a `type` field identifying the event.
+
+### Composition authentication
+
+| What you're calling                                                         | How it authenticates                                                                                                                                    |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Control-plane calls (composition, inputs, outputs, renderers, events, room) | `Authorization: Bearer <token>`: your Fishjam **Management Token**, the same token used across Fishjam.                                                 |
+| Publishing to an input (`/whip/{input_id}`)                                 | The **input's** own bearer token, returned when you register a `whip_server` input (or the one you supplied). This is distinct from your account token. |
+| Playing back an output (`/whep/{output_id}`)                                | Optional. Public playback is allowed; add a Bearer token only if you want to require one.                                                               |
+| The WebSocket event stream                                                  | The subprotocol scheme described above.                                                                                                                 |
+
+Get your Management Token from the [**Fishjam developer panel**](https://fishjam.io/app).
+
+### Errors
+
+Every non-2xx response of the Composition API is a JSON object:
+
+```json
+{ "message": "Composition not found", "http_status_code": 404 }
+```
+
+Common statuses are `400` (bad request), `401` (unauthorized), `404` (not found), `500` (server error), and `503` (no capacity, returned by composition creation).

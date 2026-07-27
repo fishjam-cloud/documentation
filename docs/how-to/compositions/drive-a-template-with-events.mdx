@@ -1,7 +1,7 @@
 ---
 type: how-to
 sidebar_position: 3
-description: Send custom events to a running Smelter Cloud composition to update a template's on-screen state at runtime.
+description: Send custom events to a running composition to update a template's on-screen state at runtime.
 ---
 
 # Drive a template with events
@@ -48,14 +48,14 @@ export default function App() {
 Send an event with `POST /api/composition/{composition_id}/event`. The `event_name` is matched against your `eventBus.on(...)` subscriptions, and `data` is delivered as the handler's argument.
 
 ```bash
-curl -X POST "$SMELTER_URL/api/composition/$COMPOSITION/event" \
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/event" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{ "event_name": "SET_CAPTION", "data": { "text": "Welcome to the stream" } }'
 ```
 
 ```bash
-curl -X POST "$SMELTER_URL/api/composition/$COMPOSITION/event" \
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/event" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{ "event_name": "SET_LIVE", "data": { "live": true } }'

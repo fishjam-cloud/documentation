@@ -69,10 +69,26 @@ type CustomInjectedCategory = Omit<SidebarItemCategory, "items"> & {
   items: any;
 };
 
-function buildApiSidebarItems(
+function injectTypeDocSidebar(
   version: SidebarItemsGeneratorVersion,
   items: NormalizedSidebar,
 ): NormalizedSidebar {
+  return items.map((item) => {
+    if (item.customProps?.id === "generated-api" && item.type === "category") {
+      return {
+        ...item,
+        items: [
+          ...buildInjectedApiItems(version),
+          ...item.items.filter((element) => element.type === "doc"),
+        ] as NormalizedSidebar,
+      };
+    }
+
+    return item;
+  });
+}
+
+function buildInjectedApiItems(version: SidebarItemsGeneratorVersion) {
   const injectedItems: (CustomInjectedCategory | NormalizedSidebarItem)[] = [
     {
       type: "category",
@@ -127,10 +143,7 @@ function buildApiSidebarItems(
     ],
   });
 
-  return [
-    ...injectedItems,
-    ...items.filter((element) => element.type === "doc"),
-  ] as NormalizedSidebar;
+  return injectedItems;
 }
 
 const typedocConfig = {
@@ -219,18 +232,7 @@ const config: Config = {
             ...args
           }) {
             const items = await defaultSidebarItemsGenerator(args);
-            if (args.item.dirName === "api") {
-              return buildApiSidebarItems(args.version, items);
-            }
-            // The api directory has its own sidebar (apiSidebar); keep it out
-            // of the main docs sidebar.
-            return items.filter(
-              (item) =>
-                !(
-                  item.type === "category" &&
-                  item.customProps?.id === "generated-api"
-                ),
-            );
+            return injectTypeDocSidebar(args.version, items);
           },
         },
         theme: {
@@ -270,12 +272,17 @@ const config: Config = {
           activeBaseRegex: "^/docs(?=/|$)(?!.*(ai-skill|/api(/|$)))",
         },
         {
-          to: "/api",
+          type: "dropdown",
+          to: "/api/rest",
           label: "API Reference",
           position: "left",
           // Highlight across the whole /api section (rest, reference, and the
-          // typedoc web/mobile/server pages), not just the linked /api index.
+          // typedoc web/mobile/server pages), not just the linked /api/rest.
           activeBaseRegex: "/api(/|$)",
+          items: [
+            { to: "/api/rest", label: "Server API" },
+            { to: "/api/compositions", label: "Composition API" },
+          ],
         },
         {
           to: "/ai-skill",
@@ -389,7 +396,19 @@ const config: Config = {
         route: "/api/rest",
         showNavLink: false,
         configuration: {
-          url: "/docs/api/fishjam-server-openapi.yaml",
+          sources: [
+            {
+              title: "Server API",
+              slug: "server",
+              url: "/docs/api/fishjam-server-openapi.yaml",
+              default: true,
+            },
+            {
+              title: "Composition API",
+              slug: "composition",
+              url: "/docs/api/composition-openapi.json",
+            },
+          ],
           hideSearch: true,
           persistAuth: true,
           defaultOpenFirstTag: false,
@@ -402,12 +421,12 @@ const config: Config = {
     [
       "@scalar/docusaurus",
       {
-        id: "smelter-cloud-api",
-        label: "Smelter Cloud REST API",
-        route: "/api/smelter-cloud/rest",
+        id: "composition-api",
+        label: "Composition API",
+        route: "/api/compositions",
         showNavLink: false,
         configuration: {
-          url: "/docs/api/smelter-cloud-openapi.json",
+          url: "/docs/api/composition-openapi.json",
           hideSearch: true,
           persistAuth: true,
           defaultOpenFirstTag: false,

@@ -1,0 +1,137 @@
+---
+type: how-to
+sidebar_position: 2
+description: Forward a Fishjam room into a composition and render its peers with a live React template.
+---
+
+# Compose a Fishjam room
+
+A composition can include the peers of a [Fishjam room](./../../explanation/rooms). You forward the room's tracks to the composition with a single Fishjam API call: Fishjam then pushes each participant's media into the composition as inputs, and hooks from `@fishjam-cloud/composition` let a [template](./write-and-deploy-a-template) render one tile per participant and push the result to a [livestream](./../../explanation/livestreams).
+
+```
+Fishjam room (peers) ──forwarded──▶ composition (template) ──WHIP──▶ Fishjam livestream ──WHEP──▶ [viewers]
+```
+
+## Prerequisites
+
+- A Fishjam room created with `"videoCodec": "h264"` (compositions consume h264 video), with peers publishing into it.
+- A [livestream](./../../explanation/livestreams) (or any other WHIP/RTMP destination) to publish the composed stream to.
+- A template project scaffolded with the composition CLI (see [Write and deploy a template](./write-and-deploy-a-template)).
+
+## Step 1: Write a room-aware template
+
+Hooks from `@fishjam-cloud/composition` give the template live room state; it re-renders automatically as participants join, leave, mute, or speak.
+
+```tsx
+// @jsx: react-jsx
+// ---cut-before---
+import { InputStream, Rescaler, Text, Tiles, View } from "@swmansion/smelter";
+import { usePeers, useSpeakingState } from "@fishjam-cloud/composition";
+import type { PeerWithStreams } from "@fishjam-cloud/composition";
+
+type PeerMetadata = { displayName?: string };
+
+function PeerTile({ peer }: { peer: PeerWithStreams<PeerMetadata> }) {
+  const camera = peer.cameraStream;
+  const cameraOn = camera?.video && !camera.video.paused;
+  const speaking = useSpeakingState(peer.id) === "speech";
+  const name = peer.metadata.peer?.displayName ?? peer.id;
+
+  return (
+    <View style={{ borderWidth: speaking ? 4 : 0, borderColor: "#00cc66ff" }}>
+      {cameraOn ? (
+        <Rescaler>
+          <InputStream inputId={camera.inputId} />
+        </Rescaler>
+      ) : (
+        <View>
+          <Text>{name}</Text>
+        </View>
+      )}
+    </View>
+  );
+}
+
+export default function App() {
+  const peers = usePeers<PeerMetadata>();
+  const connected = peers.filter((peer) => peer.streams.length > 0);
+
+  return (
+    <View style={{ backgroundColor: "#0b1020ff" }}>
+      <Tiles style={{ padding: 8 }}>
+        {connected.map((peer) => (
+          <PeerTile peer={peer} key={peer.id} />
+        ))}
+      </Tiles>
+    </View>
+  );
+}
+```
+
+| Hook                       | Returns                                                                                                        |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `usePeers()`               | All peers in the forwarded room, each with its streams (`cameraStream`, `screenShareStream`, `customStreams`). |
+| `usePeer(peerId)`          | A single peer, or `undefined`.                                                                                 |
+| `useRoom()`                | The forwarded room `{ id }`, or `undefined` before a room is forwarded.                                        |
+| `useSpeakingState(peerId)` | `"speech"` or `"silence"` for active-speaker highlighting.                                                     |
+
+The key link is `stream.inputId`: you pass it to `<InputStream inputId={…} />` to render that participant's forwarded track. A peer's streams fill in once its media actually starts flowing into the composition.
+
+Build the bundle as usual with `npm run build`.
+
+## Step 2: Create the composition and register the templated output
+
+Create the composition with auto-start and auto-cleanup off, since the room's inputs only appear once forwarding starts:
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "autostart": false, "cleanup_without_inputs": false }'
+```
+
+Register a templated `whip_client` output that pushes to your livestream's WHIP endpoint. The output configuration and the template bundle go together in one multipart request:
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/template" \
+  -H "Authorization: Bearer $TOKEN" \
+  -F 'config={
+        "type": "whip_client",
+        "endpoint_url": "<LIVESTREAM_WHIP_URL>",
+        "bearer_token": "<LIVESTREAM_STREAMER_TOKEN>",
+        "video": { "resolution": { "width": 1280, "height": 720 }, "initial": { "root": { "type": "view" } } },
+        "audio": { "initial": { "inputs": [] } }
+      };type=application/json' \
+  -F "template=@dist/App.js"
+```
+
+## Step 3: Forward the room into the composition
+
+One call to the [Fishjam Server API](/api/rest) wires everything up:
+
+```bash
+curl -X POST "https://fishjam.io/api/v1/connect/$FISHJAM_ID/room/$ROOM_ID/track_forwardings" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{ \"compositionURL\": \"$COMPOSITION_URL/api/composition/$COMPOSITION\", \"selector\": \"all\" }"
+```
+
+Everything else happens automatically: Fishjam links the room to the composition, registers an input for every forwarded track, and streams the media in. Your template's `usePeers()` fills with the room's peers as their media starts flowing. You never register room inputs by hand.
+
+## Step 4: Start the composition
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/start" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+Viewers can now watch the composed grid through the livestream's WHEP endpoint.
+
+## Step 5: Clean up
+
+Delete the composition when you are done; deleting the room (or removing its track forwarding) stops the media on the Fishjam side.
+
+```bash
+curl -X DELETE "$COMPOSITION_URL/api/composition/$COMPOSITION" \
+  -H "Authorization: Bearer $TOKEN"
+```
