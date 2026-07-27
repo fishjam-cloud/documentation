@@ -75,7 +75,7 @@ jobs:
       - name: Reindex Algolia when a docs version is released
         run: |
           git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
-            | grep -qx versions.json || exit 0
+            | grep -qxF versions.json || exit 0
           curl -sS -f -X POST \
             -u "${{ secrets.ALGOLIA_CRAWLER_USER_ID }}:${{ secrets.ALGOLIA_CRAWLER_API_KEY }}" \
             "https://crawler.algolia.com/api/1/crawlers/9bc2ab68-0ce9-4f44-9824-3a48219680b2/reindex"
