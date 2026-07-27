@@ -310,6 +310,11 @@ const config: Config = {
       indexName: "Fishjam",
       contextualSearch: true,
       searchPagePath: "search",
+      searchParameters: {
+        // Without this, generated API headings that are exactly the query
+        // outrank guides before weight.pageRank is ever consulted.
+        exactOnSingleWordQuery: "word",
+      },
       insights: false,
       askAi: {
         assistantId: "49fdf088-e614-4b89-86c2-da8c4b566260",
