@@ -310,6 +310,17 @@ const config: Config = {
       indexName: "Fishjam",
       contextualSearch: true,
       searchPagePath: "search",
+      searchParameters: {
+        // For single-word queries, treat an exact match on a whole *word* as
+        // exact, not only a match on the whole attribute. The index default
+        // ("attribute") means a generated API heading that is literally the
+        // query — e.g. an interface field named "token" — counts as exact,
+        // while the "Security & Token Model" concept page does not. Algolia
+        // decides `exact` before `custom`, so weight.pageRank never gets a
+        // say and reference pages bury the guides. Set here rather than in
+        // the index settings because free DocSearch grants no editSettings key.
+        exactOnSingleWordQuery: "word",
+      },
       insights: false,
       askAi: {
         assistantId: "49fdf088-e614-4b89-86c2-da8c4b566260",
