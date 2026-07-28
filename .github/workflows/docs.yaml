@@ -59,3 +59,23 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  # A new docs version starts with zero records in Algolia, and contextual
+  # search filters on it, so the search box returns nothing until a recrawl.
+  reindex:
+    needs: deploy
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Reindex Algolia when a docs version is released
+        run: |
+          git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
+            | grep -qxF versions.json || exit 0
+          curl -sS -f -X POST \
+            -u "${{ secrets.ALGOLIA_CRAWLER_USER_ID }}:${{ secrets.ALGOLIA_CRAWLER_API_KEY }}" \
+            "https://crawler.algolia.com/api/1/crawlers/9bc2ab68-0ce9-4f44-9824-3a48219680b2/reindex"
