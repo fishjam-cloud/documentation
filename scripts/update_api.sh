@@ -38,9 +38,6 @@ copy_openapi() {
 }
 
 # TODO: switch to main once the template-workers branch is merged there.
-# Note: until that merge, the branch's checked-in spec lacks the oneOf variant
-# titles the committed composition-openapi.json already carries, so re-running
-# this script before the merge drops them.
 COMPOSITION_BRANCH="template-workers"
 
 # The composition source repo does not tag semver releases yet, so its
@@ -49,21 +46,13 @@ checkout_submodule_branch() {
     local submodule_path
     submodule_path=api/$1
 
-    cd $CWD/$submodule_path
-    git fetch origin $2
+    cd "$CWD/$submodule_path"
+    git fetch origin "$2"
     git checkout FETCH_HEAD --detach &>/dev/null
 }
 
-# The spec is passed through a presentation overlay before publishing: see
-# scripts/composition_openapi_overlay.jq.
 copy_composition_openapi() {
-    if ! command -v jq >/dev/null 2>&1; then
-        echo "jq is required to process the composition spec. Install jq and re-run." >&2
-        exit 1
-    fi
-
-    jq -f "$CWD/scripts/composition_openapi_overlay.jq" openapi.json \
-        >"$ASSETS_DIRECTORY/composition-openapi.json"
+    cp openapi.json "$ASSETS_DIRECTORY/composition-openapi.json"
     echo "Copied openapi.json of composition to the assets directory."
 }
 
