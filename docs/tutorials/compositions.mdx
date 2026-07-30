@@ -52,7 +52,7 @@ The response contains the `composition_id` you will use for every subsequent cal
 { "composition_id": "abc123", "api_url": "https://rtc.fishjam.io" }
 ```
 
-By default a composition auto-starts and is cleaned up automatically once it has no inputs. Save the id:
+By default a composition auto-starts, and cleans itself up after five minutes in which none of its inputs carry any media. Save the id:
 
 ```bash
 export COMPOSITION="abc123"

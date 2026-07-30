@@ -62,6 +62,8 @@ Next, you can should subscribe to notifications by sending `SubscribeRequest` ev
 
 The [OpenAPI document](https://github.com/fishjam-cloud/documentation/blob/main/static/api/composition-openapi.json) is generated from the service's source code and republished together with documentation updates.
 
+Alongside the input, output, and renderer endpoints, the API exposes three lifecycle calls: `POST …/start` starts a composition created with `autostart` off, `POST …/reset` tears down every registered input, output, and renderer and returns the composition to an empty, unstarted state, and `DELETE /api/composition/{composition_id}` destroys it.
+
 ### WebSocket event stream
 
 Some engine events (for example, an output finishing) are delivered over a WebSocket rather than HTTP. Connect to:
@@ -103,4 +105,4 @@ Every non-2xx response of the Composition API is a JSON object:
 { "message": "Composition not found", "http_status_code": 404 }
 ```
 
-Common statuses are `400` (bad request), `401` (unauthorized), `404` (not found), `500` (server error), and `503` (no capacity, returned by composition creation).
+Common statuses are `400` (bad request), `401` (unauthorized), `404` (not found), `500` (server error), and `503` (no capacity, returned by composition creation, templated output registration, events, and the WebSocket stream).

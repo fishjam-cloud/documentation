@@ -81,7 +81,7 @@ Build the bundle as usual with `npm run build`.
 
 ## Step 2: Create the composition and register the templated output
 
-Create the composition with auto-start and auto-cleanup off, since the room's inputs only appear once forwarding starts:
+Create the composition with auto-start off, because the room's inputs only appear once forwarding starts. Setting `cleanup_without_inputs` to `false` widens the cleanup condition to require both the inputs and the outputs to go quiet, so the composition survives the wait for the first peer to publish.
 
 ```bash
 curl -X POST "$COMPOSITION_URL/api/composition" \
@@ -118,6 +118,8 @@ curl -X POST "https://fishjam.io/api/v1/connect/$FISHJAM_ID/room/$ROOM_ID/track_
 
 Everything else happens automatically: Fishjam links the room to the composition, registers an input for every forwarded track, and streams the media in. Your template's `usePeers()` fills with the room's peers as their media starts flowing. You never register room inputs by hand.
 
+A room forwards to one composition at a time. Repeating the call with the same `compositionURL` is a no-op, while pointing the room at a different composition fails with `409 Conflict`.
+
 ## Step 4: Start the composition
 
 ```bash
@@ -129,7 +131,7 @@ Viewers can now watch the composed grid through the livestream's WHEP endpoint.
 
 ## Step 5: Clean up
 
-Delete the composition when you are done; deleting the room (or removing its track forwarding) stops the media on the Fishjam side.
+Delete the composition when you are done. Forwarding stops on the Fishjam side when the room itself stops, so delete the room too once you no longer need it. There is no separate call to remove a forwarding from a live room.
 
 ```bash
 curl -X DELETE "$COMPOSITION_URL/api/composition/$COMPOSITION" \
