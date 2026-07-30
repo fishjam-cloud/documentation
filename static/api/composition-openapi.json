@@ -18,6 +18,7 @@
     "/api/composition": {
       "post": {
         "tags": ["Compositions"],
+        "summary": "Create a composition",
         "operationId": "create_composition",
         "requestBody": {
           "content": {
@@ -79,13 +80,13 @@
           {
             "BearerAuth": []
           }
-        ],
-        "summary": "Create a composition"
+        ]
       }
     },
     "/api/composition/{composition_id}/output/{output_id}/template": {
       "post": {
         "tags": ["Outputs"],
+        "summary": "Register a templated output",
         "operationId": "register_template_output",
         "parameters": [
           {
@@ -122,6 +123,24 @@
                     "format": "binary"
                   }
                 }
+              },
+              "example": {
+                "config": {
+                  "type": "whip_client",
+                  "endpoint_url": "https://example.com/whip",
+                  "video": {
+                    "resolution": {
+                      "width": 1280,
+                      "height": 720
+                    },
+                    "initial": {
+                      "root": {
+                        "type": "view"
+                      }
+                    }
+                  }
+                },
+                "template": "@App.js"
               }
             }
           },
@@ -193,13 +212,13 @@
           {
             "BearerAuth": []
           }
-        ],
-        "summary": "Register a templated output"
+        ]
       }
     },
     "/api/composition/{composition_id}/room": {
       "post": {
         "tags": ["Room forwarding"],
+        "summary": "Link a Fishjam room",
         "operationId": "link_room",
         "parameters": [
           {
@@ -284,11 +303,11 @@
           {
             "BearerAuth": []
           }
-        ],
-        "summary": "Link a Fishjam room"
+        ]
       },
       "delete": {
         "tags": ["Room forwarding"],
+        "summary": "Unlink a Fishjam room",
         "operationId": "unlink_room",
         "parameters": [
           {
@@ -340,13 +359,13 @@
           {
             "BearerAuth": []
           }
-        ],
-        "summary": "Unlink a Fishjam room"
+        ]
       }
     },
     "/api/composition/{composition_id}/event": {
       "post": {
         "tags": ["Events"],
+        "summary": "Send an event to templates",
         "operationId": "send_composition_event",
         "parameters": [
           {
@@ -444,13 +463,13 @@
           {
             "BearerAuth": []
           }
-        ],
-        "summary": "Send an event to templates"
+        ]
       }
     },
     "/api/composition/{composition_id}/ws": {
       "get": {
         "tags": ["Events"],
+        "summary": "Subscribe to engine events",
         "description": "Open a WebSocket to the composition.",
         "operationId": "ws",
         "parameters": [
@@ -543,13 +562,13 @@
           {
             "WebSocketSubprotocolAuth": []
           }
-        ],
-        "summary": "Subscribe to engine events"
+        ]
       }
     },
     "/api/composition/{composition_id}": {
       "delete": {
         "tags": ["Compositions"],
+        "summary": "Delete a composition",
         "operationId": "delete_composition",
         "parameters": [
           {
@@ -601,13 +620,13 @@
           {
             "BearerAuth": []
           }
-        ],
-        "summary": "Delete a composition"
+        ]
       }
     },
     "/api/composition/{composition_id}/start": {
       "post": {
         "tags": ["Compositions"],
+        "summary": "Start a composition",
         "operationId": "start",
         "parameters": [
           {
@@ -666,13 +685,13 @@
           {
             "BearerAuth": []
           }
-        ],
-        "summary": "Start a composition"
+        ]
       }
     },
     "/api/composition/{composition_id}/reset": {
       "post": {
         "tags": ["Compositions"],
+        "summary": "Reset a composition",
         "operationId": "reset",
         "parameters": [
           {
@@ -731,13 +750,13 @@
           {
             "BearerAuth": []
           }
-        ],
-        "summary": "Reset a composition"
+        ]
       }
     },
     "/api/composition/{composition_id}/input/{input_id}/register": {
       "post": {
         "tags": ["Inputs"],
+        "summary": "Register an input",
         "operationId": "register_input",
         "parameters": [
           {
@@ -828,13 +847,13 @@
           {
             "BearerAuth": []
           }
-        ],
-        "summary": "Register an input"
+        ]
       }
     },
     "/api/composition/{composition_id}/output/{output_id}/register": {
       "post": {
         "tags": ["Outputs"],
+        "summary": "Register an output",
         "operationId": "register_output",
         "parameters": [
           {
@@ -959,13 +978,13 @@
           {
             "BearerAuth": []
           }
-        ],
-        "summary": "Register an output"
+        ]
       }
     },
     "/api/composition/{composition_id}/image/{image_id}/register": {
       "post": {
         "tags": ["Renderers"],
+        "summary": "Register an image",
         "operationId": "register_image",
         "parameters": [
           {
@@ -992,6 +1011,10 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ImageSpec"
+              },
+              "example": {
+                "asset_type": "png",
+                "url": "https://example.com/logo.png"
               }
             }
           },
@@ -1053,13 +1076,13 @@
           {
             "BearerAuth": []
           }
-        ],
-        "summary": "Register an image"
+        ]
       }
     },
     "/api/composition/{composition_id}/font/register": {
       "post": {
         "tags": ["Renderers"],
+        "summary": "Register a font",
         "operationId": "register_font",
         "parameters": [
           {
@@ -1084,6 +1107,9 @@
                     "format": "binary"
                   }
                 }
+              },
+              "example": {
+                "font": "@Roboto-Regular.ttf"
               }
             }
           },
@@ -1145,13 +1171,13 @@
           {
             "BearerAuth": []
           }
-        ],
-        "summary": "Register a font"
+        ]
       }
     },
     "/api/composition/{composition_id}/input/{input_id}/unregister": {
       "post": {
         "tags": ["Inputs"],
+        "summary": "Unregister an input",
         "operationId": "unregister_input",
         "parameters": [
           {
@@ -1178,6 +1204,9 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UnregisterInput"
+              },
+              "example": {
+                "schedule_time_ms": 5000
               }
             }
           },
@@ -1239,13 +1268,13 @@
           {
             "BearerAuth": []
           }
-        ],
-        "summary": "Unregister an input"
+        ]
       }
     },
     "/api/composition/{composition_id}/output/{output_id}/unregister": {
       "post": {
         "tags": ["Outputs"],
+        "summary": "Unregister an output",
         "operationId": "unregister_output",
         "parameters": [
           {
@@ -1272,6 +1301,9 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UnregisterOutput"
+              },
+              "example": {
+                "schedule_time_ms": 5000
               }
             }
           },
@@ -1333,13 +1365,13 @@
           {
             "BearerAuth": []
           }
-        ],
-        "summary": "Unregister an output"
+        ]
       }
     },
     "/api/composition/{composition_id}/image/{image_id}/unregister": {
       "post": {
         "tags": ["Renderers"],
+        "summary": "Unregister an image",
         "operationId": "unregister_image",
         "parameters": [
           {
@@ -1366,6 +1398,9 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UnregisterRenderer"
+              },
+              "example": {
+                "schedule_time_ms": 5000
               }
             }
           },
@@ -1427,13 +1462,13 @@
           {
             "BearerAuth": []
           }
-        ],
-        "summary": "Unregister an image"
+        ]
       }
     },
     "/api/composition/{composition_id}/output/{output_id}/update": {
       "post": {
         "tags": ["Outputs"],
+        "summary": "Update an output's scene",
         "operationId": "update_output",
         "parameters": [
           {
@@ -1532,13 +1567,13 @@
           {
             "BearerAuth": []
           }
-        ],
-        "summary": "Update an output's scene"
+        ]
       }
     },
     "/api/composition/{composition_id}/output/{output_id}/request_keyframe": {
       "post": {
         "tags": ["Outputs"],
+        "summary": "Request a keyframe",
         "operationId": "request_keyframe",
         "parameters": [
           {
@@ -1616,13 +1651,13 @@
           {
             "BearerAuth": []
           }
-        ],
-        "summary": "Request a keyframe"
+        ]
       }
     },
     "/api/composition/{composition_id}/whip/{input_id}": {
       "post": {
         "tags": ["Media transport"],
+        "summary": "Publish to an input over WHIP",
         "operationId": "whip_offer",
         "parameters": [
           {
@@ -1650,7 +1685,8 @@
             "application/sdp": {
               "schema": {
                 "type": "string"
-              }
+              },
+              "example": "v=0\r\no=- 4611731400430051336 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\nm=video 9 UDP/TLS/RTP/SAVPF 96\r\na=mid:0\r\na=sendonly\r\na=rtpmap:96 H264/90000\r\n"
             }
           },
           "required": true
@@ -1719,13 +1755,13 @@
           {
             "BearerAuth": []
           }
-        ],
-        "summary": "Publish to an input over WHIP"
+        ]
       }
     },
     "/api/composition/{composition_id}/whep/{output_id}": {
       "post": {
         "tags": ["Media transport"],
+        "summary": "Play an output over WHEP",
         "operationId": "whep_offer",
         "parameters": [
           {
@@ -1753,7 +1789,8 @@
             "application/sdp": {
               "schema": {
                 "type": "string"
-              }
+              },
+              "example": "v=0\r\no=- 4611731400430051337 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\nm=video 9 UDP/TLS/RTP/SAVPF 96\r\na=mid:0\r\na=recvonly\r\na=rtpmap:96 H264/90000\r\n"
             }
           },
           "required": true
@@ -1823,8 +1860,7 @@
           {
             "BearerAuth": []
           }
-        ],
-        "summary": "Play an output over WHEP"
+        ]
       }
     }
   },
@@ -1917,16 +1953,6 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/InputStream"
-              },
-              {
-                "type": "object",
-                "required": ["type"],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": ["input_stream"]
-                  }
-                }
               }
             ],
             "title": "ComponentInputStream"
@@ -1935,16 +1961,6 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/View"
-              },
-              {
-                "type": "object",
-                "required": ["type"],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": ["view"]
-                  }
-                }
               }
             ],
             "title": "ComponentView"
@@ -1953,16 +1969,6 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/Text"
-              },
-              {
-                "type": "object",
-                "required": ["type"],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": ["text"]
-                  }
-                }
               }
             ],
             "title": "ComponentText"
@@ -1971,16 +1977,6 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/Tiles"
-              },
-              {
-                "type": "object",
-                "required": ["type"],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": ["tiles"]
-                  }
-                }
               }
             ],
             "title": "ComponentTiles"
@@ -1989,16 +1985,6 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/Rescaler"
-              },
-              {
-                "type": "object",
-                "required": ["type"],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": ["rescaler"]
-                  }
-                }
               }
             ],
             "title": "ComponentRescaler"
@@ -2007,16 +1993,6 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/Image"
-              },
-              {
-                "type": "object",
-                "required": ["type"],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": ["image"]
-                  }
-                }
               }
             ],
             "title": "ComponentImage"
@@ -2135,9 +2111,9 @@
           },
           {
             "type": "integer",
+            "title": "Frames per second",
             "format": "int32",
-            "minimum": 0,
-            "title": "Frames per second"
+            "minimum": 0
           }
         ]
       },
@@ -2159,11 +2135,15 @@
       "HlsInput": {
         "type": "object",
         "description": "Parameters for an input stream from HLS source.",
-        "required": ["url"],
+        "required": ["url", "type"],
         "properties": {
           "url": {
             "type": "string",
             "description": "URL to HLS playlist"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["hls"]
           }
         },
         "additionalProperties": false
@@ -2174,7 +2154,7 @@
       },
       "Image": {
         "type": "object",
-        "required": ["image_id"],
+        "required": ["image_id", "type"],
         "properties": {
           "id": {
             "oneOf": [
@@ -2189,7 +2169,7 @@
           },
           "image_id": {
             "$ref": "#/components/schemas/RendererId",
-            "description": "Id of an image. It identifies an image registered using a [`register image`](../routes.md#register-image) request."
+            "description": "Id of an image. It identifies an image registered using a `register image` request."
           },
           "width": {
             "type": ["number", "null"],
@@ -2200,6 +2180,10 @@
             "type": ["number", "null"],
             "format": "float",
             "description": "Height of the image in pixels.\nIf `width` is not explicitly provided, the image will automatically adjust its width to maintain its original aspect ratio relative to the height."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["image"]
           }
         },
         "additionalProperties": false
@@ -2293,7 +2277,7 @@
       },
       "InputStream": {
         "type": "object",
-        "required": ["input_id"],
+        "required": ["input_id", "type"],
         "properties": {
           "id": {
             "oneOf": [
@@ -2308,7 +2292,11 @@
           },
           "input_id": {
             "$ref": "#/components/schemas/InputId",
-            "description": "Id of an input. It identifies a stream registered using a [`RegisterInputStream`](../routes.md#register-input) request."
+            "description": "Id of an input. It identifies a stream registered using a `RegisterInputStream` request."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["input_stream"]
           }
         },
         "additionalProperties": false
@@ -2320,6 +2308,7 @@
       "Mp4Input": {
         "type": "object",
         "description": "Input stream from an MP4 file.",
+        "required": ["type"],
         "properties": {
           "url": {
             "type": ["string", "null"],
@@ -2328,6 +2317,10 @@
           "loop": {
             "type": ["boolean", "null"],
             "description": "(**default=`false`**) If input should be played in the loop. <span class=\"badge badge--primary\">Added in v0.4.0</span>"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["mp4"]
           }
         },
         "additionalProperties": false
@@ -2433,7 +2426,7 @@
           },
           "initial": {
             "$ref": "#/components/schemas/VideoScene",
-            "description": "Root of a component tree/scene that should be rendered for the output. Use [`update_output` request](../routes.md#update-output) to update this value after registration. [Learn more](../../concept/component.md)."
+            "description": "Root of a component tree/scene that should be rendered for the output. Use `update_output` request to update this value after registration. Learn more."
           }
         },
         "additionalProperties": false
@@ -2531,9 +2524,9 @@
           },
           {
             "type": "integer",
+            "title": "Single port",
             "format": "int32",
-            "minimum": 0,
-            "title": "Single port"
+            "minimum": 0
           }
         ]
       },
@@ -2546,16 +2539,6 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/RtmpInput"
-              },
-              {
-                "type": "object",
-                "required": ["type"],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": ["rtmp_server"]
-                  }
-                }
               }
             ],
             "title": "RegisterInputRtmpServer"
@@ -2564,16 +2547,6 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/Mp4Input"
-              },
-              {
-                "type": "object",
-                "required": ["type"],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": ["mp4"]
-                  }
-                }
               }
             ],
             "title": "RegisterInputMp4"
@@ -2582,16 +2555,6 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/WhipInput"
-              },
-              {
-                "type": "object",
-                "required": ["type"],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": ["whip_server"]
-                  }
-                }
               }
             ],
             "title": "RegisterInputWhipServer"
@@ -2600,16 +2563,6 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/WhepInput"
-              },
-              {
-                "type": "object",
-                "required": ["type"],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": ["whep_client"]
-                  }
-                }
               }
             ],
             "title": "RegisterInputWhepClient"
@@ -2618,16 +2571,6 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/HlsInput"
-              },
-              {
-                "type": "object",
-                "required": ["type"],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": ["hls"]
-                  }
-                }
               }
             ],
             "title": "RegisterInputHls"
@@ -2640,16 +2583,6 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/RtmpOutput"
-              },
-              {
-                "type": "object",
-                "required": ["type"],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": ["rtmp_client"]
-                  }
-                }
               }
             ],
             "title": "RegisterOutputRtmpClient"
@@ -2658,16 +2591,6 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/WhipOutput"
-              },
-              {
-                "type": "object",
-                "required": ["type"],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": ["whip_client"]
-                  }
-                }
               }
             ],
             "title": "RegisterOutputWhipClient"
@@ -2696,7 +2619,7 @@
       },
       "Rescaler": {
         "type": "object",
-        "required": ["child"],
+        "required": ["child", "type"],
         "properties": {
           "id": {
             "oneOf": [
@@ -2819,6 +2742,10 @@
               "$ref": "#/components/schemas/BoxShadow"
             },
             "description": "List of box shadows."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["rescaler"]
           }
         },
         "additionalProperties": false
@@ -2843,16 +2770,17 @@
         "oneOf": [
           {
             "type": "object",
+            "title": "Bearer token",
             "required": ["bearer_token"],
             "properties": {
               "bearer_token": {
                 "type": "string"
               }
-            },
-            "title": "Bearer token"
+            }
           },
           {
             "type": "object",
+            "title": "Media durations",
             "properties": {
               "video_duration_ms": {
                 "type": ["integer", "null"],
@@ -2864,19 +2792,18 @@
                 "format": "int64",
                 "minimum": 0
               }
-            },
-            "title": "Media durations"
+            }
           },
           {
             "type": "object",
+            "title": "Port",
             "properties": {
               "port": {
                 "type": ["integer", "null"],
                 "format": "int32",
                 "minimum": 0
               }
-            },
-            "title": "Port"
+            }
           },
           {
             "type": "object",
@@ -2898,7 +2825,7 @@
       },
       "RtmpInput": {
         "type": "object",
-        "required": ["app", "stream_key"],
+        "required": ["app", "stream_key", "type"],
         "properties": {
           "app": {
             "type": "string",
@@ -2907,13 +2834,17 @@
           "stream_key": {
             "type": "string",
             "description": "The RTMP stream key.\nThis is the second path segment of the RTMP stream URL that Smelter listens on for incoming streams.\nFormat: `rtmp://<ip_address>:<port>/<app>/<stream_key`"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["rtmp_server"]
           }
         },
         "additionalProperties": false
       },
       "RtmpOutput": {
         "type": "object",
-        "required": ["url"],
+        "required": ["url", "type"],
         "properties": {
           "url": {
             "type": "string",
@@ -2940,6 +2871,10 @@
                 "description": "Audio stream configuration."
               }
             ]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["rtmp_client"]
           }
         },
         "additionalProperties": false
@@ -3050,14 +2985,14 @@
         "properties": {
           "source": {
             "type": "string",
-            "description": "Shader source code. [Learn more.](../../concept/shaders)"
+            "description": "Shader source code. Learn more."
           }
         },
         "additionalProperties": false
       },
       "Text": {
         "type": "object",
-        "required": ["text", "font_size"],
+        "required": ["text", "font_size", "type"],
         "properties": {
           "id": {
             "oneOf": [
@@ -3173,6 +3108,10 @@
                 "description": "(**default=`\"normal\"`**) Font weight. The selected font needs to support the specified weight."
               }
             ]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["text"]
           }
         },
         "additionalProperties": false
@@ -3202,6 +3141,7 @@
       },
       "Tiles": {
         "type": "object",
+        "required": ["type"],
         "properties": {
           "id": {
             "oneOf": [
@@ -3295,6 +3235,10 @@
                 "description": "Defines how this component will behave during a scene update. This will only have an\neffect if the previous scene already contained a `Tiles` component with the same id."
               }
             ]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["tiles"]
           }
         },
         "additionalProperties": false
@@ -3397,13 +3341,14 @@
         "oneOf": [
           {
             "type": "integer",
+            "title": "Average bitrate",
             "format": "int64",
             "description": "Average bitrate measured in bits/second. Encoder will try to keep the bitrate around the provided average,\nbut may temporarily increase it by 25%.",
-            "minimum": 0,
-            "title": "Average bitrate"
+            "minimum": 0
           },
           {
             "type": "object",
+            "title": "Average and max bitrate",
             "required": ["average_bitrate", "max_bitrate"],
             "properties": {
               "average_bitrate": {
@@ -3418,8 +3363,7 @@
                 "description": "Max bitrate measured in bits/second.",
                 "minimum": 0
               }
-            },
-            "title": "Average and max bitrate"
+            }
           }
         ]
       },
@@ -3435,6 +3379,7 @@
       },
       "View": {
         "type": "object",
+        "required": ["type"],
         "properties": {
           "id": {
             "oneOf": [
@@ -3595,6 +3540,10 @@
             "type": ["number", "null"],
             "format": "float",
             "description": "(**default=`0.0`**) Padding on left side in pixels."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["view"]
           }
         },
         "additionalProperties": false
@@ -3605,7 +3554,7 @@
       },
       "WhepInput": {
         "type": "object",
-        "required": ["endpoint_url"],
+        "required": ["endpoint_url", "type"],
         "properties": {
           "endpoint_url": {
             "type": "string",
@@ -3618,6 +3567,10 @@
           "video": {
             "type": ["boolean", "null"],
             "description": "If `true`, requests a h264-encoded video track.\nIf not provided, it defaults to `true`"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["whep_client"]
           }
         },
         "additionalProperties": false
@@ -3671,6 +3624,7 @@
       },
       "WhipInput": {
         "type": "object",
+        "required": ["type"],
         "properties": {
           "bearer_token": {
             "type": ["string", "null"],
@@ -3679,13 +3633,17 @@
           "video": {
             "type": ["boolean", "null"],
             "description": "If `true`, accepts a h264-encoded video track.\nIf not provided, it defaults to `true`"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["whip_server"]
           }
         },
         "additionalProperties": false
       },
       "WhipOutput": {
         "type": "object",
-        "required": ["endpoint_url"],
+        "required": ["endpoint_url", "type"],
         "properties": {
           "endpoint_url": {
             "type": "string",
@@ -3715,6 +3673,10 @@
                 "description": "Audio track configuration."
               }
             ]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["whip_client"]
           }
         },
         "additionalProperties": false
