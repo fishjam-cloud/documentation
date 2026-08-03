@@ -57,11 +57,13 @@ connection; for Android,
 
 1. Your backend sends a VoIP push to the callee's device.
 2. The OS wakes the app, even if it was killed, and the SDK reports the call to
-   CallKit / Telecom. `status` becomes `incoming`.
-3. The user answers on the **system** call UI. `status` becomes `connecting`.
+   CallKit / Telecom. `callStatus` becomes `incoming`.
+3. The user answers on the **system** call UI. `callStatus` becomes `connecting`.
 4. **Your app** joins the Fishjam room and waits for the remote media.
-5. Once media is live, **your app** calls `reportConnected()`. The SDK confirms the
-   connection to the OS, the call timer starts, and `status` becomes `active`.
+5. Once media is live, **your app** calls
+   [`reportConnected()`](../../api/mobile/type-aliases/VoIPContextValue#reportconnected).
+   The SDK confirms the connection to the OS, the call timer starts, and `callStatus`
+   becomes `active`.
 
 The SDK tracks the call's state and drives the native call UI; **joining the room and
 reporting back is your app's job**. Step 5 has a **deadline**: an answered call that
@@ -437,20 +439,23 @@ saw.
 
 ## 5. Connect calls to a room
 
-This is the bridge between the two halves. `VoIPProvider` tells you a call needs a room;
-your app joins it and reports back. Split the work like this:
+This step wires the native call to the Fishjam room: `VoIPProvider` tells you a call
+needs a room; your app joins it and reports back. Split the work like this:
 
 **The provider tells you** (through `useVoIP`):
 
-- `status` is `connecting`: join `currentCall.roomName` (see
+- `callStatus` is `connecting`: join `currentCall.roomName` (see
   [`CurrentCall`](../../api/mobile/type-aliases/CurrentCall)).
-- `status` left `connecting` / `active`: leave that room.
+- `callStatus` left `connecting` / `active`: leave that room.
 - `isOnHold` or `isMuted` changed: apply it to your tracks ([step 9](#9-hold-and-mute)).
 
 **You tell the provider:**
 
 - `reportConnected()` once media is live, or `reportConnectFailed()` if the join failed.
-- `endCall('remote')` when the other side disappears from the room.
+- `endCall('remote')` when the other side disappears from the room. `'remote'` means the
+  other party hung up — it's one of six
+  [`CallEndedReason`](../../api/mobile/type-aliases/CallEndedReason) values, all covered
+  in [step 8](#8-end-a-call).
 
 A remote peer appearing in the room is what "media is live" means, so watch
 [`usePeers`](../../api/mobile/functions/usePeers) and report from there. Start your
@@ -470,15 +475,20 @@ import { useEffect } from "react";
 declare function getPeerToken(roomName: string): Promise<string>;
 // ---cut---
 function useVoIPRoomConnection() {
-  const { status, currentCall, reportConnected, reportConnectFailed, endCall } =
-    useVoIP();
+  const {
+    callStatus,
+    currentCall,
+    reportConnected,
+    reportConnectFailed,
+    endCall,
+  } = useVoIP();
   const { joinRoom, leaveRoom } = useConnection();
   const { startMicrophone, stopMicrophone } = useMicrophone();
   const { remotePeers } = usePeers();
 
   // Join the room the SDK is asking for; leave it when the call ends.
   const targetRoom =
-    status === "connecting" || status === "active"
+    callStatus === "connecting" || callStatus === "active"
       ? currentCall?.roomName
       : undefined;
 
@@ -506,12 +516,12 @@ function useVoIPRoomConnection() {
 
   // A remote peer showing up means the call connected; it leaving means they hung up.
   useEffect(() => {
-    if (status === "connecting" && remotePeers.length > 0) {
+    if (callStatus === "connecting" && remotePeers.length > 0) {
       void reportConnected(); // [!code highlight]
-    } else if (status === "active" && remotePeers.length === 0) {
+    } else if (callStatus === "active" && remotePeers.length === 0) {
       void endCall("remote");
     }
-  }, [status, remotePeers.length]);
+  }, [callStatus, remotePeers.length]);
 }
 ```
 
@@ -526,14 +536,14 @@ call.
 
 ## 6. Handle an incoming call
 
-A push wakes the app, the system UI starts ringing, and `useVoIP` moves `status` to
+A push wakes the app, the system UI starts ringing, and `useVoIP` moves `callStatus` to
 `'incoming'` with [`currentCall`](../../api/mobile/type-aliases/CurrentCall) populated.
 **Answering happens on the system call UI** (the CallKit screen or Android's full-screen
-activity), not from a button you build. On answer, `status` moves to `'connecting'` and
+activity), not from a button you build. On answer, `callStatus` moves to `'connecting'` and
 the hook from [step 5](#5-connect-calls-to-a-room) joins the room and reports back;
 you don't wire the accept path yourself.
 
-You can still render your own screen off `status` while a call rings (to match your app's
+You can still render your own screen off `callStatus` while a call rings (to match your app's
 look), and decline from it with `endCall('rejected')`:
 
 ```tsx
@@ -546,10 +556,10 @@ declare function IncomingCallScreen(props: {
 }): ReactElement;
 // ---cut---
 function CallUI() {
-  const { status, currentCall, endCall } = useVoIP();
-  // status: 'available' | 'incoming' | 'connecting' | 'active' // [!code highlight]
+  const { callStatus, currentCall, endCall } = useVoIP();
+  // callStatus: 'available' | 'incoming' | 'connecting' | 'active' // [!code highlight]
 
-  if (status === "incoming") {
+  if (callStatus === "incoming") {
     return (
       <IncomingCallScreen
         name={currentCall?.displayName}
@@ -587,8 +597,8 @@ For the exact message our example server sends, see
 
 You mint the room name and ring the callee through **your own** signaling backend, then
 call `startCall(to, roomName)`. `startCall` only registers the call with CallKit /
-Telecom and moves `status` to `'connecting'`. It doesn't ring anyone and doesn't join;
-the hook from [step 5](#5-connect-calls-to-a-room) joins once `status` is `connecting`,
+Telecom and moves `callStatus` to `'connecting'`. It doesn't ring anyone and doesn't join;
+the hook from [step 5](#5-connect-calls-to-a-room) joins once `callStatus` is `connecting`,
 exactly as it does for an incoming call. The order is yours to choose, and doing signaling
 first means a failed ring never shows a call that can't connect:
 
@@ -606,7 +616,7 @@ function usePlaceCall() {
     async (to: string) => {
       const roomName = makeRoomName(); // you own the room name
       await ringCallee(to, roomName); // your signaling rings the callee
-      await startCall(to, roomName); // [!code highlight] registers the native call, status → 'connecting'
+      await startCall(to, roomName); // [!code highlight] registers the native call, callStatus → 'connecting'
     },
     [startCall],
   );
@@ -620,7 +630,7 @@ reaches the callee: the name **they** see is the
 [`displayName`](#6-handle-an-incoming-call) your backend puts in the push.
 
 If `startCall`'s native session won't start, the provider ends the call as `failed` and
-`status` returns to `'available'`. A failed room join is reported by your hook's
+`callStatus` returns to `'available'`. A failed room join is reported by your hook's
 `reportConnectFailed()` (step 5).
 
 ## 8. End a call
@@ -670,14 +680,14 @@ import { useMicrophone, useVoIP } from "@fishjam-cloud/react-native-client";
 import { useEffect } from "react";
 // ---cut---
 function useSyncMute() {
-  const { status, isMuted } = useVoIP();
+  const { callStatus, isMuted } = useVoIP();
   const { isMicrophoneOn, toggleMicrophone } = useMicrophone();
 
   useEffect(() => {
-    if (status !== "active") return; // only while a call is live // [!code highlight]
+    if (callStatus !== "active") return; // only while a call is live // [!code highlight]
     // Mirror the system mute onto your published track.
     if (isMicrophoneOn === isMuted) void toggleMicrophone();
-  }, [isMuted, status]);
+  }, [isMuted, callStatus]);
 }
 ```
 
