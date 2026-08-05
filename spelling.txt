@@ -119,3 +119,17 @@ unplugin
 unorm
 bgra
 BGRA
+VoIP
+CallKit
+PushKit
+Telecom
+APNs
+FCM
+prebuild
+Firebase
+Recents
+redial
+backgrounded
+Gradle
+entitlement
+entitlements
