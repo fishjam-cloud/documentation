@@ -15,7 +15,7 @@ A composition with two WebRTC inputs arranged into a tiled layout, published as 
 
 ```
 [camera 1] ──WHIP──▶ ┐
-                     ├─▶ composition (tiles) ──WHIP──▶ [viewer via WHEP]
+                     ├─▶ composition ──WHIP──▶ livestream ──WHEP──▶ [viewer]
 [camera 2] ──WHIP──▶ ┘
 ```
 
@@ -23,12 +23,13 @@ A composition with two WebRTC inputs arranged into a tiled layout, published as 
 
 - How to create a composition.
 - How to register inputs and an output with a layout.
-- How to publish to and play back from a composition.
+- How to publish into a composition, and where to watch the composed result.
 
 ## Prerequisites
 
 - A Fishjam account. Open the [**Fishjam developer panel**](https://fishjam.io/app) and copy your **Management Token**.
 - A WHIP/WHEP client to publish and play streams. Any standard WebRTC tool works.
+- A destination for the composed stream, such as a [livestream](./../explanation/livestreams). The composition publishes to it over WHIP, and viewers watch from it over WHEP.
 
 All requests go to `https://rtc.fishjam.io` and carry your token as a Bearer header:
 
