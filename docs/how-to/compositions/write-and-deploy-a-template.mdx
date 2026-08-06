@@ -25,7 +25,7 @@ This generates a ready-to-build project: a `package.json` with `build` and `type
 
 ## Write the template
 
-A template **default-exports a React component**. You lay out the composition with components from [`@swmansion/smelter`](https://smelter.dev). The example below renders one registered input full-frame (`camera_1` from the [Compositions tutorial](./../../tutorials/compositions)) with a caption on top:
+A template **default-exports a React component**. You lay out the composition with components from [`@swmansion/smelter`](https://smelter.dev/ts-sdk/overview). The example below renders one registered input full-frame (`camera_1` from the [Compositions tutorial](./../../tutorials/compositions)) with a caption on top:
 
 ```tsx
 // @jsx: react-jsx
@@ -48,7 +48,7 @@ export default function App() {
 }
 ```
 
-`<InputStream inputId={…} />` renders one of the composition's registered inputs. Layout, styling, and every visual component (`View`, `Tiles`, `InputStream`, `Rescaler`, `Text`, `Image`, …) come from `@swmansion/smelter`. Its style model is not CSS: see the [Smelter reference](https://smelter.dev) for the full component and style documentation.
+`<InputStream inputId={…} />` renders one of the composition's registered inputs. Layout, styling, and every visual component (`View`, `Tiles`, `InputStream`, `Rescaler`, `Text`, `Image`, …) come from `@swmansion/smelter`. Its style model is not CSS: see the [Smelter TypeScript SDK reference](https://smelter.dev/ts-sdk/overview) for every component and its style props.
 
 Templates really shine when composing a Fishjam room: hooks from `@fishjam-cloud/composition` give the template live room state, so it re-renders as participants join, leave, or speak. See [Compose a Fishjam room](./compose-a-fishjam-room).
 

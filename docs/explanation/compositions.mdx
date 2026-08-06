@@ -61,7 +61,7 @@ The available component types are:
 | `text`         | Renders a text string.                                                           |
 | `image`        | Renders a registered image. Identified by `image_id`.                            |
 
-Components nest freely: a `tiles` of `rescaler`s wrapping `input_stream`s, a `view` with a `text` caption over an `input_stream`, and so on. The styling and full property set of each component come from Smelter itself; see the [Smelter component reference](https://smelter.dev) for every available property.
+Components nest freely: a `tiles` of `rescaler`s wrapping `input_stream`s, a `view` with a `text` caption over an `input_stream`, and so on. The styling and full property set of each component come from Smelter itself; the [Smelter HTTP API reference](https://smelter.dev/http-api/overview) documents every component and its properties.
 
 ### The audio scene
 
@@ -84,9 +84,9 @@ You provide the initial scene when you register an output, under `video.initial`
 
 ### Changing a scene over time
 
-A scene is not fixed for the life of an output. You can replace it while the composition is running, either straight away or at a chosen point on the composition timeline, so the layout can follow whatever your application is doing. See [Choose inputs and outputs](./../how-to/compositions/inputs-and-outputs) for how to send an update, and the [tutorial](./../tutorials/compositions) to try one.
+A scene is not fixed for the life of an output. You can replace it while the composition is running, immediately or at a chosen point on the composition timeline.
 
-There are two ways to decide what the layout should be. You can drive it yourself, pushing a new scene whenever something changes, which keeps the layout entirely in your backend's hands. Or you can hand that job to a **template**: a React component that receives the live room state and re-renders itself as participants join, leave, mute, or speak. Templates suit anything where the layout follows the room, since they turn a stream of updates you would otherwise have to send into a component that reacts on its own. See [Write and deploy a template](./../how-to/compositions/write-and-deploy-a-template) to build one.
+Either you push those updates yourself, or you hand the job to a **template**: a React component that receives the live room state and re-renders as the room changes. See [Choose inputs and outputs](./../how-to/compositions/inputs-and-outputs) to send an update, or [Write and deploy a template](./../how-to/compositions/write-and-deploy-a-template) to build one.
 
 ## Where to go next
 
