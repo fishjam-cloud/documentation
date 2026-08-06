@@ -14,11 +14,46 @@ Fishjam room (peers) ──forwarded──▶ composition (template) ──WHIP�
 
 ## Prerequisites
 
-- A Fishjam room created with `"videoCodec": "h264"` (compositions consume h264 video), with peers publishing into it.
 - A [livestream](./../../explanation/livestreams) (or any other WHIP/RTMP destination) to publish the composed stream to.
 - A template project scaffolded with the composition CLI (see [Write and deploy a template](./write-and-deploy-a-template)).
 
-## Step 1: Write a room-aware template
+Compositions live on `https://rtc.fishjam.io`, while rooms and livestreams live on the Fishjam API. Both take the same Management Token:
+
+```bash
+export COMPOSITION_URL="https://rtc.fishjam.io"
+export FISHJAM_URL="https://fishjam.io/api/v1/connect/<YOUR_FISHJAM_ID>"
+export TOKEN="<YOUR_FISHJAM_TOKEN>"
+```
+
+## Step 1: Create a room and invite peers
+
+Compositions consume h264 video, so the room has to enforce that codec. It is the default, but set it explicitly so a change of default cannot break the composition later:
+
+```bash
+curl -X POST "$FISHJAM_URL/room" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "roomType": "conference", "videoCodec": "h264" }'
+```
+
+The room id comes back under `data.room.id`. Save it:
+
+```bash
+export ROOM_ID="<ROOM_ID>"
+```
+
+Every participant needs their own peer token. Create one per person:
+
+```bash
+curl -X POST "$FISHJAM_URL/room/$ROOM_ID/peer" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "type": "webrtc", "options": {} }'
+```
+
+Hand each `data.token` to a client and have it join, using [Connect to a room](./../client/connecting) or the [React quick start](./../../tutorials/react-quick-start). The composition renders whoever is publishing, so get at least one peer in with a camera on before you expect a picture.
+
+## Step 2: Write a room-aware template
 
 Hooks from `@fishjam-cloud/composition` give the template live room state; it re-renders automatically as participants join, leave, mute, or speak.
 
@@ -79,7 +114,7 @@ The key link is `stream.inputId`: you pass it to `<InputStream inputId={…} />`
 
 Build the bundle as usual with `npm run build`.
 
-## Step 2: Create the composition and register the templated output
+## Step 3: Create the composition and register the templated output
 
 Create the composition with auto-start off, because the room's inputs only appear once forwarding starts. Setting `cleanup_without_inputs` to `false` widens the cleanup condition to require both the inputs and the outputs to go quiet, so the composition survives the wait for the first peer to publish.
 
@@ -105,12 +140,12 @@ curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/template
   -F "template=@dist/App.js"
 ```
 
-## Step 3: Forward the room into the composition
+## Step 4: Forward the room into the composition
 
 One call to the [Fishjam Server API](/api/rest) wires everything up:
 
 ```bash
-curl -X POST "https://fishjam.io/api/v1/connect/$FISHJAM_ID/room/$ROOM_ID/track_forwardings" \
+curl -X POST "$FISHJAM_URL/room/$ROOM_ID/track_forwardings" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d "{ \"compositionURL\": \"$COMPOSITION_URL/api/composition/$COMPOSITION\", \"selector\": \"all\" }"
@@ -120,7 +155,7 @@ Everything else happens automatically: Fishjam links the room to the composition
 
 A room forwards to one composition at a time. Repeating the call with the same `compositionURL` is a no-op, while pointing the room at a different composition fails with `409 Conflict`.
 
-## Step 4: Start the composition
+## Step 5: Start the composition
 
 ```bash
 curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/start" \
@@ -129,11 +164,14 @@ curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/start" \
 
 Viewers can now watch the composed grid through the livestream's WHEP endpoint.
 
-## Step 5: Clean up
+## Step 6: Clean up
 
 Delete the composition when you are done. Forwarding stops on the Fishjam side when the room itself stops, so delete the room too once you no longer need it. There is no separate call to remove a forwarding from a live room.
 
 ```bash
 curl -X DELETE "$COMPOSITION_URL/api/composition/$COMPOSITION" \
+  -H "Authorization: Bearer $TOKEN"
+
+curl -X DELETE "$FISHJAM_URL/room/$ROOM_ID" \
   -H "Authorization: Bearer $TOKEN"
 ```
