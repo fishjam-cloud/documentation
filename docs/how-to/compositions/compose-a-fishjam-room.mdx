@@ -118,6 +118,10 @@ Build the bundle as usual with `npm run build`.
 
 Create the composition with auto-start off, because the room's inputs only appear once forwarding starts. Setting `cleanup_without_inputs` to `false` widens the cleanup condition to require both the inputs and the outputs to go quiet, so the composition survives the wait for the first peer to publish.
 
+:::warning
+That second flag switches off the guard that would otherwise delete an idle composition after five minutes, and a composition bills for GPU time the whole time it exists. Nothing will clean this one up for you, so delete it as soon as you are finished, and do not leave one running after a test. See [Cost and lifecycle](./../../explanation/compositions#cost-and-lifecycle).
+:::
+
 ```bash
 curl -X POST "$COMPOSITION_URL/api/composition" \
   -H "Authorization: Bearer $TOKEN" \

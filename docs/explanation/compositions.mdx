@@ -29,6 +29,21 @@ A **composition** is a single running compositing session. Into it you register:
 
 An output's scene can either be described directly in the API or rendered by a **template**: a React component, written with the layout components and the [`@fishjam-cloud/composition`](./../how-to/compositions/write-and-deploy-a-template) hooks, that updates the layout live as the room changes.
 
+## Cost and lifecycle
+
+A running composition holds a GPU-backed rendering session for as long as it exists, and you are billed for that time whether or not anyone is watching. It is the most expensive thing in this part of Fishjam to leave running by accident.
+
+Two defaults keep that in check. A composition auto-starts, and it cleans itself up after five minutes in which none of its inputs carry any media. Between them, an experiment you walk away from stops costing you money on its own.
+
+`cleanup_without_inputs: false` turns that guard off. It widens the condition so cleanup needs both the inputs and the outputs to go quiet, which is what you want when inputs arrive late, such as a room whose peers have not joined yet, or when a composition legitimately has no inputs, such as an output that renders only text. The cost is that an idle composition then survives indefinitely, so anything created that way is yours to delete, and a forgotten one bills until you do.
+
+Delete a composition as soon as you are done with it:
+
+```bash
+curl -X DELETE "$COMPOSITION_URL/api/composition/$COMPOSITION" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
 ## Scenes
 
 Every video output carries a **scene**: a tree of components that describes how inputs, text, and images are arranged into the composed frame. Audio outputs carry an **audio scene** that describes which inputs are mixed together.
