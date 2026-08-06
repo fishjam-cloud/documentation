@@ -2,40 +2,51 @@
 type: tutorial
 title: Compositions
 sidebar_position: 3.5
-description: Create your first composition end to end, from two WHIP inputs to a composed WHIP output you can play back.
+description: Create your first composition end to end, overlaying one video on another and watching the composed result in your browser.
 ---
 
 # Compositions
 
-This tutorial walks you through creating your first composition. You will compose two live camera streams into a single side-by-side output and play it back.
+This tutorial walks you through creating your first composition. You will overlay a small player camera on top of full-screen gameplay, publish the result to a livestream, and watch it in your browser.
+
+Both sources are sample MP4 files, so you need no camera, no encoder, and no publishing tool to get a picture. [Swap in live cameras](#swap-in-live-cameras) at the end once it works.
 
 ## What you'll build
 
-A composition with two WebRTC inputs arranged into a tiled layout, published as one WebRTC output.
+```
+[race.mp4]   ──┐
+               ├─▶ composition ──WHIP──▶ livestream ──WHEP──▶ [your browser]
+[player.mp4] ──┘
+```
+
+The composed frame puts the race full-screen with the player inset in the top-left corner, the same shape as a gameplay stream:
 
 ```
-[camera 1] ──WHIP──▶ ┐
-                     ├─▶ composition ──WHIP──▶ livestream ──WHEP──▶ [viewer]
-[camera 2] ──WHIP──▶ ┘
+┌─────────────────────────────┐
+│ ┌────────┐                  │
+│ │ player │                  │
+│ └────────┘        race      │
+│                             │
+└─────────────────────────────┘
 ```
 
 ## What you'll learn
 
-- How to create a composition.
-- How to register inputs and an output with a layout.
-- How to publish into a composition, and where to watch the composed result.
+- How to create a composition and feed it media.
+- How to describe a layout as a scene.
+- How to publish the composed result and watch it.
 - How to change the layout while the composition is running.
 
 ## Prerequisites
 
-- A Fishjam account. Open the [**Fishjam developer panel**](https://fishjam.io/app) and copy your **Management Token**.
-- A WHIP/WHEP client to publish and play streams. Any standard WebRTC tool works.
-- A destination for the composed stream, such as a [livestream](./../explanation/livestreams). The composition publishes to it over WHIP, and viewers watch from it over WHEP.
+- A Fishjam account. Open the [**Fishjam developer panel**](https://fishjam.io/app) and copy your **Fishjam ID** and **Management Token**.
+- A browser, to watch the result.
 
-All requests go to `https://rtc.fishjam.io` and carry your token as a Bearer header:
+Compositions live on `https://rtc.fishjam.io`, while rooms and livestreams live on the Fishjam API. Both take the same token as a Bearer header:
 
 ```bash
 export COMPOSITION_URL="https://rtc.fishjam.io"
+export FISHJAM_URL="https://fishjam.io/api/v1/connect/<YOUR_FISHJAM_ID>"
 export TOKEN="<YOUR_FISHJAM_TOKEN>"
 ```
 
@@ -62,78 +73,125 @@ export COMPOSITION="abc123"
 
 ## Step 2: Register two inputs
 
-Register two `whip_server` inputs. Each one returns a `bearer_token` that a publisher uses to push media in.
+Register two `mp4` inputs, looping so they never run dry. The composition downloads them itself, so there is nothing to publish:
 
 ```bash
-for INPUT in camera_1 camera_2; do
-  curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/input/$INPUT/register" \
-    -H "Authorization: Bearer $TOKEN" \
-    -H "Content-Type: application/json" \
-    -d '{ "type": "whip_server" }'
-done
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/input/race/register" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "mp4",
+    "url": "https://smelter.dev/videos/template-scene-race.mp4",
+    "loop": true
+  }'
+
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/input/player/register" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "mp4",
+    "url": "https://smelter.dev/videos/template-scene-streamer.mp4",
+    "loop": true
+  }'
 ```
 
-Each response returns the token for that input, plus the route a publisher pushes to:
-
-```json
-{ "bearer_token": "<INPUT_PUBLISH_TOKEN>", "endpoint_route": "/whip/camera_1" }
-```
-
-## Step 3: Register an output with a layout
-
-Register a `whip_client` output whose scene arranges both inputs in a `tiles` layout and mixes their audio. Replace `endpoint_url` with the WHIP endpoint of the service that should receive the composed stream, for example a [Fishjam livestream](./../explanation/livestreams).
+The names `race` and `player` are the `input_id`s you will refer to from the layout in Step 4.
 
 :::note
-The output connects to `endpoint_url` while it is being registered, so the endpoint has to be reachable already. Registering against a URL that does not accept the connection fails.
+The file is fetched while the input is being registered, so an unreachable URL fails right here rather than later.
+:::
+
+## Step 3: Create a livestream to publish to
+
+The composition needs somewhere to send the composed stream. Create a [livestream](./../explanation/livestreams) for it. Making it public lets viewers watch without a token, which keeps this tutorial short:
+
+```bash
+curl -X POST "$FISHJAM_URL/livestream" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "public": true }'
+```
+
+Save the id from the response:
+
+```bash
+export STREAM="<STREAM_ID>"
+```
+
+Then create a **streamer token**, which is what lets the composition publish into the livestream:
+
+```bash
+curl -X POST "$FISHJAM_URL/livestream/$STREAM/streamer" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+```bash
+export STREAMER_TOKEN="<STREAMER_TOKEN>"
+```
+
+## Step 4: Register an output with a layout
+
+Register a `whip_client` output that publishes to the livestream's WHIP endpoint using the streamer token from Step 3. Its scene stacks two components: the race filling the frame, and the player rescaled into a rounded box in the top-left corner.
+
+:::note
+The output connects to `endpoint_url` while it is being registered, so the endpoint has to be reachable already. That is why the livestream comes first. Registering against a URL that does not accept the connection fails.
 :::
 
 ```bash
 curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/register" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{
-    "type": "whip_client",
-    "endpoint_url": "https://example.com/whip",
-    "video": {
-      "resolution": { "width": 1280, "height": 720 },
-      "initial": {
-        "root": {
-          "type": "tiles",
-          "children": [
-            { "type": "input_stream", "input_id": "camera_1" },
-            { "type": "input_stream", "input_id": "camera_2" }
-          ]
-        }
-      }
-    },
-    "audio": {
-      "initial": {
-        "inputs": [
-          { "input_id": "camera_1" },
-          { "input_id": "camera_2" }
+  -d @- <<EOF
+{
+  "type": "whip_client",
+  "endpoint_url": "https://fishjam.io/api/v1/live/api/whip",
+  "bearer_token": "$STREAMER_TOKEN",
+  "video": {
+    "resolution": { "width": 1280, "height": 720 },
+    "initial": {
+      "root": {
+        "type": "view",
+        "children": [
+          {
+            "type": "rescaler",
+            "child": { "type": "input_stream", "input_id": "race" }
+          },
+          {
+            "type": "rescaler",
+            "top": 20,
+            "left": 20,
+            "width": 355,
+            "height": 200,
+            "border_radius": 44,
+            "mode": "fill",
+            "child": { "type": "input_stream", "input_id": "player" }
+          }
         ]
       }
     }
-  }'
+  },
+  "audio": { "initial": { "inputs": [{ "input_id": "player" }] } }
+}
+EOF
 ```
 
-The scene is a tree of components. `tiles` automatically arranges its children into a grid, and each `input_stream` renders one registered input. See [Scenes](../explanation/compositions#scenes) for how scenes work and what each component does.
+The scene is a tree of components. A `view` stacks its children in order, so the second `rescaler` draws on top of the first. Giving that second one `top` and `left` positions it in the corner instead of filling the frame, and `mode: "fill"` makes the video cover its box rather than letter-boxing inside it. See [Scenes](../explanation/compositions#scenes) for how scenes work and what each component does.
 
-## Step 4: Publish and play
+## Step 5: Watch it
 
-Publish a camera to each input's WHIP endpoint using the input token from Step 2:
+That is the whole pipeline. The composition is already pulling both files, drawing the frame, and publishing it into your livestream.
+
+Because the livestream is public, any WHEP player can watch it without a token. Your playback URL is the WHEP endpoint with the stream id on the end:
 
 ```
-POST https://rtc.fishjam.io/api/composition/abc123/whip/camera_1
-Authorization: Bearer <INPUT_PUBLISH_TOKEN>
-Content-Type: application/sdp
+https://fishjam.io/api/v1/live/api/whep/<STREAM_ID>
 ```
 
-Your composed output is now publishing to the `endpoint_url` you set in Step 3. Play it back through the receiving service's WHEP endpoint with any WHEP client.
+If you have no WHEP player to hand, [vdo.ninja](https://vdo.ninja/whip#play) works in the browser: paste that URL into **WHEP endpoint URL** and press **GO**. You should see the race running full-screen with the player tucked into the top-left corner.
 
-## Step 5: Change the layout while it runs
+## Step 6: Change the layout while it runs
 
-A scene is not fixed once the output is registered. Swap the side-by-side grid for a single full-frame camera, without touching the publishers:
+A scene is not fixed once the output is registered. Leave the player watching and swap the corner inset for a side-by-side grid:
 
 ```bash
 curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/update" \
@@ -142,28 +200,49 @@ curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/update" 
   -d '{
     "video": {
       "root": {
-        "type": "rescaler",
-        "child": { "type": "input_stream", "input_id": "camera_1" }
+        "type": "tiles",
+        "children": [
+          { "type": "input_stream", "input_id": "race" },
+          { "type": "input_stream", "input_id": "player" }
+        ]
       }
     },
-    "audio": { "inputs": [{ "input_id": "camera_1" }] }
+    "audio": { "inputs": [{ "input_id": "player" }] }
   }'
 ```
 
-Viewers see the layout change on the fly. Send the Step 3 scene again to go back to the grid.
+The layout changes on the fly, with no interruption to the stream. Send the Step 4 scene again to go back to the inset.
 
 :::warning
 An update has to carry the same sides the output was registered with. This output has both `video` and `audio`, so every update needs both, even when only the layout changed. Sending only one of them fails. See [Update a scene](../how-to/compositions/inputs-and-outputs#update-a-scene) for the full rule.
 :::
 
-## Step 6: Clean up
+## Step 7: Clean up
 
-Delete the composition when you are done:
+Delete the composition and the livestream when you are done:
 
 ```bash
 curl -X DELETE "$COMPOSITION_URL/api/composition/$COMPOSITION" \
   -H "Authorization: Bearer $TOKEN"
+
+curl -X DELETE "$FISHJAM_URL/livestream/$STREAM" \
+  -H "Authorization: Bearer $TOKEN"
 ```
+
+## Swap in live cameras
+
+MP4 files kept this tutorial to a single terminal, but nothing about the composition assumed they were files. A `whip_server` input accepts WebRTC from anything that can speak WHIP: a phone's camera, a laptop webcam, a browser tab, a screen share, OBS, or a hardware encoder in a studio. Each one becomes another `input_id` you can place in a scene, so a phone in the field and a desk webcam can appear in the same composed frame.
+
+To feed it live media instead, register a `whip_server` input in place of an `mp4` one:
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/input/player/register" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "type": "whip_server" }'
+```
+
+[Choose inputs and outputs](../how-to/compositions/inputs-and-outputs) covers the rest: RTMP for encoders, HLS for pulling an existing stream, and RTMP outputs for republishing to social platforms.
 
 ## Describing the layout in React instead
 
