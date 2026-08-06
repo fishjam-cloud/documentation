@@ -82,40 +82,11 @@ An audio scene lists the inputs to mix and, optionally, their relative volume:
 
 You provide the initial scene when you register an output, under `video.initial` (a video scene) and `audio.initial` (an audio scene). See [Choose inputs and outputs](./../how-to/compositions/inputs-and-outputs) for the full output shape.
 
-### Updating a scene live
+### Changing a scene over time
 
-To change the layout while a composition is running, call the output's update endpoint with the new scene:
+A scene is not fixed for the life of an output. You can replace it while the composition is running, either straight away or at a chosen point on the composition timeline, so the layout can follow whatever your application is doing. See [Choose inputs and outputs](./../how-to/compositions/inputs-and-outputs) for how to send an update, and the [tutorial](./../tutorials/compositions) to try one.
 
-```bash
-curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/update" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "video": {
-      "root": {
-        "type": "rescaler",
-        "child": { "type": "input_stream", "input_id": "camera_1" }
-      }
-    },
-    "audio": { "inputs": [{ "input_id": "camera_1" }] }
-  }'
-```
-
-An update has to mirror the sides the output was registered with. If you registered the output with both `video` and `audio`, every update must carry both, even when only one of them changed. If you registered only one of them, the update may only carry that one. Sending a mismatched update fails with `400`.
-
-An update can be scheduled instead of applied immediately by adding `schedule_time_ms`, the composition timeline offset in milliseconds at which the change should take effect:
-
-```json
-{
-  "video": { "root": { "type": "tiles", "children": [] } },
-  "audio": { "inputs": [] },
-  "schedule_time_ms": 5000
-}
-```
-
-### What if I don't want to update the scene on every change?
-
-Pushing a scene update every time a participant joins, leaves, or mutes gets tedious fast. Instead, you can describe the layout once as a **template**: a React component that receives the live room state and re-renders automatically as it changes, cutting manual scene management down to a minimum. See [Write and deploy a template](./../how-to/compositions/write-and-deploy-a-template) to build one.
+There are two ways to decide what the layout should be. You can drive it yourself, pushing a new scene whenever something changes, which keeps the layout entirely in your backend's hands. Or you can hand that job to a **template**: a React component that receives the live room state and re-renders itself as participants join, leave, mute, or speak. Templates suit anything where the layout follows the room, since they turn a stream of updates you would otherwise have to send into a component that reacts on its own. See [Write and deploy a template](./../how-to/compositions/write-and-deploy-a-template) to build one.
 
 ## Where to go next
 

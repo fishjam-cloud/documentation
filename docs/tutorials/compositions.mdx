@@ -24,6 +24,7 @@ A composition with two WebRTC inputs arranged into a tiled layout, published as 
 - How to create a composition.
 - How to register inputs and an output with a layout.
 - How to publish into a composition, and where to watch the composed result.
+- How to change the layout while the composition is running.
 
 ## Prerequisites
 
@@ -83,7 +84,7 @@ Each response returns the token for that input, plus the route a publisher pushe
 Register a `whip_client` output whose scene arranges both inputs in a `tiles` layout and mixes their audio. Replace `endpoint_url` with the WHIP endpoint of the service that should receive the composed stream, for example a [Fishjam livestream](./../explanation/livestreams).
 
 :::note
-The output connects to `endpoint_url` while it is being registered, so the endpoint has to be reachable already. Registering against a URL that does not accept the connection fails with `500` and the message `Output initialization error`.
+The output connects to `endpoint_url` while it is being registered, so the endpoint has to be reachable already. Registering against a URL that does not accept the connection fails.
 :::
 
 ```bash
@@ -116,7 +117,7 @@ curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/register
   }'
 ```
 
-The scene is a tree of components. `tiles` automatically arranges its children into a grid, and each `input_stream` renders one registered input. See [Scenes](../explanation/compositions#scenes) for the full component model.
+The scene is a tree of components. `tiles` automatically arranges its children into a grid, and each `input_stream` renders one registered input. See [Scenes](../explanation/compositions#scenes) for how scenes work and what each component does.
 
 ## Step 4: Publish and play
 
@@ -130,7 +131,32 @@ Content-Type: application/sdp
 
 Your composed output is now publishing to the `endpoint_url` you set in Step 3. Play it back through the receiving service's WHEP endpoint with any WHEP client.
 
-## Step 5: Clean up
+## Step 5: Change the layout while it runs
+
+A scene is not fixed once the output is registered. Swap the side-by-side grid for a single full-frame camera, without touching the publishers:
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/update" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "video": {
+      "root": {
+        "type": "rescaler",
+        "child": { "type": "input_stream", "input_id": "camera_1" }
+      }
+    },
+    "audio": { "inputs": [{ "input_id": "camera_1" }] }
+  }'
+```
+
+Viewers see the layout change on the fly. Send the Step 3 scene again to go back to the grid.
+
+:::warning
+An update has to carry the same sides the output was registered with. This output has both `video` and `audio`, so every update needs both, even when only the layout changed. Sending only one of them fails. See [Update a scene](../how-to/compositions/inputs-and-outputs#update-a-scene) for the full rule.
+:::
+
+## Step 6: Clean up
 
 Delete the composition when you are done:
 
@@ -138,6 +164,12 @@ Delete the composition when you are done:
 curl -X DELETE "$COMPOSITION_URL/api/composition/$COMPOSITION" \
   -H "Authorization: Bearer $TOKEN"
 ```
+
+## Describing the layout in React instead
+
+Updating the scene by hand gets tedious once people are joining, leaving, muting, and unmuting, since each of those needs its own call.
+
+A **template** is a React component that receives the live room state and re-renders itself as the room changes, so you send no scene updates at all. See [Write and deploy a template](../how-to/compositions/write-and-deploy-a-template) and [Compose a Fishjam room](../how-to/compositions/compose-a-fishjam-room).
 
 ## Next steps
 
