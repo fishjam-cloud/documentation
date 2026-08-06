@@ -9,7 +9,7 @@ description: Create your first composition end to end, overlaying one video on a
 
 This tutorial walks you through creating your first composition. You will overlay a small player camera on top of full-screen gameplay, publish the result to a livestream, and watch it in your browser.
 
-Both sources are sample MP4 files, so you need no camera, no encoder, and no publishing tool to get a picture. [Swap in live cameras](#swap-in-live-cameras) at the end once it works.
+Both sources are sample MP4 files, so you need no camera, no encoder, and no publishing tool to get a picture. Nothing else in the tutorial depends on that, so you can swap either one for a live camera afterwards.
 
 ## What you'll build
 
@@ -19,7 +19,7 @@ Both sources are sample MP4 files, so you need no camera, no encoder, and no pub
 [player.mp4] ──┘
 ```
 
-The composed frame puts the race full-screen with the player inset in the top-left corner, the same shape as a gameplay stream:
+The composed frame puts the race full-screen with the player inset in the top-left corner, standard gaming stream layout:
 
 ```
 ┌─────────────────────────────┐
@@ -42,7 +42,7 @@ The composed frame puts the race full-screen with the player inset in the top-le
 - A Fishjam account. Open the [**Fishjam developer panel**](https://fishjam.io/app) and copy your **Fishjam ID** and **Management Token**.
 - A browser, to watch the result.
 
-Compositions live on `https://rtc.fishjam.io`, while rooms and livestreams live on the Fishjam API. Both take the same token as a Bearer header:
+Compositions live on `https://rtc.fishjam.io`, while rooms and livestreams live on the Fishjam API. Both use the same token:
 
 ```bash
 export COMPOSITION_URL="https://rtc.fishjam.io"
@@ -95,7 +95,7 @@ curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/input/player/registe
   }'
 ```
 
-The names `race` and `player` are the `input_id`s you will refer to from the layout in Step 4.
+The names `race` and `player` are the `input_id`s you will refer to from the layout in Step 4. The scene only ever refers to inputs by id, so what sits behind an id is interchangeable: register `whip_server` instead of `mp4` to take a live camera, phone, or OBS feed here, or forward a whole [Fishjam room](../how-to/compositions/compose-a-fishjam-room) in. See [Choose inputs and outputs](../how-to/compositions/inputs-and-outputs) for every input type.
 
 :::note
 The file is fetched while the input is being registered, so an unreachable URL fails right here rather than later.
@@ -228,21 +228,6 @@ curl -X DELETE "$COMPOSITION_URL/api/composition/$COMPOSITION" \
 curl -X DELETE "$FISHJAM_URL/livestream/$STREAM" \
   -H "Authorization: Bearer $TOKEN"
 ```
-
-## Swap in live cameras
-
-MP4 files kept this tutorial to a single terminal, but nothing about the composition assumed they were files. A `whip_server` input accepts WebRTC from anything that can speak WHIP: a phone's camera, a laptop webcam, a browser tab, a screen share, OBS, or a hardware encoder in a studio. Each one becomes another `input_id` you can place in a scene, so a phone in the field and a desk webcam can appear in the same composed frame.
-
-To feed it live media instead, register a `whip_server` input in place of an `mp4` one:
-
-```bash
-curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/input/player/register" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{ "type": "whip_server" }'
-```
-
-[Choose inputs and outputs](../how-to/compositions/inputs-and-outputs) covers the rest: RTMP for encoders, HLS for pulling an existing stream, and RTMP outputs for republishing to social platforms.
 
 ## Describing the layout in React instead
 
