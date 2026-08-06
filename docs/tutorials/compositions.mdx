@@ -71,15 +71,19 @@ for INPUT in camera_1 camera_2; do
 done
 ```
 
-Each response returns the token for that input:
+Each response returns the token for that input, plus the route a publisher pushes to:
 
 ```json
-{ "bearer_token": "<INPUT_PUBLISH_TOKEN>" }
+{ "bearer_token": "<INPUT_PUBLISH_TOKEN>", "endpoint_route": "/whip/camera_1" }
 ```
 
 ## Step 3: Register an output with a layout
 
 Register a `whip_client` output whose scene arranges both inputs in a `tiles` layout and mixes their audio. Replace `endpoint_url` with the WHIP endpoint of the service that should receive the composed stream, for example a [Fishjam livestream](./../explanation/livestreams).
+
+:::note
+The output connects to `endpoint_url` while it is being registered, so the endpoint has to be reachable already. Registering against a URL that does not accept the connection fails with `500` and the message `Output initialization error`.
+:::
 
 ```bash
 curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/register" \

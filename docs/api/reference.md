@@ -92,10 +92,11 @@ Messages are JSON text frames, each with a `type` field identifying the event.
 | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Control-plane calls (composition, inputs, outputs, renderers, events, room) | `Authorization: Bearer <token>`: your Fishjam **Management Token**, the same token used across Fishjam.                                                 |
 | Publishing to an input (`/whip/{input_id}`)                                 | The **input's** own bearer token, returned when you register a `whip_server` input (or the one you supplied). This is distinct from your account token. |
-| Playing back an output (`/whep/{output_id}`)                                | Optional. Public playback is allowed; add a Bearer token only if you want to require one.                                                               |
 | The WebSocket event stream                                                  | The subprotocol scheme described above.                                                                                                                 |
 
 Get your Management Token from the [**Fishjam developer panel**](https://fishjam.io/app).
+
+Compositions are not played back from the Composition API itself: outputs push to the destination you register, so viewers connect to that destination instead. A `whip_client` output pointed at a [livestream](../explanation/livestreams), for example, is watched through the livestream's own WHEP endpoint.
 
 ### Errors
 

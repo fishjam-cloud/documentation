@@ -37,8 +37,7 @@ copy_openapi() {
     fi
 }
 
-# TODO: switch to main once the template-workers branch is merged there.
-COMPOSITION_BRANCH="template-workers"
+COMPOSITION_BRANCH="main"
 
 # The composition source repo does not tag semver releases yet, so its
 # submodule is checked out at a branch instead of the latest tag.

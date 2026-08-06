@@ -20,11 +20,13 @@ Register an input with `POST /api/composition/{composition_id}/input/{input_id}/
 | `hls`         | The composition should pull an HLS playlist.                          | `url` (required).                                                                                 |
 | `mp4`         | You want to compose a file, optionally looped.                        | `url` (optional), `loop` (optional).                                                              |
 
-For `whip_server`, the register response returns the `bearer_token` a publisher uses to authenticate against the input's WHIP endpoint:
+For `whip_server`, the register response returns the `bearer_token` a publisher uses to authenticate against the input's WHIP endpoint, together with the route to push to:
 
 ```json
-{ "bearer_token": "<INPUT_PUBLISH_TOKEN>" }
+{ "bearer_token": "<INPUT_PUBLISH_TOKEN>", "endpoint_route": "/whip/camera_1" }
 ```
+
+That token is the only one accepted on the publish endpoint. Your Management Token is rejected there with `401`.
 
 Unregister any input with `POST …/input/{input_id}/unregister`.
 
