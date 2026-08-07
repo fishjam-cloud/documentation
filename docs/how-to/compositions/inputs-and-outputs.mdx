@@ -60,6 +60,8 @@ An output's `video` carries the resolution and initial [scene](./../../explanati
 }
 ```
 
+`resolution` has to be even on both sides, and at most 3840x2160.
+
 Other output operations:
 
 - **Register a templated output** with `POST …/output/{output_id}/template` instead of `…/register`: a multipart request carrying the same configuration plus a template bundle (see [Write and deploy a template](./write-and-deploy-a-template)).
