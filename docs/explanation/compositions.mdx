@@ -35,7 +35,7 @@ A running composition holds a GPU-backed rendering session for as long as it exi
 
 Two defaults keep that in check. A composition auto-starts, and it cleans itself up after five minutes in which none of its inputs carry any media. Between them, an experiment you walk away from stops costing you money on its own.
 
-`cleanup_without_inputs: false` turns that guard off. It widens the condition so cleanup needs both the inputs and the outputs to go quiet, which is what you want when inputs arrive late, such as a room whose peers have not joined yet, or when a composition legitimately has no inputs, such as an output that renders only text. The cost is that an idle composition then survives indefinitely, so anything created that way is yours to delete, and a forgotten one bills until you do.
+`cleanup_without_inputs: false` turns that guard off. It tightens the condition so cleanup needs both the inputs and the outputs to go quiet, which is what you want when inputs arrive late, such as a room whose peers have not joined yet, or when a composition legitimately has no inputs, such as an output that renders only text. The cost is that an idle composition then survives indefinitely, so anything created that way is yours to delete, and a forgotten one bills until you do.
 
 Delete a composition as soon as you are done with it:
 

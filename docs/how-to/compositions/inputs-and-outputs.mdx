@@ -26,7 +26,7 @@ For `whip_server`, the register response returns the `bearer_token` a publisher 
 { "bearer_token": "<INPUT_PUBLISH_TOKEN>", "endpoint_route": "/whip/camera_1" }
 ```
 
-That token is the only one accepted on the publish endpoint. Your Management Token is rejected there with `401`.
+That token is the only one accepted on the publish endpoint. Your Management Token is rejected there.
 
 Point any WHIP publisher at `endpoint_route` under the composition's base URL and authenticate with that token. A `whip_server` input takes WebRTC from anything that speaks WHIP: a phone's camera, a laptop webcam, a browser tab, a screen share, or a hardware encoder. [vdo.ninja](https://vdo.ninja/whip) publishes from a browser, and OBS has WHIP output built in.
 
@@ -40,6 +40,11 @@ Register an output with `POST /api/composition/{composition_id}/output/{output_i
 | ------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
 | `whip_client` | Publish the composed result over WebRTC (for example to a Fishjam livestream). | `endpoint_url` (required), `bearer_token` (optional), `video`, `audio`. |
 | `rtmp_client` | Publish to an RTMP destination (for example a social platform).                | `url` (required), `video`, `audio`.                                     |
+
+Both types push. A composition is never played back from the Composition API
+itself, so viewers connect to whichever destination the output publishes to: a
+`whip_client` output pointed at a [livestream](./../../explanation/livestreams)
+is watched through that livestream's WHEP endpoint.
 
 An output's `video` carries the resolution and initial [scene](./../../explanation/compositions#scenes), and `audio` carries the initial audio scene:
 
@@ -81,7 +86,7 @@ curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/update" 
   }'
 ```
 
-An update has to mirror the sides the output was registered with. If you registered the output with both `video` and `audio`, every update must carry both, even when only one of them changed. If you registered only one of them, the update may only carry that one. Sending a mismatched update fails with `400`.
+An update has to mirror the sides the output was registered with. If you registered the output with both `video` and `audio`, every update must carry both, even when only one of them changed. If you registered only one of them, the update may only carry that one. Sending a mismatched update fails.
 
 Add `schedule_time_ms` to apply the change at a chosen offset on the composition timeline, in milliseconds, instead of immediately:
 

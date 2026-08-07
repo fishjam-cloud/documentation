@@ -13,7 +13,7 @@ Both sources are sample MP4 files, so you need no camera, no encoder, and no pub
 
 ## What you'll build
 
-```
+```text
 [race.mp4]   ──┐
                ├─▶ composition ──WHIP──▶ livestream ──WHEP──▶ [your browser]
 [player.mp4] ──┘
@@ -21,7 +21,7 @@ Both sources are sample MP4 files, so you need no camera, no encoder, and no pub
 
 The composed frame puts the race full-screen with the player inset in the top-left corner, standard gaming stream layout:
 
-```
+```text
 ┌─────────────────────────────┐
 │ ┌────────┐                  │
 │ │ player │                  │
@@ -183,7 +183,7 @@ That is the whole pipeline. The composition is already pulling both files, drawi
 
 Because the livestream is public, any WHEP player can watch it without a token. Your playback URL is the WHEP endpoint with the stream id on the end:
 
-```
+```text
 https://fishjam.io/api/v1/live/api/whep/<STREAM_ID>
 ```
 

@@ -8,7 +8,7 @@ description: Forward a Fishjam room into a composition and render its peers with
 
 A composition can include the peers of a [Fishjam room](./../../explanation/rooms). You forward the room's tracks to the composition with a single Fishjam API call: Fishjam then pushes each participant's media into the composition as inputs, and hooks from `@fishjam-cloud/composition` let a [template](./write-and-deploy-a-template) render one tile per participant and push the result to a [livestream](./../../explanation/livestreams).
 
-```
+```text
 Fishjam room (peers) ──forwarded──▶ composition (template) ──WHIP──▶ Fishjam livestream ──WHEP──▶ [viewers]
 ```
 
@@ -116,7 +116,8 @@ Build the bundle as usual with `npm run build`.
 
 ## Step 3: Create the composition and register the templated output
 
-Create the composition with auto-start off, because the room's inputs only appear once forwarding starts. Setting `cleanup_without_inputs` to `false` widens the cleanup condition to require both the inputs and the outputs to go quiet, so the composition survives the wait for the first peer to publish.
+Create the composition with auto-start off, because the room's inputs only appear once forwarding starts.
+Setting `cleanup_without_inputs` to `false` tightens the cleanup condition, so that it now takes both the inputs and the outputs going quiet rather than the inputs alone. Cleanup therefore fires less readily, and the composition survives the wait for the first peer to publish.
 
 :::warning
 That second flag switches off the guard that would otherwise delete an idle composition after five minutes, and a composition bills for GPU time the whole time it exists. Nothing will clean this one up for you, so delete it as soon as you are finished, and do not leave one running after a test. See [Cost and lifecycle](./../../explanation/compositions#cost-and-lifecycle).
@@ -157,7 +158,7 @@ curl -X POST "$FISHJAM_URL/room/$ROOM_ID/track_forwardings" \
 
 Everything else happens automatically: Fishjam links the room to the composition, registers an input for every forwarded track, and streams the media in. Your template's `usePeers()` fills with the room's peers as their media starts flowing. You never register room inputs by hand.
 
-A room forwards to one composition at a time. Repeating the call with the same `compositionURL` is a no-op, while pointing the room at a different composition fails with `409 Conflict`.
+A room and a composition pair up one to one, in both directions. Repeating the call with the same `compositionURL` is a no-op, but pointing the room at a second composition, or a second room at this composition, fails. To compose two rooms, give each its own composition.
 
 ## Step 5: Start the composition
 
