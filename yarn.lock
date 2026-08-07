@@ -7066,49 +7066,49 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swmansion/smelter-browser-render@npm:0.2.1":
-  version: 0.2.1
-  resolution: "@swmansion/smelter-browser-render@npm:0.2.1"
+"@swmansion/smelter-browser-render@npm:0.3.0":
+  version: 0.3.0
+  resolution: "@swmansion/smelter-browser-render@npm:0.3.0"
   peerDependencies:
-    "@swmansion/smelter": 0.2.1
-  checksum: 10c0/be55fee0e70b37ceec11031ca4165fcfaa1b6bede2ef2f2103a1114672d7769c92bcbd1f983ec7deb2c58d39824e0420f99253e4a70352798e81d2c212ac2094
+    "@swmansion/smelter": ^0.3.0
+  checksum: 10c0/a10d8a3d7e04d6c315fdd438c11c9631f869c66997e500d73394f9cf0e2866c683f142d01b817851d79632cb1a26839521bfc34b6b6b218d91b52a2fa128cb55
   languageName: node
   linkType: hard
 
-"@swmansion/smelter-core@npm:0.2.1":
-  version: 0.2.1
-  resolution: "@swmansion/smelter-core@npm:0.2.1"
+"@swmansion/smelter-core@npm:0.3.0":
+  version: 0.3.0
+  resolution: "@swmansion/smelter-core@npm:0.3.0"
   dependencies:
     react-reconciler: "npm:0.29.2"
   peerDependencies:
-    "@swmansion/smelter": ^0.2.1
+    "@swmansion/smelter": ^0.3.0
     react: "*"
-  checksum: 10c0/cd0f40922f82fd263aa7e080f6672e7159c14ac2d742f2c9ca83e5cc8d5f464f0b7d8e75acfa68238f713151688089daf4a061b8969a61429109dfe7f86cee9c
+  checksum: 10c0/b3f53a399b435d89a007a78030699cb0fe6ed3993c111ada6125462387b578e0e1f5cc600ff2407e38f446d661186c8c3b3d7b6bce9d94910c4d52d7857d2f04
   languageName: node
   linkType: hard
 
-"@swmansion/smelter-web-wasm@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "@swmansion/smelter-web-wasm@npm:0.2.1"
+"@swmansion/smelter-web-wasm@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "@swmansion/smelter-web-wasm@npm:0.3.0"
   dependencies:
     "@datastructures-js/queue": "npm:^4.2.3"
-    "@swmansion/smelter-browser-render": "npm:0.2.1"
-    "@swmansion/smelter-core": "npm:0.2.1"
+    "@swmansion/smelter-browser-render": "npm:0.3.0"
+    "@swmansion/smelter-core": "npm:0.3.0"
     mp4box: "npm:^0.5.2"
     path-parser: "npm:^6.1.0"
     pino: "npm:^9.5.0"
   peerDependencies:
-    "@swmansion/smelter": ^0.2.1
-  checksum: 10c0/0640c3148b62966abdd4164e2477c8fc8289b944a9a5c21c9157524157c03483b17495e45e1b2d1778c2372de9c1facb66c3d61687b61b9a36a520c3cf0268cf
+    "@swmansion/smelter": ^0.3.0
+  checksum: 10c0/147d234344a7bfcce7363013d6a2f909512fa6cc10fc22565a7ba906abc248306a7d261444fece1363de791a0e1aa0cc02afbbdfcbc00a1c559b99a86faa4a63
   languageName: node
   linkType: hard
 
-"@swmansion/smelter@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "@swmansion/smelter@npm:0.2.1"
+"@swmansion/smelter@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "@swmansion/smelter@npm:0.3.0"
   peerDependencies:
     react: "*"
-  checksum: 10c0/aa94455ab3c2b0bb7e60a42e30444af5a2b7cb89e1e5df33024496804259ad7ca87703e5398d8198c2eea3e023b1c8d29e12522a66313df3e9c4eb8b31dac90e
+  checksum: 10c0/3d40fda353193fe3bae3b9fe13e146e654613ce817a6b8e0c12c924e3a7361d49b99a0e1bfa9a0c768aa461524dabcc5fe37da993c4ea110458c77ed4edd98b0
   languageName: node
   linkType: hard
 
@@ -11950,8 +11950,8 @@ __metadata:
     "@shikijs/rehype": "npm:^3.6.0"
     "@shikijs/transformers": "npm:^3.6.0"
     "@shikijs/twoslash": "npm:^3.6.0"
-    "@swmansion/smelter": "npm:^0.2.1"
-    "@swmansion/smelter-web-wasm": "npm:^0.2.1"
+    "@swmansion/smelter": "npm:^0.3.0"
+    "@swmansion/smelter-web-wasm": "npm:^0.3.0"
     "@types/react": "npm:^19.1.8"
     "@types/react-dom": "npm:^19.1.6"
     "@vapi-ai/server-sdk": "npm:^1.1.0"
