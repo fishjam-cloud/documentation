@@ -229,13 +229,9 @@ curl -X DELETE "$FISHJAM_URL/livestream/$STREAM" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-## Describing the layout in React instead
-
-Updating the scene by hand gets tedious once people are joining, leaving, muting, and unmuting, since each of those needs its own call.
-
-A **template** is a React component that receives the live room state and re-renders itself as the room changes, so you send no scene updates at all. See [Write and deploy a template](../how-to/compositions/write-and-deploy-a-template) and [Compose a Fishjam room](../how-to/compositions/compose-a-fishjam-room).
-
 ## Next steps
+
+Updating the scene by hand gets tedious once people are joining, leaving, muting, and unmuting, since each of those needs its own call. A **template** is a React component that receives the live room state and re-renders itself as the room changes, so you send no scene updates at all.
 
 - [Write and deploy a template](../how-to/compositions/write-and-deploy-a-template) to replace the static scene with a live React layout.
 - [Compose a Fishjam room](../how-to/compositions/compose-a-fishjam-room) to feed a whole room's peers in automatically.
