@@ -11,6 +11,15 @@ import TabItem from "@theme/TabItem";
 
 A **template** is a React component that describes an output's layout. Instead of sending a static scene, you write a component, bundle it into a single file with the composition CLI, and upload it when registering an output.
 
+The [Composition API](./../../api/reference#compositions) lives on `https://rtc.fishjam.io`, while livestreams live on the [Fishjam Server API](./../../api/reference#server). Both take the same Management Token:
+
+```bash
+export COMPOSITION_URL="https://rtc.fishjam.io"
+export FISHJAM_URL="https://fishjam.io/api/v1/connect/<YOUR_FISHJAM_ID>"
+export TOKEN="<YOUR_FISHJAM_TOKEN>"
+export COMPOSITION="<COMPOSITION_ID>"
+```
+
 ## Scaffold a project
 
 Create a new template project with the CLI:
@@ -71,7 +80,7 @@ export default function App() {
 
 Register an input and a tile appears; unregister it and the grid reflows. Each entry also carries `videoState` and `audioState`, one of `ready`, `playing`, `paused`, or `finished`, which is what the filter above uses to keep inputs off screen until their media actually starts.
 
-`<InputStream inputId={…} />` renders one of the composition's registered inputs. Layout, styling, and every visual component (`View`, `Tiles`, `InputStream`, `Rescaler`, `Text`, `Image`, …) come from `@swmansion/smelter`.see the [Smelter TypeScript SDK reference](https://smelter.dev/ts-sdk/overview) for every component and its style props.
+`<InputStream inputId={…} />` renders one of the composition's registered inputs. Layout, styling, and every visual component (`View`, `Tiles`, `InputStream`, `Rescaler`, `Text`, `Image`, …) come from `@swmansion/smelter`. See the [Smelter TypeScript SDK reference](https://smelter.dev/ts-sdk/overview) for every component and its style props.
 
 ## Build the bundle
 

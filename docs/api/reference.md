@@ -61,3 +61,5 @@ Next, you can should subscribe to notifications by sending `SubscribeRequest` ev
 [Composition REST API Reference](/api/compositions)
 
 Calls authenticate with your Management Token, from the [**Fishjam developer panel**](https://fishjam.io/app).
+
+Request bodies are snake_case and closed: a field the endpoint does not define is rejected with `422` rather than ignored, so a misspelling fails loudly instead of silently doing nothing.

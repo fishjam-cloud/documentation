@@ -130,7 +130,13 @@ curl -X POST "$COMPOSITION_URL/api/composition" \
   -d '{ "autostart": false, "cleanup_without_inputs": false }'
 ```
 
-Register a templated `whip_client` output that pushes to your livestream's WHIP endpoint. The output configuration and the template bundle go together in one multipart request:
+Save the `composition_id` from the response, every call below uses it:
+
+```bash
+export COMPOSITION="<COMPOSITION_ID>"
+```
+
+Register a templated `whip_client` output that pushes to your livestream's WHIP endpoint. Create the livestream and its streamer token first, as in [Step 3 of the tutorial](./../../tutorials/compositions#step-3-create-a-livestream-to-publish-to). The output configuration and the template bundle go together in one multipart request:
 
 ```bash
 curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/template" \
@@ -147,7 +153,7 @@ curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/template
 
 ## Step 4: Forward the room into the composition
 
-One call to the [Fishjam Server API](/api/rest) wires everything up:
+One call to the [Fishjam Server API](./../../api/reference#server) wires everything up:
 
 ```bash
 curl -X POST "$FISHJAM_URL/room/$ROOM_ID/track_forwardings" \
