@@ -27,6 +27,8 @@ A **composition** is a single running compositing session. Into it you register:
 - **Outputs**: where the composed result is sent (WebRTC via WHIP, or RTMP). Each output carries a **scene** that describes the layout.
 - **Renderers**: shared assets such as images and fonts you can place in a scene.
 
+A composition produces video, it does not serve it. There is nowhere to point a player at a composition, so it always needs an output aimed at something that viewers can actually connect to, such as a [livestream](./livestreams) or an RTMP destination.
+
 An output's scene can either be described directly in the API or rendered by a **template**: a React component, written with the layout components and the [`@fishjam-cloud/composition`](./../how-to/compositions/write-and-deploy-a-template) hooks, that updates the layout live as the room changes.
 
 ## Cost and lifecycle
