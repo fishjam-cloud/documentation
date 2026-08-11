@@ -41,13 +41,14 @@ Register an output with `POST /api/composition/{composition_id}/output/{output_i
 | `whip_client` | Publish the composed result over WebRTC (for example to a Fishjam livestream). | `endpoint_url` (required), `bearer_token` (optional), `video`, `audio`. |
 | `rtmp_client` | Publish to an RTMP destination (for example a social platform).                | `url` (required), `video`, `audio`.                                     |
 
-There is no URL you can point a player at to watch a composition. Both output types **push** the composed video to somewhere else, and viewers connect to that somewhere else:
+There is no URL you can point a player at to watch a composition. An output **pushes** the composed video to a destination you name when you register it, and your viewers connect to that destination's own playback URL:
 
 ```text
-composition ──push──▶ livestream or RTMP destination ──▶ [viewers]
+whip_client ──▶ Fishjam livestream ──WHEP──▶ [viewers]
+rtmp_client ──▶ YouTube, Twitch, any RTMP service ──▶ [viewers]
 ```
 
-So aim a `whip_client` output at a [livestream](./../../explanation/livestreams) and people watch it through that livestream's WHEP URL. Aim an `rtmp_client` output at a social platform and they watch it there. Without an output, a composition renders for nobody.
+So the destination is what your viewers need, not the composition. A `whip_client` output pointed at a [livestream](./../../explanation/livestreams) is watched through that livestream's WHEP URL, and an `rtmp_client` output pointed at YouTube is watched on YouTube.
 
 An output's `video` carries the resolution and initial [scene](./../../explanation/compositions#scenes), and `audio` carries the initial audio scene:
 
