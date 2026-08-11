@@ -45,8 +45,28 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request body does not match the schema.",
             "content": {
               "application/json": {
                 "schema": {
@@ -215,153 +235,6 @@
         ]
       }
     },
-    "/api/composition/{composition_id}/room": {
-      "post": {
-        "tags": ["Room forwarding"],
-        "summary": "Link a Fishjam room",
-        "operationId": "link_room",
-        "parameters": [
-          {
-            "name": "composition_id",
-            "in": "path",
-            "description": "Composition ID.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["fishjam_id", "room_id"],
-                "properties": {
-                  "fishjam_id": {
-                    "type": "string"
-                  },
-                  "room_id": {
-                    "type": "string"
-                  }
-                }
-              },
-              "example": {
-                "fishjam_id": "your-fishjam-id",
-                "room_id": "room-uuid"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "204": {
-            "description": "Composition linked to room."
-          },
-          "400": {
-            "description": "Bad request.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Composition not found.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Service unavailable.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      },
-      "delete": {
-        "tags": ["Room forwarding"],
-        "summary": "Unlink a Fishjam room",
-        "operationId": "unlink_room",
-        "parameters": [
-          {
-            "name": "composition_id",
-            "in": "path",
-            "description": "Composition ID.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Composition unlinked from room."
-          },
-          "401": {
-            "description": "Unauthorized.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Composition not found.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Service unavailable.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
-    },
     "/api/composition/{composition_id}/event": {
       "post": {
         "tags": ["Events"],
@@ -395,7 +268,8 @@
                   "data": {
                     "description": "Optional arbitrary JSON payload delivered with the event."
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "example": {
                 "event_name": "SET_CAPTION",
@@ -462,105 +336,6 @@
         "security": [
           {
             "BearerAuth": []
-          }
-        ]
-      }
-    },
-    "/api/composition/{composition_id}/ws": {
-      "get": {
-        "tags": ["Events"],
-        "summary": "Subscribe to engine events",
-        "description": "Open a WebSocket to the composition.",
-        "operationId": "ws",
-        "parameters": [
-          {
-            "name": "composition_id",
-            "in": "path",
-            "description": "Composition ID.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "101": {
-            "description": "WebSocket connection established."
-          },
-          "400": {
-            "description": "Bad request.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Composition not found.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "502": {
-            "description": "Bad gateway.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Service unavailable.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "504": {
-            "description": "Gateway timeout.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "WebSocketSubprotocolAuth": []
           }
         ]
       }
@@ -832,6 +607,16 @@
               }
             }
           },
+          "422": {
+            "description": "Request body does not match the schema.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error.",
             "content": {
@@ -963,6 +748,16 @@
               }
             }
           },
+          "422": {
+            "description": "Request body does not match the schema.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error.",
             "content": {
@@ -1053,6 +848,16 @@
           },
           "404": {
             "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request body does not match the schema.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1253,6 +1058,16 @@
               }
             }
           },
+          "422": {
+            "description": "Request body does not match the schema.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error.",
             "content": {
@@ -1342,6 +1157,16 @@
           },
           "404": {
             "description": "Output not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request body does not match the schema.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1447,6 +1272,16 @@
               }
             }
           },
+          "422": {
+            "description": "Request body does not match the schema.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error.",
             "content": {
@@ -1544,6 +1379,16 @@
           },
           "404": {
             "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request body does not match the schema.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2014,22 +1859,6 @@
           }
         }
       },
-      "CompositionEvent": {
-        "type": "object",
-        "required": ["event_name"],
-        "properties": {
-          "event_name": {
-            "type": "string",
-            "description": "Name of the event delivered to the composition's templates.",
-            "example": "START_LIVE",
-            "maxLength": 128,
-            "minLength": 1
-          },
-          "data": {
-            "description": "Optional arbitrary JSON payload delivered with the event."
-          }
-        }
-      },
       "CompositionId": {
         "type": "string"
       },
@@ -2046,7 +1875,8 @@
             "description": "If true (default), the composition will be cleaned up after 5 minutes when all **inputs**\nhave zero bitrate, regardless of output bitrate. This prevents circular liveness when\ncomposition output is sent to a stream.\nIf false, cleanup only triggers when both inputs and outputs have zero bitrate.",
             "default": true
           }
-        }
+        },
+        "additionalProperties": false
       },
       "EasingFunction": {
         "oneOf": [
@@ -2810,18 +2640,6 @@
             "title": "Empty"
           }
         ]
-      },
-      "RoomLink": {
-        "type": "object",
-        "required": ["fishjam_id", "room_id"],
-        "properties": {
-          "fishjam_id": {
-            "type": "string"
-          },
-          "room_id": {
-            "type": "string"
-          }
-        }
       },
       "RtmpInput": {
         "type": "object",
@@ -3686,12 +3504,6 @@
       "BearerAuth": {
         "type": "http",
         "scheme": "bearer"
-      },
-      "WebSocketSubprotocolAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "Sec-WebSocket-Protocol",
-        "description": "The client MUST send two subprotocols: `json.fishjam.io` and `bearer.auth.fishjam.io.<TOKEN>`."
       }
     }
   },
@@ -3714,11 +3526,7 @@
     },
     {
       "name": "Events",
-      "description": "Custom events delivered to templates, and the WebSocket stream of engine events."
-    },
-    {
-      "name": "Room forwarding",
-      "description": "Links a Fishjam room to the composition. Called by Fishjam automatically when a room's track forwarding is created."
+      "description": "Custom events delivered to templates."
     },
     {
       "name": "Media transport",
