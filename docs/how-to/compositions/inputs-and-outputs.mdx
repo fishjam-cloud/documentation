@@ -48,8 +48,6 @@ whip_client ──▶ Fishjam livestream ──WHEP──▶ [viewers]
 rtmp_client ──▶ YouTube, Twitch, any RTMP service ──▶ [viewers]
 ```
 
-So the destination is what your viewers need, not the composition. A `whip_client` output pointed at a [livestream](./../../explanation/livestreams) is watched through that livestream's WHEP URL, and an `rtmp_client` output pointed at YouTube is watched on YouTube.
-
 An output's `video` carries the resolution and initial [scene](./../../explanation/compositions#scenes), and `audio` carries the initial audio scene:
 
 ```json
