@@ -31,7 +31,7 @@ An output's scene can either be described directly in the API or rendered by a *
 
 ## Cost and lifecycle
 
-A running composition holds a GPU-backed rendering session for as long as it exists, and you are billed for that time whether or not anyone is watching. It is the most expensive thing in this part of Fishjam to leave running by accident.
+A running composition holds a live rendering session for as long as it exists, and you are billed for that time whether or not anyone is watching. Leaving one running by accident is the easiest way to spend money here without noticing.
 
 Two defaults keep that in check. A composition auto-starts, and it cleans itself up after five minutes in which none of its inputs carry any media. Between them, an experiment you walk away from stops costing you money on its own.
 

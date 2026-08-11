@@ -1,0 +1,8 @@
+:::warning[A composition bills for the whole time it exists]
+By default a composition deletes itself after five minutes in which none of its inputs
+carry any media. Setting `cleanup_without_inputs` to `false` widens that condition so
+cleanup needs both the inputs and the outputs to go quiet, which keeps the composition
+alive while inputs are still on their way. Nothing will then clean it up for you, so
+delete it as soon as you are finished. See
+[Cost and lifecycle](../../explanation/compositions#cost-and-lifecycle).
+:::
