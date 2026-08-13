@@ -8,6 +8,14 @@ description: Choose the right input and output protocols for a composition, from
 
 A composition pulls media in through **inputs** and pushes the composed result out through **outputs**. Each is a tagged object whose `type` selects the protocol. This guide summarizes the available types and when to use each.
 
+The examples below run against a composition you already have, created as in [Step 1 of the tutorial](./../../tutorials/compositions#step-1-create-a-composition):
+
+```bash
+export COMPOSITION_URL="https://rtc.fishjam.io"
+export TOKEN="<YOUR_MANAGEMENT_TOKEN>"
+export COMPOSITION="<COMPOSITION_ID>"
+```
+
 ## Inputs
 
 Register an input with `POST /api/composition/{composition_id}/input/{input_id}/register` and a body whose `type` is one of:
