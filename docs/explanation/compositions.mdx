@@ -11,17 +11,17 @@ _Understanding real-time stream composition in Fishjam_
 
 A **composition** mixes multiple live media streams into a single output stream in real time. You send inputs (WebRTC, RTMP, HLS, or MP4), describe how they should be laid out, and it produces one composed stream that it publishes to a destination of your choosing, all without running any rendering infrastructure yourself.
 
-Compositions are built on [Smelter](https://smelter.dev), the open-source real-time video compositing engine by [Software Mansion](https://swmansion.com), and are a native part of Fishjam: they authenticate with the same Fishjam credentials and can compose the peers of a [Fishjam room](./rooms) directly.
+Compositions are built on [Smelter](https://smelter.dev), the source-available real-time video compositing engine by [Software Mansion](https://swmansion.com), and are a native part of Fishjam: they authenticate with the same Fishjam credentials and can compose the peers of a [Fishjam room](./rooms) directly.
 
 ## What you can build
 
 - **Multi-party layouts**: arrange the cameras of a conference or livestream into grids, side-by-sides, or picture-in-picture.
 - **Branded streams**: overlay logos, captions, lower-thirds, and backgrounds on top of live video.
-- **Cross-protocol bridging**: take WebRTC inputs and republish the composed result to an RTMP destination, or vice versa.
+- **Cross-protocol bridging**: take WebRTC inputs and republish the composed result over RTMP, for example broadcasting a conference to YouTube or Twitch, or the other way round.
 
 ## Core concepts
 
-A **composition** is a single running compositing session. Into it you register:
+A **composition** is a single running compositing session. You register three kinds of things into it:
 
 - **Inputs**: the live media sources being composed (WebRTC via WHIP/WHEP, RTMP, HLS, or MP4).
 - **Outputs**: where the composed result is sent (WebRTC via WHIP, or RTMP). Each output carries a **scene** that describes the layout.
@@ -33,9 +33,9 @@ An output's scene can either be described directly in the API or rendered by a *
 
 ## Cost and lifecycle
 
-A running composition holds a live rendering session for as long as it exists, and you are billed for that time whether or not anyone is watching. Leaving one running by accident is the easiest way to spend money here without noticing.
+A running composition holds a live rendering session for as long as it exists, and you are billed for that time whether or not anyone is watching.
 
-Two defaults keep that in check. A composition auto-starts, and it cleans itself up after five minutes in which none of its inputs carry any media. Between them, an experiment you walk away from stops costing you money on its own.
+Two defaults keep that in check. A composition auto-starts, and it cleans itself up after five minutes in which none of its inputs carry any media.
 
 `cleanup_without_inputs: false` turns that guard off. It tightens the condition so cleanup needs both the inputs and the outputs to go quiet, which is what you want when inputs arrive late, such as a room whose peers have not joined yet, or when a composition legitimately has no inputs, such as an output that renders only text. The cost is that an idle composition then survives indefinitely, so anything created that way is yours to delete, and a forgotten one bills until you do.
 

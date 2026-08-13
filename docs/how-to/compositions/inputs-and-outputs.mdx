@@ -14,7 +14,7 @@ Register an input with `POST /api/composition/{composition_id}/input/{input_id}/
 
 | `type`        | Use it when                                                           | Key fields                                                                                        |
 | ------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `whip_server` | A WebRTC client should publish **into** the composition.              | `bearer_token` (optional; generated and returned if omitted), `video` (optional, default `true`). |
+| `whip_server` | A WebRTC client should publish **to** the composition.                | `bearer_token` (optional; generated and returned if omitted), `video` (optional, default `true`). |
 | `whep_client` | The composition should **pull** a WebRTC stream from a WHEP endpoint. | `endpoint_url` (required), `bearer_token` (optional), `video` (optional).                         |
 | `rtmp_server` | An encoder (OBS, hardware) should push RTMP in.                       | `app` (required), `stream_key` (required).                                                        |
 | `hls`         | The composition should pull an HLS playlist.                          | `url` (required).                                                                                 |
