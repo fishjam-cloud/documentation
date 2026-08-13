@@ -69,6 +69,12 @@ export default function App() {
 }
 ```
 
+## Deploy it
+
+Build the bundle and register it as a templated output, the same single multipart request to `POST …/output/{output_id}/template` as in [Write and deploy a template](./write-and-deploy-a-template).
+
+That output has to publish somewhere, so create a livestream and take its streamer token first, as in [Step 3 of the compositions tutorial](./../../tutorials/compositions#step-3-create-a-livestream-to-publish-to). Watching it works the same way as there.
+
 ## Send events from your backend
 
 Send an event with `POST /api/composition/{composition_id}/event`. The `event_name` is matched against your `eventBus.on(...)` subscriptions, and `data` is delivered as the handler's argument.
