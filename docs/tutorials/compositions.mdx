@@ -44,7 +44,7 @@ The composed frame puts the race full-screen with the player in a small overlay 
 - A Fishjam account. Open the [**Fishjam developer panel**](https://fishjam.io/app) and copy your **Fishjam ID** and **Management Token**.
 - A browser, to watch the result.
 
-The [Composition API](../api/reference#compositions) lives on `https://rtc.fishjam.io`, while rooms and livestreams live on the [Fishjam Server API](../api/reference#server). Both use the same token:
+The [Composition API](../api/reference#compositions) lives on `https://rtc.fishjam.io` and takes your Management Token. The livestream you will publish to comes from the [Sandbox API](../explanation/sandbox-api-concept), which sits under your Fishjam URL and needs no token at all:
 
 ```bash
 export COMPOSITION_URL="https://rtc.fishjam.io"
@@ -105,31 +105,29 @@ The file is fetched while the input is being registered, so an unreachable URL f
 
 ## Step 3: Create a livestream to publish to
 
-The composition needs somewhere to send the composed stream. Create a [livestream](./../explanation/livestreams) for it. Making it public lets viewers watch without a token, which keeps this tutorial short:
+The composition needs somewhere to send the composed stream. The [Sandbox API](../explanation/sandbox-api-concept) creates a [livestream](./../explanation/livestreams) and hands back a **streamer token**:
 
 ```bash
-curl -X POST "$FISHJAM_URL/livestream" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{ "public": true }'
+curl "$FISHJAM_URL/room-manager/livestream?roomName=composition-tutorial&public=false"
 ```
 
-Save the id from the response:
+The response carries both things the next steps need, the token the composition publishes with and the livestream's id:
+
+```json
+{
+  "streamerToken": "<STREAMER_TOKEN>",
+  "room": { "id": "<STREAM_ID>", "name": "composition-tutorial" }
+}
+```
 
 ```bash
 export STREAM="<STREAM_ID>"
-```
-
-Then create a **streamer token**, which is what lets the composition publish into the livestream:
-
-```bash
-curl -X POST "$FISHJAM_URL/livestream/$STREAM/streamer" \
-  -H "Authorization: Bearer $TOKEN"
-```
-
-```bash
 export STREAMER_TOKEN="<STREAMER_TOKEN>"
 ```
+
+:::note
+The Sandbox API is for prototyping: it holds your Management Token server-side so a client can get a scoped token without a backend. In production you create livestreams yourself through the [Fishjam Server API](../api/reference#server), with your Management Token.
+:::
 
 ## Step 4: Register an output with a layout
 
@@ -183,13 +181,9 @@ The scene is a tree of components. A `view` stacks its children in order, so the
 
 That is the whole pipeline. The composition is already pulling both files, drawing the frame, and publishing it into your livestream.
 
-Because the livestream is public, any WHEP player can watch it without a token. Your playback URL is the WHEP endpoint with the stream id on the end:
+Open the [livestreaming demo](https://livestreaming.fishjam.io) and give it your **Fishjam ID** and your **Sandbox API URL**, which is `$FISHJAM_URL` with `/room-manager` on the end. In the **Livestream Viewer** window, enter the room name you used in Step 3, `composition-tutorial`, and click **Connect to stream**.
 
-```text
-https://fishjam.io/api/v1/live/api/whep/<STREAM_ID>
-```
-
-If you have no WHEP player to hand, [vdo.ninja](https://vdo.ninja/whip#play) works in the browser: paste that URL into **WHEP endpoint URL** and press **GO**. You should see the race running.
+You should see the race running.
 
 ## Step 6: Change the layout while it runs
 
@@ -221,7 +215,7 @@ An update has to carry the same sides the output was registered with. This outpu
 
 ## Step 7: Clean up
 
-Delete the composition and the livestream when you are done:
+Delete the composition and the livestream when you are done. The Sandbox API only creates, so removing the livestream goes through the Server API with your Management Token:
 
 ```bash
 curl -X DELETE "$COMPOSITION_URL/api/composition/$COMPOSITION" \
