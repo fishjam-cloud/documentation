@@ -5,6 +5,8 @@ sidebar_position: 3.5
 description: Create your first composition end to end, overlaying one video on another and watching the composed result in your browser.
 ---
 
+import useBaseUrl from "@docusaurus/useBaseUrl";
+
 # Compositions
 
 This tutorial walks you through creating your first composition. You will overlay a small player camera on top of full-screen gameplay, publish the result to a livestream, and watch it in your browser.
@@ -22,7 +24,7 @@ Both sources are sample MP4 files, so you need no camera, no encoder, and no pub
 The composed frame puts the race full-screen with the player in a small overlay in the top-left corner, standard gaming stream layout. Halfway through, the layout switches to a side-by-side grid without interrupting the stream, which is what you will do in Step 6:
 
 <video
-  src="/video/composition-tutorial-scene.mp4"
+  src={useBaseUrl("/video/composition-tutorial-scene.mp4")}
   autoPlay
   loop
   muted
