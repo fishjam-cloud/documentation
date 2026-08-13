@@ -19,7 +19,7 @@ Both sources are sample MP4 files, so you need no camera, no encoder, and no pub
 [player.mp4] ──┘
 ```
 
-The composed frame puts the race full-screen with the player inset in the top-left corner, standard gaming stream layout:
+The composed frame puts the race full-screen with the player in a small overlay in the top-left corner, standard gaming stream layout:
 
 ```text
 ┌─────────────────────────────┐
@@ -191,7 +191,7 @@ If you have no WHEP player to hand, [vdo.ninja](https://vdo.ninja/whip#play) wor
 
 ## Step 6: Change the layout while it runs
 
-A scene is not fixed once the output is registered. Leave the player watching and swap the corner inset for a side-by-side grid:
+A scene is not fixed once the output is registered. Leave the player watching and swap the corner overlay for a side-by-side grid:
 
 ```bash
 curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/update" \
@@ -211,7 +211,7 @@ curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/update" 
   }'
 ```
 
-The layout changes on the fly, with no interruption to the stream. Send the Step 4 scene again to go back to the inset.
+The layout changes on the fly, with no interruption to the stream. Send the Step 4 scene again to go back to the corner overlay.
 
 :::warning
 An update has to carry the same sides the output was registered with. This output has both `video` and `audio`, so every update needs both, even when only the layout changed. Sending only one of them fails. See [Update a scene](../how-to/compositions/inputs-and-outputs#update-a-scene) for the full rule.
