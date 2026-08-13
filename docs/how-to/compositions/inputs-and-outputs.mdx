@@ -28,7 +28,7 @@ For `whip_server`, the register response returns the `bearer_token` a publisher 
 
 That token is the only one accepted on the publish endpoint. Your Management Token is rejected there.
 
-Point any WHIP publisher at `endpoint_route` under the composition's base URL and authenticate with that token. A `whip_server` input takes WebRTC from anything that speaks WHIP: a phone's camera, a laptop webcam, a browser tab, a screen share, or a hardware encoder. [vdo.ninja](https://vdo.ninja/whip) publishes from a browser, and OBS has WHIP output built in.
+Point any WHIP publisher at `endpoint_route` under the composition's base URL and authenticate with that token. A `whip_server` input takes WebRTC from anything that speaks WHIP: a phone's camera, a laptop webcam, a browser tab, a screen share, or a hardware encoder. OBS has WHIP output built in.
 
 Unregister any input with `POST …/input/{input_id}/unregister`.
 

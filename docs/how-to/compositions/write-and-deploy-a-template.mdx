@@ -95,7 +95,7 @@ A templated output is registered in a **single multipart request** to `POST …/
 - `config`: the same JSON body a regular output registration takes (see [Choose inputs and outputs](./inputs-and-outputs)). Its `video.initial` scene is only a placeholder; the template takes over rendering as soon as it loads.
 - `template`: the built bundle.
 
-`endpoint_url` is wherever the composed stream should go. The quickest destination to watch is a Fishjam livestream, exactly as in [the tutorial](./../../tutorials/compositions#step-3-create-a-livestream-to-publish-to): create one, take its streamer token, and publish to `https://fishjam.io/api/v1/live/api/whip`. A public livestream then plays back in any WHEP player without a token.
+`endpoint_url` is wherever the composed stream should go. The quickest destination to watch is a Fishjam livestream, exactly as in [the tutorial](./../../tutorials/compositions#step-3-create-a-livestream-to-publish-to): create one, take its streamer token, and publish to `https://fishjam.io/api/v1/live/api/whip`.
 
 <Tabs groupId="language">
   <TabItem value="curl" label="curl">
