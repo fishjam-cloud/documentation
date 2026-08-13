@@ -14,7 +14,7 @@ The [Composition API](./../../api/reference#compositions) lives on `https://rtc.
 
 ```bash
 export COMPOSITION_URL="https://rtc.fishjam.io"
-export TOKEN="<YOUR_FISHJAM_TOKEN>"
+export TOKEN="<YOUR_MANAGEMENT_TOKEN>"
 ```
 
 A caption-only template registers no inputs, and a composition with no input media cleans itself up after five minutes. Create this one with `cleanup_without_inputs` set to `false` so it stays up while you experiment, instead of disappearing mid-test and leaving playback returning `404 Stream not found`:
