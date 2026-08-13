@@ -11,19 +11,6 @@ import TabItem from "@theme/TabItem";
 
 A **template** is a React component that describes an output's layout. Instead of sending a static scene, you write a component, bundle it into a single file with the composition CLI, and upload it when registering an output.
 
-The [Composition API](./../../api/reference#compositions) lives on `https://rtc.fishjam.io`, while livestreams live on the [Fishjam Server API](./../../api/reference#server). Both take the same Management Token:
-
-```bash
-export COMPOSITION_URL="https://rtc.fishjam.io"
-export FISHJAM_URL="https://fishjam.io/api/v1/connect/<YOUR_FISHJAM_ID>"
-export TOKEN="<YOUR_MANAGEMENT_TOKEN>"
-export COMPOSITION="<COMPOSITION_ID>"
-export STREAM="<STREAM_ID>"
-export STREAMER_TOKEN="<STREAMER_TOKEN>"
-```
-
-The composition comes from [Step 1 of the tutorial](./../../tutorials/compositions#step-1-create-a-composition), the livestream and its streamer token from [Step 3](./../../tutorials/compositions#step-3-create-a-livestream-to-publish-to).
-
 ## Scaffold a project
 
 Create a new template project with the CLI:
@@ -93,6 +80,17 @@ npm run build
 ```
 
 ## Deploy the template
+
+Create the composition and the livestream now rather than earlier, so neither is sitting idle while you write the template: a composition with no input media deletes itself after five minutes. Take the composition from [Step 1 of the tutorial](./../../tutorials/compositions#step-1-create-a-composition) and the livestream with its streamer token from [Step 3](./../../tutorials/compositions#step-3-create-a-livestream-to-publish-to):
+
+```bash
+export COMPOSITION_URL="https://rtc.fishjam.io"
+export FISHJAM_URL="https://fishjam.io/api/v1/connect/<YOUR_FISHJAM_ID>"
+export TOKEN="<YOUR_MANAGEMENT_TOKEN>"
+export COMPOSITION="<COMPOSITION_ID>"
+export STREAM="<STREAM_ID>"
+export STREAMER_TOKEN="<STREAMER_TOKEN>"
+```
 
 A templated output is registered in a **single multipart request** to `POST …/output/{output_id}/template`. Do not call the plain `…/register` endpoint first. The request carries two parts:
 
