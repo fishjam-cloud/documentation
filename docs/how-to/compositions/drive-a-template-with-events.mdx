@@ -10,30 +10,6 @@ import IdleCleanup from "../../_common/compositions/idle-cleanup.mdx";
 
 Once a [template](./write-and-deploy-a-template) is running, you can push **custom events** to it from your backend to change what it shows, such as toggling a live badge or updating a caption, without re-uploading the template.
 
-The [Composition API](./../../api/reference#compositions) lives on `https://rtc.fishjam.io` and takes your Management Token:
-
-```bash
-export COMPOSITION_URL="https://rtc.fishjam.io"
-export TOKEN="<YOUR_MANAGEMENT_TOKEN>"
-```
-
-A caption-only template registers no inputs, and a composition with no input media cleans itself up after five minutes. Create this one with `cleanup_without_inputs` set to `false` so it stays up while you experiment, instead of disappearing mid-test and leaving playback returning `404 Stream not found`:
-
-```bash
-curl -X POST "$COMPOSITION_URL/api/composition" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{ "cleanup_without_inputs": false }'
-```
-
-Save the id from the response:
-
-```bash
-export COMPOSITION="<COMPOSITION_ID>"
-```
-
-<IdleCleanup />
-
 ## Handle events in the template
 
 Inside a template, subscribe to events with the `eventBus`. Each `on` call returns an unsubscribe function. Event names and payloads are entirely defined by your application.
@@ -70,6 +46,26 @@ export default function App() {
 ```
 
 ## Deploy it
+
+Now create the composition. A caption-only template registers no inputs, and a composition with no input media cleans itself up after five minutes, so create this one with `cleanup_without_inputs` set to `false`:
+
+```bash
+export COMPOSITION_URL="https://rtc.fishjam.io"
+export TOKEN="<YOUR_MANAGEMENT_TOKEN>"
+
+curl -X POST "$COMPOSITION_URL/api/composition" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "cleanup_without_inputs": false }'
+```
+
+Save the id from the response:
+
+```bash
+export COMPOSITION="<COMPOSITION_ID>"
+```
+
+<IdleCleanup />
 
 Build the bundle and register it as a templated output, the same single multipart request to `POST …/output/{output_id}/template` as in [Write and deploy a template](./write-and-deploy-a-template).
 
