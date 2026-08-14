@@ -41,14 +41,15 @@ The composed frame puts the race full-screen with the player in a small overlay 
 
 ## Prerequisites
 
-- A Fishjam account. Open the [**Fishjam developer panel**](https://fishjam.io/app) and copy your **Fishjam ID** and **Management Token**.
+- A Fishjam account. Open the [**Fishjam developer panel**](https://fishjam.io/app) and copy your **Fishjam ID** and **Management Token** from the Dashboard tab, and your **Sandbox API URL** from the [Sandbox tab](https://fishjam.io/app/sandbox).
 - A browser, to watch the result.
 
-The [Composition API](../api/reference#compositions) lives on `https://rtc.fishjam.io` and takes your Management Token. The livestream you will publish to comes from the [Sandbox API](../explanation/sandbox-api-concept), which sits under your Fishjam URL and needs no token at all:
+The [Composition API](../api/reference#compositions) lives on `https://rtc.fishjam.io` and takes your Management Token. The livestream you will publish to comes from the [Sandbox API](../explanation/sandbox-api-concept), which has its own URL and needs no token at all:
 
 ```bash
 export COMPOSITION_URL="https://rtc.fishjam.io"
 export FISHJAM_URL="https://fishjam.io/api/v1/connect/<YOUR_FISHJAM_ID>"
+export SANDBOX_URL="<YOUR_SANDBOX_API_URL>"
 export TOKEN="<YOUR_MANAGEMENT_TOKEN>"
 ```
 
@@ -108,7 +109,7 @@ The file is fetched while the input is being registered, so an unreachable URL f
 The composition needs somewhere to send the composed stream. The [Sandbox API](../explanation/sandbox-api-concept) creates a [livestream](./../explanation/livestreams) and hands back a **streamer token**:
 
 ```bash
-curl "$FISHJAM_URL/room-manager/livestream?roomName=composition-tutorial&public=false"
+curl "$SANDBOX_URL/livestream?roomName=composition-tutorial&public=false"
 ```
 
 The response carries both things the next steps need, the token the composition publishes with and the livestream's id:
@@ -181,7 +182,7 @@ The scene is a tree of components. A `view` stacks its children in order, so the
 
 That is the whole pipeline. The composition is already pulling both files, drawing the frame, and publishing it into your livestream.
 
-Open the [livestreaming demo](https://livestreaming.fishjam.io) and give it your **Fishjam ID** and your **Sandbox API URL**, which is `$FISHJAM_URL` with `/room-manager` on the end. In the **Livestream Viewer** window, enter the room name you used in Step 3, `composition-tutorial`, and click **Connect to stream**.
+Open the [livestreaming demo](https://livestreaming.fishjam.io) and give it your **Fishjam ID** and the same **Sandbox API URL** you used in Step 3. In the **Livestream Viewer** window, enter the room name you used in Step 3, `composition-tutorial`, and click **Connect to stream**.
 
 You should see the race running.
 
