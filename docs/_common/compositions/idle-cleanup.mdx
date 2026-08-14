@@ -1,5 +1,6 @@
 :::warning[A composition bills for the whole time it exists]
-With that guard off, nothing will clean this composition up for you. Delete it as soon
-as you are finished, and do not leave one running after a test. See
+With that guard off, cleanup waits for the outputs to fall silent too, so one that keeps
+publishing is never cleaned up for you. Delete it as soon as you are finished, and do not
+leave one running after a test. See
 [Cost and lifecycle](../../explanation/compositions#cost-and-lifecycle).
 :::
