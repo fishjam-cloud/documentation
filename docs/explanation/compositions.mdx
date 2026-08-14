@@ -9,7 +9,7 @@ description: Understand compositions, the Fishjam feature that mixes multiple li
 
 _Understanding real-time stream composition in Fishjam_
 
-A **composition** mixes multiple live media streams into a single output stream in real time. You send inputs (WebRTC, RTMP, HLS, or MP4), describe how they should be laid out, and it produces one composed stream that it publishes to a destination of your choosing, all without running any rendering infrastructure yourself.
+A **composition** mixes multiple live media streams into a single output stream in real time. You send inputs (WebRTC, RTMP, or MP4), describe how they should be laid out, and it produces one composed stream that it publishes to a destination of your choosing, all without running any rendering infrastructure yourself.
 
 Compositions are built on [Smelter](https://smelter.dev), the source-available real-time video compositing engine by [Software Mansion](https://swmansion.com), and are a native part of Fishjam: they authenticate with the same Fishjam credentials and can compose the peers of a [Fishjam room](./rooms) directly.
 
@@ -23,7 +23,7 @@ Compositions are built on [Smelter](https://smelter.dev), the source-available r
 
 A **composition** is a single running compositing session. You register three kinds of things into it:
 
-- **Inputs**: the live media sources being composed (WebRTC via WHIP/WHEP, RTMP, HLS, or MP4).
+- **Inputs**: the live media sources being composed (WebRTC via WHIP/WHEP, RTMP, or MP4).
 - **Outputs**: where the composed result is sent (WebRTC via WHIP, or RTMP). Each output carries a **scene** that describes the layout.
 - **Renderers**: shared assets such as images and fonts you can place in a scene.
 

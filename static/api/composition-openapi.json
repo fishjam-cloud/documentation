@@ -1962,22 +1962,6 @@
           "placebo"
         ]
       },
-      "HlsInput": {
-        "type": "object",
-        "description": "Parameters for an input stream from HLS source.",
-        "required": ["url", "type"],
-        "properties": {
-          "url": {
-            "type": "string",
-            "description": "URL to HLS playlist"
-          },
-          "type": {
-            "type": "string",
-            "enum": ["hls"]
-          }
-        },
-        "additionalProperties": false
-      },
       "HorizontalAlign": {
         "type": "string",
         "enum": ["left", "right", "justified", "center"]
@@ -2138,10 +2122,10 @@
       "Mp4Input": {
         "type": "object",
         "description": "Input stream from an MP4 file.",
-        "required": ["type"],
+        "required": ["url", "type"],
         "properties": {
           "url": {
-            "type": ["string", "null"],
+            "type": "string",
             "description": "URL of the MP4 file."
           },
           "loop": {
@@ -2396,14 +2380,6 @@
               }
             ],
             "title": "RegisterInputWhepClient"
-          },
-          {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/HlsInput"
-              }
-            ],
-            "title": "RegisterInputHls"
           }
         ]
       },
@@ -3514,7 +3490,7 @@
     },
     {
       "name": "Inputs",
-      "description": "Live media sources being composed: WHIP, WHEP, RTMP, HLS, or MP4."
+      "description": "Live media sources being composed: WHIP, WHEP, RTMP, or MP4."
     },
     {
       "name": "Outputs",
