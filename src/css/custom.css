@@ -42,6 +42,88 @@ html[data-theme="light"] footer.footer {
   background-color: #fcf4e4;
 }
 
+footer.footer {
+  padding: 48px 24px 32px;
+}
+
+footer.footer .container {
+  max-width: 1000px;
+}
+
+footer.footer .footer__links {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  align-items: start;
+  gap: 40px;
+  margin: 0 0 40px;
+}
+
+footer.footer .footer__col {
+  padding: 0;
+  max-width: none;
+}
+
+footer.footer .footer__title {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+footer.footer .footer__items {
+  margin: 0;
+}
+
+footer.footer .footer__item {
+  margin: 0 0 10px;
+}
+
+/* Infima sets line-height 2 on link items while a paragraph resolves to ~1.5,
+   so the extra half-leading pushed the link columns below the brand text.
+   One shared line-height puts every column's first row on the same baseline. */
+footer.footer .footer__link-item,
+footer.footer .footer__brand-text {
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+footer.footer .footer__link-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+footer.footer .footer__brand-text {
+  margin: 0;
+  color: var(--ifm-color-emphasis-700);
+  max-width: 280px;
+}
+
+footer.footer .footer__link-item svg {
+  width: 12px;
+  height: 12px;
+  opacity: 0.7;
+}
+
+footer.footer .footer__bottom {
+  border-top: 1px solid var(--ifm-color-emphasis-500);
+  padding-top: 24px;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 996px) {
+  footer.footer .footer__links {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 640px) {
+  footer.footer .footer__links {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
 html[data-theme="light"] nav.navbar--fixed-top {
   background-color: #fcf4e4;
 }

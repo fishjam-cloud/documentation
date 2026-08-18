@@ -324,6 +324,14 @@ const config: Config = {
     footer: {
       links: [
         {
+          title: "Fishjam",
+          items: [
+            {
+              html: '<p class="footer__brand-text">Building tools and open-source infrastructure for developers.</p>',
+            },
+          ],
+        },
+        {
           title: "Quick Setup",
           items: [
             {
@@ -355,6 +363,19 @@ const config: Config = {
             {
               label: "Software Mansion",
               href: "https://swmansion.com/",
+            },
+          ],
+        },
+        {
+          title: "Legal",
+          items: [
+            {
+              label: "Privacy Policy",
+              href: "https://swmansion.com/privacy/policy/",
+            },
+            {
+              label: "Terms of Service",
+              href: "https://swmansion.com/legal/fishjam/terms-of-service/",
             },
           ],
         },
