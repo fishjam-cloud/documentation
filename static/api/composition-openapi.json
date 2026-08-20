@@ -1713,15 +1713,10 @@
     "schemas": {
       "ApiError": {
         "type": "object",
-        "required": ["message", "http_status_code"],
+        "required": ["message"],
         "properties": {
           "message": {
             "type": "string"
-          },
-          "http_status_code": {
-            "type": "integer",
-            "format": "int32",
-            "minimum": 0
           }
         }
       },
@@ -1795,52 +1790,22 @@
       "Component": {
         "oneOf": [
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/InputStream"
-              }
-            ],
-            "title": "ComponentInputStream"
+            "$ref": "#/components/schemas/InputStream"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/View"
-              }
-            ],
-            "title": "ComponentView"
+            "$ref": "#/components/schemas/View"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Text"
-              }
-            ],
-            "title": "ComponentText"
+            "$ref": "#/components/schemas/Text"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Tiles"
-              }
-            ],
-            "title": "ComponentTiles"
+            "$ref": "#/components/schemas/Tiles"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Rescaler"
-              }
-            ],
-            "title": "ComponentRescaler"
+            "$ref": "#/components/schemas/Rescaler"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Image"
-              }
-            ],
-            "title": "ComponentImage"
+            "$ref": "#/components/schemas/Image"
           }
         ]
       },
@@ -2350,56 +2315,26 @@
       "RegisterInput": {
         "oneOf": [
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/RtmpInput"
-              }
-            ],
-            "title": "RegisterInputRtmpServer"
+            "$ref": "#/components/schemas/RtmpInput"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Mp4Input"
-              }
-            ],
-            "title": "RegisterInputMp4"
+            "$ref": "#/components/schemas/Mp4Input"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/WhipInput"
-              }
-            ],
-            "title": "RegisterInputWhipServer"
+            "$ref": "#/components/schemas/WhipInput"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/WhepInput"
-              }
-            ],
-            "title": "RegisterInputWhepClient"
+            "$ref": "#/components/schemas/WhepInput"
           }
         ]
       },
       "RegisterOutput": {
         "oneOf": [
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/RtmpOutput"
-              }
-            ],
-            "title": "RegisterOutputRtmpClient"
+            "$ref": "#/components/schemas/RtmpOutput"
           },
           {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/WhipOutput"
-              }
-            ],
-            "title": "RegisterOutputWhipClient"
+            "$ref": "#/components/schemas/WhipOutput"
           }
         ]
       },
@@ -2619,15 +2554,11 @@
       },
       "RtmpInput": {
         "type": "object",
-        "required": ["app", "stream_key", "type"],
+        "required": ["stream_key", "type"],
         "properties": {
-          "app": {
-            "type": "string",
-            "description": "The RTMP application name.\nThis is the first path segment of the RTMP stream URL that Smelter listens on for incoming streams.\nFormat: `rtmp://<ip_address>:<port>/<app>/<stream_key`"
-          },
           "stream_key": {
             "type": "string",
-            "description": "The RTMP stream key.\nThis is the second path segment of the RTMP stream URL that Smelter listens on for incoming streams.\nFormat: `rtmp://<ip_address>:<port>/<app>/<stream_key`"
+            "description": "The RTMP stream key.\nThis is the path segment of the RTMP stream URL that Smelter listens on for incoming streams.\nFormat: `rtmp://<ip_address>:<port>/<stream_key>`"
           },
           "type": {
             "type": "string",
