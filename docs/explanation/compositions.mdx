@@ -18,6 +18,7 @@ Compositions are built on [Smelter](https://smelter.dev), the source-available r
 - **Multi-party layouts**: arrange the cameras of a conference or livestream into grids, side-by-sides, or picture-in-picture.
 - **Branded streams**: overlay logos, captions, lower-thirds, and backgrounds on top of live video.
 - **Cross-protocol bridging**: take WebRTC inputs and republish the composed result over RTMP, for example broadcasting a conference to YouTube or Twitch, or the other way round.
+- **Recordings**: capture the composed stream as an MP4 file to store, replay, or serve on demand.
 
 ## Core concepts
 
@@ -45,6 +46,10 @@ Delete a composition as soon as you are done with it:
 curl -X DELETE "$COMPOSITION_URL/api/composition/$COMPOSITION" \
   -H "Authorization: Bearer $TOKEN"
 ```
+
+## Recordings
+
+A **recording** saves what one of a composition's outputs publishes into an MP4 file that stays around after the composition is gone. Recordings are a resource of their own, managed through the [Fishjam Server API](./../api/reference#server) rather than the Composition API: [Recordings](./recordings) explains how they work, and [Record a composition](./../how-to/compositions/record-a-composition) walks through making one.
 
 ## Scenes
 
@@ -109,4 +114,5 @@ Either you push those updates yourself, or you hand the job to a **template**: a
 - [Compositions tutorial](./../tutorials/compositions): create your first composition end to end.
 - [Write and deploy a template](./../how-to/compositions/write-and-deploy-a-template): build a React layout with the composition SDK.
 - [Compose a Fishjam room](./../how-to/compositions/compose-a-fishjam-room): turn a room's peers into one composed stream.
+- [Record a composition](./../how-to/compositions/record-a-composition): save an output as an MP4.
 - [Composition API](./../api/reference#compositions): the full REST surface.

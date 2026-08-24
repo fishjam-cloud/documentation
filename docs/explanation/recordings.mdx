@@ -1,0 +1,57 @@
+---
+type: explanation
+title: Recordings
+sidebar_position: 4.6
+description: Understand recordings, the Fishjam resource that captures a composition's output into an MP4 file that outlives the session it came from.
+---
+
+# Recordings
+
+_Understanding how Fishjam turns live composed streams into files_
+
+A **recording** captures what one of a [composition](./compositions)'s outputs publishes and turns it into an MP4 file. A composition is a live process: it produces media while it runs and leaves nothing behind when it is deleted. A recording is its durable counterpart, the file that remains. It outlives the composition, the room, and the livestream it came from, and it stays in Fishjam until you delete it.
+
+```text
+composition ──output──▶ livestream / RTMP ──▶ [viewers]
+      │
+      └──recording──▶ MP4 ──▶ [download]
+```
+
+## A recorder attached to an output
+
+A composition produces media through its outputs, so outputs are also the thing you record. When you create a recording, you name a composition and one of its registered outputs, and Fishjam attaches a recorder to that output. From that moment the recorder captures exactly what the output plays out: the same layout, the same encoding, and every scene update along the way. There is no separate recording scene; if the file should look different from the live stream, register a dedicated output with its own scene and record that one instead.
+
+The one knob on the recorder itself is `scaleRatio`, which records at a fraction (or multiple) of the output's resolution, for example `0.5` to store an archive copy at half size.
+
+An output carries at most one recording at a time. To record the same output again, wait until the current recording is no longer `active`.
+
+## Two APIs, one feature
+
+Compositions live on the [Composition API](./../api/reference#compositions), but recordings are created and managed through the [Fishjam Server API](./../api/reference#server), directly or with the JS and Python server SDKs. The split follows ownership: a composition is a running session you configure, while a recording is a resource of your Fishjam app, stored alongside your rooms and livestreams and managed with the same management token. You never talk to the composition to record it; the Server API drives the capture inside the composition for you.
+
+## Lifecycle
+
+A recording moves through four statuses:
+
+| Status      | Meaning                                                  |
+| ----------- | -------------------------------------------------------- |
+| `active`    | Capturing the output right now.                          |
+| `finished`  | Capture has ended; the file is being prepared.           |
+| `available` | The MP4 is ready; `files` holds the download URL.        |
+| `failed`    | Something went wrong along the way; no file will appear. |
+
+Capture starts the moment the recording is created. It ends when you stop the recording explicitly, or on its own when the recorded output ends or the composition is deleted, so tearing a session down finalizes its recordings too. Finalization is asynchronous: the recording stays `active` until the capture wraps up, then moves through `finished` to `available` once the file is ready.
+
+Every status change emits a `RecordingStatusChanged` [server notification](./../api/reference#protobufs) over your configured webhook or a websocket, so you can react to a file becoming available without polling.
+
+Once `available`, the recording's `files` list its media in playback order as direct HTTPS URLs you can download or hand straight to your users. The recording and its files persist until you delete the recording; deleting is the only way they go away, and an `active` recording cannot be deleted.
+
+## Metadata
+
+A recording carries optional free-form `metadata` that you set at creation and get back with every read. Because recordings accumulate as sessions come and go, metadata is also the handle for finding them later: listing recordings can filter by metadata pairs, for example everything recorded for a given show or customer.
+
+## Where to go next
+
+- [Record a composition](./../how-to/compositions/record-a-composition): start, stop, and download a recording step by step.
+- [Compositions](./compositions): the sessions that recordings capture.
+- [Server REST API](/api/rest): the complete request and response schemas.
