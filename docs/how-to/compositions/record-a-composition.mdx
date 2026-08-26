@@ -21,20 +21,53 @@ composition ──output──▶ livestream / RTMP ──▶ [viewers]
 
 ## Prerequisites
 
-A running composition with a registered output, for example from the [tutorial](./../../tutorials/compositions) or [Compose a Fishjam room](./compose-a-fishjam-room). The steps below record the `main` output those guides register.
+A running composition with its inputs registered, and a livestream for it to publish to along with the livestream's streamer token. The [tutorial](./../../tutorials/compositions) sets up all of that in its Steps 1 to 3; stop before its Step 4, which registers the same output as Step 1 below does.
 
 ```bash
 export COMPOSITION_URL="https://rtc.fishjam.io"
 export FISHJAM_URL="https://fishjam.io/api/v1/connect/<YOUR_FISHJAM_ID>"
 export TOKEN="<YOUR_MANAGEMENT_TOKEN>"
 export COMPOSITION="<COMPOSITION_ID>"
+export STREAMER_TOKEN="<STREAMER_TOKEN>"
 ```
 
-Besides curl, every call is also available as a method on the `FishjamClient` of the [JS and Python server SDKs](./../backend/server-setup), shown in the language tabs.
+Step 1 talks to the Composition API. Every recording call from Step 2 on is also available as a method on the `FishjamClient` of the [JS and Python server SDKs](./../backend/server-setup), shown in the language tabs.
 
-## Step 1: Start the recording
+## Step 1: Register the output to record
 
-Name the composition and the output to record in `source`:
+A recording attaches to an output, so the composition first needs the output whose scene should end up in the file. Register it like any other output. An output always publishes to a destination as it plays out, so the output you record is also a live stream: here `main` publishes to your livestream over WHIP, with the tutorial's two inputs side by side.
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/register" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d @- <<EOF
+{
+  "type": "whip_client",
+  "endpoint_url": "https://fishjam.io/api/v1/live/api/whip",
+  "bearer_token": "$STREAMER_TOKEN",
+  "video": {
+    "resolution": { "width": 1280, "height": 720 },
+    "initial": {
+      "root": {
+        "type": "tiles",
+        "children": [
+          { "type": "input_stream", "input_id": "race" },
+          { "type": "input_stream", "input_id": "player" }
+        ]
+      }
+    }
+  },
+  "audio": { "initial": { "inputs": [{ "input_id": "player" }] } }
+}
+EOF
+```
+
+The recording will carry exactly this scene, and every update you send to `main` afterwards. If your composition already has the output you want to record, for example the templated one from [Compose a Fishjam room](./compose-a-fishjam-room), skip ahead. See [Choose inputs and outputs](./inputs-and-outputs) for the other output types.
+
+## Step 2: Start the recording
+
+Name the composition and the output from Step 1 in `source`:
 
 <Tabs groupId="language">
   <TabItem value="curl" label="curl">
@@ -110,11 +143,11 @@ The recording comes back with status `active`: capture has already started.
 
 A few things to know at this point:
 
-- The recording mirrors the output it captures: the same layout, the same encoding, and every scene update the output plays out. To record at a different resolution than the live output, add `scaleRatio` to `source`: `0.5` records at half the output's resolution, values above `1` upscale. It defaults to `1`.
+- The recording mirrors the output it captures: the same layout and resolution, and every scene update the output plays out. The file is encoded separately from the live stream. To record at a different resolution than the live output, add `scaleRatio` to `source`: `0.5` records at half the output's resolution, values above `1` upscale. It defaults to `1`.
 - An output carries at most one recording at a time. To record the same output again, wait until the current recording is no longer `active`.
 - `metadata` is free-form and optional; it comes back with the recording and you can filter by it later.
 
-## Step 2: Follow the status
+## Step 3: Follow the status
 
 <Tabs groupId="language">
   <TabItem value="curl" label="curl">
@@ -160,7 +193,7 @@ A recording moves through four statuses:
 
 Rather than polling, you can subscribe to [server notifications](./../../api/reference#protobufs): every change emits a `RecordingStatusChanged` message carrying the recording's id, its new status, and its metadata, over your configured webhook or a websocket.
 
-## Step 3: Stop the capture
+## Step 4: Stop the capture
 
 <Tabs groupId="language">
   <TabItem value="curl" label="curl">
@@ -199,7 +232,7 @@ Finalization is asynchronous: the recording stays `active` until the capture is 
 
 You do not have to stop a recording explicitly. When the recorded output ends, or the composition itself is deleted, the capture finishes on its own, so ending a session by [deleting the composition](./../../explanation/compositions#cost-and-lifecycle) finalizes its recordings too.
 
-## Step 4: Download the MP4
+## Step 5: Download the MP4
 
 Once the status reaches `available`, the recording's `files` list its media in playback order, as direct HTTPS URLs:
 
@@ -217,7 +250,7 @@ Once the status reaches `available`, the recording's `files` list its media in p
 
 Download the file or serve the URL to your users as it is; until then, `files` is empty.
 
-## Step 5: List your recordings
+## Step 6: List your recordings
 
 `GET /recordings` lists every recording of your app, and takes filters on status and metadata. A metadata filter matches recordings whose metadata contains all the given pairs; values are compared as strings, so numbers and booleans in metadata cannot be matched this way.
 
@@ -259,7 +292,7 @@ recordings = fishjam_client.get_all_recordings({"show": "weekly-standup"})
 
 The SDK methods filter by metadata; to filter by status as well, call the REST endpoint directly.
 
-## Step 6: Clean up
+## Step 7: Clean up
 
 Recordings persist independently of the composition until you delete them, file and all:
 

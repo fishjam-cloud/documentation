@@ -19,7 +19,7 @@ composition ──output──▶ livestream / RTMP ──▶ [viewers]
 
 ## A recorder attached to an output
 
-A composition produces media through its outputs, so outputs are also the thing you record. When you create a recording, you name a composition and one of its registered outputs, and Fishjam attaches a recorder to that output. From that moment the recorder captures exactly what the output plays out: the same layout, the same encoding, and every scene update along the way. There is no separate recording scene; if the file should look different from the live stream, register a dedicated output with its own scene and record that one instead.
+A composition produces media through its outputs, so outputs are also the thing you record. When you create a recording, you name a composition and one of its registered outputs, and Fishjam attaches a recorder to that output. From that moment the recorder captures exactly what the output plays out: the same layout and resolution, and every scene update along the way, encoded separately from the live stream. There is no separate recording scene; if the file should look different from the live stream, register a dedicated output with its own scene and record that one instead.
 
 The one knob on the recorder itself is `scaleRatio`, which records at a fraction (or multiple) of the output's resolution, for example `0.5` to store an archive copy at half size.
 
