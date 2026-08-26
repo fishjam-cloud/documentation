@@ -1,0 +1,105 @@
+---
+type: how-to
+sidebar_position: 3
+description: Send custom events to a running composition to update a template's on-screen state at runtime.
+---
+
+import IdleCleanup from "../../_common/compositions/idle-cleanup.mdx";
+
+# Drive a template with events
+
+Once a [template](./write-and-deploy-a-template) is running, you can push **custom events** to it from your backend to change what it shows, such as toggling a live badge or updating a caption, without re-uploading the template.
+
+## Handle events in the template
+
+Inside a template, subscribe to events with the `eventBus`. Each `on` call returns an unsubscribe function. Event names and payloads are entirely defined by your application.
+
+```tsx
+// @jsx: react-jsx
+// ---cut-before---
+import { useEffect, useState } from "react";
+import { Text, View } from "@swmansion/smelter";
+import { eventBus } from "@fishjam-cloud/composition";
+
+export default function App() {
+  const [caption, setCaption] = useState<string | null>(null);
+  const [live, setLive] = useState(false);
+
+  useEffect(() => {
+    const unsubs = [
+      eventBus.on<{ text: string }>("SET_CAPTION", ({ text }) =>
+        setCaption(text),
+      ),
+      eventBus.on("CLEAR_CAPTION", () => setCaption(null)),
+      eventBus.on<{ live: boolean }>("SET_LIVE", ({ live }) => setLive(live)),
+    ];
+    return () => unsubs.forEach((off) => off());
+  }, []);
+
+  return (
+    <View>
+      {live && <Text>● LIVE</Text>}
+      {caption && <Text>{caption}</Text>}
+    </View>
+  );
+}
+```
+
+## Deploy it
+
+Now create the composition. A caption-only template registers no inputs, and a composition with no input media cleans itself up after five minutes, so create this one with `cleanup_without_inputs` set to `false`:
+
+```bash
+export COMPOSITION_URL="https://rtc.fishjam.io"
+export TOKEN="<YOUR_MANAGEMENT_TOKEN>"
+
+curl -X POST "$COMPOSITION_URL/api/composition" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "cleanup_without_inputs": false }'
+```
+
+Save the id from the response:
+
+```bash
+export COMPOSITION="<COMPOSITION_ID>"
+```
+
+<IdleCleanup />
+
+Build the bundle and register it as a templated output, the same single multipart request to `POST …/output/{output_id}/template` as in [Write and deploy a template](./write-and-deploy-a-template).
+
+That output has to publish somewhere, so create a livestream and take its streamer token first, as in [Step 3 of the compositions tutorial](./../../tutorials/compositions#step-3-create-a-livestream-to-publish-to). Watching it works the same way as there.
+
+## Send events from your backend
+
+Send an event with `POST /api/composition/{composition_id}/event`. The `event_name` is matched against your `eventBus.on(...)` subscriptions, and `data` is delivered as the handler's argument.
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/event" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "event_name": "SET_CAPTION", "data": { "text": "Welcome to the stream" } }'
+```
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/event" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "event_name": "SET_LIVE", "data": { "live": true } }'
+```
+
+The template re-renders as soon as the event arrives.
+
+:::note
+Event names and payloads are an application-defined contract between your backend and your template. There is no canonical set of events; `SET_LIVE` and `SET_CAPTION` above are just examples. Pick names and payload shapes that fit your app, and keep them in sync on both sides.
+:::
+
+## Clean up
+
+Delete the composition when you have finished testing, so it stops billing:
+
+```bash
+curl -X DELETE "$COMPOSITION_URL/api/composition/$COMPOSITION" \
+  -H "Authorization: Bearer $TOKEN"
+```

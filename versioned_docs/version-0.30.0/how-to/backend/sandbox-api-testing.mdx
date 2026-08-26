@@ -1,0 +1,333 @@
+---
+sidebar_position: 5
+description: Use the Sandbox API to create rooms and peers for testing without setting up your own backend server.
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+# Testing with the Sandbox API
+
+The Sandbox API is a development tool that lets you create rooms and peers for testing without setting up your own backend server. This guide shows you how to use it effectively.
+
+## Prerequisites
+
+- Access to [Fishjam Dashboard](https://fishjam.io/app)
+
+## Step 1: Get your Fishjam ID and Sandbox API URL
+
+1. Log in to [Fishjam Dashboard](https://fishjam.io/app)
+2. Navigate to the [Sandbox tab](https://fishjam.io/app/sandbox)
+3. Copy your **Fishjam ID**
+4. In the **Sandbox API** section, copy your **Sandbox API URL**
+
+:::note
+You need both values for React/React Native apps:
+
+- `Sandbox API url` is used to call the Sandbox API to create test rooms and return peer tokens.
+- `Fishjam ID` is passed to `FishjamProvider` so the client can connect to the Fishjam media server after it gets a peer token.
+
+:::
+
+## Step 2: Create a room and get peer tokens
+
+### With the `useSandbox` hook
+
+<Tabs groupId="framework">
+<TabItem value="react-native" label="React Native">
+
+    ```ts
+    const FISHJAM_ID = "...";
+    const roomName = "testRoom";
+    const peerName = "testUser";
+    // ---cut---
+    import { useSandbox } from '@fishjam-cloud/react-native-client';
+
+    // ...
+
+    const SANDBOX_API_URL = "your-sandbox-api-url-here";
+    const { getSandboxPeerToken } = useSandbox({ sandboxApiUrl: SANDBOX_API_URL });
+    const peerToken = await getSandboxPeerToken(roomName, peerName);
+    ```
+
+  </TabItem>
+
+  <TabItem value="react" label="React">
+  
+    ```ts
+    const roomName = "testRoom";
+    const peerName = "testUser";
+    // ---cut---
+    import { useSandbox } from '@fishjam-cloud/react-client';
+
+    // ...
+
+    const SANDBOX_API_URL = "your-sandbox-api-url-here";
+    const { getSandboxPeerToken } = useSandbox({ sandboxApiUrl: SANDBOX_API_URL });
+    const peerToken = await getSandboxPeerToken(roomName, peerName);
+    ```
+
+  </TabItem>
+ </Tabs>
+
+### Required parameters
+
+- `roomName` - Name of the room to create/join
+- `peerName` - Name for the peer joining the room
+
+### Optional parameters
+
+- `roomType` - Type of room to create (defaults to `conference`)
+
+### Room types available
+
+- `conference` - For video/audio conferencing (default)
+- `audio_only` - For audio-only conferencing
+- `livestream` - For one-to-many video/audio streaming
+
+## Step 3: Handle the response
+
+The Sandbox API returns a JSON response with connection details:
+
+```json
+{
+  "peerToken": "<PEER_TOKEN>",
+  "room": {
+    "id": "<ROOM_ID>",
+    "name": "foo"
+  },
+  "peer": {
+    "id": "<PEER_ID>",
+    "name": "bar"
+  }
+}
+```
+
+## Step 4: Use the tokens in your client app
+
+Below are examples on how to use tokens from the Sandbox API in your frontend applications:
+
+<Tabs groupId="platform">
+  <TabItem value="react-native" label="React Native">
+
+    ```tsx
+    import React, { useEffect, useState } from "react";
+    import { Text } from "react-native";
+
+    const roomName = "testRoom";
+    const peerName = `user_${Date.now()}`;
+    const FISHJAM_ID = "...";
+    const SANDBOX_API_URL = "...";
+
+    const RoomView = (props: {peerToken: string}) => null;
+    // ---cut---
+    import { useSandbox } from "@fishjam-cloud/react-native-client";
+
+    export default function TestScreen() {
+      const [peerToken, setPeerToken] = useState<string | null>(null);
+      // fishjamId is provided through FishjamProvider
+      const { getSandboxPeerToken } = useSandbox({ sandboxApiUrl: SANDBOX_API_URL });
+
+      useEffect(() => {
+        const fetchPeerToken = async () => {
+          try {
+            const token = await getSandboxPeerToken(roomName, peerName);
+            setPeerToken(token);
+          } catch (error) {
+            console.error("Failed to create room:", error);
+          }
+        };
+
+        fetchPeerToken();
+      }, []);
+
+      if (!peerToken) {
+        return <Text>Creating room...</Text>;
+      }
+
+      return (
+        <RoomView peerToken={peerToken} />
+      );
+    }
+    ```
+
+  </TabItem>
+
+  <TabItem value="react" label="React">
+
+    ```tsx
+    import React, { useState, useEffect } from "react";
+
+    const FISHJAM_ID = "your-fishjam-id-here";
+    const SANDBOX_API_URL = "your-sandbox-api-url-here";
+    // ---cut---
+    import { FishjamProvider, useConnection, useSandbox } from "@fishjam-cloud/react-client";
+
+    function VideoCallComponent() {
+      const { joinRoom, peerStatus } = useConnection();
+      const { getSandboxPeerToken } = useSandbox({ sandboxApiUrl: SANDBOX_API_URL });
+
+      const handleJoinRoom = async () => {
+        const roomName = "testRoom";
+        const peerName = `user_${Date.now()}`;
+
+        try {
+          const peerToken = await getSandboxPeerToken(roomName, peerName)
+          await joinRoom({ peerToken });
+        } catch (error) {
+          console.error("Failed to join room:", error);
+        }
+      };
+
+      const isConnected = peerStatus === "connected";
+
+      return (
+        <div>
+          {isConnected ? <p>Connected to room!</p> : <button onClick={handleJoinRoom}>Join Room</button>}
+        </div>
+      );
+    }
+
+    export default function App() {
+      return (
+        <FishjamProvider fishjamId={FISHJAM_ID}>
+          <VideoCallComponent />
+        </FishjamProvider>
+      );
+    }
+    ```
+
+  </TabItem>
+</Tabs>
+
+## Step 5: Test different room types
+
+### Testing audio-only rooms
+
+```ts
+import { useSandbox } from "@fishjam-cloud/react-client";
+const SANDBOX_API_URL = "your-sandbox-api-url-here";
+const { getSandboxPeerToken } = useSandbox({ sandboxApiUrl: SANDBOX_API_URL });
+// ---cut---
+const audioOnlyPeerToken = await getSandboxPeerToken(
+  "audioTest",
+  "user1",
+  "audio_only",
+);
+```
+
+### Testing livestream rooms
+
+```ts
+import { useSandbox } from "@fishjam-cloud/react-client";
+const SANDBOX_API_URL = "your-sandbox-api-url-here";
+const { getSandboxLivestream, getSandboxViewerToken } = useSandbox({
+  sandboxApiUrl: SANDBOX_API_URL,
+});
+// ---cut---
+
+const livestreamName = "livestream1";
+// For the streamer
+const streamerData = await getSandboxLivestream(livestreamName);
+
+// For viewers, you need a viewer token (different endpoint)
+const viewerToken = await getSandboxViewerToken(livestreamName);
+```
+
+## Step 6: Handle multiple peers
+
+To test with multiple participants, create multiple peer tokens with different peer names:
+
+```ts
+import { useSandbox } from "@fishjam-cloud/react-client";
+const SANDBOX_API_URL = "your-sandbox-api-url-here";
+const { getSandboxPeerToken } = useSandbox({ sandboxApiUrl: SANDBOX_API_URL });
+// ---cut---
+// First peer
+const peer1Response = await getSandboxPeerToken("multiTest", "alice");
+
+// Second peer
+const peer2Response = await getSandboxPeerToken("multiTest", "bob");
+```
+
+Both peers will join the same room (`multiTest`) and can communicate with each other.
+
+## Common testing patterns
+
+### Pattern 1: Random room names for isolation
+
+```ts
+const roomName = `test_${Math.random().toString(36).substring(7)}`;
+const peerName = `user_${Date.now()}`;
+```
+
+### Pattern 2: Consistent naming for repeated tests
+
+```ts
+// @noErrors: 2451
+const roomName = "development-room";
+const peerName = `developer_1`;
+```
+
+### Pattern 3: Feature-specific room names
+
+```ts
+// @noErrors: 2451
+const roomName = `screenshare-test-${Date.now()}`;
+const roomName = `audio-only-test`;
+const roomName = `livestream-demo`;
+```
+
+## Troubleshooting
+
+### Issue: Room not found errors
+
+**Problem**: Rooms might not persist between requests.
+
+**Solution**: Always create rooms fresh for each test session.
+
+### Issue: Connection failures
+
+**Problem**: Invalid Fishjam ID, invalid Sandbox API URL, disabled Sandbox API, or network issues.
+
+**Solution**:
+
+1. Verify your Fishjam ID in the Fishjam Dashboard.
+2. Verify your Sandbox API URL in the [Sandbox tab](https://fishjam.io/app/sandbox).
+3. Make sure the Sandbox API is enabled.
+4. Check network connectivity.
+
+## Security reminder
+
+:::danger
+**The Sandbox API is not safe for production!**
+
+- No authentication required
+- Anyone with your Sandbox API URL can create rooms and peer tokens
+- Identical room/peer names get the same tokens
+- No rate limiting or abuse protection
+
+Only use the Sandbox API for development and testing.
+:::
+
+## Managing your Sandbox API
+
+Manage the Sandbox API from the [Sandbox tab](https://fishjam.io/app/sandbox):
+
+- If your Sandbox API URL is exposed or credentials are compromised, click **Generate new URL**. This invalidates the old URL.
+- If you want to stop using it, click **Disable Sandbox API**.
+- When you want to use it again, click **Enable Sandbox API**.
+  Your `FISHJAM_ID` is still required by `FishjamProvider` to connect to the Fishjam media server. The Sandbox API URL is only used to request test room and peer tokens.
+
+## Next steps
+
+Once you've tested your integration with the Sandbox API:
+
+- [Set up your own backend](../../tutorials/backend-quick-start)
+- [Learn more about the Sandbox API](../../explanation/sandbox-api-concept)
+- [Understand security implications](../../explanation/security-tokens)
+
+For production deployment:
+
+- [How to set up a production server](./server-setup)
+- [How to implement proper authentication](../../explanation/security-tokens)

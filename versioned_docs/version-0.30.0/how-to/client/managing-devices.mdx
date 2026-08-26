@@ -1,0 +1,361 @@
+---
+sidebar_position: 4
+sidebar_label: "Managing devices"
+description: Select, switch, mute, and dynamically control camera and microphone devices.
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Managing devices
+
+The Fishjam SDK provides functions for dynamically controlling media device streams. This includes selecting desired cameras and microphones, turning them on and off, as well as muting and unmuting microphones.
+
+## Selecting Camera and Microphone
+
+To select the desired camera or microphone, use the `selectCamera` and `selectMicrophone` functions.  
+Lists of the available devices are available via the `cameraDevices` and `microphoneDevices` properties.
+
+<Tabs groupId="platform">
+  <TabItem value="web" label="React (Web)">
+
+To select the desired camera or microphone, use [`selectCamera()`](../../api/web/functions/useCamera#selectcamera) and [`selectMicrophone()`](../../api/web/functions/useMicrophone#selectmicrophone) functions.  
+Lists of the available devices are available via the [`cameraDevices`](../../api/web/functions/useCamera#cameradevices) and [`microphoneDevices`](../../api/web/functions/useMicrophone#microphonedevices) properties.
+
+#### Usage Example
+
+```tsx
+import React from "react";
+import { useCamera } from "@fishjam-cloud/react-client";
+
+export function CameraControl() {
+  const { cameraDevices, selectCamera } = useCamera();
+
+  return (
+    <ul>
+      {cameraDevices.map(({ deviceId, label }) => (
+        <li key={deviceId}>
+          <button onClick={() => selectCamera(deviceId)}>{label}</button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+  </TabItem>
+  <TabItem value="mobile" label="React Native (Mobile)">
+
+To select the desired camera, use the [`selectCamera`](../../api/mobile/functions/useCamera) method.
+The list of the available camera devices is available via the [`cameraDevices`](../../api/mobile/functions/useCamera).
+
+```tsx
+import React, { useCallback, useState } from "react";
+import { Button } from "react-native";
+import { useCamera } from "@fishjam-cloud/react-native-client";
+
+export function FlipButton() {
+  const { cameraDevices, selectCamera } = useCamera(); // [!code highlight]
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const onPressFlipCamera = useCallback(() => {
+    if (cameraDevices.length === 0) return;
+
+    // Cycle through available cameras
+    const nextIndex = (currentIndex + 1) % cameraDevices.length;
+    const nextCamera = cameraDevices[nextIndex];
+    if (nextCamera) {
+      selectCamera(nextCamera.deviceId); // [!code highlight]
+      setCurrentIndex(nextIndex);
+    }
+  }, [cameraDevices, currentIndex, selectCamera]);
+
+  return <Button onPress={onPressFlipCamera} title="Flip Camera" />;
+}
+```
+
+  </TabItem>
+</Tabs>
+
+:::tip[Testing on iOS Simulator]
+The iOS Simulator has no camera. [SimCam](https://simcam.swmansion.com/) solves this by injecting a virtual feed (your Mac's camera or a video file), so you can test without a physical device. See [Camera on iOS Simulator](./ios-simulator-camera).
+:::
+
+## Turning Camera On and Off
+
+<Tabs groupId="platform">
+  <TabItem value="web" label="React (Web)">
+
+Use the [`toggleCamera()`](../../api/web/functions/useCamera#togglecamera) method to control the physical operational state of the camera.
+
+- **Turning the camera off**: This action stops the camera device, disables the media stream, and pauses streaming. The webcam indicator light will shut down.
+- **Turning the camera on**: This action starts the camera and resumes streaming, allowing other participants to see video after a brief initialization period.
+
+#### Usage Example
+
+```tsx
+import React from "react";
+import { useCamera } from "@fishjam-cloud/react-client";
+
+export function CameraControl() {
+  const { toggleCamera } = useCamera();
+
+  return <button onClick={() => toggleCamera()}>Toggle Camera Device</button>;
+}
+```
+
+  </TabItem>
+  <TabItem value="mobile" label="React Native (Mobile)">
+
+You can use [`toggleCamera`](../../api/mobile/functions/useCamera) to toggle the camera state, or use [`startCamera`](../../api/mobile/functions/useCamera) and [`stopCamera`](../../api/mobile/functions/useCamera) for more explicit control.
+
+#### Using toggleCamera
+
+```tsx
+import { Button } from "react-native";
+import React from "react";
+import { useCamera } from "@fishjam-cloud/react-native-client";
+
+export function ToggleCameraButton() {
+  const { isCameraOn, toggleCamera } = useCamera(); // [!code highlight]
+
+  return (
+    <Button
+      onPress={toggleCamera} // [!code highlight]
+      title={isCameraOn ? "Disable camera" : "Enable camera"}
+    />
+  );
+}
+```
+
+#### Using startCamera/stopCamera
+
+```tsx
+import { Button, View } from "react-native";
+import React from "react";
+import { useCamera } from "@fishjam-cloud/react-native-client";
+
+export function CameraControls() {
+  const { startCamera, stopCamera, isCameraOn } = useCamera();
+
+  return (
+    <View>
+      <Button
+        onPress={() => startCamera()}
+        title="Start Camera"
+        disabled={isCameraOn}
+      />
+      <Button
+        onPress={() => stopCamera()}
+        title="Stop Camera"
+        disabled={!isCameraOn}
+      />
+    </View>
+  );
+}
+```
+
+  </TabItem>
+</Tabs>
+
+## Turning Microphone On and Off
+
+<Tabs groupId="platform">
+  <TabItem value="web" label="React (Web)">
+
+Use the [`toggleMicrophone()`](../../api/web/functions/useMicrophone#togglemicrophone) method to toggle the microphone's physical operational state. The function interacts with a physical device, so it might take a noticeable amount of time.
+
+**Turning the microphone off**: This action turns the microphone off, disables the media stream, and pauses any audio transmission.
+
+**Turning the microphone on**: This action turns the microphone on and resumes audio streaming.
+
+  </TabItem>
+  <TabItem value="mobile" label="React Native (Mobile)">
+
+You can use [`toggleMicrophone`](../../api/mobile/functions/useMicrophone) to toggle the microphone state, or use [`startMicrophone`](../../api/mobile/functions/useMicrophone) and [`stopMicrophone`](../../api/mobile/functions/useMicrophone) for more explicit control.
+
+#### Using toggleMicrophone
+
+```tsx
+import { Button } from "react-native";
+import React from "react";
+import { useMicrophone } from "@fishjam-cloud/react-native-client";
+
+export function ToggleMicrophoneButton() {
+  const { isMicrophoneOn, toggleMicrophone } = useMicrophone(); // [!code highlight]
+
+  return (
+    <Button
+      onPress={toggleMicrophone} // [!code highlight]
+      title={isMicrophoneOn ? "Disable microphone" : "Enable microphone"}
+    />
+  );
+}
+```
+
+#### Using startMicrophone/stopMicrophone
+
+```tsx
+import { Button, View } from "react-native";
+import React from "react";
+import { useMicrophone } from "@fishjam-cloud/react-native-client";
+
+export function MicrophoneControls() {
+  const { startMicrophone, stopMicrophone, isMicrophoneOn } = useMicrophone();
+
+  return (
+    <View>
+      <Button
+        onPress={() => startMicrophone()}
+        title="Start Microphone"
+        disabled={isMicrophoneOn}
+      />
+      <Button
+        onPress={() => stopMicrophone()}
+        title="Stop Microphone"
+        disabled={!isMicrophoneOn}
+      />
+    </View>
+  );
+}
+```
+
+  </TabItem>
+</Tabs>
+
+## Muting and Unmuting Microphone (Web only)
+
+:::note
+This feature is only available on Web. On mobile, use `toggleMicrophone` or `stopMicrophone` to disable audio transmission.
+:::
+
+Use [`toggleMicrophoneMute()`](../../api/web/functions/useMicrophone#togglemicrophonemute) to manage the audio stream's operational status without affecting the microphone's hardware state.
+
+Muting and unmuting is faster than turning the microphone on/off, but a muted device still uses resources. This is useful, as it is common to mute and unmute during a meeting. Unmuting needs to be quick to capture the first word of a sentence.
+
+- **Muting the microphone**: This action disables the media stream and stops audio transmission while keeping the microphone active.
+- **Unmuting the microphone**: This action enables the media stream, allowing immediate transmission of sounds.
+
+#### Usage Example
+
+```tsx
+import React from "react";
+import { useMicrophone } from "@fishjam-cloud/react-client";
+
+export function MicrophoneControl() {
+  const { toggleMicrophone, toggleMicrophoneMute } = useMicrophone();
+
+  return (
+    <div>
+      <button onClick={() => toggleMicrophone()}>
+        Toggle Microphone Device
+      </button>
+      <button onClick={() => toggleMicrophoneMute()}>
+        Toggle Microphone Mute
+      </button>
+    </div>
+  );
+}
+```
+
+## Audio processing: noise cancellation and auto gain control
+
+When capturing a microphone, the browser (Web) or OS (Mobile) applies audio processing — **echo cancellation**, **noise suppression** (noise cancellation) and **auto gain control** — to make speech clearer. These are enabled by default and are the right choice for most voice and meeting use cases.
+
+Turn them off only when you need the raw, unprocessed signal — for example capturing music or an instrument, or running your own audio processing — since these filters can distort non-speech audio.
+
+<Tabs groupId="platform">
+  <TabItem value="web" label="React (Web)">
+
+On Web, audio processing follows the browser's defaults (noise suppression, auto gain control and echo cancellation are on by default). To set them explicitly, pass [`constraints`](../../api/web/interfaces/FishjamProviderProps#constraints) to `FishjamProvider`. The `audio` field accepts standard [`MediaTrackConstraints`](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints).
+
+```tsx
+import React from "react";
+import { FishjamProvider } from "@fishjam-cloud/react-client";
+
+export function App({ fishjamId }: { fishjamId: string }) {
+  return (
+    <FishjamProvider
+      fishjamId={fishjamId}
+      constraints={{
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true, // noise cancellation
+          autoGainControl: true,
+        },
+      }}
+    >
+      {/* your app */}
+    </FishjamProvider>
+  );
+}
+```
+
+To capture raw audio (for example, music), set `echoCancellation`, `noiseSuppression`, and `autoGainControl` to `false` instead.
+
+:::note
+These constraints are applied when `FishjamProvider` creates the microphone track. `selectMicrophone` and `startMicrophone` reuse the same constraints — they don't accept per-call overrides.
+:::
+
+  </TabItem>
+  <TabItem value="mobile" label="React Native (Mobile)">
+
+On Mobile, echo cancellation, noise suppression and auto gain control are enabled by default in the native audio pipeline and aren't currently configurable from JavaScript.
+
+  </TabItem>
+</Tabs>
+
+## Managing Permissions (Mobile only)
+
+The SDK provides built-in hooks for querying and requesting device permissions: `useCameraPermissions` and `useMicrophonePermissions` from `@fishjam-cloud/react-native-client`.
+
+Both hooks return a `[query, request]` tuple:
+
+- **`query()`** — checks the current permission status without prompting the user
+- **`request()`** — triggers the native permission dialog and returns the resulting status
+
+The returned `PermissionStatus` is one of: `'granted'`, `'denied'`, or `'prompt'`.
+
+:::info
+Requesting permissions manually is optional — `initializeDevices()` will automatically prompt for any permissions that haven't been granted yet.
+However, you must always call `initializeDevices()` to set up camera and microphone devices.
+:::
+
+#### Usage Example
+
+```tsx
+// @noErrors: 2305
+import React, { useEffect } from "react";
+import {
+  useCameraPermissions,
+  useMicrophonePermissions,
+  useInitializeDevices,
+} from "@fishjam-cloud/react-native-client";
+
+function RoomScreen() {
+  const [queryCamera, requestCamera] = useCameraPermissions(); // [!code highlight]
+  const [queryMicrophone, requestMicrophone] = useMicrophonePermissions(); // [!code highlight]
+  const { initializeDevices } = useInitializeDevices(); // [!code highlight]
+
+  useEffect(() => {
+    const setup = async () => {
+      let cam = await queryCamera();
+      let mic = await queryMicrophone();
+
+      if (cam !== "granted") cam = await requestCamera();
+      if (mic !== "granted") mic = await requestMicrophone();
+
+      if (cam === "granted" && mic === "granted") {
+        await initializeDevices(); // [!code highlight]
+      }
+    };
+    setup();
+  }, [
+    queryCamera,
+    requestCamera,
+    queryMicrophone,
+    requestMicrophone,
+    initializeDevices,
+  ]);
+}
+```
