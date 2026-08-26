@@ -21,7 +21,7 @@ composition ──output──▶ livestream / RTMP ──▶ [viewers]
 
 A composition produces media through its outputs, and outputs are the unit that is recorded. To create a recording, you specify a composition and one of its registered outputs, and Fishjam attaches a recorder to that output. The recorder captures the output as it is published: the same layout and resolution, including every scene update, encoded separately from the live stream. There is no separate recording scene. If the recorded file should differ from the live stream, register a dedicated output with its own scene and record that output instead.
 
-The recorder accepts a single option, `scaleRatio`, which sets the recording resolution as a fraction or multiple of the output's resolution. For example, `0.5` stores the recording at half the output resolution.
+Besides composition URL and output ID, the recording API accepts a single option, `scaleRatio`, which sets the recording resolution as a fraction or multiple of the output's resolution. For example, `0.5` stores the recording at half the output resolution.
 
 An output can have at most one recording at a time. To record the same output again, wait until the current recording is no longer `active`.
 
