@@ -16,7 +16,7 @@ See also: [What is the Sandbox API?](../explanation/sandbox-api-concept)
 
 ## Server
 
-Fishjam Server provides a REST API for managing rooms and peers, and
+Fishjam Server provides a REST API for managing rooms, peers, and [recordings](../how-to/compositions/record-a-composition), and
 [Protobufs](https://protobuf.dev) for
 receiving structured live updates from the server.
 The notifications can be configured using Webhook or Websocket.

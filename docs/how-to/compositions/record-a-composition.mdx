@@ -1,0 +1,334 @@
+---
+type: how-to
+sidebar_position: 5
+description: Record a composition's output through the Fishjam Server API and download the result as an MP4.
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Record a composition
+
+A **recording** captures the media published by one of a composition's outputs and stores it as an MP4 file. You attach it to a registered output, it captures that output from the moment it is created, and once capture ends Fishjam prepares the file and returns a download URL.
+
+A recording is a standalone resource. It remains available after the composition, the room, and the livestream it was created from are gone, and it is stored until you delete it. Compositions are managed through the [Composition API](./../../api/reference#compositions), while recordings are managed through the [Fishjam Server API](./../../api/reference#server): a single call there starts the recording, and Fishjam controls the capture inside the composition on your behalf. The [Recordings](./../../explanation/recordings) article explains this model and the recording lifecycle in more detail.
+
+```text
+composition ──output──▶ livestream / RTMP ──▶ [viewers]
+                │
+                └──recording──▶ MP4 ──▶ [download]
+```
+
+## Prerequisites
+
+A running composition with its inputs registered, a livestream for it to publish to, and the livestream's streamer token. The [tutorial](./../../tutorials/compositions) sets these up in Steps 1 to 3; stop before Step 4, which registers the same output as Step 1 below.
+
+```bash
+export COMPOSITION_URL="https://rtc.fishjam.io"
+export FISHJAM_URL="https://fishjam.io/api/v1/connect/<YOUR_FISHJAM_ID>"
+export TOKEN="<YOUR_MANAGEMENT_TOKEN>"
+export COMPOSITION="<COMPOSITION_ID>"
+export STREAMER_TOKEN="<STREAMER_TOKEN>"
+```
+
+Step 1 uses the Composition API. Every recording call from Step 2 onwards is also available as a method on the `FishjamClient` of the [JS and Python server SDKs](./../backend/server-setup), shown in the language tabs.
+
+## Step 1: Register the output to record
+
+A recording attaches to an output, so the composition must first have an output whose scene will be recorded. Register it like any other output. Every output publishes to a destination, so the output you record is also a live stream: in this example, `main` publishes to your livestream over WHIP, with the tutorial's two inputs side by side.
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/register" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d @- <<EOF
+{
+  "type": "whip_client",
+  "endpoint_url": "https://fishjam.io/api/v1/live/api/whip",
+  "bearer_token": "$STREAMER_TOKEN",
+  "video": {
+    "resolution": { "width": 1280, "height": 720 },
+    "initial": {
+      "root": {
+        "type": "tiles",
+        "children": [
+          { "type": "input_stream", "input_id": "race" },
+          { "type": "input_stream", "input_id": "player" }
+        ]
+      }
+    }
+  },
+  "audio": { "initial": { "inputs": [{ "input_id": "player" }] } }
+}
+EOF
+```
+
+The recording captures this scene and every subsequent update sent to `main`. If your composition already has the output you want to record, for example the templated output from [Compose a Fishjam room](./compose-a-fishjam-room), skip to Step 2. See [Choose inputs and outputs](./inputs-and-outputs) for the other output types.
+
+## Step 2: Start the recording
+
+Specify the composition and the output from Step 1 in `source`:
+
+<Tabs groupId="language">
+  <TabItem value="curl" label="curl">
+
+```bash
+curl -X POST "$FISHJAM_URL/recordings" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"source\": {
+      \"compositionURL\": \"$COMPOSITION_URL/api/composition/$COMPOSITION\",
+      \"outputId\": \"main\"
+    },
+    \"metadata\": { \"show\": \"weekly-standup\" }
+  }"
+```
+
+The response returns the recording with status `active`; capture has already started. Save its id from `data.id`:
+
+```bash
+export RECORDING="<RECORDING_ID>"
+```
+
+  </TabItem>
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/js-server-sdk";
+
+const fishjamClient = new FishjamClient({
+  fishjamId: process.env.FISHJAM_ID!,
+  managementToken: process.env.MANAGEMENT_TOKEN!,
+});
+// ---cut---
+const recording = await fishjamClient.createRecording({
+  source: {
+    compositionURL: "https://rtc.fishjam.io/api/composition/<COMPOSITION_ID>",
+    outputId: "main",
+  },
+  metadata: { show: "weekly-standup" },
+});
+```
+
+The response returns the recording with status `active`; capture has already started.
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+import os
+
+from fishjam import FishjamClient
+from fishjam.recording import CompositionSource
+
+fishjam_client = FishjamClient(
+    fishjam_id=os.environ["FISHJAM_ID"],
+    management_token=os.environ["MANAGEMENT_TOKEN"],
+)
+
+recording = fishjam_client.create_recording(
+    source=CompositionSource(
+        composition_url="https://rtc.fishjam.io/api/composition/<COMPOSITION_ID>",
+        output_id="main",
+    ),
+    metadata={"show": "weekly-standup"},
+)
+```
+
+The response returns the recording with status `active`; capture has already started.
+
+  </TabItem>
+</Tabs>
+
+Note the following:
+
+- The recording mirrors the output it captures: the same layout and resolution, including every scene update. The file is encoded separately from the live stream. To record at a different resolution than the live output, add `scaleRatio` to `source`: `0.5` records at half the output's resolution, and values above `1` upscale. The default is `1`.
+- An output can have at most one recording at a time. To record the same output again, wait until the current recording is no longer `active`.
+- `metadata` is optional and free-form. It is returned with the recording and can be used to filter recordings later.
+
+## Step 3: Check the status
+
+<Tabs groupId="language">
+  <TabItem value="curl" label="curl">
+
+```bash
+curl "$FISHJAM_URL/recordings/$RECORDING" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+  </TabItem>
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { FishjamClient, type Recording } from "@fishjam-cloud/js-server-sdk";
+
+const fishjamClient = new FishjamClient({
+  fishjamId: process.env.FISHJAM_ID!,
+  managementToken: process.env.MANAGEMENT_TOKEN!,
+});
+declare const recording: Recording;
+// ---cut---
+const { status } = await fishjamClient.getRecording(recording.id);
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+status = fishjam_client.get_recording(recording.id).status
+```
+
+  </TabItem>
+</Tabs>
+
+A recording has four statuses:
+
+| Status      | Meaning                                                 |
+| ----------- | ------------------------------------------------------- |
+| `active`    | The output is being captured.                           |
+| `finished`  | Capture has ended and the file is being prepared.       |
+| `available` | The MP4 is ready and `files` contains the download URL. |
+| `failed`    | An error occurred and no file will be produced.         |
+
+Instead of polling, you can subscribe to [server notifications](./../../api/reference#protobufs): every status change emits a `RecordingStatusChanged` message containing the recording's id, its new status, and its metadata, delivered over your configured webhook or a websocket.
+
+## Step 4: Stop the recording
+
+<Tabs groupId="language">
+  <TabItem value="curl" label="curl">
+
+```bash
+curl -X POST "$FISHJAM_URL/recordings/$RECORDING/stop" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+  </TabItem>
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { FishjamClient, type Recording } from "@fishjam-cloud/js-server-sdk";
+
+const fishjamClient = new FishjamClient({
+  fishjamId: process.env.FISHJAM_ID!,
+  managementToken: process.env.MANAGEMENT_TOKEN!,
+});
+declare const recording: Recording;
+// ---cut---
+await fishjamClient.stopRecording(recording.id);
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+fishjam_client.stop_recording(recording.id)
+```
+
+  </TabItem>
+</Tabs>
+
+Finalization is asynchronous: the recording remains `active` until capture has ended, then transitions to `finished`. Stopping a recording that is no longer active has no effect.
+
+Stopping a recording explicitly is optional. Capture ends automatically when the recorded output ends or the composition is deleted, so [deleting the composition](./../../explanation/compositions#cost-and-lifecycle) also finalizes its recordings.
+
+## Step 5: Download the MP4
+
+Once the status is `available`, the recording's `files` field lists its media files in playback order as direct HTTPS URLs:
+
+```json
+{
+  "data": {
+    "id": "<RECORDING_ID>",
+    "status": "available",
+    "files": [{ "url": "https://media.fishjam.io/.../index.mp4" }],
+    "source": { "...": "..." },
+    "metadata": { "show": "weekly-standup" }
+  }
+}
+```
+
+You can download the file or serve the URL to your users directly. Until the recording is `available`, `files` is empty.
+
+## Step 6: List your recordings
+
+`GET /recordings` lists every recording in your app and accepts filters on status and metadata. A metadata filter matches recordings whose metadata contains all of the given pairs. Values are compared as strings, so numeric and boolean metadata values cannot be matched this way.
+
+<Tabs groupId="language">
+  <TabItem value="curl" label="curl">
+
+```bash
+curl -g "$FISHJAM_URL/recordings?status=available&metadata[show]=weekly-standup" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The `-g` flag prevents curl from interpreting the square brackets.
+
+  </TabItem>
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/js-server-sdk";
+
+const fishjamClient = new FishjamClient({
+  fishjamId: process.env.FISHJAM_ID!,
+  managementToken: process.env.MANAGEMENT_TOKEN!,
+});
+// ---cut---
+const recordings = await fishjamClient.getAllRecordings({
+  show: "weekly-standup",
+});
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+recordings = fishjam_client.get_all_recordings({"show": "weekly-standup"})
+```
+
+  </TabItem>
+</Tabs>
+
+The SDK methods filter by metadata only. To filter by status as well, call the REST endpoint directly.
+
+## Step 7: Clean up
+
+Recordings persist independently of the composition until you delete them. Deleting a recording also removes its files:
+
+<Tabs groupId="language">
+  <TabItem value="curl" label="curl">
+
+```bash
+curl -X DELETE "$FISHJAM_URL/recordings/$RECORDING" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+  </TabItem>
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { FishjamClient, type Recording } from "@fishjam-cloud/js-server-sdk";
+
+const fishjamClient = new FishjamClient({
+  fishjamId: process.env.FISHJAM_ID!,
+  managementToken: process.env.MANAGEMENT_TOKEN!,
+});
+declare const recording: Recording;
+// ---cut---
+await fishjamClient.deleteRecording(recording.id);
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+fishjam_client.delete_recording(recording.id)
+```
+
+  </TabItem>
+</Tabs>
+
+An `active` recording cannot be deleted. Stop it first and delete it once its status is no longer `active`.
+
+See the [Server REST API](/api/rest) reference for the complete request and response schemas.
