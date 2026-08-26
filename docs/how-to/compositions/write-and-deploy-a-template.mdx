@@ -1,0 +1,185 @@
+---
+type: how-to
+sidebar_position: 1
+description: Write a React composition template, bundle it with the CLI, and deploy it as an output.
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Write and deploy a template
+
+A **template** is a React component that describes an output's layout. Instead of sending a static scene, you write a component, bundle it into a single file with the composition CLI, and upload it when registering an output.
+
+## Scaffold a project
+
+Create a new template project with the CLI:
+
+```bash npm2yarn
+npx @fishjam-cloud/composition-cli init my-template
+cd my-template
+npm install
+```
+
+This generates a ready-to-build project: a `package.json` with `build` and `typecheck` scripts, a TypeScript config, and a starter `src/App.tsx`.
+
+## Write the template
+
+A template **default-exports a React component**. You lay out the composition with components from [`@swmansion/smelter`](https://smelter.dev/ts-sdk/overview).
+
+The example below builds a grid that maintains itself. `useInputStreams()` returns every input currently registered on the composition, so the layout follows them without you sending a single scene update:
+
+```tsx
+// @jsx: react-jsx
+// ---cut-before---
+import {
+  InputStream,
+  Rescaler,
+  Text,
+  Tiles,
+  View,
+  useInputStreams,
+} from "@swmansion/smelter";
+
+export default function App() {
+  const inputs = Object.values(useInputStreams());
+  const playing = inputs.filter((input) => input.videoState === "playing");
+
+  if (playing.length === 0) {
+    return (
+      <View style={{ backgroundColor: "#0b1020ff" }}>
+        <Text style={{ fontSize: 48, color: "#ffffff" }}>
+          Waiting for inputs
+        </Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={{ backgroundColor: "#0b1020ff" }}>
+      <Tiles style={{ padding: 8 }}>
+        {playing.map((input) => (
+          <Rescaler key={input.inputId}>
+            <InputStream inputId={input.inputId} />
+          </Rescaler>
+        ))}
+      </Tiles>
+    </View>
+  );
+}
+```
+
+Register an input and a tile appears; unregister it and the grid reflows. Each entry also carries `videoState` and `audioState`, one of `ready`, `playing`, `paused`, or `finished`, which is what the filter above uses to keep inputs off screen until their media actually starts.
+
+`<InputStream inputId={…} />` renders one of the composition's registered inputs. Layout, styling, and every visual component (`View`, `Tiles`, `InputStream`, `Rescaler`, `Text`, `Image`, …) come from `@swmansion/smelter`. See the [Smelter TypeScript SDK reference](https://smelter.dev/ts-sdk/overview) for every component and its style props.
+
+## Build the bundle
+
+```bash npm2yarn
+npm run build
+```
+
+## Deploy the template
+
+Now create the composition, as in [Step 1 of the tutorial](./../../tutorials/compositions#step-1-create-a-composition), and the livestream with its streamer token, as in [Step 3](./../../tutorials/compositions#step-3-create-a-livestream-to-publish-to):
+
+```bash
+export COMPOSITION_URL="https://rtc.fishjam.io"
+export FISHJAM_URL="https://fishjam.io/api/v1/connect/<YOUR_FISHJAM_ID>"
+export TOKEN="<YOUR_MANAGEMENT_TOKEN>"
+export COMPOSITION="<COMPOSITION_ID>"
+export STREAM="<STREAM_ID>"
+export STREAMER_TOKEN="<STREAMER_TOKEN>"
+```
+
+A templated output is registered in a **single multipart request** to `POST …/output/{output_id}/template`. Do not call the plain `…/register` endpoint first. The request carries two parts:
+
+- `config`: the same JSON body a regular output registration takes (see [Choose inputs and outputs](./inputs-and-outputs)). Its `video.initial` scene is only a placeholder; the template takes over rendering as soon as it loads.
+- `template`: the built bundle.
+
+`endpoint_url` is wherever the composed stream should go. The quickest destination to watch is a Fishjam livestream, exactly as in [the tutorial](./../../tutorials/compositions#step-3-create-a-livestream-to-publish-to): create one, take its streamer token, and publish to `https://fishjam.io/api/v1/live/api/whip`.
+
+<Tabs groupId="language">
+  <TabItem value="curl" label="curl">
+
+```bash
+CONFIG=$(cat <<EOF
+{
+  "type": "whip_client",
+  "endpoint_url": "https://fishjam.io/api/v1/live/api/whip",
+  "bearer_token": "$STREAMER_TOKEN",
+  "video": {
+    "resolution": { "width": 1280, "height": 720 },
+    "initial": { "root": { "type": "view" } }
+  },
+  "audio": { "initial": { "inputs": [] } }
+}
+EOF
+)
+
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/template" \
+  -H "Authorization: Bearer $TOKEN" \
+  -F "config=$CONFIG;type=application/json" \
+  -F "template=@dist/App.js"
+```
+
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
+
+```js
+const config = {
+  type: "whip_client",
+  endpoint_url: "https://fishjam.io/api/v1/live/api/whip",
+  bearer_token: streamerToken,
+  video: {
+    resolution: { width: 1280, height: 720 },
+    initial: { root: { type: "view" } },
+  },
+  audio: { initial: { inputs: [] } },
+};
+
+const form = new FormData();
+form.append("config", JSON.stringify(config));
+form.append("template", new Blob([bundle]), "App.js");
+
+await fetch(
+  `${COMPOSITION_URL}/api/composition/${composition}/output/main/template`,
+  {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: form,
+  },
+);
+```
+
+  </TabItem>
+</Tabs>
+
+## Redeploy after an edit
+
+Unregister the output first, then deploy again:
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/unregister" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+Rebuild with `npm run build` and repeat the deploy request. The inputs stay registered, so only the layout changes.
+
+## Clean up
+
+Deleting the composition removes its inputs and outputs with it, so a finished experiment takes two calls:
+
+```bash
+curl -X DELETE "$COMPOSITION_URL/api/composition/$COMPOSITION" \
+  -H "Authorization: Bearer $TOKEN"
+
+curl -X DELETE "$FISHJAM_URL/livestream/$STREAM" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+## Next steps
+
+To feed a whole Fishjam room's peers into the template, continue with [Compose a Fishjam room](./compose-a-fishjam-room). To update the template's on-screen state at runtime, see [Drive a template with events](./drive-a-template-with-events).

@@ -1,0 +1,139 @@
+---
+type: how-to
+sidebar_position: 4
+description: Choose the right input and output protocols for a composition, from WebRTC to RTMP and MP4.
+---
+
+# Choose inputs and outputs
+
+A composition pulls media in through **inputs** and pushes the composed result out through **outputs**. Each is a tagged object whose `type` selects the protocol. This guide summarizes the available types and when to use each.
+
+## Inputs
+
+Register an input with `POST /api/composition/{composition_id}/input/{input_id}/register` and a body whose `type` is one of:
+
+| `type`        | Use it when                                                           | Key fields                                                                                        |
+| ------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `whip_server` | A WebRTC client should publish **to** the composition.                | `bearer_token` (optional; generated and returned if omitted), `video` (optional, default `true`). |
+| `whep_client` | The composition should **pull** a WebRTC stream from a WHEP endpoint. | `endpoint_url` (required), `bearer_token` (optional), `video` (optional).                         |
+| `rtmp_server` | An encoder (OBS, hardware) should push RTMP in.                       | `stream_key` (required).                                                                          |
+| `mp4`         | You want to compose a file, optionally looped.                        | `url` (required), `loop` (optional).                                                              |
+
+For `whip_server`, the register response returns the `bearer_token` a publisher uses to authenticate against the input's WHIP endpoint, together with the route to push to:
+
+```json
+{ "bearer_token": "<INPUT_PUBLISH_TOKEN>", "endpoint_route": "/whip/camera_1" }
+```
+
+That token is the only one accepted on the publish endpoint. Your Management Token is rejected there.
+
+`endpoint_route` is relative to the composition, so the full address is `https://rtc.fishjam.io/api/composition/<YOUR_COMPOSITION_ID>/whip/<YOUR_INPUT_ID>`. Point any WHIP publisher there and authenticate with that token. A `whip_server` input takes WebRTC from anything that speaks WHIP: a phone's camera, a laptop webcam, a browser tab, a screen share, or a hardware encoder. OBS has WHIP output built in.
+
+Unregister any input with `POST …/input/{input_id}/unregister`.
+
+## Outputs
+
+Register an output with `POST /api/composition/{composition_id}/output/{output_id}/register` and a body whose `type` is one of:
+
+| `type`        | Use it when                                                                    | Key fields                                                              |
+| ------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| `whip_client` | Publish the composed result over WebRTC (for example to a Fishjam livestream). | `endpoint_url` (required), `bearer_token` (optional), `video`, `audio`. |
+| `rtmp_client` | Publish to an RTMP destination (for example a social platform).                | `url` (required), `video`, `audio`.                                     |
+
+There is no URL you can point a player at to watch a composition. An output **pushes** the composed video to a destination you name when you register it, and your viewers connect to that destination's own playback URL:
+
+```text
+whip_client ──▶ Fishjam livestream ──WHEP──▶ [viewers]
+rtmp_client ──▶ YouTube, Twitch, any RTMP service ──▶ [viewers]
+```
+
+An output's `video` carries the resolution and initial [scene](./../../explanation/compositions#scenes), and `audio` carries the initial audio scene:
+
+```json
+{
+  "type": "whip_client",
+  "endpoint_url": "https://example.com/whip",
+  "video": {
+    "resolution": { "width": 1280, "height": 720 },
+    "initial": { "root": { "type": "tiles", "children": [] } }
+  },
+  "audio": { "initial": { "inputs": [] } }
+}
+```
+
+`resolution` has to be even on both sides, and at most 3840x2160.
+
+Other output operations:
+
+- **Register a templated output** with `POST …/output/{output_id}/template` instead of `…/register`: a multipart request carrying the same configuration plus a template bundle (see [Write and deploy a template](./write-and-deploy-a-template)).
+- **Update the scene** live with `POST …/output/{output_id}/update` (see [Update a scene](#update-a-scene) below).
+- **Force a keyframe** with `POST …/output/{output_id}/request_keyframe`, useful when a new subscriber joins.
+- **Unregister** with `POST …/output/{output_id}/unregister`.
+
+## Update a scene
+
+Replace an output's [scene](./../../explanation/compositions#scenes) while the composition is running with `POST …/output/{output_id}/update`:
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/update" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "video": {
+      "root": {
+        "type": "rescaler",
+        "child": { "type": "input_stream", "input_id": "camera_1" }
+      }
+    },
+    "audio": { "inputs": [{ "input_id": "camera_1" }] }
+  }'
+```
+
+An update has to mirror the sides the output was registered with. If you registered the output with both `video` and `audio`, every update must carry both, even when only one of them changed. If you registered only one of them, the update may only carry that one. Sending a mismatched update fails.
+
+Add `schedule_time_ms` to apply the change at a chosen offset on the composition timeline, in milliseconds, instead of immediately:
+
+```json
+{
+  "video": { "root": { "type": "tiles", "children": [] } },
+  "audio": { "inputs": [] },
+  "schedule_time_ms": 5000
+}
+```
+
+## Renderers
+
+Renderers are shared assets you register once and then place in any scene.
+
+### Images
+
+Register an image with `POST …/image/{image_id}/register`:
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/image/logo/register" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "asset_type": "auto", "url": "https://example.com/logo.png" }'
+```
+
+`asset_type` selects the format: `png`, `jpeg`, `svg`, `gif`, or `auto` to detect it from the URL. Each takes a `url`; `svg` also accepts a `resolution`. Place the image in a scene with an `image` component:
+
+```json
+{ "type": "image", "image_id": "logo" }
+```
+
+Unregister with `POST …/image/{image_id}/unregister`.
+
+### Fonts
+
+Register a font with a multipart request carrying the font file in a single `font` part:
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/font/register" \
+  -H "Authorization: Bearer $TOKEN" \
+  -F "font=@BrandFont.ttf"
+```
+
+The font is then available to `text` components.
+
+See the [Composition API](./../../api/reference#compositions) reference for the complete request and response schemas.

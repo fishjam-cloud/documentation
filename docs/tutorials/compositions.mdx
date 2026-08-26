@@ -1,0 +1,235 @@
+---
+type: tutorial
+title: Compositions
+sidebar_position: 3.5
+description: Create your first composition end to end, overlaying one video on another and watching the composed result in your browser.
+---
+
+import useBaseUrl from "@docusaurus/useBaseUrl";
+
+# Compositions
+
+This tutorial walks you through creating your first composition. You will overlay a small player camera on top of full-screen gameplay, publish the result to a livestream, and watch it in your browser.
+
+Both sources are sample MP4 files, so you need no camera, no encoder, and no publishing tool to get a picture. Nothing else in the tutorial depends on that, so you can swap either one for a live camera afterwards.
+
+## What you'll build
+
+```text
+[race.mp4]   ──┐
+               ├─▶ composition ──WHIP──▶ livestream ──WHEP──▶ [your browser]
+[player.mp4] ──┘
+```
+
+The composed frame puts the race full-screen with the player in a small overlay in the top-left corner, standard gaming stream layout:
+
+<video
+  src={useBaseUrl("/video/composition-tutorial-scene.mp4")}
+  autoPlay
+  loop
+  muted
+  playsInline
+  style={{ width: "100%", borderRadius: "8px" }}
+/>
+
+## What you'll learn
+
+- How to create a composition and feed it media.
+- How to describe a layout as a scene.
+- How to publish the composed result and watch it.
+- How to change the layout while the composition is running.
+
+## Prerequisites
+
+- A Fishjam account. Open the [**Fishjam developer panel**](https://fishjam.io/app) and copy your **Fishjam ID** and **Management Token** from the Dashboard tab, and your **Sandbox API URL** from the [Sandbox tab](https://fishjam.io/app/sandbox).
+- A browser, to watch the result.
+
+The [Composition API](../api/reference#compositions) lives on `https://rtc.fishjam.io` and takes your Management Token. The livestream you will publish to comes from the [Sandbox API](../explanation/sandbox-api-concept), which has its own URL and needs no token at all:
+
+```bash
+export COMPOSITION_URL="https://rtc.fishjam.io"
+export FISHJAM_URL="https://fishjam.io/api/v1/connect/<YOUR_FISHJAM_ID>"
+export SANDBOX_URL="<YOUR_SANDBOX_API_URL>"
+export TOKEN="<YOUR_MANAGEMENT_TOKEN>"
+```
+
+## Step 1: Create a composition
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+The response contains the `composition_id` you will use for every subsequent call:
+
+```json
+{ "composition_id": "abc123", "api_url": "https://rtc.fishjam.io" }
+```
+
+By default a composition auto-starts, and cleans itself up after five minutes in which none of its inputs carry any media. Save the id:
+
+```bash
+export COMPOSITION="abc123"
+```
+
+## Step 2: Register two inputs
+
+Register two `mp4` inputs, looping so they never run dry. The composition downloads them itself, so there is nothing to publish:
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/input/race/register" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "mp4",
+    "url": "https://smelter.dev/videos/template-scene-race.mp4",
+    "loop": true
+  }'
+
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/input/player/register" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "mp4",
+    "url": "https://smelter.dev/videos/template-scene-streamer.mp4",
+    "loop": true
+  }'
+```
+
+The names `race` and `player` are the `input_id`s you will refer to from the layout in Step 4. The scene only ever refers to inputs by id, so what sits behind an id is interchangeable: register `whip_server` instead of `mp4` to take a live camera, phone, or OBS feed here, or forward a whole [Fishjam room](../how-to/compositions/compose-a-fishjam-room) in. See [Choose inputs and outputs](../how-to/compositions/inputs-and-outputs) for every input type.
+
+:::note
+The file is fetched while the input is being registered, so an unreachable URL fails right here rather than later.
+:::
+
+## Step 3: Create a livestream to publish to
+
+The composition needs somewhere to send the composed stream. The [Sandbox API](../explanation/sandbox-api-concept) creates a [livestream](./../explanation/livestreams) and hands back a **streamer token**:
+
+```bash
+curl "$SANDBOX_URL/livestream?roomName=composition-tutorial&public=false"
+```
+
+The response carries both things the next steps need, the token the composition publishes with and the livestream's id:
+
+```json
+{
+  "streamerToken": "<STREAMER_TOKEN>",
+  "room": { "id": "<STREAM_ID>", "name": "composition-tutorial" }
+}
+```
+
+```bash
+export STREAM="<STREAM_ID>"
+export STREAMER_TOKEN="<STREAMER_TOKEN>"
+```
+
+:::note
+The Sandbox API is for prototyping: it holds your Management Token server-side so a client can get a scoped token without a backend. In production you create livestreams yourself through the [Fishjam Server API](../api/reference#server), with your Management Token.
+:::
+
+## Step 4: Register an output with a layout
+
+Register a `whip_client` output that publishes to the livestream's WHIP endpoint using the streamer token from Step 3. Its scene stacks two components: the race filling the frame, and the player rescaled into a rounded box in the top-left corner.
+
+:::note
+The output connects to `endpoint_url` while it is being registered, so the endpoint has to be reachable already. That is why the livestream comes first. Registering against a URL that does not accept the connection fails.
+:::
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/register" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d @- <<EOF
+{
+  "type": "whip_client",
+  "endpoint_url": "https://fishjam.io/api/v1/live/api/whip",
+  "bearer_token": "$STREAMER_TOKEN",
+  "video": {
+    "resolution": { "width": 1280, "height": 720 },
+    "initial": {
+      "root": {
+        "type": "view",
+        "children": [
+          {
+            "type": "rescaler",
+            "child": { "type": "input_stream", "input_id": "race" }
+          },
+          {
+            "type": "rescaler",
+            "top": 20,
+            "left": 20,
+            "width": 355,
+            "height": 200,
+            "border_radius": 44,
+            "mode": "fill",
+            "child": { "type": "input_stream", "input_id": "player" }
+          }
+        ]
+      }
+    }
+  },
+  "audio": { "initial": { "inputs": [{ "input_id": "player" }] } }
+}
+EOF
+```
+
+The scene is a tree of components. A `view` stacks its children in order, so the second `rescaler` draws on top of the first. Giving that second one `top` and `left` positions it in the corner instead of filling the frame, and `mode: "fill"` makes the video cover its box rather than letter-boxing inside it. See [Scenes](../explanation/compositions#scenes) for how scenes work and what each component does.
+
+## Step 5: Watch it
+
+That is the whole pipeline. The composition is already pulling both files, drawing the frame, and publishing it into your livestream.
+
+Open the [livestreaming demo](https://livestreaming.fishjam.io) and give it your **Fishjam ID** and the same **Sandbox API URL** you used in Step 3. In the **Livestream Viewer** window, enter the room name you used in Step 3, `composition-tutorial`, and click **Connect to stream**.
+
+You should see the race running.
+
+## Step 6: Change the layout while it runs
+
+A scene is not fixed once the output is registered. Leave the player watching and swap the corner overlay for a side-by-side grid:
+
+```bash
+curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/update" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "video": {
+      "root": {
+        "type": "tiles",
+        "children": [
+          { "type": "input_stream", "input_id": "race" },
+          { "type": "input_stream", "input_id": "player" }
+        ]
+      }
+    },
+    "audio": { "inputs": [{ "input_id": "player" }] }
+  }'
+```
+
+The layout changes on the fly, with no interruption to the stream. Send the Step 4 scene again to go back to the corner overlay.
+
+:::warning
+An update has to carry the same sides the output was registered with. This output has both `video` and `audio`, so every update needs both, even when only the layout changed. Sending only one of them fails. See [Update a scene](../how-to/compositions/inputs-and-outputs#update-a-scene) for the full rule.
+:::
+
+## Step 7: Clean up
+
+Delete the composition and the livestream when you are done. The Sandbox API only creates, so removing the livestream goes through the Server API with your Management Token:
+
+```bash
+curl -X DELETE "$COMPOSITION_URL/api/composition/$COMPOSITION" \
+  -H "Authorization: Bearer $TOKEN"
+
+curl -X DELETE "$FISHJAM_URL/livestream/$STREAM" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+## Next steps
+
+Updating the scene by hand gets tedious once people are joining, leaving, muting, and unmuting, since each of those needs its own call. A **template** is a React component that receives the live room state and re-renders itself as the room changes, so you send no scene updates at all.
+
+- [Write and deploy a template](../how-to/compositions/write-and-deploy-a-template) to replace the static scene with a live React layout.
+- [Compose a Fishjam room](../how-to/compositions/compose-a-fishjam-room) to feed a whole room's peers in automatically.
+- [Choose inputs and outputs](../how-to/compositions/inputs-and-outputs) for other protocols like RTMP and WHEP.

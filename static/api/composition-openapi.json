@@ -1,0 +1,3443 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Composition API",
+    "description": "Real-time video compositing",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    },
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "https://rtc.fishjam.io"
+    }
+  ],
+  "paths": {
+    "/api/composition": {
+      "post": {
+        "tags": ["Compositions"],
+        "summary": "Create a composition",
+        "operationId": "create_composition",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCompositionRequest"
+              },
+              "example": {
+                "autostart": false,
+                "cleanup_without_inputs": false
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Composition created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompositionCreatedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request body does not match the schema.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/composition/{composition_id}/output/{output_id}/template": {
+      "post": {
+        "tags": ["Outputs"],
+        "summary": "Register a templated output",
+        "operationId": "register_template_output",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "output_id",
+            "in": "path",
+            "description": "Output ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["config", "template"],
+                "properties": {
+                  "config": {
+                    "$ref": "#/components/schemas/RegisterOutput"
+                  },
+                  "template": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "example": {
+                "config": {
+                  "type": "whip_client",
+                  "endpoint_url": "https://example.com/whip",
+                  "video": {
+                    "resolution": {
+                      "width": 1280,
+                      "height": 720
+                    },
+                    "initial": {
+                      "root": {
+                        "type": "view"
+                      }
+                    }
+                  }
+                },
+                "template": "@App.js"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Output registered successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/composition/{composition_id}/event": {
+      "post": {
+        "tags": ["Events"],
+        "summary": "Send an event to templates",
+        "operationId": "send_composition_event",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["event_name"],
+                "properties": {
+                  "event_name": {
+                    "type": "string",
+                    "description": "Name of the event delivered to the composition's templates.",
+                    "example": "START_LIVE",
+                    "maxLength": 128,
+                    "minLength": 1
+                  },
+                  "data": {
+                    "description": "Optional arbitrary JSON payload delivered with the event."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "example": {
+                "event_name": "SET_CAPTION",
+                "data": {
+                  "text": "Welcome to the stream"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Event accepted (dispatched, or a no-op if no output has an active template).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/composition/{composition_id}": {
+      "delete": {
+        "tags": ["Compositions"],
+        "summary": "Delete a composition",
+        "operationId": "delete_composition",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Composition deleted."
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/composition/{composition_id}/start": {
+      "post": {
+        "tags": ["Compositions"],
+        "summary": "Start a composition",
+        "operationId": "start",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Composition started.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/composition/{composition_id}/reset": {
+      "post": {
+        "tags": ["Compositions"],
+        "summary": "Reset a composition",
+        "operationId": "reset",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Composition reset.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/composition/{composition_id}/input/{input_id}/register": {
+      "post": {
+        "tags": ["Inputs"],
+        "summary": "Register an input",
+        "operationId": "register_input",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "input_id",
+            "in": "path",
+            "description": "Input ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterInput"
+              },
+              "example": {
+                "type": "whip_server"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Input registered successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request body does not match the schema.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/composition/{composition_id}/output/{output_id}/register": {
+      "post": {
+        "tags": ["Outputs"],
+        "summary": "Register an output",
+        "operationId": "register_output",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "output_id",
+            "in": "path",
+            "description": "Output ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterOutput"
+              },
+              "example": {
+                "type": "whip_client",
+                "endpoint_url": "https://example.com/whip",
+                "video": {
+                  "resolution": {
+                    "width": 1280,
+                    "height": 720
+                  },
+                  "initial": {
+                    "root": {
+                      "type": "tiles",
+                      "children": [
+                        {
+                          "type": "input_stream",
+                          "input_id": "camera_1"
+                        },
+                        {
+                          "type": "input_stream",
+                          "input_id": "camera_2"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "audio": {
+                  "initial": {
+                    "inputs": [
+                      {
+                        "input_id": "camera_1"
+                      },
+                      {
+                        "input_id": "camera_2"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Output registered successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request body does not match the schema.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/composition/{composition_id}/image/{image_id}/register": {
+      "post": {
+        "tags": ["Renderers"],
+        "summary": "Register an image",
+        "operationId": "register_image",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "image_id",
+            "in": "path",
+            "description": "Image ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImageSpec"
+              },
+              "example": {
+                "asset_type": "png",
+                "url": "https://example.com/logo.png"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Image registered successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request body does not match the schema.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/composition/{composition_id}/font/register": {
+      "post": {
+        "tags": ["Renderers"],
+        "summary": "Register a font",
+        "operationId": "register_font",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["font"],
+                "properties": {
+                  "font": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "example": {
+                "font": "@Roboto-Regular.ttf"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Font registered successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/composition/{composition_id}/input/{input_id}/unregister": {
+      "post": {
+        "tags": ["Inputs"],
+        "summary": "Unregister an input",
+        "operationId": "unregister_input",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "input_id",
+            "in": "path",
+            "description": "Input ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnregisterInput"
+              },
+              "example": {
+                "schedule_time_ms": 5000
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Input unregistered successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Input not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request body does not match the schema.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/composition/{composition_id}/output/{output_id}/unregister": {
+      "post": {
+        "tags": ["Outputs"],
+        "summary": "Unregister an output",
+        "operationId": "unregister_output",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "output_id",
+            "in": "path",
+            "description": "Output ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnregisterOutput"
+              },
+              "example": {
+                "schedule_time_ms": 5000
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Output unregistered successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Output not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request body does not match the schema.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/composition/{composition_id}/image/{image_id}/unregister": {
+      "post": {
+        "tags": ["Renderers"],
+        "summary": "Unregister an image",
+        "operationId": "unregister_image",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "image_id",
+            "in": "path",
+            "description": "Image ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnregisterRenderer"
+              },
+              "example": {
+                "schedule_time_ms": 5000
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Image unregistered successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Image not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request body does not match the schema.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/composition/{composition_id}/output/{output_id}/update": {
+      "post": {
+        "tags": ["Outputs"],
+        "summary": "Update an output's scene",
+        "operationId": "update_output",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "output_id",
+            "in": "path",
+            "description": "Output ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOutputRequest"
+              },
+              "example": {
+                "video": {
+                  "root": {
+                    "type": "rescaler",
+                    "child": {
+                      "type": "input_stream",
+                      "input_id": "camera_1"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Output updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request body does not match the schema.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/composition/{composition_id}/output/{output_id}/request_keyframe": {
+      "post": {
+        "tags": ["Outputs"],
+        "summary": "Request a keyframe",
+        "operationId": "request_keyframe",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "output_id",
+            "in": "path",
+            "description": "Output ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Keyframe request successful.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/composition/{composition_id}/whip/{input_id}": {
+      "post": {
+        "tags": ["Media transport"],
+        "summary": "Publish to an input over WHIP",
+        "operationId": "whip_offer",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "input_id",
+            "in": "path",
+            "description": "Input ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "SDP offer.",
+          "content": {
+            "application/sdp": {
+              "schema": {
+                "type": "string"
+              },
+              "example": "v=0\r\no=- 4611731400430051336 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\nm=video 9 UDP/TLS/RTP/SAVPF 96\r\na=mid:0\r\na=sendonly\r\na=rtpmap:96 H264/90000\r\n"
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Session created.",
+            "headers": {
+              "location": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Session URL."
+              }
+            },
+            "content": {
+              "application/sdp": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition or input not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/composition/{composition_id}/whep/{output_id}": {
+      "post": {
+        "tags": ["Media transport"],
+        "summary": "Play an output over WHEP",
+        "operationId": "whep_offer",
+        "parameters": [
+          {
+            "name": "composition_id",
+            "in": "path",
+            "description": "Composition ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "output_id",
+            "in": "path",
+            "description": "Output ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "SDP offer.",
+          "content": {
+            "application/sdp": {
+              "schema": {
+                "type": "string"
+              },
+              "example": "v=0\r\no=- 4611731400430051337 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\nm=video 9 UDP/TLS/RTP/SAVPF 96\r\na=mid:0\r\na=recvonly\r\na=rtpmap:96 H264/90000\r\n"
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Session created.",
+            "headers": {
+              "location": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Session URL."
+              }
+            },
+            "content": {
+              "application/sdp": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Composition or output not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {},
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiError": {
+        "type": "object",
+        "required": ["message"],
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "AspectRatio": {
+        "type": "string"
+      },
+      "AudioChannels": {
+        "type": "string",
+        "enum": ["mono", "stereo"]
+      },
+      "AudioMixingStrategy": {
+        "type": "string",
+        "enum": ["sum_clip", "sum_scale"]
+      },
+      "AudioScene": {
+        "type": "object",
+        "required": ["inputs"],
+        "properties": {
+          "inputs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AudioSceneInput"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "AudioSceneInput": {
+        "type": "object",
+        "required": ["input_id"],
+        "properties": {
+          "input_id": {
+            "$ref": "#/components/schemas/InputId"
+          },
+          "volume": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "(**default=`1.0`**) float in `[0, 2]` range representing input volume"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BoxShadow": {
+        "type": "object",
+        "properties": {
+          "offset_x": {
+            "type": ["number", "null"],
+            "format": "float"
+          },
+          "offset_y": {
+            "type": ["number", "null"],
+            "format": "float"
+          },
+          "color": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RGBAColor"
+              }
+            ]
+          },
+          "blur_radius": {
+            "type": ["number", "null"],
+            "format": "float"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Component": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/InputStream"
+          },
+          {
+            "$ref": "#/components/schemas/View"
+          },
+          {
+            "$ref": "#/components/schemas/Text"
+          },
+          {
+            "$ref": "#/components/schemas/Tiles"
+          },
+          {
+            "$ref": "#/components/schemas/Rescaler"
+          },
+          {
+            "$ref": "#/components/schemas/Image"
+          }
+        ]
+      },
+      "ComponentId": {
+        "type": "string"
+      },
+      "CompositionCreatedResponse": {
+        "type": "object",
+        "required": ["composition_id", "api_url"],
+        "properties": {
+          "composition_id": {
+            "$ref": "#/components/schemas/CompositionId"
+          },
+          "api_url": {
+            "type": "string"
+          }
+        }
+      },
+      "CompositionId": {
+        "type": "string"
+      },
+      "CreateCompositionRequest": {
+        "type": "object",
+        "properties": {
+          "autostart": {
+            "type": "boolean",
+            "description": "If true, outputs will immediately start producing audio and video.\nIf false, call `POST /api/composition/{composition_id}/start` to start the composition.",
+            "default": true
+          },
+          "cleanup_without_inputs": {
+            "type": "boolean",
+            "description": "If true (default), the composition will be cleaned up after 5 minutes when all **inputs**\nhave zero bitrate, regardless of output bitrate. This prevents circular liveness when\ncomposition output is sent to a stream.\nIf false, cleanup only triggers when both inputs and outputs have zero bitrate.",
+            "default": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EasingFunction": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "EasingFunctionLinear",
+            "required": ["function_name"],
+            "properties": {
+              "function_name": {
+                "type": "string",
+                "enum": ["linear"]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "EasingFunctionBounce",
+            "required": ["function_name"],
+            "properties": {
+              "function_name": {
+                "type": "string",
+                "enum": ["bounce"]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "EasingFunctionCubicBezier",
+            "required": ["points", "function_name"],
+            "properties": {
+              "points": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "format": "double"
+                }
+              },
+              "function_name": {
+                "type": "string",
+                "enum": ["cubic_bezier"]
+              }
+            }
+          }
+        ],
+        "description": "Easing functions are used to interpolate between two values over time.\n\nCustom easing functions can be implemented with cubic Bézier.\nThe control points are defined with `points` field by providing four numerical values: `x1`, `y1`, `x2` and `y2`. The `x1` and `x2` values have to be in the range `[0; 1]`. The cubic Bézier result is clamped to the range `[0; 1]`.\nYou can find example control point configurations [here](https://easings.net/)."
+      },
+      "FontUpload": {
+        "type": "object",
+        "required": ["font"],
+        "properties": {
+          "font": {
+            "type": "string",
+            "format": "binary"
+          }
+        }
+      },
+      "Framerate": {
+        "oneOf": [
+          {
+            "type": "string",
+            "title": "Ratio string"
+          },
+          {
+            "type": "integer",
+            "title": "Frames per second",
+            "format": "int32",
+            "minimum": 0
+          }
+        ]
+      },
+      "H264EncoderPreset": {
+        "type": "string",
+        "enum": [
+          "ultrafast",
+          "superfast",
+          "veryfast",
+          "faster",
+          "fast",
+          "medium",
+          "slow",
+          "slower",
+          "veryslow",
+          "placebo"
+        ]
+      },
+      "HorizontalAlign": {
+        "type": "string",
+        "enum": ["left", "right", "justified", "center"]
+      },
+      "Image": {
+        "type": "object",
+        "required": ["image_id", "type"],
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ComponentId",
+                "description": "Id of a component."
+              }
+            ]
+          },
+          "image_id": {
+            "$ref": "#/components/schemas/RendererId",
+            "description": "Id of an image. It identifies an image registered using a `register image` request."
+          },
+          "width": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Width of the image in pixels.\nIf `height` is not explicitly provided, the image will automatically adjust its height to maintain its original aspect ratio relative to the width."
+          },
+          "height": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Height of the image in pixels.\nIf `width` is not explicitly provided, the image will automatically adjust its width to maintain its original aspect ratio relative to the height."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["image"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "ImageSpec": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "ImageSpecPng",
+            "required": ["asset_type"],
+            "properties": {
+              "url": {
+                "type": ["string", "null"]
+              },
+              "asset_type": {
+                "type": "string",
+                "enum": ["png"]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "ImageSpecJpeg",
+            "required": ["asset_type"],
+            "properties": {
+              "url": {
+                "type": ["string", "null"]
+              },
+              "asset_type": {
+                "type": "string",
+                "enum": ["jpeg"]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "ImageSpecSvg",
+            "required": ["asset_type"],
+            "properties": {
+              "url": {
+                "type": ["string", "null"]
+              },
+              "resolution": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/Resolution"
+                  }
+                ]
+              },
+              "asset_type": {
+                "type": "string",
+                "enum": ["svg"]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "ImageSpecGif",
+            "required": ["asset_type"],
+            "properties": {
+              "url": {
+                "type": ["string", "null"]
+              },
+              "asset_type": {
+                "type": "string",
+                "enum": ["gif"]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "ImageSpecAuto",
+            "required": ["asset_type"],
+            "properties": {
+              "url": {
+                "type": ["string", "null"]
+              },
+              "asset_type": {
+                "type": "string",
+                "enum": ["auto"]
+              }
+            }
+          }
+        ]
+      },
+      "InputId": {
+        "type": "string"
+      },
+      "InputStream": {
+        "type": "object",
+        "required": ["input_id", "type"],
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ComponentId",
+                "description": "Id of a component."
+              }
+            ]
+          },
+          "input_id": {
+            "$ref": "#/components/schemas/InputId",
+            "description": "Id of an input. It identifies a stream registered using a `RegisterInputStream` request."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["input_stream"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Interpolation": {
+        "type": "string",
+        "enum": ["linear", "spring"]
+      },
+      "Mp4Input": {
+        "type": "object",
+        "description": "Input stream from an MP4 file.",
+        "required": ["url", "type"],
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the MP4 file."
+          },
+          "loop": {
+            "type": ["boolean", "null"],
+            "description": "(**default=`false`**) If input should be played in the loop. <span class=\"badge badge--primary\">Added in v0.4.0</span>"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["mp4"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "OpusEncoderPreset": {
+        "type": "string",
+        "enum": ["quality", "voip", "lowest_latency"]
+      },
+      "OutputEndCondition": {
+        "type": "object",
+        "description": "This type defines when end of an input stream should trigger end of the output stream. Only one of those fields can be set at the time.\nUnless specified otherwise the input stream is considered finished/ended when:\n- TCP connection was dropped/closed.\n- RTCP Goodbye packet (`BYE`) was received.\n- Mp4 track has ended.\n- Input was unregistered already (or never registered).",
+        "properties": {
+          "any_of": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/InputId"
+            },
+            "description": "Terminate output stream if any of the input streams from the list are finished."
+          },
+          "all_of": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/InputId"
+            },
+            "description": "Terminate output stream if all the input streams from the list are finished."
+          },
+          "any_input": {
+            "type": ["boolean", "null"],
+            "description": "Terminate output stream if any of the input streams ends. This includes streams added after the output was registered. In particular, output stream will **not be** terminated if no inputs were ever connected."
+          },
+          "all_inputs": {
+            "type": ["boolean", "null"],
+            "description": "Terminate output stream if all the input streams finish. In particular, output stream will **be** terminated if no inputs were ever connected."
+          }
+        },
+        "additionalProperties": false
+      },
+      "OutputId": {
+        "type": "string"
+      },
+      "OutputRtmpClientAudioOptions": {
+        "type": "object",
+        "required": ["initial"],
+        "properties": {
+          "mixing_strategy": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudioMixingStrategy",
+                "description": "(**default=\"sum_clip\"**) Specifies how audio should be mixed."
+              }
+            ]
+          },
+          "send_eos_when": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputEndCondition",
+                "description": "Condition for termination of the output stream based on the input streams states. If output includes both audio and video streams, then EOS needs to be sent for every type."
+              }
+            ]
+          },
+          "channels": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudioChannels",
+                "description": "Channels configuration."
+              }
+            ]
+          },
+          "initial": {
+            "$ref": "#/components/schemas/AudioScene",
+            "description": "Initial audio mixer configuration for output."
+          }
+        },
+        "additionalProperties": false
+      },
+      "OutputRtmpClientVideoOptions": {
+        "type": "object",
+        "required": ["resolution", "initial"],
+        "properties": {
+          "resolution": {
+            "$ref": "#/components/schemas/Resolution",
+            "description": "Output resolution in pixels."
+          },
+          "send_eos_when": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputEndCondition",
+                "description": "Condition for termination of the output stream based on the input streams states. If output includes both audio and video streams, then EOS needs to be sent for every type."
+              }
+            ]
+          },
+          "initial": {
+            "$ref": "#/components/schemas/VideoScene",
+            "description": "Root of a component tree/scene that should be rendered for the output. Use `update_output` request to update this value after registration. Learn more."
+          }
+        },
+        "additionalProperties": false
+      },
+      "OutputWhipAudioOptions": {
+        "type": "object",
+        "required": ["initial"],
+        "properties": {
+          "mixing_strategy": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudioMixingStrategy",
+                "description": "(**default=\"sum_clip\"**) Specifies how audio should be mixed."
+              }
+            ]
+          },
+          "send_eos_when": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputEndCondition",
+                "description": "Condition for termination of output stream based on the input streams states."
+              }
+            ]
+          },
+          "channels": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudioChannels",
+                "description": "Specifies channels configuration."
+              }
+            ]
+          },
+          "encoder_preferences": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/WhipAudioEncoderOptions"
+            },
+            "description": "Codec preferences list."
+          },
+          "initial": {
+            "$ref": "#/components/schemas/AudioScene",
+            "description": "Initial audio mixer configuration for output."
+          }
+        },
+        "additionalProperties": false
+      },
+      "OutputWhipVideoOptions": {
+        "type": "object",
+        "required": ["resolution", "initial"],
+        "properties": {
+          "resolution": {
+            "$ref": "#/components/schemas/Resolution",
+            "description": "Output resolution in pixels."
+          },
+          "send_eos_when": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputEndCondition",
+                "description": "Defines when output stream should end if some of the input streams are finished. If output includes both audio and video streams, then EOS needs to be sent on both."
+              }
+            ]
+          },
+          "initial": {
+            "$ref": "#/components/schemas/VideoScene",
+            "description": "Root of a component tree/scene that should be rendered for the output."
+          }
+        },
+        "additionalProperties": false
+      },
+      "Overflow": {
+        "type": "string",
+        "enum": ["visible", "hidden", "fit"]
+      },
+      "PixelFormat": {
+        "type": "string",
+        "enum": ["yuv420p", "yuv422p", "yuv444p"]
+      },
+      "PortOrPortRange": {
+        "oneOf": [
+          {
+            "type": "string",
+            "title": "Port range string"
+          },
+          {
+            "type": "integer",
+            "title": "Single port",
+            "format": "int32",
+            "minimum": 0
+          }
+        ]
+      },
+      "RGBAColor": {
+        "type": "string"
+      },
+      "RegisterInput": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/RtmpInput"
+          },
+          {
+            "$ref": "#/components/schemas/Mp4Input"
+          },
+          {
+            "$ref": "#/components/schemas/WhipInput"
+          },
+          {
+            "$ref": "#/components/schemas/WhepInput"
+          }
+        ]
+      },
+      "RegisterOutput": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/RtmpOutput"
+          },
+          {
+            "$ref": "#/components/schemas/WhipOutput"
+          }
+        ]
+      },
+      "RegisterTemplateOutput": {
+        "type": "object",
+        "required": ["config", "template"],
+        "properties": {
+          "config": {
+            "$ref": "#/components/schemas/RegisterOutput"
+          },
+          "template": {
+            "type": "string",
+            "format": "binary"
+          }
+        }
+      },
+      "RendererId": {
+        "type": "string"
+      },
+      "RescaleMode": {
+        "type": "string",
+        "enum": ["fit", "fill"]
+      },
+      "Rescaler": {
+        "type": "object",
+        "required": ["child", "type"],
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ComponentId",
+                "description": "Id of a component."
+              }
+            ]
+          },
+          "child": {
+            "$ref": "#/components/schemas/Component",
+            "description": "List of component's children."
+          },
+          "mode": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RescaleMode",
+                "description": "(**default=`\"fit\"`**) Resize mode:"
+              }
+            ]
+          },
+          "horizontal_align": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/HorizontalAlign",
+                "description": "(**default=`\"center\"`**) Horizontal alignment."
+              }
+            ]
+          },
+          "vertical_align": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/VerticalAlign",
+                "description": "(**default=`\"center\"`**) Vertical alignment."
+              }
+            ]
+          },
+          "width": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Width of a component in pixels (without a border). Exact behavior might be different\nbased on the parent component:\n- If the parent component is a layout, check sections \"Absolute positioning\" and \"Static\n  positioning\" of that component.\n- If the parent component is not a layout, then this field is required."
+          },
+          "height": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Height of a component in pixels (without a border). Exact behavior might be different\nbased on the parent component:\n- If the parent component is a layout, check sections \"Absolute positioning\" and \"Static\n  positioning\" of that component.\n- If the parent component is not a layout, then this field is required."
+          },
+          "top": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Distance in pixels between this component's top edge and its parent's top edge (including a border).\nIf this field is defined, then the component will ignore a layout defined by its parent."
+          },
+          "left": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Distance in pixels between this component's left edge and its parent's left edge (including a border).\nIf this field is defined, this element will be absolutely positioned, instead of being\nlaid out by its parent."
+          },
+          "bottom": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Distance in pixels between the bottom edge of this component and the bottom edge of its\nparent (including a border). If this field is defined, this element will be absolutely\npositioned, instead of being laid out by its parent."
+          },
+          "right": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Distance in pixels between this component's right edge and its parent's right edge.\nIf this field is defined, this element will be absolutely positioned, instead of being\nlaid out by its parent."
+          },
+          "rotation": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Rotation of a component in degrees. If this field is defined, this element will be\nabsolutely positioned, instead of being laid out by its parent."
+          },
+          "transition": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Transition",
+                "description": "Defines how this component will behave during a scene update. This will only have an\neffect if the previous scene already contained a `Rescaler` component with the same id."
+              }
+            ]
+          },
+          "border_radius": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "(**default=`0.0`**) Radius of a rounded corner."
+          },
+          "border_width": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "(**default=`0.0`**) Border width."
+          },
+          "border_color": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RGBAColor",
+                "description": "(**default=`\"#00000000\"`**) Border color in a `\"#RRGGBBAA\"` format."
+              }
+            ]
+          },
+          "box_shadow": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/BoxShadow"
+            },
+            "description": "List of box shadows."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["rescaler"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Resolution": {
+        "type": "object",
+        "required": ["width", "height"],
+        "properties": {
+          "width": {
+            "type": "integer",
+            "description": "Width in pixels.",
+            "minimum": 0
+          },
+          "height": {
+            "type": "integer",
+            "description": "Height in pixels.",
+            "minimum": 0
+          }
+        }
+      },
+      "Response": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "Bearer token",
+            "required": ["bearer_token"],
+            "properties": {
+              "bearer_token": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "Media durations",
+            "properties": {
+              "video_duration_ms": {
+                "type": ["integer", "null"],
+                "format": "int64",
+                "minimum": 0
+              },
+              "audio_duration_ms": {
+                "type": ["integer", "null"],
+                "format": "int64",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "Port",
+            "properties": {
+              "port": {
+                "type": ["integer", "null"],
+                "format": "int32",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "Empty"
+          }
+        ]
+      },
+      "RtmpInput": {
+        "type": "object",
+        "required": ["stream_key", "type"],
+        "properties": {
+          "stream_key": {
+            "type": "string",
+            "description": "The RTMP stream key.\nThis is the path segment of the RTMP stream URL that Smelter listens on for incoming streams.\nFormat: `rtmp://<ip_address>:<port>/<stream_key>`"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["rtmp_server"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "RtmpOutput": {
+        "type": "object",
+        "required": ["url", "type"],
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "RTMP endpoint url."
+          },
+          "video": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputRtmpClientVideoOptions",
+                "description": "Video stream configuration."
+              }
+            ]
+          },
+          "audio": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputRtmpClientAudioOptions",
+                "description": "Audio stream configuration."
+              }
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["rtmp_client"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "ShaderParam": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "ShaderParamF32",
+            "required": ["value", "type"],
+            "properties": {
+              "value": {
+                "type": "number",
+                "format": "float"
+              },
+              "type": {
+                "type": "string",
+                "enum": ["f32"]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "ShaderParamU32",
+            "required": ["value", "type"],
+            "properties": {
+              "value": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0
+              },
+              "type": {
+                "type": "string",
+                "enum": ["u32"]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "ShaderParamI32",
+            "required": ["value", "type"],
+            "properties": {
+              "value": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "type": {
+                "type": "string",
+                "enum": ["i32"]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "ShaderParamList",
+            "required": ["value", "type"],
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ShaderParam"
+                }
+              },
+              "type": {
+                "type": "string",
+                "enum": ["list"]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "ShaderParamStruct",
+            "required": ["value", "type"],
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ShaderParamStructField"
+                }
+              },
+              "type": {
+                "type": "string",
+                "enum": ["struct"]
+              }
+            }
+          }
+        ]
+      },
+      "ShaderParamStructField": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ShaderParam"
+          },
+          {
+            "type": "object",
+            "required": ["field_name"],
+            "properties": {
+              "field_name": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "ShaderSpec": {
+        "type": "object",
+        "required": ["source"],
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Shader source code. Learn more."
+          }
+        },
+        "additionalProperties": false
+      },
+      "Text": {
+        "type": "object",
+        "required": ["text", "font_size", "type"],
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ComponentId",
+                "description": "Id of a component."
+              }
+            ]
+          },
+          "text": {
+            "type": "string",
+            "description": "Text that will be rendered."
+          },
+          "width": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Width of a texture that text will be rendered on. If not provided, the resulting texture\nwill be sized based on the defined text but limited to `max_width` value."
+          },
+          "height": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Height of a texture that text will be rendered on. If not provided, the resulting texture\nwill be sized based on the defined text but limited to `max_height` value.\nIt's an error to provide `height` if `width` is not defined."
+          },
+          "max_width": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "(**default=`7682`**) Maximal `width`. Limits the width of the texture that the text will be rendered on.\nValue is ignored if `width` is defined."
+          },
+          "max_height": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "(**default=`4320`**) Maximal `height`. Limits the height of the texture that the text will be rendered on.\nValue is ignored if height is defined."
+          },
+          "font_size": {
+            "type": "number",
+            "format": "float",
+            "description": "Font size in pixels."
+          },
+          "line_height": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Distance between lines in pixels. Defaults to the value of the `font_size` property."
+          },
+          "color": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RGBAColor",
+                "description": "(**default=`\"#FFFFFFFF\"`**) Font color in `#RRGGBBAA` format."
+              }
+            ]
+          },
+          "background_color": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RGBAColor",
+                "description": "(**default=`\"#00000000\"`**) Background color in `#RRGGBBAA` format."
+              }
+            ]
+          },
+          "font_family": {
+            "type": ["string", "null"],
+            "description": "(**default=`\"Verdana\"`**) Font family. Provide [family-name](https://www.w3.org/TR/2018/REC-css-fonts-3-20180920/#family-name-value)\nfor a specific font. \"generic-family\" values like e.g. \"sans-serif\" will not work."
+          },
+          "style": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TextStyle",
+                "description": "(**default=`\"normal\"`**) Font style. The selected font needs to support the specified style."
+              }
+            ]
+          },
+          "align": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/HorizontalAlign",
+                "description": "(**default=`\"left\"`**) Text align."
+              }
+            ]
+          },
+          "wrap": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TextWrapMode",
+                "description": "(**default=`\"none\"`**) Text wrapping options."
+              }
+            ]
+          },
+          "weight": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TextWeight",
+                "description": "(**default=`\"normal\"`**) Font weight. The selected font needs to support the specified weight."
+              }
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["text"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "TextStyle": {
+        "type": "string",
+        "enum": ["normal", "italic", "oblique"]
+      },
+      "TextWeight": {
+        "type": "string",
+        "description": "Font weight, based on the [OpenType specification](https://learn.microsoft.com/en-gb/typography/opentype/spec/os2#usweightclass).",
+        "enum": [
+          "thin",
+          "extra_light",
+          "light",
+          "normal",
+          "medium",
+          "semi_bold",
+          "bold",
+          "extra_bold",
+          "black"
+        ]
+      },
+      "TextWrapMode": {
+        "type": "string",
+        "enum": ["none", "glyph", "word"]
+      },
+      "Tiles": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ComponentId",
+                "description": "Id of a component."
+              }
+            ]
+          },
+          "children": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/Component"
+            },
+            "description": "List of component's children."
+          },
+          "width": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Width of a component in pixels. Exact behavior might be different based on the parent\ncomponent:\n- If the parent component is a layout, check sections \"Absolute positioning\" and \"Static\n  positioning\" of that component.\n- If the parent component is not a layout, then this field is required."
+          },
+          "height": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Height of a component in pixels. Exact behavior might be different based on the parent\ncomponent:\n- If the parent component is a layout, check sections \"Absolute positioning\" and \"Static\n  positioning\" of that component.\n- If the parent component is not a layout, then this field is required."
+          },
+          "background_color": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RGBAColor",
+                "description": "(**default=`\"#00000000\"`**) Background color in a `\"#RRGGBBAA\"` format."
+              }
+            ]
+          },
+          "tile_aspect_ratio": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AspectRatio",
+                "description": "(**default=`\"16:9\"`**) Aspect ratio of a tile in `\"W:H\"` format, where W and H are integers."
+              }
+            ]
+          },
+          "margin": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "(**default=`0`**) Margin of each tile in pixels."
+          },
+          "padding": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "(**default=`0`**) Padding on each tile in pixels."
+          },
+          "horizontal_align": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/HorizontalAlign",
+                "description": "(**default=`\"center\"`**) Horizontal alignment of tiles."
+              }
+            ]
+          },
+          "vertical_align": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/VerticalAlign",
+                "description": "(**default=`\"center\"`**) Vertical alignment of tiles."
+              }
+            ]
+          },
+          "transition": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Transition",
+                "description": "Defines how this component will behave during a scene update. This will only have an\neffect if the previous scene already contained a `Tiles` component with the same id."
+              }
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["tiles"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Transition": {
+        "type": "object",
+        "required": ["duration_ms"],
+        "properties": {
+          "duration_ms": {
+            "type": "number",
+            "format": "double",
+            "description": "Duration of a transition in milliseconds."
+          },
+          "easing_function": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/EasingFunction",
+                "description": "(**default=`\"linear\"`**) Easing function to be used for the transition."
+              }
+            ]
+          },
+          "should_interrupt": {
+            "type": ["boolean", "null"],
+            "description": "(**default=`false`**) On scene update, if there is already a transition in progress,\nit will be interrupted and the new transition will start from the current state."
+          }
+        }
+      },
+      "TransportProtocol": {
+        "type": "string",
+        "enum": ["udp", "tcp_server"]
+      },
+      "UnregisterInput": {
+        "type": "object",
+        "properties": {
+          "schedule_time_ms": {
+            "type": ["number", "null"],
+            "format": "double",
+            "description": "Time in milliseconds when this request should be applied. Value `0` represents\ntime of the start request."
+          }
+        }
+      },
+      "UnregisterOutput": {
+        "type": "object",
+        "properties": {
+          "schedule_time_ms": {
+            "type": ["number", "null"],
+            "format": "double",
+            "description": "Time in milliseconds when this request should be applied. Value `0` represents\ntime of the start request."
+          }
+        }
+      },
+      "UnregisterRenderer": {
+        "type": "object",
+        "properties": {
+          "schedule_time_ms": {
+            "type": ["number", "null"],
+            "format": "double",
+            "description": "Time in milliseconds when this request should be applied. Value `0` represents\ntime of the start request."
+          }
+        }
+      },
+      "UpdateOutputRequest": {
+        "type": "object",
+        "properties": {
+          "video": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/VideoScene"
+              }
+            ]
+          },
+          "audio": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudioScene"
+              }
+            ]
+          },
+          "schedule_time_ms": {
+            "type": ["number", "null"],
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "VerticalAlign": {
+        "type": "string",
+        "enum": ["top", "center", "bottom", "justified"]
+      },
+      "VideoEncoderBitrate": {
+        "oneOf": [
+          {
+            "type": "integer",
+            "title": "Average bitrate",
+            "format": "int64",
+            "description": "Average bitrate measured in bits/second. Encoder will try to keep the bitrate around the provided average,\nbut may temporarily increase it by 25%.",
+            "minimum": 0
+          },
+          {
+            "type": "object",
+            "title": "Average and max bitrate",
+            "required": ["average_bitrate", "max_bitrate"],
+            "properties": {
+              "average_bitrate": {
+                "type": "integer",
+                "format": "int64",
+                "description": "Average bitrate measured in bits/second. Encoder will try to keep the bitrate around the provided average,\nbut may temporarily increase it to the provided max bitrate.",
+                "minimum": 0
+              },
+              "max_bitrate": {
+                "type": "integer",
+                "format": "int64",
+                "description": "Max bitrate measured in bits/second.",
+                "minimum": 0
+              }
+            }
+          }
+        ]
+      },
+      "VideoScene": {
+        "type": "object",
+        "required": ["root"],
+        "properties": {
+          "root": {
+            "$ref": "#/components/schemas/Component"
+          }
+        },
+        "additionalProperties": false
+      },
+      "View": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ComponentId",
+                "description": "Id of a component."
+              }
+            ]
+          },
+          "children": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/Component"
+            },
+            "description": "List of component's children."
+          },
+          "width": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Width of a component in pixels (without a border). Exact behavior might be different\nbased on the parent component:\n- If the parent component is a layout, check sections \"Absolute positioning\" and \"Static\n  positioning\" of that component.\n- If the parent component is not a layout, then this field is required."
+          },
+          "height": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Height of a component in pixels (without a border). Exact behavior might be different\nbased on the parent component:\n- If the parent component is a layout, check sections \"Absolute positioning\" and \"Static\n  positioning\" of that component.\n- If the parent component is not a layout, then this field is required."
+          },
+          "direction": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ViewDirection",
+                "description": "Direction defines how static children are positioned inside a View component."
+              }
+            ]
+          },
+          "top": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Distance in pixels between this component's top edge and its parent's top edge (including a border).\nIf this field is defined, then the component will ignore a layout defined by its parent."
+          },
+          "left": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Distance in pixels between this component's left edge and its parent's left edge (including a border).\nIf this field is defined, this element will be absolutely positioned, instead of being\nlaid out by its parent."
+          },
+          "bottom": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Distance in pixels between the bottom edge of this component and the bottom edge of its\nparent (including a border). If this field is defined, this element will be absolutely\npositioned, instead of being laid out by its parent."
+          },
+          "right": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Distance in pixels between this component's right edge and its parent's right edge.\nIf this field is defined, this element will be absolutely positioned, instead of being\nlaid out by its parent."
+          },
+          "rotation": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "Rotation of a component in degrees. If this field is defined, this element will be\nabsolutely positioned, instead of being laid out by its parent."
+          },
+          "transition": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Transition",
+                "description": "Defines how this component will behave during a scene update. This will only have an\neffect if the previous scene already contained a `View` component with the same id."
+              }
+            ]
+          },
+          "overflow": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Overflow",
+                "description": "(**default=`\"hidden\"`**) Controls what happens to content that is too big to fit into an area."
+              }
+            ]
+          },
+          "background_color": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RGBAColor",
+                "description": "(**default=`\"#00000000\"`**) Background color in a `\"#RRGGBBAA\"` format."
+              }
+            ]
+          },
+          "border_radius": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "(**default=`0.0`**) Radius of a rounded corner."
+          },
+          "border_width": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "(**default=`0.0`**) Border width."
+          },
+          "border_color": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RGBAColor",
+                "description": "(**default=`\"#00000000\"`**) Border color in a `\"#RRGGBBAA\"` format."
+              }
+            ]
+          },
+          "box_shadow": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/BoxShadow"
+            },
+            "description": "List of box shadows."
+          },
+          "padding": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "(**default=`0.0`**) Padding for all sides of the component."
+          },
+          "padding_vertical": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "(**default=`0.0`**) Padding for the top and bottom of the component."
+          },
+          "padding_horizontal": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "(**default=`0.0`**) Padding for the left and right of the component."
+          },
+          "padding_top": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "(**default=`0.0`**) Padding on top side in pixels."
+          },
+          "padding_right": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "(**default=`0.0`**) Padding on right side in pixels."
+          },
+          "padding_bottom": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "(**default=`0.0`**) Padding on bottom side in pixels."
+          },
+          "padding_left": {
+            "type": ["number", "null"],
+            "format": "float",
+            "description": "(**default=`0.0`**) Padding on left side in pixels."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["view"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "ViewDirection": {
+        "type": "string",
+        "enum": ["row", "column"]
+      },
+      "WhepInput": {
+        "type": "object",
+        "required": ["endpoint_url", "type"],
+        "properties": {
+          "endpoint_url": {
+            "type": "string",
+            "description": "WHEP server endpoint URL"
+          },
+          "bearer_token": {
+            "type": ["string", "null"],
+            "description": "Optional Bearer token for auth"
+          },
+          "video": {
+            "type": ["boolean", "null"],
+            "description": "If `true`, requests a h264-encoded video track.\nIf not provided, it defaults to `true`"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["whep_client"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "WhipAudioEncoderOptions": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "WhipAudioEncoderOptionsOpus",
+            "required": ["type"],
+            "properties": {
+              "preset": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/OpusEncoderPreset",
+                    "description": "(**default=\"voip\"**) Specifies preset for audio output encoder."
+                  }
+                ]
+              },
+              "sample_rate": {
+                "type": ["integer", "null"],
+                "format": "int32",
+                "description": "(**default=`48000`**) Sample rate. Allowed values: [8000, 16000, 24000, 48000].",
+                "minimum": 0
+              },
+              "forward_error_correction": {
+                "type": ["boolean", "null"],
+                "description": "(**default=`false`**) Specifies if forward error correction (FEC) should be used."
+              },
+              "type": {
+                "type": "string",
+                "enum": ["opus"]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "WhipAudioEncoderOptionsAny",
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["any"]
+              }
+            }
+          }
+        ]
+      },
+      "WhipInput": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "bearer_token": {
+            "type": ["string", "null"],
+            "description": "Token used for authentication in WHIP protocol. If not provided, the random value\nwill be generated and returned in the response."
+          },
+          "video": {
+            "type": ["boolean", "null"],
+            "description": "If `true`, accepts a h264-encoded video track.\nIf not provided, it defaults to `true`"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["whip_server"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "WhipOutput": {
+        "type": "object",
+        "required": ["endpoint_url", "type"],
+        "properties": {
+          "endpoint_url": {
+            "type": "string",
+            "description": "WHIP server endpoint"
+          },
+          "bearer_token": {
+            "type": ["string", "null"]
+          },
+          "video": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputWhipVideoOptions",
+                "description": "Video track configuration."
+              }
+            ]
+          },
+          "audio": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutputWhipAudioOptions",
+                "description": "Audio track configuration."
+              }
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["whip_client"]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Compositions",
+      "description": "A composition is a single running compositing session. Create one, start it, and delete it when you are done."
+    },
+    {
+      "name": "Inputs",
+      "description": "Live media sources being composed: WHIP, WHEP, RTMP, or MP4."
+    },
+    {
+      "name": "Outputs",
+      "description": "Where the composed result is sent, over WHIP or RTMP. Each output carries a scene or renders a template."
+    },
+    {
+      "name": "Renderers",
+      "description": "Shared assets, such as images and fonts, that scenes can reference."
+    },
+    {
+      "name": "Events",
+      "description": "Custom events delivered to templates."
+    },
+    {
+      "name": "Media transport",
+      "description": "WHIP publishing into inputs and WHEP playback of outputs."
+    }
+  ]
+}

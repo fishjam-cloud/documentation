@@ -6,7 +6,7 @@ type: reference
 
 Describes APIs for direct interaction with Fishjam.
 
-Fishjam publishes documentation for the Sandbox API and Fishjam Server APIs.
+Fishjam publishes documentation for the Sandbox API, Fishjam Server APIs, and the Composition API.
 
 ## Sandbox API
 
@@ -51,3 +51,15 @@ the first message that must be sent is an `AuthRequest`,
 with a valid Management Token.
 
 Next, you can should subscribe to notifications by sending `SubscribeRequest` event with `SERVER_NOTIFICATION` event type.
+
+## Compositions
+
+[Compositions](../explanation/compositions) are managed through the Composition API. All requests go to `https://rtc.fishjam.io`.
+
+### REST API
+
+[Composition REST API Reference](/api/compositions)
+
+Calls authenticate with your Management Token, from the [**Fishjam developer panel**](https://fishjam.io/app).
+
+Request bodies are snake_case and closed: a field the endpoint does not define is rejected with `422` rather than ignored, so a misspelling fails loudly instead of silently doing nothing.

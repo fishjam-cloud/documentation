@@ -37,6 +37,24 @@ copy_openapi() {
     fi
 }
 
+COMPOSITION_BRANCH="main"
+
+# The composition source repo does not tag semver releases yet, so its
+# submodule is checked out at a branch instead of the latest tag.
+checkout_submodule_branch() {
+    local submodule_path
+    submodule_path=api/$1
+
+    cd "$CWD/$submodule_path"
+    git fetch origin "$2"
+    git checkout FETCH_HEAD --detach &>/dev/null
+}
+
+copy_composition_openapi() {
+    cp openapi.json "$ASSETS_DIRECTORY/composition-openapi.json"
+    echo "Copied openapi.json of composition to the assets directory."
+}
+
 PROTO_FILES="server_notifications agent_notifications notifications/shared"
 copy_protos() {
     for file in $PROTO_FILES; do
@@ -52,5 +70,8 @@ copy_openapi room-manager
 
 checkout_submodule protos
 copy_protos
+
+checkout_submodule_branch composition $COMPOSITION_BRANCH
+copy_composition_openapi
 
 echo $'\nSubmodule update and copy complete.'
