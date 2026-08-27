@@ -1,0 +1,154 @@
+---
+type: explanation
+sidebar_position: 9
+title: Media over QUIC in Fishjam
+description: Understand how Media over QUIC (MoQ) works in Fishjam — the relay model, publish/subscribe architecture, paths, and token-based access control.
+---
+
+# Media over QUIC in Fishjam
+
+_How Media over QUIC (MoQ) works in Fishjam_
+
+:::warning[MoQ is a standalone feature]
+MoQ runs as a **separate delivery path** in Fishjam — it handles publishing and subscribing to a live broadcast over the MoQ relay, and the rest of Fishjam's feature set does not apply to a MoQ stream. In particular, a MoQ broadcast is not part of a WebRTC [room](./rooms), so you cannot use features like [Agents](../tutorials/agents), [data channels](./data-channels), and others that are part of the Fishjam WebRTC ecosystem.
+
+What MoQ supports is covered end to end in the [MoQ tutorials](../tutorials/moq/web-publishing).
+:::
+
+## What is MoQ?
+
+[Media over QUIC (MoQ)](https://datatracker.ietf.org/wg/moq/about/) is a new internet standard for live media delivery, designed from the ground up for **scalable, low-latency streaming to large audiences**.
+
+Unlike WebRTC — which was primarily built for interactive, peer-to-peer conferencing — MoQ is optimized for the one-to-many broadcast model: one publisher, potentially thousands of simultaneous subscribers, all receiving the stream with minimal delay.
+
+A few properties make MoQ stand out:
+
+- **Built on QUIC.** QUIC is a modern transport protocol that eliminates head-of-line blocking, recovers from packet loss more gracefully than TCP, and establishes connections faster. For live video, this means more resilient delivery at low latency.
+- **Standardized negotiation.** Because MoQ defines a common signaling and subscription protocol, any MoQ-compliant client can connect to any MoQ-compliant relay — you are not locked into a proprietary stack.
+- **Relay-based architecture.** The relay is a first-class part of the MoQ protocol, not an add-on. Because relaying is built into the protocol's design, scaling delivery to large audiences is a native capability.
+
+:::info
+Fishjam also supports WebRTC-based livestreaming (WHIP/WHEP). See [Livestreams](./livestreams) for that approach.
+:::
+
+## How MoQ Works in Fishjam
+
+Fishjam provides a **MoQ relay** that publishers push media to and subscribers pull media from.
+
+```
+Publisher → Fishjam MoQ Relay → Subscriber(s)
+```
+
+The relay is responsible for distributing the stream: it receives media from the publisher once and fans it out to every subscriber.
+
+### The publish/subscribe model
+
+MoQ uses a **publish/subscribe** model:
+
+- A **publisher** connects to the relay, announces a stream under a specific path, and starts sending media.
+- **Subscribers** connect to the relay, discover announced paths, and receive the media.
+
+The relay manages the flow between them. Neither side needs a direct connection to the other.
+
+### Paths
+
+Every stream is identified by a **path** — a slash-separated string like `my-room/alice-camera`. Paths are used in two distinct ways:
+
+1. **Addressing** — a subscriber consumes an exact path to receive that specific stream (e.g. `my-room/alice-camera`).
+2. **Discovery** — a subscriber watches a prefix (e.g. `my-room`) to learn which streams are currently live under it. This returns a live feed of announced paths — each of which must then be consumed individually. This is how you can display all participants in a room without knowing their paths in advance.
+
+Note that consuming an exact path and discovering a prefix are separate operations. Consuming `my-room` directly would fail unless a publisher is broadcasting at that exact path.
+
+### Path Scoping
+
+Every connection goes to `relay.fishjam.io/<fishjam-id>`. Your Fishjam ID is automatically used as the token's root namespace by the Fishjam Server — you never include it in `publishPath` or `subscribePath`; it is set for you. All paths you specify are **relative to that root**.
+
+Path matching is **prefix-based**: a path of `"stream-name"` permits any broadcast whose full path starts with `stream-name/`, not just the exact string `"stream-name"`.
+
+#### Publisher paths
+
+The `publishPath` you set determines how much freedom the broadcaster has when naming their broadcast:
+
+- **Broad path** (`publishPath: "stream-name"`) — the client can publish as any sub-path under `stream-name`, such as `stream-name/alice` or `stream-name/bob-camera`. The client chooses its own identity; the relay only enforces the prefix.
+- **Specific path** (`publishPath: "stream-name/alice"`) — the client can **only** publish as `stream-name/alice`. If the broadcaster tries to use `stream-name/bob`, the relay rejects the announcement. This is how you enforce a broadcaster's identity from the server side.
+
+Use the broad form when clients self-identify (e.g., users pick their own stream name). Use the specific form when your backend assigns identities (e.g., you issue a per-user token for a managed conference).
+
+#### Subscriber paths
+
+The `subscribePath` works the same way: it is a prefix that limits which broadcasts the subscriber can consume and discover.
+
+- **Broad path** (`subscribePath: "stream-name"`) — the subscriber can consume any broadcast under `stream-name/` and will surface all publishers in that namespace as they come and go.
+- **Specific path** (`subscribePath: "stream-name/alice"`) — the subscriber can only receive from `stream-name/alice`. Broadcasts at `stream-name/bob` are invisible to this client.
+
+#### Example: a multi-publisher room
+
+A typical room setup uses a combination of both patterns:
+
+1. The backend issues each broadcaster a **specific** publisher token — `publishPath: "my-room/<user-id>"` — so each user can only occupy their own slot.
+2. The backend issues viewers a **broad** subscriber token — `subscribePath: "my-room"` — so they discover and consume every broadcast in the room.
+3. When a new publisher joins or leaves, the viewer is informed by the relay
+
+## Access Control: MoQ Tokens
+
+Access to the relay is controlled by **MoQ tokens** — short-lived JWTs that are path-scoped:
+
+| Token type       | Grants                             | Typical recipient |
+| ---------------- | ---------------------------------- | ----------------- |
+| Publisher token  | Write access to a specific path    | Streamer          |
+| Subscriber token | Read access to a path or namespace | Viewer            |
+
+A token is attached to the relay URL as a query parameter (`?jwt=<token>`). The relay validates the token and enforces its scope before allowing any media to flow. Both the Sandbox API and the Server SDK hand you the authenticated **connection URL** (the relay URL with the token already embedded), so the client can just take it as is and connect.
+
+Keeping publisher and subscriber tokens separate ensures that a viewer can never accidentally publish to the stream, and a publisher cannot subscribe to paths it does not own.
+
+## Where to get the Connection URL from?
+
+There are two ways to obtain a MoQ connection URL, depending on where you are in the development lifecycle.
+
+### Sandbox API (prototyping)
+
+The **Sandbox API** is a ready-made backend provided by Fishjam for development and prototyping. It issues connection URLs without requiring you to build your own server, so you can start streaming immediately.
+
+To get a publisher connection URL, call:
+
+```
+GET https://fishjam.io/api/v1/connect/{FISHJAM_ID}/room-manager/moq/{PUBLISHER-PATH}/publisher
+```
+
+To get a subscriber connection URL, call:
+
+```
+GET https://fishjam.io/api/v1/connect/{FISHJAM_ID}/room-manager/moq/{SUBSCRIBER-PATH}/subscriber
+```
+
+To get a full-access connection URL — one that can both publish to and subscribe on the path — call:
+
+```
+GET https://fishjam.io/api/v1/connect/{FISHJAM_ID}/room-manager/moq/{PATH}/full-access
+```
+
+Each returns a JSON object with a `connection_url` field — the relay URL with the JWT embedded as `?jwt=` — alongside the raw `token`.
+
+The Sandbox API is **not intended for production** — it has no authentication and is only available in the Sandbox environment. See [What is the Sandbox API?](./sandbox-api-concept) for more context.
+
+### Fishjam Server SDK (production)
+
+In production, your backend generates connection URLs using the **Fishjam Server SDK**. This gives you full control over who can publish and who can subscribe.
+
+The SDK's `createMoqAccess` method accepts a `publishPath`, a `subscribePath`, or both, and returns the MoQ access details — a `connection_url` (the relay URL with the JWT embedded) alongside the raw `token`:
+
+- `publishPath` — returns a publisher connection URL scoped to that path.
+- `subscribePath` — returns a subscriber connection URL scoped to that path or namespace prefix.
+- both `publishPath` and `subscribePath` — returns a full-access connection URL that can publish and subscribe on those paths.
+
+Your backend then delivers each connection URL to the appropriate client (publisher or viewer), which uses it to connect to the relay.
+
+See the [Web Publishing](../tutorials/moq/web-publishing) and [Web Subscribing](../tutorials/moq/web-subscribing) tutorials (or their [React Native](../tutorials/moq/react-native-publishing) [counterparts](../tutorials/moq/react-native-subscribing)) for working code examples.
+
+## See also
+
+- [Web Publishing](../tutorials/moq/web-publishing) / [Web Subscribing](../tutorials/moq/web-subscribing) — step-by-step guides to publishing and subscribing
+- [What is the Sandbox API?](./sandbox-api-concept) — when and why to use the Sandbox API
+- [Security & Token Model](./security-tokens) — broader overview of Fishjam's token system
+- [Livestreams](./livestreams) — WebRTC-based livestreaming with WHIP/WHEP

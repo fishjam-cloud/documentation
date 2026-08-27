@@ -1,0 +1,945 @@
+---
+type: tutorial
+sidebar_position: 6
+sidebar_label: "Draw WebGPU effects into your published camera 📱"
+description: Step-by-step guide to drawing your own WebGPU effects (a watermark overlay and a grayscale shader) into the camera feed you publish to Fishjam.
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+# Draw WebGPU effects into your published camera <span className="badge badge--mobile">Mobile</span>
+
+:::note
+This tutorial is exclusively for **Mobile** (React Native) applications. On the web, publishing WebGPU output only requires capturing a canvas; see the web tab of the [WebGPU effects how-to](../how-to/client/custom-sources/webgpu-effects).
+:::
+
+This tutorial continues from [Stream Vision Camera to Fishjam](./vision-camera). You'll take the app you built there and route its published camera through your own WebGPU pipeline: first unchanged, then with a watermark image drawn on top, and finally recolored by a shader you write yourself.
+
+## What you'll build
+
+The Vision Camera app, now publishing through your own GPU pipeline: a camera feed with a "LIVE" watermark in the corner, recolored to grayscale by your own shader.
+
+## What you'll learn
+
+- How to route published camera frames through `useVisionCameraWebGpuSource`
+- How to load a PNG into a GPU texture and composite it over the camera as a second render pass
+- How to write TypeGPU shaders that change the published camera pixels
+
+## Prerequisites
+
+- The finished app from the [Vision Camera tutorial](./vision-camera); this tutorial rewrites only its `CameraPublisher`, while `JoinRoomButton`, `RemoteStreams` and `App` stay unchanged
+- iOS 17+ on the publishing device; the WebGPU camera path relies on Metal features not guaranteed on earlier versions (the setup from the previous tutorial keeps working below that)
+- A physical device, or the iOS Simulator with a virtual camera from [SimCam](../how-to/client/ios-simulator-camera.mdx)
+- As before: the New Architecture
+
+## Step 1: Install and configure
+
+### Install the packages
+
+On top of the packages from the previous tutorial:
+
+```bash npm2yarn
+npm install react-native-webgpu typegpu unplugin-typegpu
+```
+
+### Update the Babel config
+
+The shaders in this tutorial are written in [TypeGPU](https://docs.swmansion.com/TypeGPU/) (TGSL): typed TypeScript functions compiled to WGSL at build time by `unplugin-typegpu`. Add its Babel plugin, keeping `react-native-worklets/plugin` last:
+
+```js title='babel.config.js'
+module.exports = {
+  presets: ["babel-preset-expo"],
+  plugins: ["unplugin-typegpu/babel", "react-native-worklets/plugin"],
+};
+```
+
+Restart Metro with a cleared cache afterwards (`npx expo start --clear`).
+
+### Rebuild the app
+
+<Tabs groupId="app-type">
+  <TabItem value="expo" label="Expo">
+
+```bash
+npx expo prebuild
+npx expo run:ios # or run:android
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+```bash
+cd ios && pod install
+```
+
+  </TabItem>
+</Tabs>
+
+## Step 2: Route the camera through WebGPU
+
+Replace `useVisionCameraSource` with `useVisionCameraWebGpuSource`. This changes three things:
+
+- `useCameraWebGpuDevice` provides a shared `GPUDevice`, requested with the features the camera-import path needs.
+- Every camera frame now reaches your `onFrame` worklet, where calling `render(...)` gives you a context with the command encoder, the live camera texture and the output texture. What you draw into the output texture is what peers receive.
+- For now, draw the camera unchanged with the ready-made passthrough pass: `createCameraPassthroughPipeline` builds it once, `encodeCameraPassthrough` encodes it each frame, and `computeAspectFillCrop` fills the output like `objectFit: "cover"`.
+
+Keep the source ID `"vision-camera"`, so `RemoteStreams` keeps working without changes:
+
+```tsx
+import React, { useCallback, useEffect, useMemo } from "react";
+import { Text } from "react-native";
+import {
+  useCamera as useVisionCamera,
+  useCameraPermission,
+  type Frame,
+} from "react-native-vision-camera";
+import { RTCView } from "@fishjam-cloud/react-native-client";
+import {
+  useVisionCameraWebGpuSource,
+  useCameraWebGpuDevice,
+  createCameraPassthroughPipeline,
+  encodeCameraPassthrough,
+  computeAspectFillCrop,
+  type WebGpuFrameRenderFunction,
+} from "@fishjam-cloud/react-native-vision-camera-source/webgpu";
+
+export function CameraPublisher() {
+  const { hasPermission, canRequestPermission, requestPermission } =
+    useCameraPermission();
+
+  useEffect(() => {
+    if (!hasPermission && canRequestPermission) {
+      requestPermission();
+    }
+  }, [hasPermission, canRequestPermission, requestPermission]);
+
+  const { device } = useCameraWebGpuDevice();
+
+  // A ready-made camera → output render pass, built once per device.
+  const passthrough = useMemo(
+    () => (device ? createCameraPassthroughPipeline(device) : null),
+    [device],
+  );
+
+  const onFrame = useCallback(
+    (frame: Frame, render: WebGpuFrameRenderFunction) => {
+      "worklet";
+      if (device == null || passthrough == null) return;
+      render((context) => {
+        // Crop the camera to fill the output, like `objectFit: "cover"`.
+        const crop = computeAspectFillCrop(
+          context.cameraWidth,
+          context.cameraHeight,
+          context.outputWidth / context.outputHeight,
+        );
+        encodeCameraPassthrough(
+          device,
+          passthrough,
+          context.cameraTexture,
+          context.outputView,
+          context.commandEncoder,
+          crop,
+        );
+      });
+    },
+    [device, passthrough],
+  );
+
+  const { frameOutput, stream } = useVisionCameraWebGpuSource("vision-camera", {
+    width: 720,
+    height: 1280,
+    onFrame,
+  });
+
+  useVisionCamera({
+    device: "front",
+    isActive: hasPermission,
+    outputs: [frameOutput],
+  });
+
+  if (!stream) return <Text>Starting camera…</Text>;
+  return (
+    <RTCView
+      mediaStream={stream}
+      style={{ height: 300, width: 300 }}
+      objectFit="cover"
+      mirror={true}
+    />
+  );
+}
+```
+
+Rebuild and join the room from a second device. The feed looks the same as before, but every published pixel now flows through a pipeline you control. The next two steps build on it.
+
+From here on, the [rules inside `onFrame`](../how-to/client/custom-sources/webgpu-effects#rules-inside-onframe) apply: draw into the provided output view, call `render(...)` at most once per frame, and never call `queue.submit()` yourself.
+
+## Step 3: Draw a watermark on top
+
+### Make a watermark image
+
+Any PNG with transparency works. Make one with red "LIVE" text on a transparent background, roughly 512×128, and save it as `assets/watermark.png` in your project. Keep the alpha straight (non-premultiplied), which is what image editors export by default. A colored watermark will make the effect in Step 4 easier to see.
+
+### Build the watermark pipeline
+
+The watermark needs its own pipeline: a texture holding the image, and a textured quad drawn over the bottom-right corner with alpha blending.
+
+Note the following:
+
+- Unlike the camera, which arrives as an external texture that expires every frame, the watermark is a plain `texture_2d<f32>`. It's uploaded once with `copyExternalImageToTexture`, and its bind group is built once and reused for every frame.
+- The quad's corner placement is computed in plain JavaScript and baked into the vertex shader as constants. The output size is fixed, so no uniform buffer is needed.
+- The `.$name(...)` calls pin the WGSL entry-point names. TypeGPU otherwise names functions after their JavaScript identifiers, and `createRenderPipeline` would look for an entry point that doesn't exist. This failure is silent: WebGPU reports it as an asynchronous validation error, not a thrown exception, and the pass simply draws nothing.
+
+```tsx
+/// <reference types="@webgpu/types" />
+// ---cut---
+import tgpu from "typegpu";
+import * as d from "typegpu/data";
+import { GPUShaderStage, GPUTextureUsage } from "react-native-webgpu";
+import { getOutputSurfaceFormat } from "@fishjam-cloud/react-native-vision-camera-source/webgpu";
+
+// A plain 2D texture never expires (unlike the camera's external texture),
+// so it is bound once and reused every frame.
+const watermarkBindingDeclarations = /* wgsl */ `
+@group(0) @binding(0) var watermarkTexture: texture_2d<f32>;
+@group(0) @binding(1) var watermarkSampler: sampler;
+`;
+
+const sampleWatermark = tgpu.fn(
+  [d.vec2f],
+  d.vec4f,
+)(/* wgsl */ `(uv: vec2f) -> vec4f {
+  return textureSample(watermarkTexture, watermarkSampler, uv);
+}`);
+
+// A quad over the given clip-space rect; the corners are baked in as
+// constants when the shader is built.
+function makeWatermarkVertexMain(rect: {
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+}) {
+  const { x0, y0, x1, y1 } = rect;
+  return tgpu
+    .vertexFn({
+      in: { vertexIndex: d.builtin.vertexIndex },
+      out: { position: d.builtin.position, uv: d.location(0, d.vec2f) },
+    })((input) => {
+      const positions = [
+        d.vec2f(x0, y0),
+        d.vec2f(x1, y0),
+        d.vec2f(x0, y1),
+        d.vec2f(x1, y1),
+      ];
+      const uvs = [d.vec2f(0, 1), d.vec2f(1, 1), d.vec2f(0, 0), d.vec2f(1, 0)];
+      const p = positions[input.vertexIndex];
+      return {
+        position: d.vec4f(p.x, p.y, 0, 1),
+        uv: uvs[input.vertexIndex],
+      };
+    })
+    .$name("vertexMain");
+}
+
+const watermarkFragmentMain = tgpu
+  .fragmentFn({
+    in: { uv: d.location(0, d.vec2f) },
+    out: d.vec4f,
+  })((input) => sampleWatermark(input.uv))
+  .$name("fragmentMain");
+
+export function createWatermarkPipeline(
+  device: GPUDevice,
+  bitmap: ImageBitmap,
+  outputWidth: number,
+  outputHeight: number,
+) {
+  // 1. Upload the image into a GPU texture (a one-time copy).
+  const texture = device.createTexture({
+    size: [bitmap.width, bitmap.height],
+    format: "rgba8unorm",
+    usage:
+      GPUTextureUsage.TEXTURE_BINDING |
+      GPUTextureUsage.COPY_DST |
+      GPUTextureUsage.RENDER_ATTACHMENT,
+  });
+  device.queue.copyExternalImageToTexture({ source: bitmap }, { texture }, [
+    bitmap.width,
+    bitmap.height,
+  ]);
+
+  // 2. Bottom-right placement: 24 px margin, 40% of the output width,
+  //    height from the image's aspect ratio, converted to clip space.
+  const widthPx = outputWidth * 0.4;
+  const heightPx = widthPx * (bitmap.height / bitmap.width);
+  const marginPx = 24;
+  const x1 = 1 - (2 * marginPx) / outputWidth;
+  const x0 = x1 - (2 * widthPx) / outputWidth;
+  const y0 = -1 + (2 * marginPx) / outputHeight;
+  const y1 = y0 + (2 * heightPx) / outputHeight;
+
+  // 3. The pipeline: a textured quad with straight-alpha blending.
+  const bindGroupLayout = device.createBindGroupLayout({
+    entries: [
+      { binding: 0, visibility: GPUShaderStage.FRAGMENT, texture: {} },
+      { binding: 1, visibility: GPUShaderStage.FRAGMENT, sampler: {} },
+    ],
+  });
+  const module = device.createShaderModule({
+    code:
+      watermarkBindingDeclarations +
+      tgpu.resolve({
+        externals: {
+          vertexMain: makeWatermarkVertexMain({ x0, y0, x1, y1 }),
+          fragmentMain: watermarkFragmentMain,
+        },
+      }),
+  });
+  const pipeline = device.createRenderPipeline({
+    layout: device.createPipelineLayout({
+      bindGroupLayouts: [bindGroupLayout],
+    }),
+    vertex: { module, entryPoint: "vertexMain" },
+    fragment: {
+      module,
+      entryPoint: "fragmentMain",
+      targets: [
+        {
+          format: getOutputSurfaceFormat(),
+          blend: {
+            color: {
+              srcFactor: "src-alpha",
+              dstFactor: "one-minus-src-alpha",
+              operation: "add",
+            },
+            alpha: {
+              srcFactor: "one",
+              dstFactor: "one-minus-src-alpha",
+              operation: "add",
+            },
+          },
+        },
+      ],
+    },
+    primitive: { topology: "triangle-strip" },
+  });
+  const bindGroup = device.createBindGroup({
+    layout: bindGroupLayout,
+    entries: [
+      { binding: 0, resource: texture.createView() },
+      {
+        binding: 1,
+        resource: device.createSampler({
+          magFilter: "linear",
+          minFilter: "linear",
+        }),
+      },
+    ],
+  });
+  return { pipeline, bindGroup };
+}
+```
+
+:::note
+TypeGPU is not required; you can hand-write the same shaders in WGSL. See the [WebGPU effects how-to](../how-to/client/custom-sources/webgpu-effects) for the trade-offs.
+:::
+
+### Load the image and encode the overlay
+
+Loading is asynchronous: fetch the bundled asset, then decode it with `createImageBitmap` (provided globally by `react-native-webgpu`). It lives in a `useEffect` and lands in state. Inside `CameraPublisher`, add:
+
+```tsx
+/// <reference types="@webgpu/types" />
+import "react-native-webgpu";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Image } from "react-native";
+import type { Frame } from "react-native-vision-camera";
+import {
+  useCameraWebGpuDevice,
+  createCameraPassthroughPipeline,
+  encodeCameraPassthrough,
+  computeAspectFillCrop,
+  type WebGpuFrameRenderFunction,
+} from "@fishjam-cloud/react-native-vision-camera-source/webgpu";
+
+declare function createWatermarkPipeline(
+  device: GPUDevice,
+  bitmap: ImageBitmap,
+  outputWidth: number,
+  outputHeight: number,
+): { pipeline: GPURenderPipeline; bindGroup: GPUBindGroup };
+
+export function CameraPublisher() {
+  const { device } = useCameraWebGpuDevice();
+  const passthrough = useMemo(
+    () => (device ? createCameraPassthroughPipeline(device) : null),
+    [device],
+  );
+  // ---cut---
+  const [watermark, setWatermark] = useState<ReturnType<
+    typeof createWatermarkPipeline
+  > | null>(null);
+
+  useEffect(() => {
+    if (device == null) return;
+    let cancelled = false;
+    const load = async () => {
+      const asset = Image.resolveAssetSource(require("./assets/watermark.png"));
+      const response = await fetch(asset.uri);
+      const bitmap = await createImageBitmap(await response.arrayBuffer());
+      if (!cancelled) {
+        setWatermark(createWatermarkPipeline(device, bitmap, 720, 1280));
+      }
+    };
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [device]);
+  // ---cut-after---
+}
+```
+
+Then extend `onFrame`: after the passthrough, still inside the same `render` callback, encode a second pass on the same command encoder. `loadOp: "load"` keeps the camera pixels underneath, so the quad blends on top:
+
+```tsx
+/// <reference types="@webgpu/types" />
+import { useCallback } from "react";
+import type { Frame } from "react-native-vision-camera";
+import {
+  useCameraWebGpuDevice,
+  createCameraPassthroughPipeline,
+  encodeCameraPassthrough,
+  computeAspectFillCrop,
+  type WebGpuFrameRenderFunction,
+} from "@fishjam-cloud/react-native-vision-camera-source/webgpu";
+
+declare const device: ReturnType<typeof useCameraWebGpuDevice>["device"];
+declare const passthrough: ReturnType<
+  typeof createCameraPassthroughPipeline
+> | null;
+declare const watermark: {
+  pipeline: GPURenderPipeline;
+  bindGroup: GPUBindGroup;
+} | null;
+// ---cut---
+const onFrame = useCallback(
+  (frame: Frame, render: WebGpuFrameRenderFunction) => {
+    "worklet";
+    if (device == null || passthrough == null) return;
+    render((context) => {
+      const crop = computeAspectFillCrop(
+        context.cameraWidth,
+        context.cameraHeight,
+        context.outputWidth / context.outputHeight,
+      );
+      encodeCameraPassthrough(
+        device,
+        passthrough,
+        context.cameraTexture,
+        context.outputView,
+        context.commandEncoder,
+        crop,
+      );
+
+      if (watermark != null) {
+        // `loadOp: "load"` keeps the camera pass underneath.
+        const pass = context.commandEncoder.beginRenderPass({
+          colorAttachments: [
+            { view: context.outputView, loadOp: "load", storeOp: "store" },
+          ],
+        });
+        pass.setPipeline(watermark.pipeline);
+        pass.setBindGroup(0, watermark.bindGroup);
+        pass.draw(4);
+        pass.end();
+      }
+    });
+  },
+  [device, passthrough, watermark],
+);
+```
+
+The worklet captures the watermark's pipeline and bind group once, which is safe because a plain 2D texture never expires. A single `render(...)` call may contain any number of passes; only calling `render` more than once per frame is not allowed.
+
+One last change: keep the camera inactive until the upload has finished. `copyExternalImageToTexture` submits GPU work internally, and while frames flow the hook owns the device queue, so a concurrent upload from the JS thread can crash the app. Gating `isActive` serializes the two:
+
+```tsx
+/// <reference types="@webgpu/types" />
+import {
+  useCamera as useVisionCamera,
+  useCameraPermission,
+} from "react-native-vision-camera";
+import { useVisionCameraWebGpuSource } from "@fishjam-cloud/react-native-vision-camera-source/webgpu";
+
+declare const watermark: {
+  pipeline: GPURenderPipeline;
+  bindGroup: GPUBindGroup;
+} | null;
+declare const frameOutput: ReturnType<
+  typeof useVisionCameraWebGpuSource
+>["frameOutput"];
+const { hasPermission } = useCameraPermission();
+// ---cut---
+useVisionCamera({
+  device: "front",
+  // The hook owns the GPU queue while frames flow; wait for the upload.
+  isActive: hasPermission && watermark != null,
+  outputs: [frameOutput],
+});
+```
+
+Rebuild and check the receiving side: "LIVE" sits over the bottom-right corner of the camera.
+
+## Step 4: Change the colors with your own shader
+
+An overlay draws on top of the camera pixels. To change the pixels themselves, replace the passthrough with your own pipeline: a full-screen triangle whose fragment shader samples the camera and returns a new color. `createCameraShaderBindings` gives your shader `sampleCamera(uv)`, which returns upright RGB on both platforms and handles the YUV decode for you.
+
+Add the effect next to the watermark code at module scope:
+
+```tsx
+/// <reference types="@webgpu/types" />
+// ---cut---
+import tgpu from "typegpu";
+import * as d from "typegpu/data";
+import { dot } from "typegpu/std";
+import {
+  createCameraShaderBindings,
+  getOutputSurfaceFormat,
+} from "@fishjam-cloud/react-native-vision-camera-source/webgpu";
+
+// Full-screen triangle; uv spans the visible area.
+const vertexMain = tgpu.vertexFn({
+  in: { vertexIndex: d.builtin.vertexIndex },
+  out: { position: d.builtin.position, uv: d.location(0, d.vec2f) },
+})((input) => {
+  const positions = [d.vec2f(-1, -1), d.vec2f(3, -1), d.vec2f(-1, 3)];
+  const p = positions[input.vertexIndex];
+  return {
+    position: d.vec4f(p.x, p.y, 0, 1),
+    uv: d.vec2f((p.x + 1) * 0.5, 1 - (p.y + 1) * 0.5),
+  };
+});
+
+export function createGrayscaleEffect(device: GPUDevice) {
+  const cameraBindings = createCameraShaderBindings(device);
+
+  const fragmentMain = tgpu.fragmentFn({
+    in: { uv: d.location(0, d.vec2f) },
+    out: d.vec4f,
+  })((input) => {
+    const color = cameraBindings.sampleCamera(input.uv);
+    const gray = dot(color.xyz, d.vec3f(0.299, 0.587, 0.114));
+    return d.vec4f(gray, gray, gray, 1);
+  });
+
+  // TypeGPU cannot emit the camera's `texture_external` binding itself,
+  // so prepend the declarations that come with the bindings.
+  const module = device.createShaderModule({
+    code:
+      cameraBindings.bindingDeclarations +
+      tgpu.resolve({ externals: { vertexMain, fragmentMain } }),
+  });
+  const pipeline = device.createRenderPipeline({
+    layout: device.createPipelineLayout({
+      bindGroupLayouts: [cameraBindings.bindGroupLayout],
+    }),
+    vertex: { module, entryPoint: "vertexMain" },
+    fragment: {
+      module,
+      entryPoint: "fragmentMain",
+      targets: [{ format: getOutputSurfaceFormat() }],
+    },
+  });
+  return { cameraBindings, pipeline };
+}
+```
+
+In the component, build the effect once per device and pass its `cameraBindings` to the hook. In return, the render context carries a ready-made `cameraBindGroup`, rebuilt every frame because the camera's external texture expires with each frame. The worklet now encodes the grayscale pass instead of the passthrough, with the watermark pass unchanged on top. The passthrough and crop imports are no longer needed:
+
+```tsx
+/// <reference types="@webgpu/types" />
+import { useCallback, useMemo } from "react";
+import type { Frame } from "react-native-vision-camera";
+import {
+  useVisionCameraWebGpuSource,
+  useCameraWebGpuDevice,
+  createCameraShaderBindings,
+  type WebGpuFrameRenderFunction,
+} from "@fishjam-cloud/react-native-vision-camera-source/webgpu";
+
+declare const device: ReturnType<typeof useCameraWebGpuDevice>["device"];
+declare function createGrayscaleEffect(device: GPUDevice): {
+  cameraBindings: ReturnType<typeof createCameraShaderBindings>;
+  pipeline: GPURenderPipeline;
+};
+declare const watermark: {
+  pipeline: GPURenderPipeline;
+  bindGroup: GPUBindGroup;
+} | null;
+// ---cut---
+const effect = useMemo(
+  () => (device ? createGrayscaleEffect(device) : null),
+  [device],
+);
+
+const onFrame = useCallback(
+  (frame: Frame, render: WebGpuFrameRenderFunction) => {
+    "worklet";
+    if (effect == null) return; // drop frames until the pipeline is ready
+    render((context) => {
+      // 1. Your shader draws the recolored camera into the output.
+      const pass = context.commandEncoder.beginRenderPass({
+        colorAttachments: [
+          { view: context.outputView, loadOp: "clear", storeOp: "store" },
+        ],
+      });
+      pass.setPipeline(effect.pipeline);
+      pass.setBindGroup(0, context.cameraBindGroup!);
+      pass.draw(3);
+      pass.end();
+
+      // 2. The watermark still goes on top, unchanged.
+      if (watermark != null) {
+        const overlay = context.commandEncoder.beginRenderPass({
+          colorAttachments: [
+            { view: context.outputView, loadOp: "load", storeOp: "store" },
+          ],
+        });
+        overlay.setPipeline(watermark.pipeline);
+        overlay.setBindGroup(0, watermark.bindGroup);
+        overlay.draw(4);
+        overlay.end();
+      }
+    });
+  },
+  [effect, watermark],
+);
+
+const { frameOutput, stream } = useVisionCameraWebGpuSource("vision-camera", {
+  width: 720,
+  height: 1280,
+  // Provides a per-frame `cameraBindGroup` in the render context.
+  cameraShaderBindings: effect?.cameraBindings,
+  onFrame,
+});
+```
+
+:::note
+Sampling the full frame stretches the camera when its aspect ratio differs from 720×1280. The [cropping helpers](../how-to/client/custom-sources/webgpu-effects#going-further) in the how-to cover aspect-correct sampling.
+:::
+
+Rebuild one last time: the receiving side shows a grayscale camera with the watermark in full color on top. The watermark pass runs after your shader, so its pixels are drawn as-is.
+
+## Complete example
+
+The final `CameraPublisher` file, top to bottom. `Room` and `App` are unchanged from the [Vision Camera tutorial](./vision-camera#complete-example):
+
+```tsx
+/// <reference types="@webgpu/types" />
+// ---cut---
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Image, Text } from "react-native";
+import tgpu from "typegpu";
+import * as d from "typegpu/data";
+import { dot } from "typegpu/std";
+import { GPUShaderStage, GPUTextureUsage } from "react-native-webgpu";
+import {
+  useCamera as useVisionCamera,
+  useCameraPermission,
+  type Frame,
+} from "react-native-vision-camera";
+import { RTCView } from "@fishjam-cloud/react-native-client";
+import {
+  useVisionCameraWebGpuSource,
+  useCameraWebGpuDevice,
+  createCameraShaderBindings,
+  getOutputSurfaceFormat,
+  type WebGpuFrameRenderFunction,
+} from "@fishjam-cloud/react-native-vision-camera-source/webgpu";
+
+// --- Watermark: a textured quad blended over the camera ---
+
+const watermarkBindingDeclarations = /* wgsl */ `
+@group(0) @binding(0) var watermarkTexture: texture_2d<f32>;
+@group(0) @binding(1) var watermarkSampler: sampler;
+`;
+
+const sampleWatermark = tgpu.fn(
+  [d.vec2f],
+  d.vec4f,
+)(/* wgsl */ `(uv: vec2f) -> vec4f {
+  return textureSample(watermarkTexture, watermarkSampler, uv);
+}`);
+
+function makeWatermarkVertexMain(rect: {
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+}) {
+  const { x0, y0, x1, y1 } = rect;
+  return tgpu
+    .vertexFn({
+      in: { vertexIndex: d.builtin.vertexIndex },
+      out: { position: d.builtin.position, uv: d.location(0, d.vec2f) },
+    })((input) => {
+      const positions = [
+        d.vec2f(x0, y0),
+        d.vec2f(x1, y0),
+        d.vec2f(x0, y1),
+        d.vec2f(x1, y1),
+      ];
+      const uvs = [d.vec2f(0, 1), d.vec2f(1, 1), d.vec2f(0, 0), d.vec2f(1, 0)];
+      const p = positions[input.vertexIndex];
+      return {
+        position: d.vec4f(p.x, p.y, 0, 1),
+        uv: uvs[input.vertexIndex],
+      };
+    })
+    .$name("vertexMain");
+}
+
+const watermarkFragmentMain = tgpu
+  .fragmentFn({
+    in: { uv: d.location(0, d.vec2f) },
+    out: d.vec4f,
+  })((input) => sampleWatermark(input.uv))
+  .$name("fragmentMain");
+
+function createWatermarkPipeline(
+  device: GPUDevice,
+  bitmap: ImageBitmap,
+  outputWidth: number,
+  outputHeight: number,
+) {
+  const texture = device.createTexture({
+    size: [bitmap.width, bitmap.height],
+    format: "rgba8unorm",
+    usage:
+      GPUTextureUsage.TEXTURE_BINDING |
+      GPUTextureUsage.COPY_DST |
+      GPUTextureUsage.RENDER_ATTACHMENT,
+  });
+  device.queue.copyExternalImageToTexture({ source: bitmap }, { texture }, [
+    bitmap.width,
+    bitmap.height,
+  ]);
+
+  const widthPx = outputWidth * 0.4;
+  const heightPx = widthPx * (bitmap.height / bitmap.width);
+  const marginPx = 24;
+  const x1 = 1 - (2 * marginPx) / outputWidth;
+  const x0 = x1 - (2 * widthPx) / outputWidth;
+  const y0 = -1 + (2 * marginPx) / outputHeight;
+  const y1 = y0 + (2 * heightPx) / outputHeight;
+
+  const bindGroupLayout = device.createBindGroupLayout({
+    entries: [
+      { binding: 0, visibility: GPUShaderStage.FRAGMENT, texture: {} },
+      { binding: 1, visibility: GPUShaderStage.FRAGMENT, sampler: {} },
+    ],
+  });
+  const module = device.createShaderModule({
+    code:
+      watermarkBindingDeclarations +
+      tgpu.resolve({
+        externals: {
+          vertexMain: makeWatermarkVertexMain({ x0, y0, x1, y1 }),
+          fragmentMain: watermarkFragmentMain,
+        },
+      }),
+  });
+  const pipeline = device.createRenderPipeline({
+    layout: device.createPipelineLayout({
+      bindGroupLayouts: [bindGroupLayout],
+    }),
+    vertex: { module, entryPoint: "vertexMain" },
+    fragment: {
+      module,
+      entryPoint: "fragmentMain",
+      targets: [
+        {
+          format: getOutputSurfaceFormat(),
+          blend: {
+            color: {
+              srcFactor: "src-alpha",
+              dstFactor: "one-minus-src-alpha",
+              operation: "add",
+            },
+            alpha: {
+              srcFactor: "one",
+              dstFactor: "one-minus-src-alpha",
+              operation: "add",
+            },
+          },
+        },
+      ],
+    },
+    primitive: { topology: "triangle-strip" },
+  });
+  const bindGroup = device.createBindGroup({
+    layout: bindGroupLayout,
+    entries: [
+      { binding: 0, resource: texture.createView() },
+      {
+        binding: 1,
+        resource: device.createSampler({
+          magFilter: "linear",
+          minFilter: "linear",
+        }),
+      },
+    ],
+  });
+  return { pipeline, bindGroup };
+}
+
+// --- Grayscale: your own shader instead of the passthrough ---
+
+const vertexMain = tgpu.vertexFn({
+  in: { vertexIndex: d.builtin.vertexIndex },
+  out: { position: d.builtin.position, uv: d.location(0, d.vec2f) },
+})((input) => {
+  const positions = [d.vec2f(-1, -1), d.vec2f(3, -1), d.vec2f(-1, 3)];
+  const p = positions[input.vertexIndex];
+  return {
+    position: d.vec4f(p.x, p.y, 0, 1),
+    uv: d.vec2f((p.x + 1) * 0.5, 1 - (p.y + 1) * 0.5),
+  };
+});
+
+function createGrayscaleEffect(device: GPUDevice) {
+  const cameraBindings = createCameraShaderBindings(device);
+
+  const fragmentMain = tgpu.fragmentFn({
+    in: { uv: d.location(0, d.vec2f) },
+    out: d.vec4f,
+  })((input) => {
+    const color = cameraBindings.sampleCamera(input.uv);
+    const gray = dot(color.xyz, d.vec3f(0.299, 0.587, 0.114));
+    return d.vec4f(gray, gray, gray, 1);
+  });
+
+  const module = device.createShaderModule({
+    code:
+      cameraBindings.bindingDeclarations +
+      tgpu.resolve({ externals: { vertexMain, fragmentMain } }),
+  });
+  const pipeline = device.createRenderPipeline({
+    layout: device.createPipelineLayout({
+      bindGroupLayouts: [cameraBindings.bindGroupLayout],
+    }),
+    vertex: { module, entryPoint: "vertexMain" },
+    fragment: {
+      module,
+      entryPoint: "fragmentMain",
+      targets: [{ format: getOutputSurfaceFormat() }],
+    },
+  });
+  return { cameraBindings, pipeline };
+}
+
+// --- The publisher ---
+
+export function CameraPublisher() {
+  const { hasPermission, canRequestPermission, requestPermission } =
+    useCameraPermission();
+
+  useEffect(() => {
+    if (!hasPermission && canRequestPermission) {
+      requestPermission();
+    }
+  }, [hasPermission, canRequestPermission, requestPermission]);
+
+  const { device } = useCameraWebGpuDevice();
+
+  const effect = useMemo(
+    () => (device ? createGrayscaleEffect(device) : null),
+    [device],
+  );
+
+  const [watermark, setWatermark] = useState<ReturnType<
+    typeof createWatermarkPipeline
+  > | null>(null);
+
+  useEffect(() => {
+    if (device == null) return;
+    let cancelled = false;
+    const load = async () => {
+      const asset = Image.resolveAssetSource(require("./assets/watermark.png"));
+      const response = await fetch(asset.uri);
+      const bitmap = await createImageBitmap(await response.arrayBuffer());
+      if (!cancelled) {
+        setWatermark(createWatermarkPipeline(device, bitmap, 720, 1280));
+      }
+    };
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [device]);
+
+  const onFrame = useCallback(
+    (frame: Frame, render: WebGpuFrameRenderFunction) => {
+      "worklet";
+      if (effect == null) return; // drop frames until the pipeline is ready
+      render((context) => {
+        const pass = context.commandEncoder.beginRenderPass({
+          colorAttachments: [
+            { view: context.outputView, loadOp: "clear", storeOp: "store" },
+          ],
+        });
+        pass.setPipeline(effect.pipeline);
+        pass.setBindGroup(0, context.cameraBindGroup!);
+        pass.draw(3);
+        pass.end();
+
+        if (watermark != null) {
+          const overlay = context.commandEncoder.beginRenderPass({
+            colorAttachments: [
+              { view: context.outputView, loadOp: "load", storeOp: "store" },
+            ],
+          });
+          overlay.setPipeline(watermark.pipeline);
+          overlay.setBindGroup(0, watermark.bindGroup);
+          overlay.draw(4);
+          overlay.end();
+        }
+      });
+    },
+    [effect, watermark],
+  );
+
+  const { frameOutput, stream } = useVisionCameraWebGpuSource("vision-camera", {
+    width: 720,
+    height: 1280,
+    cameraShaderBindings: effect?.cameraBindings,
+    onFrame,
+  });
+
+  useVisionCamera({
+    device: "front",
+    // The hook owns the GPU queue while frames flow; wait for the upload.
+    isActive: hasPermission && watermark != null,
+    outputs: [frameOutput],
+  });
+
+  if (!stream) return <Text>Starting camera…</Text>;
+  return (
+    <RTCView
+      mediaStream={stream}
+      style={{ height: 300, width: 300 }}
+      objectFit="cover"
+      mirror={true}
+    />
+  );
+}
+```
+
+## Next steps
+
+- See the [WebGPU effects how-to](../how-to/client/custom-sources/webgpu-effects) for the rules inside `onFrame`, platform notes and cropping helpers
+- Produce frames without a camera with the [low-level frame API](../how-to/client/custom-sources/low-level-frame-api)
+- Learn [how custom sources work](../explanation/custom-sources) under the hood
+- API reference: [Vision Camera Source package](../api/vision-camera-source/index.md), [Custom Video Source package](../api/custom-video-source/index.md)

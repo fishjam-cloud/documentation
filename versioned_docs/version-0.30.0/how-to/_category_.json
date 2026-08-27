@@ -1,0 +1,11 @@
+{
+  "label": "How-to Guides",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "title": "How-to Guides",
+    "description": "Practical step-by-step guides to help you achieve a specific goal. Most useful when you're trying to get something done.",
+    "slug": "/how-to"
+  },
+  "collapsible": false
+}
