@@ -148,7 +148,7 @@ composition_client.update_output(
   <TabItem value="curl" label="curl">
 
 ```bash
-curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/update" \
+curl -X POST "https://rtc.fishjam.io/api/composition/$COMPOSITION/output/main/update" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -231,7 +231,7 @@ composition_client.register_image(
   <TabItem value="curl" label="curl">
 
 ```bash
-curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/image/logo/register" \
+curl -X POST "https://rtc.fishjam.io/api/composition/$COMPOSITION/image/logo/register" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{ "asset_type": "auto", "url": "https://example.com/logo.png" }'
@@ -286,7 +286,7 @@ composition_client.register_font("<COMPOSITION_ID>", "./BrandFont.ttf")
   <TabItem value="curl" label="curl">
 
 ```bash
-curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/font/register" \
+curl -X POST "https://rtc.fishjam.io/api/composition/$COMPOSITION/font/register" \
   -H "Authorization: Bearer $TOKEN" \
   -F "font=@BrandFont.ttf"
 ```
