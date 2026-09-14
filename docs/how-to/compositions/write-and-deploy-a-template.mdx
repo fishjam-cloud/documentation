@@ -84,7 +84,6 @@ npm run build
 Now create the composition, as in [Step 1 of the tutorial](./../../tutorials/compositions#step-1-create-a-composition), and the livestream with its streamer token, as in [Step 3](./../../tutorials/compositions#step-3-create-a-livestream-to-publish-to):
 
 ```bash
-export COMPOSITION_URL="https://rtc.fishjam.io"
 export FISHJAM_URL="https://fishjam.io/api/v1/connect/<YOUR_FISHJAM_ID>"
 export TOKEN="<YOUR_MANAGEMENT_TOKEN>"
 export COMPOSITION="<COMPOSITION_ID>"
@@ -92,7 +91,7 @@ export STREAM="<STREAM_ID>"
 export STREAMER_TOKEN="<STREAMER_TOKEN>"
 ```
 
-A templated output is registered in a **single multipart request** to `POST …/output/{output_id}/template`. Do not call the plain `…/register` endpoint first. The request carries two parts:
+A templated output is registered with `registerTemplateOutput` in a **single request**. Do not register a plain output first. The request carries two parts:
 
 - `config`: the same JSON body a regular output registration takes (see [Choose inputs and outputs](./inputs-and-outputs)). Its `video.initial` scene is only a placeholder; the template takes over rendering as soon as it loads.
 - `template`: the built bundle.
@@ -100,6 +99,72 @@ A templated output is registered in a **single multipart request** to `POST …/
 `endpoint_url` is wherever the composed stream should go. The quickest destination to watch is a Fishjam livestream, exactly as in [the tutorial](./../../tutorials/compositions#step-3-create-a-livestream-to-publish-to): create one, take its streamer token, and publish to `https://fishjam.io/api/v1/live/api/whip`.
 
 <Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import {
+  CompositionClient,
+  CompositionId,
+  OutputId,
+} from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken: "" });
+const compositionId = "" as CompositionId;
+const outputId = "" as OutputId;
+const streamerToken = "";
+
+// ---cut---
+await compositionClient.registerTemplateOutput(
+  compositionId,
+  outputId,
+  {
+    type: "whip_client",
+    endpointUrl: "https://fishjam.io/api/v1/live/api/whip",
+    bearerToken: streamerToken,
+    video: {
+      resolution: { width: 1280, height: 720 },
+      initial: { root: { type: "view" } },
+    },
+    audio: { initial: { inputs: [] } },
+  },
+  "dist/App.js",
+);
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+from fishjam.composition import (
+    AudioScene,
+    OutputWhipAudioOptions,
+    OutputWhipVideoOptions,
+    Resolution,
+    VideoScene,
+    View,
+    ViewType,
+    WhipOutput,
+    WhipOutputType,
+)
+
+composition_client.register_template_output(
+    composition_id,
+    "main",
+    WhipOutput(
+        type_=WhipOutputType.WHIP_CLIENT,
+        endpoint_url="https://fishjam.io/api/v1/live/api/whip",
+        bearer_token=streamer_token,
+        video=OutputWhipVideoOptions(
+            resolution=Resolution(width=1280, height=720),
+            initial=VideoScene(root=View(type_=ViewType.VIEW)),
+        ),
+        audio=OutputWhipAudioOptions(initial=AudioScene(inputs=[])),
+    ),
+    "dist/App.js",
+)
+```
+
+  </TabItem>
   <TabItem value="curl" label="curl">
 
 ```bash
@@ -117,39 +182,10 @@ CONFIG=$(cat <<EOF
 EOF
 )
 
-curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/template" \
+curl -X POST "https://rtc.fishjam.io/api/composition/$COMPOSITION/output/main/template" \
   -H "Authorization: Bearer $TOKEN" \
   -F "config=$CONFIG;type=application/json" \
   -F "template=@dist/App.js"
-```
-
-  </TabItem>
-  <TabItem value="js" label="JavaScript">
-
-```js
-const config = {
-  type: "whip_client",
-  endpoint_url: "https://fishjam.io/api/v1/live/api/whip",
-  bearer_token: streamerToken,
-  video: {
-    resolution: { width: 1280, height: 720 },
-    initial: { root: { type: "view" } },
-  },
-  audio: { initial: { inputs: [] } },
-};
-
-const form = new FormData();
-form.append("config", JSON.stringify(config));
-form.append("template", new Blob([bundle]), "App.js");
-
-await fetch(
-  `${COMPOSITION_URL}/api/composition/${composition}/output/main/template`,
-  {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-    body: form,
-  },
-);
 ```
 
   </TabItem>
@@ -159,12 +195,43 @@ await fetch(
 
 Unregister the output first, then deploy again:
 
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import {
+  CompositionClient,
+  CompositionId,
+  OutputId,
+} from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken: "" });
+const compositionId = "" as CompositionId;
+const outputId = "" as OutputId;
+
+// ---cut---
+await compositionClient.unregisterOutput(compositionId, outputId);
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+composition_client.unregister_output(composition_id, "main")
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
 ```bash
-curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/unregister" \
+curl -X POST "https://rtc.fishjam.io/api/composition/$COMPOSITION/output/main/unregister" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
+
+  </TabItem>
+</Tabs>
 
 Rebuild with `npm run build` and repeat the deploy request. The inputs stay registered, so only the layout changes.
 
@@ -172,13 +239,48 @@ Rebuild with `npm run build` and repeat the deploy request. The inputs stay regi
 
 Deleting the composition removes its inputs and outputs with it, so a finished experiment takes two calls:
 
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import {
+  CompositionClient,
+  CompositionId,
+  FishjamClient,
+  RoomId,
+} from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken: "" });
+const fishjamClient = new FishjamClient({ fishjamId: "", managementToken: "" });
+const compositionId = "" as CompositionId;
+const roomId = "" as RoomId;
+
+// ---cut---
+await compositionClient.deleteComposition(compositionId);
+await fishjamClient.deleteRoom(roomId);
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+composition_client.delete_composition(composition_id)
+fishjam_client.delete_room(room_id)
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
 ```bash
-curl -X DELETE "$COMPOSITION_URL/api/composition/$COMPOSITION" \
+curl -X DELETE "https://rtc.fishjam.io/api/composition/$COMPOSITION" \
   -H "Authorization: Bearer $TOKEN"
 
 curl -X DELETE "$FISHJAM_URL/livestream/$STREAM" \
   -H "Authorization: Bearer $TOKEN"
 ```
+
+  </TabItem>
+</Tabs>
 
 ## Next steps
 
