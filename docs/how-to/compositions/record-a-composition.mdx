@@ -24,21 +24,107 @@ composition ──output──▶ livestream / RTMP ──▶ [viewers]
 A running composition with its inputs registered, a livestream for it to publish to, and the livestream's streamer token. The [tutorial](./../../tutorials/compositions) sets these up in Steps 1 to 3; stop before Step 4, which registers the same output as Step 1 below.
 
 ```bash
-export COMPOSITION_URL="https://rtc.fishjam.io"
 export FISHJAM_URL="https://fishjam.io/api/v1/connect/<YOUR_FISHJAM_ID>"
 export TOKEN="<YOUR_MANAGEMENT_TOKEN>"
 export COMPOSITION="<COMPOSITION_ID>"
 export STREAMER_TOKEN="<STREAMER_TOKEN>"
 ```
 
-Step 1 uses the Composition API. Every recording call from Step 2 onwards is also available as a method on the `FishjamClient` of the [JS and Python server SDKs](./../backend/server-setup), shown in the language tabs.
+Step 1 uses the `CompositionClient`; every recording call from Step 2 onwards is a method on the `FishjamClient` of the [JS and Python server SDKs](./../backend/server-setup). Both are shown in the language tabs.
 
 ## Step 1: Register the output to record
 
 A recording attaches to an output, so the composition must first have an output whose scene will be recorded. Register it like any other output. Every output publishes to a destination, so the output you record is also a live stream: in this example, `main` publishes to your livestream over WHIP, with the tutorial's two inputs side by side.
 
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import {
+  CompositionClient,
+  CompositionId,
+  FishjamClient,
+  InputId,
+  OutputId,
+} from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken: "" });
+const fishjamClient = new FishjamClient({ fishjamId: "", managementToken: "" });
+const compositionId = "" as CompositionId;
+const outputId = "" as OutputId;
+const streamerToken = "";
+const race = "race" as InputId;
+const player = "player" as InputId;
+
+// ---cut---
+await compositionClient.registerWhipOutput(compositionId, outputId, {
+  endpointUrl: fishjamClient.livestreamWhipUrl(),
+  bearerToken: streamerToken,
+  video: {
+    resolution: { width: 1280, height: 720 },
+    initial: {
+      root: {
+        type: "tiles",
+        children: [
+          { type: "input_stream", inputId: race },
+          { type: "input_stream", inputId: player },
+        ],
+      },
+    },
+  },
+  audio: { initial: { inputs: [{ inputId: player }] } },
+});
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+from fishjam.composition import (
+    AudioScene,
+    AudioSceneInput,
+    InputStream,
+    InputStreamType,
+    OutputWhipAudioOptions,
+    OutputWhipVideoOptions,
+    Resolution,
+    Tiles,
+    TilesType,
+    VideoScene,
+)
+
+composition_client.register_whip_output(
+    composition_id,
+    "main",
+    endpoint_url=fishjam_client.livestream_whip_url(),
+    bearer_token=streamer_token,
+    video=OutputWhipVideoOptions(
+        resolution=Resolution(width=1280, height=720),
+        initial=VideoScene(
+            root=Tiles(
+                type_=TilesType.TILES,
+                children=[
+                    InputStream(
+                        type_=InputStreamType.INPUT_STREAM, input_id="race"
+                    ),
+                    InputStream(
+                        type_=InputStreamType.INPUT_STREAM, input_id="player"
+                    ),
+                ],
+            )
+        ),
+    ),
+    audio=OutputWhipAudioOptions(
+        initial=AudioScene(inputs=[AudioSceneInput(input_id="player")])
+    ),
+)
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
 ```bash
-curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/register" \
+curl -X POST "https://rtc.fishjam.io/api/composition/$COMPOSITION/output/main/register" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d @- <<EOF
@@ -63,6 +149,9 @@ curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/register
 EOF
 ```
 
+  </TabItem>
+</Tabs>
+
 The recording captures this scene and every subsequent update sent to `main`. If your composition already has the output you want to record, for example the templated output from [Compose a Fishjam room](./compose-a-fishjam-room), skip to Step 2. See [Choose inputs and outputs](./inputs-and-outputs) for the other output types.
 
 ## Step 2: Start the recording
@@ -70,28 +159,6 @@ The recording captures this scene and every subsequent update sent to `main`. If
 Specify the composition and the output from Step 1 in `source`:
 
 <Tabs groupId="language">
-  <TabItem value="curl" label="curl">
-
-```bash
-curl -X POST "$FISHJAM_URL/recordings" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d "{
-    \"source\": {
-      \"compositionURL\": \"$COMPOSITION_URL/api/composition/$COMPOSITION\",
-      \"outputId\": \"main\"
-    },
-    \"metadata\": { \"show\": \"weekly-standup\" }
-  }"
-```
-
-The response returns the recording with status `active`; capture has already started. Save its id from `data.id`:
-
-```bash
-export RECORDING="<RECORDING_ID>"
-```
-
-  </TabItem>
   <TabItem value="ts" label="Typescript">
 
 ```ts
@@ -139,6 +206,28 @@ recording = fishjam_client.create_recording(
 The response returns the recording with status `active`; capture has already started.
 
   </TabItem>
+  <TabItem value="curl" label="curl">
+
+```bash
+curl -X POST "$FISHJAM_URL/recordings" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"source\": {
+      \"compositionURL\": \"https://rtc.fishjam.io/api/composition/$COMPOSITION\",
+      \"outputId\": \"main\"
+    },
+    \"metadata\": { \"show\": \"weekly-standup\" }
+  }"
+```
+
+The response returns the recording with status `active`; capture has already started. Save its id from `data.id`:
+
+```bash
+export RECORDING="<RECORDING_ID>"
+```
+
+  </TabItem>
 </Tabs>
 
 Note the following:
@@ -150,14 +239,6 @@ Note the following:
 ## Step 3: Check the status
 
 <Tabs groupId="language">
-  <TabItem value="curl" label="curl">
-
-```bash
-curl "$FISHJAM_URL/recordings/$RECORDING" \
-  -H "Authorization: Bearer $TOKEN"
-```
-
-  </TabItem>
   <TabItem value="ts" label="Typescript">
 
 ```ts
@@ -180,6 +261,14 @@ status = fishjam_client.get_recording(recording.id).status
 ```
 
   </TabItem>
+  <TabItem value="curl" label="curl">
+
+```bash
+curl "$FISHJAM_URL/recordings/$RECORDING" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+  </TabItem>
 </Tabs>
 
 A recording has four statuses:
@@ -196,14 +285,6 @@ Instead of polling, you can subscribe to [server notifications](./../../api/refe
 ## Step 4: Stop the recording
 
 <Tabs groupId="language">
-  <TabItem value="curl" label="curl">
-
-```bash
-curl -X POST "$FISHJAM_URL/recordings/$RECORDING/stop" \
-  -H "Authorization: Bearer $TOKEN"
-```
-
-  </TabItem>
   <TabItem value="ts" label="Typescript">
 
 ```ts
@@ -223,6 +304,14 @@ await fishjamClient.stopRecording(recording.id);
 
 ```python
 fishjam_client.stop_recording(recording.id)
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
+```bash
+curl -X POST "$FISHJAM_URL/recordings/$RECORDING/stop" \
+  -H "Authorization: Bearer $TOKEN"
 ```
 
   </TabItem>
@@ -255,16 +344,6 @@ You can download the file or serve the URL to your users directly. Until the rec
 `GET /recordings` lists every recording in your app and accepts filters on status and metadata. A metadata filter matches recordings whose metadata contains all of the given pairs. Values are compared as strings, so numeric and boolean metadata values cannot be matched this way.
 
 <Tabs groupId="language">
-  <TabItem value="curl" label="curl">
-
-```bash
-curl -g "$FISHJAM_URL/recordings?status=available&metadata[show]=weekly-standup" \
-  -H "Authorization: Bearer $TOKEN"
-```
-
-The `-g` flag prevents curl from interpreting the square brackets.
-
-  </TabItem>
   <TabItem value="ts" label="Typescript">
 
 ```ts
@@ -288,6 +367,16 @@ recordings = fishjam_client.get_all_recordings({"show": "weekly-standup"})
 ```
 
   </TabItem>
+  <TabItem value="curl" label="curl">
+
+```bash
+curl -g "$FISHJAM_URL/recordings?status=available&metadata[show]=weekly-standup" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The `-g` flag prevents curl from interpreting the square brackets.
+
+  </TabItem>
 </Tabs>
 
 The SDK methods filter by metadata only. To filter by status as well, call the REST endpoint directly.
@@ -297,14 +386,6 @@ The SDK methods filter by metadata only. To filter by status as well, call the R
 Recordings persist independently of the composition until you delete them. Deleting a recording also removes its files:
 
 <Tabs groupId="language">
-  <TabItem value="curl" label="curl">
-
-```bash
-curl -X DELETE "$FISHJAM_URL/recordings/$RECORDING" \
-  -H "Authorization: Bearer $TOKEN"
-```
-
-  </TabItem>
   <TabItem value="ts" label="Typescript">
 
 ```ts
@@ -324,6 +405,14 @@ await fishjamClient.deleteRecording(recording.id);
 
 ```python
 fishjam_client.delete_recording(recording.id)
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
+```bash
+curl -X DELETE "$FISHJAM_URL/recordings/$RECORDING" \
+  -H "Authorization: Bearer $TOKEN"
 ```
 
   </TabItem>
