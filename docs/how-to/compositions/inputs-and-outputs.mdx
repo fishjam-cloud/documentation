@@ -13,14 +13,14 @@ A composition pulls media in through **inputs** and pushes the composed result o
 
 ## Inputs
 
-Register an input with `POST /api/composition/{composition_id}/input/{input_id}/register` and a body whose `type` is one of:
+Register an input with the method for its protocol:
 
-| `type`        | Use it when                                                           | Key fields                                                                                        |
-| ------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `whip_server` | A WebRTC client should publish **to** the composition.                | `bearer_token` (optional; generated and returned if omitted), `video` (optional, default `true`). |
-| `whep_client` | The composition should **pull** a WebRTC stream from a WHEP endpoint. | `endpoint_url` (required), `bearer_token` (optional), `video` (optional).                         |
-| `rtmp_server` | An encoder (OBS, hardware) should push RTMP in.                       | `stream_key` (required).                                                                          |
-| `mp4`         | You want to compose a file, optionally looped.                        | `url` (required), `loop` (optional).                                                              |
+| SDK method          | `type`        | Use it when                                                           | Key fields                                                                                        |
+| ------------------- | ------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `registerWhipInput` | `whip_server` | A WebRTC client should publish **to** the composition.                | `bearer_token` (optional; generated and returned if omitted), `video` (optional, default `true`). |
+| `registerWhepInput` | `whep_client` | The composition should **pull** a WebRTC stream from a WHEP endpoint. | `endpoint_url` (required), `bearer_token` (optional), `video` (optional).                         |
+| `registerRtmpInput` | `rtmp_server` | An encoder (OBS, hardware) should push RTMP in.                       | `stream_key` (required).                                                                          |
+| `registerMp4Input`  | `mp4`         | You want to compose a file, optionally looped.                        | `url` (required), `loop` (optional).                                                              |
 
 For `whip_server`, the register response returns the `bearer_token` a publisher uses to authenticate against the input's WHIP endpoint, together with the route to push to:
 
@@ -32,16 +32,16 @@ That token is the only one accepted on the publish endpoint. Your Management Tok
 
 `endpoint_route` is relative to the composition, so the full address is `https://rtc.fishjam.io/api/composition/<YOUR_COMPOSITION_ID>/whip/<YOUR_INPUT_ID>`. Point any WHIP publisher there and authenticate with that token. A `whip_server` input takes WebRTC from anything that speaks WHIP: a phone's camera, a laptop webcam, a browser tab, a screen share, or a hardware encoder. OBS has WHIP output built in.
 
-Unregister any input with `POST …/input/{input_id}/unregister`.
+Unregister any input with `unregisterInput`.
 
 ## Outputs
 
-Register an output with `POST /api/composition/{composition_id}/output/{output_id}/register` and a body whose `type` is one of:
+Register an output with the method for its protocol:
 
-| `type`        | Use it when                                                                    | Key fields                                                              |
-| ------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
-| `whip_client` | Publish the composed result over WebRTC (for example to a Fishjam livestream). | `endpoint_url` (required), `bearer_token` (optional), `video`, `audio`. |
-| `rtmp_client` | Publish to an RTMP destination (for example a social platform).                | `url` (required), `video`, `audio`.                                     |
+| SDK method           | `type`        | Use it when                                                                    | Key fields                                                              |
+| -------------------- | ------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| `registerWhipOutput` | `whip_client` | Publish the composed result over WebRTC (for example to a Fishjam livestream). | `endpoint_url` (required), `bearer_token` (optional), `video`, `audio`. |
+| `registerRtmpOutput` | `rtmp_client` | Publish to an RTMP destination (for example a social platform).                | `url` (required), `video`, `audio`.                                     |
 
 There is no URL you can point a player at to watch a composition. An output **pushes** the composed video to a destination you name when you register it, and your viewers connect to that destination's own playback URL:
 
@@ -68,34 +68,36 @@ An output's `video` carries the resolution and initial [scene](./../../explanati
 
 Other output operations:
 
-- **Register a templated output** with `POST …/output/{output_id}/template` instead of `…/register`: a multipart request carrying the same configuration plus a template bundle (see [Write and deploy a template](./write-and-deploy-a-template)).
-- **Update the scene** live with `POST …/output/{output_id}/update` (see [Update a scene](#update-a-scene) below).
-- **Force a keyframe** with `POST …/output/{output_id}/request_keyframe`, useful when a new subscriber joins.
-- **Unregister** with `POST …/output/{output_id}/unregister`.
+- **Register a templated output** with `registerTemplateOutput` instead: it carries the same configuration plus a template bundle (see [Write and deploy a template](./write-and-deploy-a-template)).
+- **Update the scene** live with `updateOutput` (see [Update a scene](#update-a-scene) below).
+- **Force a keyframe** with `requestKeyframe`, useful when a new subscriber joins.
+- **Unregister** with `unregisterOutput`.
 - **Record** any output into an MP4 through the Fishjam Server API (see [Record a composition](./record-a-composition)).
 
 ## Update a scene
 
-Replace an output's [scene](./../../explanation/compositions#scenes) while the composition is running with `POST …/output/{output_id}/update`:
+Replace an output's [scene](./../../explanation/compositions#scenes) while the composition is running:
 
 <Tabs groupId="language">
   <TabItem value="ts" label="Typescript">
 
 ```ts
 import {
-  CompositionClient,
   CompositionId,
   OutputId,
   RendererId,
 } from "@fishjam-cloud/js-server-sdk";
 
-const compositionClient = new CompositionClient({
-  managementToken: process.env.MANAGEMENT_TOKEN!,
-});
+const managementToken = "";
 const compositionId = "" as CompositionId;
 const outputId = "" as OutputId;
 const rendererId = "" as RendererId;
+
 // ---cut---
+import { CompositionClient } from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken });
+
 await compositionClient.updateOutput(compositionId, outputId, {
   video: {
     root: {
@@ -111,8 +113,6 @@ await compositionClient.updateOutput(compositionId, outputId, {
   <TabItem value="python" label="Python">
 
 ```python
-import os
-
 from fishjam import CompositionClient
 from fishjam.composition import (
     AudioScene,
@@ -125,9 +125,7 @@ from fishjam.composition import (
     VideoScene,
 )
 
-composition_client = CompositionClient(
-    management_token=os.environ["MANAGEMENT_TOKEN"],
-)
+composition_client = CompositionClient(management_token=management_token)
 
 composition_client.update_output(
     "<COMPOSITION_ID>",
@@ -185,26 +183,28 @@ Renderers are shared assets you register once and then place in any scene.
 
 ### Images
 
-Register an image with `POST …/image/{image_id}/register`:
+Register an image with `registerImage`:
 
 <Tabs groupId="language">
   <TabItem value="ts" label="Typescript">
 
 ```ts
 import {
-  CompositionClient,
   CompositionId,
   OutputId,
   RendererId,
 } from "@fishjam-cloud/js-server-sdk";
 
-const compositionClient = new CompositionClient({
-  managementToken: process.env.MANAGEMENT_TOKEN!,
-});
+const managementToken = "";
 const compositionId = "" as CompositionId;
 const outputId = "" as OutputId;
 const rendererId = "" as RendererId;
+
 // ---cut---
+import { CompositionClient } from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken });
+
 await compositionClient.registerImage(compositionId, rendererId, {
   assetType: "auto",
   url: "https://example.com/logo.png",
@@ -246,7 +246,7 @@ curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/image/logo/register"
 { "type": "image", "image_id": "logo" }
 ```
 
-Unregister with `POST …/image/{image_id}/unregister`.
+Unregister with `unregisterImage`.
 
 ### Fonts
 
@@ -257,19 +257,21 @@ Register a font with a multipart request carrying the font file in a single `fon
 
 ```ts
 import {
-  CompositionClient,
   CompositionId,
   OutputId,
   RendererId,
 } from "@fishjam-cloud/js-server-sdk";
 
-const compositionClient = new CompositionClient({
-  managementToken: process.env.MANAGEMENT_TOKEN!,
-});
+const managementToken = "";
 const compositionId = "" as CompositionId;
 const outputId = "" as OutputId;
 const rendererId = "" as RendererId;
+
 // ---cut---
+import { CompositionClient } from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken });
+
 await compositionClient.registerFont(compositionId, "./BrandFont.ttf");
 ```
 
