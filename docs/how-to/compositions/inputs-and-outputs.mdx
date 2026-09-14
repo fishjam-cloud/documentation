@@ -4,6 +4,9 @@ sidebar_position: 4
 description: Choose the right input and output protocols for a composition, from WebRTC to RTMP and MP4.
 ---
 
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
 # Choose inputs and outputs
 
 A composition pulls media in through **inputs** and pushes the composed result out through **outputs**. Each is a tagged object whose `type` selects the protocol. This guide summarizes the available types and when to use each.
@@ -75,6 +78,77 @@ Other output operations:
 
 Replace an output's [scene](./../../explanation/compositions#scenes) while the composition is running with `POST …/output/{output_id}/update`:
 
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import {
+  CompositionClient,
+  CompositionId,
+  OutputId,
+  RendererId,
+} from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({
+  managementToken: process.env.MANAGEMENT_TOKEN!,
+});
+const compositionId = "" as CompositionId;
+const outputId = "" as OutputId;
+const rendererId = "" as RendererId;
+// ---cut---
+await compositionClient.updateOutput(compositionId, outputId, {
+  video: {
+    root: {
+      type: "rescaler",
+      child: { type: "input_stream", inputId: "camera_1" },
+    },
+  },
+  audio: { inputs: [{ inputId: "camera_1" }] },
+});
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+import os
+
+from fishjam import CompositionClient
+from fishjam.composition import (
+    AudioScene,
+    AudioSceneInput,
+    InputStream,
+    InputStreamType,
+    Rescaler,
+    RescalerType,
+    UpdateOutputRequest,
+    VideoScene,
+)
+
+composition_client = CompositionClient(
+    management_token=os.environ["MANAGEMENT_TOKEN"],
+)
+
+composition_client.update_output(
+    "<COMPOSITION_ID>",
+    "main",
+    UpdateOutputRequest(
+        video=VideoScene(
+            root=Rescaler(
+                type_=RescalerType.RESCALER,
+                child=InputStream(
+                    type_=InputStreamType.INPUT_STREAM, input_id="camera_1"
+                ),
+            )
+        ),
+        audio=AudioScene(inputs=[AudioSceneInput(input_id="camera_1")]),
+    ),
+)
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
 ```bash
 curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/update" \
   -H "Authorization: Bearer $TOKEN" \
@@ -89,6 +163,9 @@ curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/update" 
     "audio": { "inputs": [{ "input_id": "camera_1" }] }
   }'
 ```
+
+  </TabItem>
+</Tabs>
 
 An update has to mirror the sides the output was registered with. If you registered the output with both `video` and `audio`, every update must carry both, even when only one of them changed. If you registered only one of them, the update may only carry that one. Sending a mismatched update fails.
 
@@ -110,12 +187,58 @@ Renderers are shared assets you register once and then place in any scene.
 
 Register an image with `POST …/image/{image_id}/register`:
 
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import {
+  CompositionClient,
+  CompositionId,
+  OutputId,
+  RendererId,
+} from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({
+  managementToken: process.env.MANAGEMENT_TOKEN!,
+});
+const compositionId = "" as CompositionId;
+const outputId = "" as OutputId;
+const rendererId = "" as RendererId;
+// ---cut---
+await compositionClient.registerImage(compositionId, rendererId, {
+  assetType: "auto",
+  url: "https://example.com/logo.png",
+});
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+from fishjam.composition import ImageSpecAuto, ImageSpecAutoAssetType
+
+composition_client.register_image(
+    "<COMPOSITION_ID>",
+    "logo",
+    ImageSpecAuto(
+        asset_type=ImageSpecAutoAssetType.AUTO,
+        url="https://example.com/logo.png",
+    ),
+)
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
 ```bash
 curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/image/logo/register" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{ "asset_type": "auto", "url": "https://example.com/logo.png" }'
 ```
+
+  </TabItem>
+</Tabs>
 
 `asset_type` selects the format: `png`, `jpeg`, `svg`, `gif`, or `auto` to detect it from the URL. Each takes a `url`; `svg` also accepts a `resolution`. Place the image in a scene with an `image` component:
 
@@ -129,11 +252,45 @@ Unregister with `POST …/image/{image_id}/unregister`.
 
 Register a font with a multipart request carrying the font file in a single `font` part:
 
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import {
+  CompositionClient,
+  CompositionId,
+  OutputId,
+  RendererId,
+} from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({
+  managementToken: process.env.MANAGEMENT_TOKEN!,
+});
+const compositionId = "" as CompositionId;
+const outputId = "" as OutputId;
+const rendererId = "" as RendererId;
+// ---cut---
+await compositionClient.registerFont(compositionId, "./BrandFont.ttf");
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+composition_client.register_font("<COMPOSITION_ID>", "./BrandFont.ttf")
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
 ```bash
 curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/font/register" \
   -H "Authorization: Bearer $TOKEN" \
   -F "font=@BrandFont.ttf"
 ```
+
+  </TabItem>
+</Tabs>
 
 The font is then available to `text` components.
 
