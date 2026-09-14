@@ -62,11 +62,12 @@ By default a composition auto-starts, and cleans itself up after five minutes in
   <TabItem value="ts" label="Typescript">
 
 ```ts
+const managementToken = "";
+
+// ---cut---
 import { CompositionClient } from "@fishjam-cloud/js-server-sdk";
 
-const compositionClient = new CompositionClient({
-  managementToken: process.env.MANAGEMENT_TOKEN!,
-});
+const compositionClient = new CompositionClient({ managementToken });
 
 const { compositionId } = await compositionClient.createComposition();
 ```
@@ -75,13 +76,9 @@ const { compositionId } = await compositionClient.createComposition();
   <TabItem value="python" label="Python">
 
 ```python
-import os
-
 from fishjam import CompositionClient
 
-composition_client = CompositionClient(
-    management_token=os.environ["MANAGEMENT_TOKEN"],
-)
+composition_client = CompositionClient(management_token=management_token)
 
 composition = composition_client.create_composition()
 composition_id = composition.composition_id
@@ -510,8 +507,8 @@ await fishjamClient.deleteRoom(streamId);
 from fishjam import FishjamClient
 
 fishjam_client = FishjamClient(
-    fishjam_id=os.environ["FISHJAM_ID"],
-    management_token=os.environ["MANAGEMENT_TOKEN"],
+    fishjam_id=fishjam_id,
+    management_token=management_token,
 )
 
 composition_client.delete_composition(composition_id)
