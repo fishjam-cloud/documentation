@@ -5,6 +5,9 @@ sidebar_position: 4.5
 description: Understand compositions, the Fishjam feature that mixes multiple live media streams into a single composed output in real time.
 ---
 
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
 # Compositions
 
 _Understanding real-time stream composition in Fishjam_
@@ -42,10 +45,36 @@ Two defaults keep that in check. A composition auto-starts, and it cleans itself
 
 Delete a composition as soon as you are done with it:
 
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { CompositionClient, CompositionId } from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken: "" });
+const compositionId = "" as CompositionId;
+
+// ---cut---
+await compositionClient.deleteComposition(compositionId);
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+composition_client.delete_composition(composition_id)
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
 ```bash
-curl -X DELETE "$COMPOSITION_URL/api/composition/$COMPOSITION" \
+curl -X DELETE "https://rtc.fishjam.io/api/composition/$COMPOSITION" \
   -H "Authorization: Bearer $TOKEN"
 ```
+
+  </TabItem>
+</Tabs>
 
 ## Recordings
 

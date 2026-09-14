@@ -5,6 +5,8 @@ sidebar_position: 3.5
 description: Create your first composition end to end, overlaying one video on another and watching the composed result in your browser.
 ---
 
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 
 # Compositions
@@ -47,7 +49,6 @@ The composed frame puts the race full-screen with the player in a small overlay 
 The [Composition API](../api/reference#compositions) lives on `https://rtc.fishjam.io` and takes your Management Token. The livestream you will publish to comes from the [Sandbox API](../explanation/sandbox-api-concept), which has its own URL and needs no token at all:
 
 ```bash
-export COMPOSITION_URL="https://rtc.fishjam.io"
 export FISHJAM_URL="https://fishjam.io/api/v1/connect/<YOUR_FISHJAM_ID>"
 export SANDBOX_URL="<YOUR_SANDBOX_API_URL>"
 export TOKEN="<YOUR_MANAGEMENT_TOKEN>"
@@ -55,8 +56,39 @@ export TOKEN="<YOUR_MANAGEMENT_TOKEN>"
 
 ## Step 1: Create a composition
 
+By default a composition auto-starts, and cleans itself up after five minutes in which none of its inputs carry any media.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+const managementToken = "";
+
+// ---cut---
+import { CompositionClient } from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken });
+
+const { compositionId } = await compositionClient.createComposition();
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+from fishjam import CompositionClient
+
+composition_client = CompositionClient(management_token=management_token)
+
+composition = composition_client.create_composition()
+composition_id = composition.composition_id
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
 ```bash
-curl -X POST "$COMPOSITION_URL/api/composition" \
+curl -X POST "https://rtc.fishjam.io/api/composition" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
@@ -68,18 +100,68 @@ The response contains the `composition_id` you will use for every subsequent cal
 { "composition_id": "abc123", "api_url": "https://rtc.fishjam.io" }
 ```
 
-By default a composition auto-starts, and cleans itself up after five minutes in which none of its inputs carry any media. Save the id:
+Save the id:
 
 ```bash
 export COMPOSITION="abc123"
 ```
 
+  </TabItem>
+</Tabs>
+
 ## Step 2: Register two inputs
 
 Register two `mp4` inputs, looping so they never run dry. The composition downloads them itself, so there is nothing to publish:
 
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import {
+  CompositionClient,
+  CompositionId,
+  InputId,
+} from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken: "" });
+const compositionId = "" as CompositionId;
+
+// ---cut---
+await compositionClient.registerMp4Input(compositionId, "race" as InputId, {
+  url: "https://smelter.dev/videos/template-scene-race.mp4",
+  loop: true,
+});
+
+await compositionClient.registerMp4Input(compositionId, "player" as InputId, {
+  url: "https://smelter.dev/videos/template-scene-streamer.mp4",
+  loop: true,
+});
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+composition_client.register_mp4_input(
+    composition_id,
+    "race",
+    url="https://smelter.dev/videos/template-scene-race.mp4",
+    loop=True,
+)
+
+composition_client.register_mp4_input(
+    composition_id,
+    "player",
+    url="https://smelter.dev/videos/template-scene-streamer.mp4",
+    loop=True,
+)
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
 ```bash
-curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/input/race/register" \
+curl -X POST "https://rtc.fishjam.io/api/composition/$COMPOSITION/input/race/register" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -88,7 +170,7 @@ curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/input/race/register"
     "loop": true
   }'
 
-curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/input/player/register" \
+curl -X POST "https://rtc.fishjam.io/api/composition/$COMPOSITION/input/player/register" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -97,6 +179,9 @@ curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/input/player/registe
     "loop": true
   }'
 ```
+
+  </TabItem>
+</Tabs>
 
 The names `race` and `player` are the `input_id`s you will refer to from the layout in Step 4. The scene only ever refers to inputs by id, so what sits behind an id is interchangeable: register `whip_server` instead of `mp4` to take a live camera, phone, or OBS feed here, or forward a whole [Fishjam room](../how-to/compositions/compose-a-fishjam-room) in. See [Choose inputs and outputs](../how-to/compositions/inputs-and-outputs) for every input type.
 
@@ -138,8 +223,116 @@ Register a `whip_client` output that publishes to the livestream's WHIP endpoint
 The output connects to `endpoint_url` while it is being registered, so the endpoint has to be reachable already. That is why the livestream comes first. Registering against a URL that does not accept the connection fails.
 :::
 
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import {
+  CompositionClient,
+  CompositionId,
+  InputId,
+  OutputId,
+} from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken: "" });
+const compositionId = "" as CompositionId;
+const streamerToken = "";
+const race = "race" as InputId;
+const player = "player" as InputId;
+
+// ---cut---
+await compositionClient.registerWhipOutput(compositionId, "main" as OutputId, {
+  endpointUrl: "https://fishjam.io/api/v1/live/api/whip",
+  bearerToken: streamerToken,
+  video: {
+    resolution: { width: 1280, height: 720 },
+    initial: {
+      root: {
+        type: "view",
+        children: [
+          { type: "rescaler", child: { type: "input_stream", inputId: race } },
+          {
+            type: "rescaler",
+            top: 20,
+            left: 20,
+            width: 355,
+            height: 200,
+            borderRadius: 44,
+            mode: "fill",
+            child: { type: "input_stream", inputId: player },
+          },
+        ],
+      },
+    },
+  },
+  audio: { initial: { inputs: [{ inputId: player }] } },
+});
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+from fishjam.composition import (
+    AudioScene,
+    AudioSceneInput,
+    InputStream,
+    InputStreamType,
+    OutputWhipAudioOptions,
+    OutputWhipVideoOptions,
+    RescaleMode,
+    Rescaler,
+    RescalerType,
+    Resolution,
+    VideoScene,
+    View,
+    ViewType,
+)
+
+composition_client.register_whip_output(
+    composition_id,
+    "main",
+    endpoint_url="https://fishjam.io/api/v1/live/api/whip",
+    bearer_token=streamer_token,
+    video=OutputWhipVideoOptions(
+        resolution=Resolution(width=1280, height=720),
+        initial=VideoScene(
+            root=View(
+                type_=ViewType.VIEW,
+                children=[
+                    Rescaler(
+                        type_=RescalerType.RESCALER,
+                        child=InputStream(
+                            type_=InputStreamType.INPUT_STREAM, input_id="race"
+                        ),
+                    ),
+                    Rescaler(
+                        type_=RescalerType.RESCALER,
+                        top=20,
+                        left=20,
+                        width=355,
+                        height=200,
+                        border_radius=44,
+                        mode=RescaleMode.FILL,
+                        child=InputStream(
+                            type_=InputStreamType.INPUT_STREAM, input_id="player"
+                        ),
+                    ),
+                ],
+            )
+        ),
+    ),
+    audio=OutputWhipAudioOptions(
+        initial=AudioScene(inputs=[AudioSceneInput(input_id="player")])
+    ),
+)
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
 ```bash
-curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/register" \
+curl -X POST "https://rtc.fishjam.io/api/composition/$COMPOSITION/output/main/register" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d @- <<EOF
@@ -176,6 +369,9 @@ curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/register
 EOF
 ```
 
+  </TabItem>
+</Tabs>
+
 The scene is a tree of components. A `view` stacks its children in order, so the second `rescaler` draws on top of the first. Giving that second one `top` and `left` positions it in the corner instead of filling the frame, and `mode: "fill"` makes the video cover its box rather than letter-boxing inside it. See [Scenes](../explanation/compositions#scenes) for how scenes work and what each component does.
 
 ## Step 5: Watch it
@@ -190,8 +386,70 @@ You should see the race running.
 
 A scene is not fixed once the output is registered. Leave the player watching and swap the corner overlay for a side-by-side grid:
 
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import {
+  CompositionClient,
+  CompositionId,
+  InputId,
+  OutputId,
+} from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken: "" });
+const compositionId = "" as CompositionId;
+const race = "race" as InputId;
+const player = "player" as InputId;
+
+// ---cut---
+await compositionClient.updateOutput(compositionId, "main" as OutputId, {
+  video: {
+    root: {
+      type: "tiles",
+      children: [
+        { type: "input_stream", inputId: race },
+        { type: "input_stream", inputId: player },
+      ],
+    },
+  },
+  audio: { inputs: [{ inputId: player }] },
+});
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+from fishjam.composition import Tiles, TilesType, UpdateOutputRequest
+
+composition_client.update_output(
+    composition_id,
+    "main",
+    UpdateOutputRequest(
+        video=VideoScene(
+            root=Tiles(
+                type_=TilesType.TILES,
+                children=[
+                    InputStream(
+                        type_=InputStreamType.INPUT_STREAM, input_id="race"
+                    ),
+                    InputStream(
+                        type_=InputStreamType.INPUT_STREAM, input_id="player"
+                    ),
+                ],
+            )
+        ),
+        audio=AudioScene(inputs=[AudioSceneInput(input_id="player")]),
+    ),
+)
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
 ```bash
-curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/update" \
+curl -X POST "https://rtc.fishjam.io/api/composition/$COMPOSITION/output/main/update" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -208,6 +466,9 @@ curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/update" 
   }'
 ```
 
+  </TabItem>
+</Tabs>
+
 The layout changes on the fly, with no interruption to the stream. Send the Step 4 scene again to go back to the corner overlay.
 
 :::warning
@@ -218,13 +479,55 @@ An update has to carry the same sides the output was registered with. This outpu
 
 Delete the composition and the livestream when you are done. The Sandbox API only creates, so removing the livestream goes through the Server API with your Management Token:
 
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import {
+  CompositionClient,
+  CompositionId,
+  FishjamClient,
+  RoomId,
+} from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken: "" });
+const fishjamClient = new FishjamClient({ fishjamId: "", managementToken: "" });
+const compositionId = "" as CompositionId;
+const streamId = "" as RoomId;
+
+// ---cut---
+await compositionClient.deleteComposition(compositionId);
+await fishjamClient.deleteRoom(streamId);
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+from fishjam import FishjamClient
+
+fishjam_client = FishjamClient(
+    fishjam_id=fishjam_id,
+    management_token=management_token,
+)
+
+composition_client.delete_composition(composition_id)
+fishjam_client.delete_room(stream_id)
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
 ```bash
-curl -X DELETE "$COMPOSITION_URL/api/composition/$COMPOSITION" \
+curl -X DELETE "https://rtc.fishjam.io/api/composition/$COMPOSITION" \
   -H "Authorization: Bearer $TOKEN"
 
 curl -X DELETE "$FISHJAM_URL/livestream/$STREAM" \
   -H "Authorization: Bearer $TOKEN"
 ```
+
+  </TabItem>
+</Tabs>
 
 ## Next steps
 

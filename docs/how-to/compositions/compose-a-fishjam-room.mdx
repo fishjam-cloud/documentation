@@ -4,6 +4,8 @@ sidebar_position: 2
 description: Forward a Fishjam room into a composition and render its peers with a live React template.
 ---
 
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
 import IdleCleanup from "../../_common/compositions/idle-cleanup.mdx";
 
 # Compose a Fishjam room
@@ -22,7 +24,6 @@ Fishjam room (peers) ──forwarded──▶ composition (template) ──WHIP�
 The [Composition API](./../../api/reference#compositions) lives on `https://rtc.fishjam.io`, while rooms and livestreams live on the [Fishjam Server API](./../../api/reference#server). Both take the same Management Token:
 
 ```bash
-export COMPOSITION_URL="https://rtc.fishjam.io"
 export FISHJAM_URL="https://fishjam.io/api/v1/connect/<YOUR_FISHJAM_ID>"
 export TOKEN="<YOUR_MANAGEMENT_TOKEN>"
 ```
@@ -30,6 +31,37 @@ export TOKEN="<YOUR_MANAGEMENT_TOKEN>"
 ## Step 1: Create a room and invite peers
 
 Compositions consume h264 video, so the room has to enforce that codec. It is the default, but set it explicitly so a change of default cannot break the composition later:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/js-server-sdk";
+
+const fishjamClient = new FishjamClient({ fishjamId: "", managementToken: "" });
+
+// ---cut---
+const room = await fishjamClient.createRoom({
+  roomType: "conference",
+  videoCodec: "h264",
+});
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+from fishjam import FishjamClient, RoomOptions
+
+fishjam_client = FishjamClient(fishjam_id=fishjam_id, management_token=management_token)
+
+room = fishjam_client.create_room(
+    RoomOptions(room_type="conference", video_codec="h264"),
+)
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
 
 ```bash
 curl -X POST "$FISHJAM_URL/room" \
@@ -44,7 +76,33 @@ The room id comes back under `data.room.id`. Save it:
 export ROOM_ID="<ROOM_ID>"
 ```
 
+  </TabItem>
+</Tabs>
+
 Every participant needs their own peer token. Create one per person:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { FishjamClient, RoomId } from "@fishjam-cloud/js-server-sdk";
+
+const fishjamClient = new FishjamClient({ fishjamId: "", managementToken: "" });
+const roomId = "" as RoomId;
+
+// ---cut---
+const { peer, peerToken } = await fishjamClient.createPeer(roomId);
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+peer, peer_token = fishjam_client.create_peer(room.id)
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
 
 ```bash
 curl -X POST "$FISHJAM_URL/room/$ROOM_ID/peer" \
@@ -52,6 +110,9 @@ curl -X POST "$FISHJAM_URL/room/$ROOM_ID/peer" \
   -H "Content-Type: application/json" \
   -d '{ "type": "webrtc", "options": {} }'
 ```
+
+  </TabItem>
+</Tabs>
 
 Hand each `data.token` to a client and have it join, using [Connect to a room](./../client/connecting) or the [React quick start](./../../tutorials/react-quick-start). The composition renders whoever is publishing, so get at least one peer in with a camera on before you expect a picture.
 
@@ -123,8 +184,41 @@ Setting `cleanup_without_inputs` to `false` tightens the cleanup condition, so t
 
 <IdleCleanup />
 
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { CompositionClient } from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken: "" });
+
+// ---cut---
+const { compositionId } = await compositionClient.createComposition({
+  autostart: false,
+  cleanupWithoutInputs: false,
+});
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+from fishjam import CompositionClient
+from fishjam.composition import CreateCompositionRequest
+
+composition_client = CompositionClient(management_token=management_token)
+
+composition = composition_client.create_composition(
+    CreateCompositionRequest(autostart=False, cleanup_without_inputs=False),
+)
+composition_id = composition.composition_id
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
 ```bash
-curl -X POST "$COMPOSITION_URL/api/composition" \
+curl -X POST "https://rtc.fishjam.io/api/composition" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{ "autostart": false, "cleanup_without_inputs": false }'
@@ -136,10 +230,90 @@ Save the `composition_id` from the response, every call below uses it:
 export COMPOSITION="<COMPOSITION_ID>"
 ```
 
+  </TabItem>
+</Tabs>
+
 Register a templated `whip_client` output that pushes to your livestream's WHIP endpoint. Create the livestream and its streamer token first, as in [Step 3 of the tutorial](./../../tutorials/compositions#step-3-create-a-livestream-to-publish-to). The output configuration and the template bundle go together in one multipart request:
 
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import {
+  CompositionClient,
+  CompositionId,
+  FishjamClient,
+  OutputId,
+  RoomId,
+} from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken: "" });
+const fishjamClient = new FishjamClient({ fishjamId: "", managementToken: "" });
+const compositionId = "" as CompositionId;
+const outputId = "" as OutputId;
+const livestreamId = "" as RoomId;
+
+// ---cut---
+const { token: streamerToken } =
+  await fishjamClient.createLivestreamStreamerToken(livestreamId);
+
+await compositionClient.registerTemplateOutput(
+  compositionId,
+  outputId,
+  {
+    type: "whip_client",
+    endpointUrl: fishjamClient.livestreamWhipUrl(),
+    bearerToken: streamerToken,
+    video: {
+      resolution: { width: 1280, height: 720 },
+      initial: { root: { type: "view" } },
+    },
+    audio: { initial: { inputs: [] } },
+  },
+  "dist/App.js",
+);
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+from fishjam.composition import (
+    AudioScene,
+    OutputWhipAudioOptions,
+    OutputWhipVideoOptions,
+    Resolution,
+    VideoScene,
+    View,
+    ViewType,
+    WhipOutput,
+    WhipOutputType,
+)
+
+streamer_token = fishjam_client.create_livestream_streamer_token(livestream_id)
+
+composition_client.register_template_output(
+    composition_id,
+    "main",
+    WhipOutput(
+        type_=WhipOutputType.WHIP_CLIENT,
+        endpoint_url=fishjam_client.livestream_whip_url(),
+        bearer_token=streamer_token,
+        video=OutputWhipVideoOptions(
+            resolution=Resolution(width=1280, height=720),
+            initial=VideoScene(root=View(type_=ViewType.VIEW)),
+        ),
+        audio=OutputWhipAudioOptions(initial=AudioScene(inputs=[])),
+    ),
+    "dist/App.js",
+)
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
 ```bash
-curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/template" \
+curl -X POST "https://rtc.fishjam.io/api/composition/$COMPOSITION/output/main/template" \
   -H "Authorization: Bearer $TOKEN" \
   -F 'config={
         "type": "whip_client",
@@ -151,16 +325,58 @@ curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/output/main/template
   -F "template=@dist/App.js"
 ```
 
+  </TabItem>
+</Tabs>
+
 ## Step 4: Forward the room into the composition
 
-One call to the [Fishjam Server API](./../../api/reference#server) wires everything up:
+One call to `forwardRoomTracks` wires everything up:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import {
+  CompositionClient,
+  CompositionId,
+  FishjamClient,
+  RoomId,
+} from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken: "" });
+const fishjamClient = new FishjamClient({ fishjamId: "", managementToken: "" });
+const compositionId = "" as CompositionId;
+const roomId = "" as RoomId;
+
+// ---cut---
+await fishjamClient.forwardRoomTracks(
+  roomId,
+  compositionClient.compositionUrl(compositionId),
+);
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+fishjam_client.forward_room_tracks(
+    room.id,
+    composition_client.composition_url(composition_id),
+)
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
 
 ```bash
 curl -X POST "$FISHJAM_URL/room/$ROOM_ID/track_forwardings" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d "{ \"compositionURL\": \"$COMPOSITION_URL/api/composition/$COMPOSITION\", \"selector\": \"all\" }"
+  -d "{ \"compositionURL\": \"https://rtc.fishjam.io/api/composition/$COMPOSITION\", \"selector\": \"all\" }"
 ```
+
+  </TabItem>
+</Tabs>
 
 Everything else happens automatically: Fishjam links the room to the composition, registers an input for every forwarded track, and streams the media in. Your template's `usePeers()` fills with the room's peers as their media starts flowing. You never register room inputs by hand.
 
@@ -168,10 +384,36 @@ A room and a composition pair up one to one, in both directions. Repeating the c
 
 ## Step 5: Start the composition
 
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { CompositionClient, CompositionId } from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken: "" });
+const compositionId = "" as CompositionId;
+
+// ---cut---
+await compositionClient.startComposition(compositionId);
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+composition_client.start_composition(composition_id)
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
 ```bash
-curl -X POST "$COMPOSITION_URL/api/composition/$COMPOSITION/start" \
+curl -X POST "https://rtc.fishjam.io/api/composition/$COMPOSITION/start" \
   -H "Authorization: Bearer $TOKEN"
 ```
+
+  </TabItem>
+</Tabs>
 
 Viewers can now watch the composed grid through the livestream's WHEP endpoint. To also keep an MP4 of the composed stream, [record the output](./record-a-composition).
 
@@ -179,10 +421,45 @@ Viewers can now watch the composed grid through the livestream's WHEP endpoint. 
 
 Delete the composition when you are done. Forwarding stops on the Fishjam side when the room itself stops, so delete the room too once you no longer need it. There is no separate call to remove a forwarding from a live room.
 
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import {
+  CompositionClient,
+  CompositionId,
+  FishjamClient,
+  RoomId,
+} from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken: "" });
+const fishjamClient = new FishjamClient({ fishjamId: "", managementToken: "" });
+const compositionId = "" as CompositionId;
+const roomId = "" as RoomId;
+
+// ---cut---
+await compositionClient.deleteComposition(compositionId);
+await fishjamClient.deleteRoom(roomId);
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+composition_client.delete_composition(composition_id)
+fishjam_client.delete_room(room.id)
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
 ```bash
-curl -X DELETE "$COMPOSITION_URL/api/composition/$COMPOSITION" \
+curl -X DELETE "https://rtc.fishjam.io/api/composition/$COMPOSITION" \
   -H "Authorization: Bearer $TOKEN"
 
 curl -X DELETE "$FISHJAM_URL/room/$ROOM_ID" \
   -H "Authorization: Bearer $TOKEN"
 ```
+
+  </TabItem>
+</Tabs>
