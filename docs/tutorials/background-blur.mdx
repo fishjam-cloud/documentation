@@ -1,0 +1,485 @@
+---
+type: tutorial
+sidebar_position: 5
+sidebar_label: "Add background blur to your camera 📱"
+description: Step-by-step guide to blurring the background of the camera you publish to Fishjam, with @fishjam-cloud/video-effects.
+---
+
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
+
+# Add background blur to your camera <span className="badge badge--mobile">Mobile</span>
+
+:::note
+This tutorial is exclusively for **Mobile** (React Native) applications.
+:::
+
+This tutorial continues from the [React Native Quick Start](./react-native-quick-start). You'll take the video call app you built there and add a button that blurs the background of your camera, for you and for everyone else in the room.
+
+## What you'll build
+
+The Quick Start video call app with a **Blur on / Blur off** button. When blur is on, other participants see you sharp in front of a blurred background.
+
+## What you'll learn
+
+- How to install and configure `@fishjam-cloud/video-effects`
+- How to load the bundled segmentation model
+- How to turn an effect into a camera middleware and switch it on and off with `useCamera`
+
+## Prerequisites
+
+- The finished app from the [React Native Quick Start](./react-native-quick-start), on Expo SDK 57 (React Native 0.86) with the New Architecture enabled
+- `@fishjam-cloud/react-native-client` **0.30.2** or newer
+- A physical device (iOS 16.4+ or Android 8.0+), or the iOS Simulator with a virtual camera from [SimCam](../how-to/client/ios-simulator-camera.mdx)
+- A second device or simulator to join the room and see the result
+
+## Step 1: Install and configure
+
+### Install the packages
+
+```bash npm2yarn
+npm install @fishjam-cloud/video-effects @fishjam-cloud/react-native-worklets react-native-worklets react-native-webgpu expo-asset expo-file-system expo-build-properties
+npm install --save-dev unplugin-typegpu @babel/plugin-transform-class-static-block
+```
+
+- `@fishjam-cloud/video-effects` contains the blur effect and the model that finds you in the picture.
+- `@fishjam-cloud/react-native-worklets` and `react-native-worklets` run the effect on every camera frame, off the JS thread.
+- `react-native-webgpu` gives the effect a GPU to draw with.
+- `expo-asset` and `expo-file-system` load the model file that ships inside `@fishjam-cloud/video-effects`.
+- `expo-build-properties` raises the Android minimum SDK version.
+
+### Update the Babel config
+
+The effect code needs the worklets Babel plugin, and TypeGPU (the GPU library it is written with) needs its own plugin, class static blocks and `import.meta`. Replace your `babel.config.js`, keeping `react-native-worklets/plugin` last:
+
+```js title='babel.config.js'
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: [["babel-preset-expo", { unstable_transformImportMeta: true }]],
+    plugins: [
+      "@babel/plugin-transform-class-static-block",
+      "unplugin-typegpu/babel",
+      "react-native-worklets/plugin",
+    ],
+  };
+};
+```
+
+### Let Metro bundle the model
+
+The model ships as a `.ssgbin` file, which Metro doesn't bundle by default. Create `metro.config.js` in your project root:
+
+```js title='metro.config.js'
+const { getDefaultConfig } = require("expo/metro-config");
+
+const config = getDefaultConfig(__dirname);
+
+config.resolver.assetExts = [...config.resolver.assetExts, "ssgbin"];
+
+module.exports = config;
+```
+
+### Raise the minimum OS versions
+
+Expo SDK 57 needs iOS 16.4, and `react-native-webgpu` needs Android 8.0 (API 26), while Expo builds for API 24 by default. Set both in `app.json`: the iOS version in the Fishjam config plugin, the Android one with `expo-build-properties`:
+
+```json title='app.json'
+{
+  "expo": {
+    "plugins": [
+      [
+        "@fishjam-cloud/react-native-client",
+        {
+          "ios": {
+            "iphoneDeploymentTarget": "16.4"
+          }
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 26
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+If you already configure the Fishjam plugin, add `iphoneDeploymentTarget` to its existing `ios` options.
+
+Without the Android setting, the Android build fails with `'AHardwareBuffer_allocate' is unavailable: introduced in Android 26`.
+
+### Rebuild the app
+
+The new packages contain native code, so a JS reload is not enough:
+
+<Tabs groupId="app-type">
+  <TabItem value="expo" label="Expo">
+
+```bash
+npx expo prebuild
+npx expo run:ios # or run:android
+```
+
+  </TabItem>
+  <TabItem value="rn" label="Bare workflow">
+
+```bash
+cd ios && pod install
+```
+
+  </TabItem>
+</Tabs>
+
+Start Metro with a cleared cache afterwards (`npx expo start --clear`), so the new Babel config is picked up.
+
+## Step 2: Load the segmentation model
+
+To blur the background, the effect first has to find you in every frame. A segmentation model does that on the GPU. Create `effects.ts` next to `App.tsx` and set up the model:
+
+```ts title='effects.ts'
+import { typeGpuPersonSegmentation } from "@fishjam-cloud/video-effects/segmentation/typegpu";
+import { Asset } from "expo-asset";
+import { File } from "expo-file-system";
+
+const segmentationModel = Asset.fromModule(
+  require("@fishjam-cloud/video-effects/assets/selfie_segmenter.ssgbin"),
+);
+
+// Android release builds can't fetch a bundled asset by URL, so read it from a local copy.
+async function loadSegmentationModel(): Promise<ArrayBuffer> {
+  await segmentationModel.downloadAsync();
+  if (!segmentationModel.localUri) {
+    throw new Error("The segmentation model is not available.");
+  }
+  return new File(segmentationModel.localUri).arrayBuffer();
+}
+
+const segmentation = typeGpuPersonSegmentation({
+  loadModel: loadSegmentationModel,
+});
+```
+
+Nothing is loaded yet: `typeGpuPersonSegmentation` only describes where the model comes from. The model is loaded the first time you switch blur on.
+
+## Step 3: Create the blur middleware
+
+Fishjam lets you put a [middleware](../how-to/client/camera-effects/stream-middleware.mdx) between your camera and the room: a function that receives the camera track and returns the track to publish instead. `createCameraEffectMiddleware` turns an effect into such a middleware.
+
+Add the blur to the end of `effects.ts`:
+
+```ts title='effects.ts'
+import type { PersonSegmentationProvider } from "@fishjam-cloud/video-effects";
+declare const segmentation: PersonSegmentationProvider;
+// ---cut---
+import { createBackgroundBlurEffect } from "@fishjam-cloud/video-effects/background-blur";
+import { createCameraEffectMiddleware } from "@fishjam-cloud/video-effects/fishjam-react-native";
+
+export const backgroundBlur = createCameraEffectMiddleware(
+  createBackgroundBlurEffect(() => ({ segmentation, radius: 24 })),
+);
+```
+
+`radius` sets how strong the blur is, from `0` to `40`. The middleware is created once, at module scope, so it keeps the same identity for the whole app. You'll use that in the next step to tell whether blur is on.
+
+## Step 4: Add a blur button
+
+`useCamera` gives you two things for middleware: `setCameraTrackMiddleware` to set it, and `currentCameraMiddleware` to read what is set. Blur is on when the current middleware is `backgroundBlur`. Add a button component to `App.tsx`:
+
+```tsx
+import type { TrackMiddleware } from "@fishjam-cloud/react-native-client";
+declare const backgroundBlur: NonNullable<TrackMiddleware>;
+// ---cut---
+import React from "react";
+import { Button } from "react-native";
+import { useCamera } from "@fishjam-cloud/react-native-client";
+
+function BlurButton() {
+  const { currentCameraMiddleware, setCameraTrackMiddleware } = useCamera();
+  const isBlurOn = currentCameraMiddleware === backgroundBlur;
+
+  const toggleBlur = async () => {
+    try {
+      await setCameraTrackMiddleware(isBlurOn ? null : backgroundBlur);
+    } catch (error) {
+      console.warn("Background blur failed", error);
+      await setCameraTrackMiddleware(null); // go back to the plain camera
+    }
+  };
+
+  return (
+    <Button title={isBlurOn ? "Blur off" : "Blur on"} onPress={toggleBlur} />
+  );
+}
+```
+
+Then render it in `VideoCall`, right above your own video:
+
+```tsx
+import React from "react";
+import { View, Text } from "react-native";
+import type { MediaStream } from "@fishjam-cloud/react-native-client";
+declare function BlurButton(): React.JSX.Element;
+declare function VideoPlayer(props: { stream: MediaStream }): React.JSX.Element;
+declare const cameraStream: MediaStream | null;
+declare const styles: { section: object; sectionTitle: object };
+const view = (
+  <>
+    // ---cut---
+    {cameraStream && (
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Your Video</Text>
+        <BlurButton />
+        <VideoPlayer stream={cameraStream} />
+      </View>
+    )}
+    // ---cut-after---
+  </>
+);
+```
+
+Rebuild, join the room and tap **Blur on**. The first time takes a moment, because the model is loaded and the GPU pipelines are built. Until blur is ready, your camera keeps being published as before, so the video never goes black.
+
+Then join the same room from a second device. Its view of you shows the blurred background too: the blur is part of the camera track you publish, so the receiving side needs no changes.
+
+A few things to notice:
+
+- Blur stays on when the component that set it unmounts, because the middleware lives in Fishjam's camera state. Pass `null` to turn it off.
+- Blur follows the camera. It is applied again when you switch between the front and back camera, or stop and restart the camera.
+- If the device can't run the effect, `setCameraTrackMiddleware` rejects. The `catch` block then goes back to the plain camera, because at that point `currentCameraMiddleware` already points at the blur.
+
+## Step 5: Report model loading problems
+
+A failed model load doesn't reject `setCameraTrackMiddleware`: the middleware is still applied, but publishes the camera without blur. To find out about it, pass `onStatus` to the middleware. Update `backgroundBlur` in `effects.ts`:
+
+```ts title='effects.ts'
+import type { PersonSegmentationProvider } from "@fishjam-cloud/video-effects";
+declare const segmentation: PersonSegmentationProvider;
+import { createBackgroundBlurEffect } from "@fishjam-cloud/video-effects/background-blur";
+import { createCameraEffectMiddleware } from "@fishjam-cloud/video-effects/fishjam-react-native";
+// ---cut---
+export const backgroundBlur = createCameraEffectMiddleware(
+  createBackgroundBlurEffect(() => ({ segmentation, radius: 24 })),
+  {
+    onStatus: (status, error) => {
+      if (status === "error") console.warn("Background blur failed", error);
+    },
+  },
+);
+```
+
+`onStatus` is called with `"loading"` when the model starts loading, `"ready"` when blur is running, and `"error"` with the error if the model can't be loaded.
+
+## Complete example
+
+`effects.ts`:
+
+```ts title='effects.ts'
+import { createBackgroundBlurEffect } from "@fishjam-cloud/video-effects/background-blur";
+import { createCameraEffectMiddleware } from "@fishjam-cloud/video-effects/fishjam-react-native";
+import { typeGpuPersonSegmentation } from "@fishjam-cloud/video-effects/segmentation/typegpu";
+import { Asset } from "expo-asset";
+import { File } from "expo-file-system";
+
+const segmentationModel = Asset.fromModule(
+  require("@fishjam-cloud/video-effects/assets/selfie_segmenter.ssgbin"),
+);
+
+// Android release builds can't fetch a bundled asset by URL, so read it from a local copy.
+async function loadSegmentationModel(): Promise<ArrayBuffer> {
+  await segmentationModel.downloadAsync();
+  if (!segmentationModel.localUri) {
+    throw new Error("The segmentation model is not available.");
+  }
+  return new File(segmentationModel.localUri).arrayBuffer();
+}
+
+const segmentation = typeGpuPersonSegmentation({
+  loadModel: loadSegmentationModel,
+});
+
+export const backgroundBlur = createCameraEffectMiddleware(
+  createBackgroundBlurEffect(() => ({ segmentation, radius: 24 })),
+  {
+    onStatus: (status, error) => {
+      if (status === "error") console.warn("Background blur failed", error);
+    },
+  },
+);
+```
+
+`App.tsx`, the Quick Start app with `BlurButton` added:
+
+```tsx title='App.tsx'
+// @filename: effects.ts
+import type { TrackMiddleware } from "@fishjam-cloud/react-native-client";
+export declare const backgroundBlur: NonNullable<TrackMiddleware>;
+// @filename: App.tsx
+// ---cut---
+import React, { useState } from "react";
+import { View, Text, Button, ScrollView, StyleSheet } from "react-native";
+import {
+  FishjamProvider,
+  useConnection,
+  useCamera,
+  usePeers,
+  useInitializeDevices,
+  useSandbox,
+  RTCView,
+  type MediaStream,
+} from "@fishjam-cloud/react-native-client";
+import { backgroundBlur } from "./effects";
+
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+
+function VideoPlayer({ stream }: { stream: MediaStream | null | undefined }) {
+  if (!stream) {
+    return (
+      <View style={styles.videoPlaceholder}>
+        <Text>No video</Text>
+      </View>
+    );
+  }
+
+  return (
+    <RTCView mediaStream={stream} style={styles.video} objectFit="cover" />
+  );
+}
+
+function BlurButton() {
+  const { currentCameraMiddleware, setCameraTrackMiddleware } = useCamera();
+  const isBlurOn = currentCameraMiddleware === backgroundBlur;
+
+  const toggleBlur = async () => {
+    try {
+      await setCameraTrackMiddleware(isBlurOn ? null : backgroundBlur);
+    } catch (error) {
+      console.warn("Background blur failed", error);
+      await setCameraTrackMiddleware(null); // go back to the plain camera
+    }
+  };
+
+  return (
+    <Button title={isBlurOn ? "Blur off" : "Blur on"} onPress={toggleBlur} />
+  );
+}
+
+function VideoCall() {
+  const { joinRoom, peerStatus } = useConnection();
+  const { cameraStream } = useCamera();
+  const { remotePeers } = usePeers();
+  const { initializeDevices } = useInitializeDevices();
+  const { getSandboxPeerToken } = useSandbox({
+    sandboxApiUrl: SANDBOX_API_URL,
+  });
+
+  const [isJoined, setIsJoined] = useState(false);
+
+  const handleJoin = async () => {
+    const roomName = "testRoom";
+    const peerName = `user_${Date.now()}`;
+
+    // Initialize devices first
+    await initializeDevices();
+
+    // For testing with the Sandbox API, use getSandboxPeerToken
+    // For production apps, get the peerToken from your own backend instead
+    const peerToken = await getSandboxPeerToken(roomName, peerName);
+
+    await joinRoom({ peerToken });
+    setIsJoined(true);
+  };
+
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>Fishjam Video Call</Text>
+      <Text style={styles.status}>Status: {peerStatus}</Text>
+
+      {!isJoined && <Button title="Join Room" onPress={handleJoin} />}
+
+      {cameraStream && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Your Video</Text>
+          <BlurButton />
+          <VideoPlayer stream={cameraStream} />
+        </View>
+      )}
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Other Participants</Text>
+        {remotePeers.length === 0 ? (
+          <Text>No other participants</Text>
+        ) : (
+          remotePeers.map((peer) => (
+            <View key={peer.id} style={styles.participant}>
+              {peer.cameraTrack?.stream && (
+                <VideoPlayer stream={peer.cameraTrack.stream} />
+              )}
+            </View>
+          ))
+        )}
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  status: {
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  section: {
+    marginTop: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 10,
+  },
+  participant: {
+    marginBottom: 10,
+  },
+  video: {
+    height: 200,
+    width: "100%",
+    borderRadius: 8,
+  },
+  videoPlaceholder: {
+    height: 200,
+    width: "100%",
+    backgroundColor: "#000",
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
+
+export default function App() {
+  return (
+    <FishjamProvider fishjamId={FISHJAM_ID}>
+      <VideoCall />
+    </FishjamProvider>
+  );
+}
+```
+
+## Next steps
+
+- Replace the background with an image, change the blur strength, or scope the effect to one screen; see [Background effects](../how-to/client/camera-effects/background-effects.mdx)
+- Draw your own shaders into the camera in the [WebGPU effects tutorial](./webgpu-effects)
+- Learn [how camera effects work](../explanation/camera-effects.mdx) under the hood
+- API reference: [Video Effects package](../api/video-effects/index.md)

@@ -1,6 +1,6 @@
 ---
 type: tutorial
-sidebar_position: 5
+sidebar_position: 1
 sidebar_label: "Stream Vision Camera to Fishjam 📱"
 description: Step-by-step guide to publishing a react-native-vision-camera feed to a Fishjam room as a custom video source.
 ---
@@ -12,6 +12,10 @@ import Tabs from "@theme/Tabs";
 
 :::note
 This tutorial is exclusively for **Mobile** (React Native) applications.
+:::
+
+:::tip[Don't need VisionCamera?]
+Fishjam manages the camera itself with [`useCamera`](../../how-to/client/start-streaming.mdx), and can blur the background or run your own shaders on it. If you don't need VisionCamera for something else, follow the [background blur tutorial](../../tutorials/background-blur.mdx) or the [WebGPU effects tutorial](../../tutorials/webgpu-effects.mdx) instead.
 :::
 
 This tutorial walks you through publishing a [VisionCamera](https://react-native-vision-camera.com) feed to a Fishjam room, step by step.
@@ -29,8 +33,8 @@ A React Native app that joins a room and publishes the device camera through Vis
 
 ## Prerequisites
 
-- The [React Native Quick Start](./react-native-quick-start) completed, or an existing app wrapped in `FishjamProvider`
-- A physical device, or the iOS Simulator with a virtual camera from [SimCam](../how-to/client/ios-simulator-camera.mdx)
+- The [React Native Quick Start](../../tutorials/react-native-quick-start) completed, or an existing app wrapped in `FishjamProvider`
+- A physical device, or the iOS Simulator with a virtual camera from [SimCam](../../how-to/client/ios-simulator-camera.mdx)
 - The New Architecture enabled; custom video tracks require it
 
 ## Step 1: Install and configure
@@ -111,7 +115,7 @@ cd ios && pod install
 
 ## Step 2: Join a room
 
-As in the [quick start](./react-native-quick-start#step-2-join-a-room-and-start-streaming), join a room with a peer token. This time there is no need to initialize the camera through the Fishjam SDK, since VisionCamera will manage the camera:
+As in the [quick start](../../tutorials/react-native-quick-start#step-2-join-a-room-and-start-streaming), join a room with a peer token. This time there is no need to initialize the camera through the Fishjam SDK, since VisionCamera will manage the camera:
 
 ```tsx
 import React from "react";
@@ -215,7 +219,7 @@ export function RemoteStreams() {
 }
 ```
 
-To verify end to end, join the same room from a second device or another client built in the [quick start](./react-native-quick-start), and watch the published feed arrive.
+To verify end to end, join the same room from a second device or another client built in the [quick start](../../tutorials/react-native-quick-start), and watch the published feed arrive.
 
 ## Complete example
 
@@ -349,7 +353,7 @@ export default function App() {
 
 ## Next steps
 
-- Run inference on the published frames; see [Publish a Vision Camera feed](../how-to/client/custom-sources/vision-camera#run-frame-processors-on-published-frames)
-- Continue this tutorial with [Draw WebGPU effects into your published camera](./webgpu-effects): a watermark overlay, then your own shaders (see the [WebGPU effects how-to](../how-to/client/custom-sources/webgpu-effects) for reference)
-- Explore the [custom sources overview](../how-to/client/custom-sources/index.mdx) and the [low-level frame API](../how-to/client/custom-sources/low-level-frame-api)
-- Learn [how custom sources work](../explanation/custom-sources) under the hood
+- Run inference on the published frames; see [Publish a Vision Camera feed](./vision-camera-source#run-frame-processors-on-published-frames)
+- Draw your own shaders into the VisionCamera feed; see [WebGPU effects with VisionCamera](./webgpu-effects.mdx)
+- Explore the [custom sources overview](../../how-to/client/custom-sources/index.mdx) and the [low-level frame API](../../how-to/client/custom-sources/low-level-frame-api)
+- Learn [how custom sources work](../../explanation/custom-sources) under the hood

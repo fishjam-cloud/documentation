@@ -1,0 +1,168 @@
+---
+title: "Stream middleware"
+sidebar_position: 4
+sidebar_label: "Stream middleware"
+description: Intercept and transform camera and microphone tracks before they are sent to Fishjam, enabling effects and custom encodings.
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Stream middleware
+
+Stream middleware in Fishjam allows you to intercept and manipulate media tracks before they are sent to the Fishjam server.
+This feature is powerful for applying effects, custom encodings, or any other transformations to the media stream.
+
+The camera and microphone keep being managed by Fishjam: device selection, starting and stopping, and publishing work as usual. The middleware only decides which track goes out in place of the raw device track. Other peers receive the result as your regular `cameraTrack` or `microphoneTrack`.
+
+## Overview
+
+Define a `TrackMiddleware` function ([Web](../../../api/web/type-aliases/TrackMiddleware) · [React Native](../../../api/mobile/type-aliases/TrackMiddleware)) which takes a `MediaStreamTrack` and returns, directly or as a promise, an object containing the modified `MediaStreamTrack` and an optional `onClear` function, which is called when the middleware is removed or replaced, or when the device track it processes goes away.
+
+### Type definition
+
+```typescript
+type MiddlewareResult = {
+  track: MediaStreamTrack;
+  onClear?: () => void;
+};
+
+export type TrackMiddleware =
+  | ((track: MediaStreamTrack) => MiddlewareResult | Promise<MiddlewareResult>)
+  | null;
+```
+
+### Setting middleware
+
+You can set the middleware for your media tracks using the `setCameraTrackMiddleware` and `setMicrophoneTrackMiddleware` methods of [`useCamera`](../../../api/web/functions/useCamera) and [`useMicrophone`](../../../api/web/functions/useMicrophone). These methods accept a `TrackMiddleware` or `null` for removing previously set middleware. `currentCameraMiddleware` and `currentMicrophoneMiddleware` return the middleware that is currently set.
+
+### How middleware is applied
+
+- **It is applied to every new device track.** A middleware set before the device starts is applied when it starts. It is applied again when the device restarts or you switch to another device, so the published track is never the raw one while a middleware is set.
+- **The old track is published until the new one is ready.** An asynchronous middleware can take a moment to set up. Until it resolves, peers keep receiving the previous track. The previous middleware's `onClear` runs only after the new track has replaced it in the published stream.
+- **The latest request wins.** If you set another middleware, or `null`, while one is still setting up, the one that was replaced is released as soon as it finishes setting up and is never published.
+- **Tracks returned by the middleware are stopped for you.** When a middleware is removed, the track it returned is stopped, unless it is the input track itself. Release anything else your middleware created in `onClear`.
+
+<Tabs groupId="platform">
+<TabItem value="mobile" label="React Native (Mobile)">
+
+## Example: Applying a video effect
+
+In React Native, a camera middleware typically runs a GPU effect on every frame of the camera track. `@fishjam-cloud/video-effects` creates such middleware for you. The example below toggles a background blur; see [Background effects](./background-effects.mdx) for the setup.
+
+```tsx
+import type { PersonSegmentationProvider } from "@fishjam-cloud/video-effects";
+declare const segmentation: PersonSegmentationProvider;
+// ---cut---
+import React from "react";
+import { Button } from "react-native";
+import { useCamera } from "@fishjam-cloud/react-native-client";
+import { createBackgroundBlurEffect } from "@fishjam-cloud/video-effects/background-blur";
+import { createCameraEffectMiddleware } from "@fishjam-cloud/video-effects/fishjam-react-native";
+
+// Create the middleware once, so its identity stays stable.
+const backgroundBlur = createCameraEffectMiddleware(
+  createBackgroundBlurEffect(() => ({ segmentation, radius: 24 })),
+);
+
+export function BlurToggle() {
+  // [!code highlight:2]
+  const { currentCameraMiddleware, setCameraTrackMiddleware } = useCamera();
+  const isBlurOn = currentCameraMiddleware === backgroundBlur;
+
+  return (
+    <Button
+      title={isBlurOn ? "Disable Blur" : "Enable Blur"}
+      onPress={() => setCameraTrackMiddleware(isBlurOn ? null : backgroundBlur)} // [!code highlight]
+    />
+  );
+}
+```
+
+To write your own middleware, see [Render WebGPU effects into the camera](./webgpu-effects.mdx), which returns a WebGPU-rendered track, and [Process camera frames in a worklet](./frame-processing.mdx), which reads frames and returns the camera track unchanged.
+
+</TabItem>
+<TabItem value="web" label="React (Web)">
+
+## Example: Applying a blur effect
+
+The following example demonstrates how to apply a custom blur effect to the camera track using the [`useCamera`](../../../api/web/functions/useCamera) hook and middleware.
+
+```tsx
+class BlurProcessor {
+  track: MediaStreamTrack;
+
+  constructor(stream: MediaStream) {
+    this.track = this.applyBlurEffect(stream);
+  }
+
+  private applyBlurEffect(stream: MediaStream): MediaStreamTrack {
+    return stream.getVideoTracks()[0];
+  }
+
+  destroy() {}
+}
+
+// ---cut---
+import React, { useCallback, useEffect, useRef } from "react";
+import type { TrackMiddleware } from "@fishjam-cloud/react-client";
+import { useCamera } from "@fishjam-cloud/react-client";
+
+export function CameraWithBlurEffect() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  // [!code highlight:2]
+  const { cameraStream, currentCameraMiddleware, setCameraTrackMiddleware } =
+    useCamera();
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+    videoRef.current.srcObject = cameraStream ?? null;
+  }, [cameraStream]);
+
+  // Define blur middleware
+  const blurMiddleware: TrackMiddleware = useCallback(
+    (track: MediaStreamTrack) => {
+      const streamToBlur = new MediaStream([track]);
+      // BlurProcessor is just an example,
+      // process the stream however you need
+      const blurProcessor = new BlurProcessor(streamToBlur);
+
+      return {
+        track: blurProcessor.track,
+        onClear: () => blurProcessor.destroy(),
+      };
+    },
+    [],
+  );
+
+  // Check if the current middleware is blur
+  const isBlurEnabled = currentCameraMiddleware === blurMiddleware;
+
+  // Toggle blur effect
+  const toggleBlur = () => {
+    setCameraTrackMiddleware(isBlurEnabled ? null : blurMiddleware); // [!code highlight]
+  };
+
+  return (
+    <>
+      <button onClick={toggleBlur}>
+        {isBlurEnabled ? "Disable Blur" : "Enable Blur"}
+      </button>
+
+      {cameraStream && <video ref={videoRef} autoPlay />}
+    </>
+  );
+}
+```
+
+This example provides a button to toggle the blur effect on and off. The `BlurProcessor` handles the actual processing logic and is assumed to be implemented elsewhere.
+
+</TabItem>
+</Tabs>
+
+## Related guides
+
+- [Background effects](./background-effects.mdx): ready-made background blur and background image for React Native
+- [Render WebGPU effects into the camera](./webgpu-effects.mdx): return a track you render yourself
+- [Managing devices](../managing-devices.mdx): start, stop and switch the camera and microphone
+- [How camera effects work](../../../explanation/camera-effects.mdx)

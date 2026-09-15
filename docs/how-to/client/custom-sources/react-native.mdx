@@ -13,7 +13,7 @@ This guide is exclusively for **Mobile** (React Native) applications.
 
 `@fishjam-cloud/react-native-client` provides two hooks for publishing custom sources. Your app must be wrapped in [`FishjamProvider`](../../../api/mobile/functions/FishjamProvider).
 
-- [`useCustomSource`](../../../api/mobile/functions/useCustomSource) publishes a `MediaStream`. It is the same hook that is available [on the web](./web), typed for the React Native [`MediaStream`](../../../api/mobile/classes/MediaStream). The stream typically comes from the [Vision Camera integration](./vision-camera) or the [low-level frame API](./low-level-frame-api), whose hooks create it for you, but any `MediaStream` you hold works.
+- [`useCustomSource`](../../../api/mobile/functions/useCustomSource) publishes a `MediaStream`. It is the same hook that is available [on the web](./web), typed for the React Native [`MediaStream`](../../../api/mobile/classes/MediaStream). The stream typically comes from the [low-level frame API](./low-level-frame-api) or the [VisionCamera integration](../../../integrations/vision-camera/vision-camera-source), whose hooks create it for you, but any `MediaStream` you hold works.
 - [`useCustomAudioSource`](../../../api/mobile/functions/useCustomAudioSource) publishes audio your app generates itself: you push PCM samples and the hook manages the track and its stream. See [Publish custom audio](#publish-custom-audio).
 
 ## Publish a stream
@@ -142,7 +142,7 @@ Custom tracks arrive in the `customVideoTracks` and `customAudioTracks` arrays o
 
 ## Related guides
 
-- [Vision Camera](./vision-camera): publish a camera feed with frame processors
-- [WebGPU effects](./webgpu-effects): draw your own content into the published video
+- [Camera effects](../camera-effects/index.mdx): blur the background or draw your own content into the published camera
+- [VisionCamera integration](../../../integrations/vision-camera/vision-camera-source): publish a VisionCamera feed with frame processors
 - [Low-level frame API](./low-level-frame-api): publish frames from your own pipeline
 - [How custom sources work](../../../explanation/custom-sources)
