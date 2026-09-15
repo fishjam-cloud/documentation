@@ -22,6 +22,7 @@ The [background blur tutorial](../../../tutorials/background-blur.mdx) builds th
 ## Prerequisites
 
 - `@fishjam-cloud/react-native-client` **0.30.2** or newer, with your app wrapped in `FishjamProvider` (see [Installation](../installation.mdx))
+- `@fishjam-cloud/video-effects` **0.1.4** or newer
 - React Native 0.86 (Expo SDK 57) with the New Architecture enabled
 - iOS 16.4 or newer, or Android 8.0 (API 26) or newer
 - A physical device, or the iOS Simulator with a virtual camera from [SimCam](../ios-simulator-camera.mdx)
@@ -193,7 +194,7 @@ How it behaves:
 
 ## Replace the background with an image
 
-`createBackgroundImageEffect` draws an image behind the person instead of blurring. Pass the image as a `uri`, or as `data` with its bytes:
+`createBackgroundImageEffect` draws an image behind the person instead of blurring. Pass the image as a `uri`, or as `data` with its bytes. Background images need `@fishjam-cloud/video-effects` 0.1.4 or newer; on React Native, earlier versions publish the camera without the image:
 
 ```ts title='effects.ts'
 import type { PersonSegmentationProvider } from "@fishjam-cloud/video-effects";
