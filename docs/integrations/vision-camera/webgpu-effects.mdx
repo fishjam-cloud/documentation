@@ -23,7 +23,7 @@ Every camera frame reaches your `onFrame` worklet. Calling `render(...)` gives y
 
 On top of the [Vision Camera setup](./vision-camera-source.mdx#prerequisites):
 
-- `react-native-webgpu` ≥ 0.5.15
+- `react-native-webgpu` ≥ 0.10.1
 - `unplugin-typegpu` in your app's Babel config (the TGSL shaders need its build-time transform)
 - iOS 17+: the camera-import path relies on Metal external-texture features not guaranteed on earlier versions. The [base integration](./vision-camera-source.mdx) has no such requirement, so you can keep your `ios.deploymentTarget` unchanged and gate WebGPU usage at runtime.
 

@@ -22,7 +22,8 @@ The [background blur tutorial](../../../tutorials/background-blur.mdx) builds th
 ## Prerequisites
 
 - `@fishjam-cloud/react-native-client` **0.30.2** or newer, with your app wrapped in `FishjamProvider` (see [Installation](../installation.mdx))
-- `@fishjam-cloud/video-effects` **0.1.4** or newer
+- `@fishjam-cloud/video-effects` **0.1.5** or newer
+- `react-native-webgpu` **0.10.1** or newer. Older versions leak one camera frame of graphics memory per frame on Android until the JavaScript garbage collector runs.
 - React Native 0.86 (Expo SDK 57) with the New Architecture enabled
 - iOS 16.4 or newer, or Android 8.0 (API 26) or newer
 - A physical device, or the iOS Simulator with a virtual camera from [SimCam](../ios-simulator-camera.mdx)
