@@ -78,6 +78,7 @@ You need both values for React/React Native apps:
 ### Optional parameters
 
 - `roomType` - Type of room to create (defaults to `conference`)
+- `videoCodec` - Video codec of the room: `vp8` (default) or `h264`. The `useSandbox` hook doesn't set it, so call the Sandbox API URL directly with `videoCodec` as a query parameter. Joining an existing room with a different codec returns `409 Conflict`; omit it to join a room regardless of its codec.
 
 ### Room types available
 
