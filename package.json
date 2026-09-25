@@ -40,6 +40,8 @@
     "@fishjam-cloud/react-native-custom-video-source": "link:./packages/web-client-sdk/packages/react-native-custom-video-source",
     "@fishjam-cloud/react-native-vision-camera-source": "link:./packages/web-client-sdk/packages/react-native-vision-camera-source",
     "@fishjam-cloud/react-native-webrtc": "link:./packages/web-client-sdk/packages/react-native-webrtc",
+    "@fishjam-cloud/react-native-worklets": "link:./packages/react-native-worklets",
+    "@fishjam-cloud/video-effects": "link:./packages/video-effects",
     "@mdx-js/react": "^3.1.0",
     "@scalar/docusaurus": "^0.8.5",
     "@shikijs/rehype": "^3.6.0",
@@ -58,7 +60,7 @@
     "react-native": "^0.80.0",
     "react-native-vision-camera": "5.0.10",
     "shiki": "^3.6.0",
-    "typegpu": "^0.11.8"
+    "typegpu": "0.12.4"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.10.0",
@@ -71,8 +73,11 @@
     "cspell": "^9.1.2",
     "docusaurus-plugin-llms": "^0.3.0",
     "docusaurus-plugin-typedoc": "1.4.0",
+    "expo-asset": "~57.0.17",
+    "expo-file-system": "~57.0.7",
     "prettier": "^3.5.3",
     "react-native-webgpu": "~0.5.15",
+    "react-native-worklets": "0.12.1",
     "typedoc": "0.28.5",
     "typedoc-plugin-markdown": "4.7.0",
     "typescript": "~5.8.2"

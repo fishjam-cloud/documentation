@@ -1,0 +1,367 @@
+---
+title: "Blur or replace the camera background"
+sidebar_position: 1
+sidebar_label: "Background effects 📱"
+description: Blur or replace the background of the camera you publish to Fishjam, with ready-made effects from @fishjam-cloud/video-effects that run on the GPU.
+---
+
+# Blur or replace the camera background <span className="badge badge--mobile">Mobile</span>
+
+:::note
+This guide is exclusively for **Mobile** (React Native) applications.
+:::
+
+`@fishjam-cloud/video-effects` ships ready-made background effects: background blur and background image replacement. An effect runs on the camera track Fishjam already publishes, as a [camera track middleware](./stream-middleware.mdx). Your app keeps using [`useCamera`](../../../api/mobile/functions/useCamera), and other peers keep receiving your video as `peer.cameraTrack`, now with the effect applied.
+
+Each camera frame reaches a worklet on a dedicated camera thread, a segmentation model finds the person on the GPU, and the effect draws the result into the published frame. The JS thread is not involved per frame. See [How camera effects work](../../../explanation/camera-effects.mdx) for the details.
+
+:::tip[First time?]
+The [background blur tutorial](../../../tutorials/background-blur.mdx) builds this step by step in a working app, from installing the packages to a blur toggle.
+:::
+
+## Prerequisites
+
+- `@fishjam-cloud/react-native-client` **0.30.2** or newer, with your app wrapped in `FishjamProvider` (see [Installation](../installation.mdx))
+- `@fishjam-cloud/video-effects` **0.1.5** or newer
+- `react-native-webgpu` **0.10.1** or newer. Older versions leak one camera frame of graphics memory per frame on Android until the JavaScript garbage collector runs.
+- React Native 0.86 (Expo SDK 57) with the New Architecture enabled
+- iOS 16.4 or newer, or Android 8.0 (API 26) or newer
+- A physical device, or the iOS Simulator with a virtual camera from [SimCam](../ios-simulator-camera.mdx)
+
+## Install
+
+```bash npm2yarn
+npm install @fishjam-cloud/video-effects @fishjam-cloud/react-native-worklets react-native-worklets react-native-webgpu expo-asset expo-file-system expo-build-properties
+npm install --save-dev unplugin-typegpu @babel/plugin-transform-class-static-block
+```
+
+What each package does:
+
+- `@fishjam-cloud/video-effects`: the effects, the segmentation model and the camera middleware
+- `@fishjam-cloud/react-native-worklets`: runs a worklet on every frame of the Fishjam camera track. Its minor version follows `react-native-worklets`: `0.12.x` works with `react-native-worklets` `0.12.x`.
+- `react-native-webgpu`: the GPU the effects render with
+- `expo-asset` and `expo-file-system`: load the bundled segmentation model
+- `expo-build-properties`: raises the Android minimum SDK version
+
+### Configure Babel
+
+The effects rely on the `react-native-worklets` Babel plugin, and on TypeGPU, which needs `import.meta`, class static blocks and its own Babel plugin. Keep `react-native-worklets/plugin` as the last plugin:
+
+```js title='babel.config.js'
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: [["babel-preset-expo", { unstable_transformImportMeta: true }]],
+    plugins: [
+      "@babel/plugin-transform-class-static-block",
+      "unplugin-typegpu/babel",
+      "react-native-worklets/plugin",
+    ],
+  };
+};
+```
+
+### Configure Metro
+
+The segmentation model ships as a `.ssgbin` file. Add the extension to Metro's asset extensions so it can be bundled with your app:
+
+```js title='metro.config.js'
+const { getDefaultConfig } = require("expo/metro-config");
+
+const config = getDefaultConfig(__dirname);
+
+config.resolver.assetExts = [...config.resolver.assetExts, "ssgbin"];
+
+module.exports = config;
+```
+
+### Set the minimum OS versions
+
+Expo SDK 57 needs iOS 16.4, while the Fishjam config plugin sets 15.1 by default. `react-native-webgpu` needs Android 8.0 (API 26), while Expo defaults to API 24. Raise both in `app.json`, the Android one with `expo-build-properties`:
+
+```json title='app.json'
+{
+  "expo": {
+    "plugins": [
+      [
+        "@fishjam-cloud/react-native-client",
+        {
+          "ios": {
+            "iphoneDeploymentTarget": "16.4"
+          }
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 26
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+In a bare React Native app, set `platform :ios, '16.4'` in `ios/Podfile` and `minSdkVersion = 26` in `android/build.gradle` instead.
+
+Then restart Metro with a cleared cache and rebuild the native app, since the new packages contain native code:
+
+```bash
+npx expo prebuild
+npx expo run:ios # or run:android
+```
+
+## Load the segmentation model
+
+Both effects need a segmentation provider, which finds the person in each frame. `typeGpuPersonSegmentation` runs the bundled model on the GPU. Create the provider once, at module scope, so every effect that uses it shares one loaded model:
+
+```ts title='effects.ts'
+import { typeGpuPersonSegmentation } from "@fishjam-cloud/video-effects/segmentation/typegpu";
+import { Asset } from "expo-asset";
+import { File } from "expo-file-system";
+
+const segmentationModel = Asset.fromModule(
+  require("@fishjam-cloud/video-effects/assets/selfie_segmenter.ssgbin"),
+);
+
+async function loadSegmentationModel(): Promise<ArrayBuffer> {
+  await segmentationModel.downloadAsync();
+  if (!segmentationModel.localUri) {
+    throw new Error("The segmentation model is not available.");
+  }
+  return new File(segmentationModel.localUri).arrayBuffer();
+}
+
+export const segmentation = typeGpuPersonSegmentation({
+  loadModel: loadSegmentationModel,
+});
+```
+
+The model is read from a local copy of the asset instead of being fetched by URL, because an Android release build cannot `fetch` a bundled asset. If you host the model yourself, pass its address as `modelUrl` instead of `loadModel`.
+
+## Blur the background
+
+Wrap the effect in `createCameraEffectMiddleware` and keep the middleware at module scope. A stable identity lets you tell whether it is active by comparing it with `currentCameraMiddleware`:
+
+```ts title='effects.ts'
+import type { PersonSegmentationProvider } from "@fishjam-cloud/video-effects";
+declare const segmentation: PersonSegmentationProvider;
+// ---cut---
+import { createBackgroundBlurEffect } from "@fishjam-cloud/video-effects/background-blur";
+import { createCameraEffectMiddleware } from "@fishjam-cloud/video-effects/fishjam-react-native";
+
+export const backgroundBlur = createCameraEffectMiddleware(
+  createBackgroundBlurEffect(() => ({ segmentation, radius: 24 })),
+);
+```
+
+Then switch it on and off with `setCameraTrackMiddleware`:
+
+```tsx
+import type { TrackMiddleware } from "@fishjam-cloud/react-native-client";
+declare const backgroundBlur: NonNullable<TrackMiddleware>;
+// ---cut---
+import React from "react";
+import { Button } from "react-native";
+import { useCamera } from "@fishjam-cloud/react-native-client";
+
+export function BlurToggle() {
+  const { currentCameraMiddleware, setCameraTrackMiddleware } = useCamera();
+  const isBlurOn = currentCameraMiddleware === backgroundBlur;
+
+  const toggleBlur = async () => {
+    try {
+      await setCameraTrackMiddleware(isBlurOn ? null : backgroundBlur);
+    } catch (error) {
+      console.warn("Background blur failed", error);
+      await setCameraTrackMiddleware(null);
+    }
+  };
+
+  return (
+    <Button title={isBlurOn ? "Blur off" : "Blur on"} onPress={toggleBlur} />
+  );
+}
+```
+
+How it behaves:
+
+- The middleware lives in Fishjam's camera state, not in the component. It stays on across screens until you pass `null`, and it is applied again when the camera restarts or you switch cameras.
+- You can set it before the camera starts. It is applied as soon as the camera track exists.
+- Setting it up takes a moment: the model loads and the GPU pipelines are built. Until the blurred track is ready, peers keep receiving the previous track, so the video never goes black.
+- If setting up fails, for example when the device has no suitable GPU, `setCameraTrackMiddleware` rejects. `currentCameraMiddleware` already points at the failed middleware at that point, so pass `null` to go back to the plain camera, as in the example.
+
+## Replace the background with an image
+
+`createBackgroundImageEffect` draws an image behind the person instead of blurring. Pass the image as a `uri`, or as `data` with its bytes. Background images need `@fishjam-cloud/video-effects` 0.1.4 or newer; on React Native, earlier versions publish the camera without the image:
+
+```ts title='effects.ts'
+import type { PersonSegmentationProvider } from "@fishjam-cloud/video-effects";
+declare const segmentation: PersonSegmentationProvider;
+// ---cut---
+import { createBackgroundImageEffect } from "@fishjam-cloud/video-effects/background-image";
+import { createCameraEffectMiddleware } from "@fishjam-cloud/video-effects/fishjam-react-native";
+
+export const beachBackground = createCameraEffectMiddleware(
+  createBackgroundImageEffect(() => ({
+    segmentation,
+    image: { uri: "https://example.com/beach.jpg" },
+    fit: "cover",
+  })),
+);
+```
+
+The image is downloaded and decoded while the middleware sets up. If it cannot be loaded, the middleware reports an `"error"` status and publishes the camera without the effect.
+
+### Use a bundled image
+
+An Android release build cannot `fetch` a bundled asset, so read the bytes of a bundled image yourself and pass them as `data`. `expo-asset` keeps a bundled image as a drawable resource on Android release builds, so describe the asset again without its image size, which makes `downloadAsync` copy it to a local file:
+
+```ts title='effects.ts'
+import type { PersonSegmentationProvider } from "@fishjam-cloud/video-effects";
+declare const segmentation: PersonSegmentationProvider;
+// ---cut---
+import { createBackgroundImageEffect } from "@fishjam-cloud/video-effects/background-image";
+import { createCameraEffectMiddleware } from "@fishjam-cloud/video-effects/fishjam-react-native";
+import { Asset } from "expo-asset";
+import { File } from "expo-file-system";
+
+async function loadBundledImage(moduleId: number): Promise<ArrayBuffer> {
+  const bundled = Asset.fromModule(moduleId);
+  const asset = new Asset({
+    name: bundled.name,
+    type: bundled.type,
+    hash: bundled.hash,
+    uri: bundled.uri,
+  });
+  await asset.downloadAsync();
+  if (!asset.localUri) throw new Error("The image is not available.");
+  return new File(asset.localUri).arrayBuffer();
+}
+
+let officeImage: ArrayBuffer | undefined;
+export const officeImageLoaded = loadBundledImage(
+  require("./assets/office.jpg"),
+).then((bytes) => {
+  officeImage = bytes;
+});
+
+export const officeBackground = createCameraEffectMiddleware(
+  createBackgroundImageEffect(() => ({
+    segmentation,
+    image: { data: officeImage, mimeType: "image/jpeg" },
+  })),
+);
+```
+
+The options are read when the middleware is applied, so switch it on after `officeImageLoaded` resolves.
+
+## Options
+
+### Effect options
+
+The options function passed to `createBackgroundBlurEffect` or `createBackgroundImageEffect` is read when the middleware is applied. To change an option, create a middleware with the new options and set it. Setting the same middleware again also re-reads its options.
+
+| Option            | Effect | Default        | Description                                                                                         |
+| ----------------- | ------ | -------------- | --------------------------------------------------------------------------------------------------- |
+| `segmentation`    | Both   | —              | The segmentation provider. Required.                                                                |
+| `radius`          | Blur   | `18`           | Blur strength, in pixels of the published frame, from `0` to `40`.                                  |
+| `edgeFeather`     | Both   | `0.2`          | Softness of the person's outline, from `0` (sharp) to `0.5`. Defaults to `0.08` for images.         |
+| `enabled`         | Both   | `true`         | Draws the camera untouched while `false`.                                                           |
+| `image`           | Image  | —              | `{ uri }` or `{ data, mimeType }`. Required.                                                        |
+| `fit`             | Image  | `"cover"`      | `"cover"` fills the frame and crops the image, `"contain"` fits the whole image inside the frame.   |
+| `backgroundColor` | Image  | `[0, 0, 0, 1]` | RGBA color, each channel from `0` to `1`, shown where a `"contain"` image does not cover the frame. |
+
+### Middleware options
+
+`createCameraEffectMiddleware` takes a second, optional argument:
+
+| Option     | Default | Description                                                                          |
+| ---------- | ------- | ------------------------------------------------------------------------------------ |
+| `width`    | `720`   | Width of the published video, in pixels.                                             |
+| `height`   | `1280`  | Height of the published video, in pixels.                                            |
+| `onStatus` | —       | Called with the effect's status (`"loading"`, `"ready"` or `"error"`) and any error. |
+
+The camera is scaled and cropped to fill the published size, like `objectFit: "cover"`. The defaults suit a phone held upright.
+
+## Follow loading and errors
+
+Pass `onStatus` to show a spinner while the model loads, or to report failures:
+
+```ts
+import type { PersonSegmentationProvider } from "@fishjam-cloud/video-effects";
+declare const segmentation: PersonSegmentationProvider;
+// ---cut---
+import { createBackgroundBlurEffect } from "@fishjam-cloud/video-effects/background-blur";
+import { createCameraEffectMiddleware } from "@fishjam-cloud/video-effects/fishjam-react-native";
+
+export const backgroundBlur = createCameraEffectMiddleware(
+  createBackgroundBlurEffect(() => ({ segmentation, radius: 24 })),
+  {
+    onStatus: (status, error) => {
+      if (status === "error") console.warn("Background blur failed", error);
+    },
+  },
+);
+```
+
+An `"error"` status means the segmentation model or the background image could not be loaded. The middleware is still applied, but it publishes the camera without the effect.
+
+## Scope the effect to a component
+
+`createCameraEffectMiddleware` keeps the effect on until you clear it. If the effect should only be on while a component is mounted, for example on a single call screen, use the `useFishjamCameraEffect` hook instead. It applies the effect while mounted, clears it on unmount, and reports the status as state:
+
+```tsx
+// @filename: effects.ts
+import type { PersonSegmentationProvider } from "@fishjam-cloud/video-effects";
+export declare const segmentation: PersonSegmentationProvider;
+// @filename: index.tsx
+// ---cut---
+import { segmentation } from "./effects";
+import React, { useState } from "react";
+import { Button, Text } from "react-native";
+import { useBackgroundBlur } from "@fishjam-cloud/video-effects/background-blur";
+import { useFishjamCameraEffect } from "@fishjam-cloud/video-effects/fishjam-react-native";
+
+export function CallControls() {
+  const [isBlurOn, setIsBlurOn] = useState(false);
+  const blur = useBackgroundBlur({ segmentation, radius: 24 });
+
+  const { status, error, retry } = useFishjamCameraEffect(
+    isBlurOn ? blur : null,
+  );
+
+  return (
+    <>
+      <Button
+        title={isBlurOn ? "Blur off" : "Blur on"}
+        onPress={() => setIsBlurOn((value) => !value)}
+      />
+      {status === "loading" && <Text>Loading blur…</Text>}
+      {error && <Button title="Retry" onPress={retry} />}
+    </>
+  );
+}
+```
+
+While the effect loads, the hook publishes the plain camera. `useBackgroundImage` is the matching hook for image backgrounds.
+
+:::warning[One camera middleware at a time]
+The camera has a single middleware slot. `useFishjamCameraEffect` and `setCameraTrackMiddleware` write to the same slot, so don't mix them, or they replace each other's effect.
+:::
+
+## Good to know
+
+- Effects improve how the video looks. They are not a privacy boundary: the model can miss parts of the background, for example around the edges of the person or in poor light, and let them show through.
+- Remote peers need nothing special. The effect is part of the published camera track.
+- The local preview from `useCamera().cameraStream` shows the effect too, because it renders the published track.
+
+## Related guides
+
+- [Background blur tutorial](../../../tutorials/background-blur.mdx): build a blur toggle step by step
+- [Render WebGPU effects into the camera](./webgpu-effects.mdx): draw your own shaders instead of a ready-made effect
+- [Process camera frames in a worklet](./frame-processing.mdx): read camera frames, for example for on-device ML
+- [How camera effects work](../../../explanation/camera-effects.mdx)
+- API reference: [`createCameraEffectMiddleware`](../../../api/video-effects/fishjam-react-native/functions/createCameraEffectMiddleware.md), [`useFishjamCameraEffect`](../../../api/video-effects/fishjam-react-native/functions/useFishjamCameraEffect.md), [`typeGpuPersonSegmentation`](../../../api/video-effects/segmentation/typegpu/functions/typeGpuPersonSegmentation.md), [Video Effects package](../../../api/video-effects/index.md)

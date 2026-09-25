@@ -1,0 +1,9 @@
+{
+  "label": "Vision Camera",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "title": "Vision Camera",
+    "description": "Publish a react-native-vision-camera feed to Fishjam, run frame processors on it, and draw your own WebGPU effects into it."
+  }
+}
