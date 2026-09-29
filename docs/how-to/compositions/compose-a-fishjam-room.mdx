@@ -1,6 +1,6 @@
 ---
 type: how-to
-sidebar_position: 2
+sidebar_position: 3
 description: Forward a Fishjam room into a composition and render its peers with a live React template.
 ---
 
@@ -15,6 +15,12 @@ A composition can include the peers of a [Fishjam room](./../../explanation/room
 ```text
 Fishjam room (peers) ──forwarded──▶ composition (template) ──WHIP──▶ Fishjam livestream ──WHEP──▶ [viewers]
 ```
+
+:::note
+Only [conference](./../../explanation/rooms#conference-rooms-default) and [audio-only](./../../explanation/rooms#audio-only-rooms) rooms can be forwarded. Forwarding a [livestream room](./../../explanation/rooms#livestream-rooms) fails.
+
+To compose a single stream, such as OBS, a phone camera, or a browser tab, you don't need a room at all. Publish it straight into the composition through a [`whip_server` input](./inputs-and-outputs#inputs).
+:::
 
 ## Prerequisites
 

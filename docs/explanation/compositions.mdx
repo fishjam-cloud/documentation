@@ -18,7 +18,7 @@ Compositions are built on [Smelter](https://smelter.dev), the source-available r
 
 ## What you can build
 
-- **Multi-party layouts**: arrange the cameras of a conference or livestream into grids, side-by-sides, or picture-in-picture.
+- **Multi-party layouts**: arrange the cameras of a conference room, or several independent streams, into grids, side-by-sides, or picture-in-picture.
 - **Branded streams**: overlay logos, captions, lower-thirds, and backgrounds on top of live video.
 - **Cross-protocol bridging**: take WebRTC inputs and republish the composed result over RTMP, for example broadcasting a conference to YouTube or Twitch, or the other way round.
 - **Recordings**: capture the composed stream as an MP4 file to store, replay, or serve on demand.
@@ -34,6 +34,13 @@ A **composition** is a single running compositing session. You register three ki
 A composition produces video, it does not serve it. There is nowhere to point a player at a composition, so it always needs an output aimed at a destination your viewers can connect to instead: a [livestream](./livestreams) they watch over WHEP, or an RTMP service such as YouTube.
 
 An output's scene can either be described directly in the API or rendered by a **template**: a React component, written with the layout components and the [`@fishjam-cloud/composition`](./../how-to/compositions/write-and-deploy-a-template) hooks, that updates the layout live as the room changes.
+
+## Getting media in
+
+There are two ways to feed a composition:
+
+- **Publish straight to an input.** Register an input and point any source at it: OBS, a phone camera, a browser tab, an RTMP encoder, or an MP4 file. This is the simplest path and needs no room. See [Choose inputs and outputs](./../how-to/compositions/inputs-and-outputs).
+- **Forward a Fishjam room.** Use this to compose every peer of a [conference or audio-only room](./rooms). Fishjam registers an input per participant and keeps them in sync as peers join and leave. Livestream rooms cannot be forwarded. See [Compose a Fishjam room](./../how-to/compositions/compose-a-fishjam-room).
 
 ## Cost and lifecycle
 
