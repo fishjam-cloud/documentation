@@ -186,6 +186,49 @@ Once both steps are complete, the VAPI assistant is live in the room — peers c
 
 The VAPI peer's lifetime is tied to the underlying WebSocket connection. If there is a prolonged period of silence or the call ends for any other reason, the peer will disconnect and be removed from the room. You can detect this by listening for `PeerDisconnected` and `PeerDeleted` server notifications. If the peer crashes (e.g. due to an invalid transport configuration or call ID), a `PeerCrashed` notification is sent instead. See [Listening to events](../how-to/backend/server-setup#listening-to-events) for how to subscribe to these notifications.
 
+## Ending the call automatically
+
+Set `autoClose` to end the VAPI call once the last participant leaves the room.
+The peer is then removed and a `PeerDeleted` notification is sent.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript">
+
+    ```ts
+    import { FishjamClient, type RoomId } from '@fishjam-cloud/js-server-sdk';
+
+    const fishjamClient = new FishjamClient({
+      fishjamId: process.env.FISHJAM_ID!,
+      managementToken: process.env.FISHJAM_TOKEN!,
+    });
+    const roomId = '' as RoomId;
+    const callId = '';
+
+    // ---cut---
+    await fishjamClient.createVapiAgent(roomId, {
+      callId,
+      apiKey: process.env.VAPI_API_KEY!,
+      // [!code highlight]
+      autoClose: true,
+    });
+    ```
+
+  </TabItem>
+
+  <TabItem value="python" label="Python">
+
+    ```python
+    options = PeerOptionsVapi(
+        api_key=os.environ["VAPI_API_KEY"],
+        call_id=call.id,
+        # [!code highlight]
+        auto_close=True,
+    )
+    ```
+
+  </TabItem>
+</Tabs>
+
 ## Billing
 
 The VAPI peer is billed as a single Fishjam peer. VAPI's own usage pricing applies separately — see [VAPI pricing](https://vapi.ai/pricing) for details.
