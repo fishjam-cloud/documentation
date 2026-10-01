@@ -1,0 +1,48 @@
+---
+sidebar_position: 1
+title: Build Fishjam apps with AI
+sidebar_label: Build with AI
+description: "The Fishjam Skill gives your AI coding assistant up-to-date, correct guidance for building Fishjam apps: right SDK, real APIs, secure auth."
+slug: /ai-skill
+---
+
+# Build Fishjam apps with AI
+
+The **Fishjam Skill** gives any skills-compatible coding assistant accurate, always-current Fishjam expertise. With it installed, your assistant generates code that uses the right SDK, real API names, and secure auth patterns from the first prompt.
+
+## What it covers
+
+The skill is one entry in Software Mansion's `skills` plugin, and it spans the whole Fishjam stack — backend, web, and mobile:
+
+- **Platform fundamentals** — rooms, peers, tracks, the two-tier auth model, notifications, and the REST API.
+- **Server SDKs (Node & Python)** — including AI voice agents and the Gemini Live integration.
+- **React web client** — the `@fishjam-cloud/react-client` hooks and providers.
+- **React Native / Expo client** — permissions, foreground service, CallKit, screen share, and Picture-in-Picture.
+
+## Install
+
+Install the skill into Claude Code (recommended) or any skills-compatible assistant:
+
+```bash
+npx skills add software-mansion-labs/skills
+```
+
+## How it activates
+
+No command needed. The skill auto-loads whenever you mention Fishjam or a Fishjam SDK/API in your prompts, like `@fishjam-cloud/react-client`, `FishjamClient`, or `managementToken`.
+
+## Why it helps
+
+The skill turns your assistant into a Fishjam specialist:
+
+- **Always current** — it tracks the latest SDKs and APIs, so your assistant builds on today's Fishjam instead of stale examples.
+- **Secure by default** — authentication and tokens follow the patterns we recommend for production, from the first line of code.
+- **Full-stack in one place** — backend, web, and mobile share the same guidance, so features connect cleanly end to end.
+
+:::tip
+The skill follows the latest Fishjam release, so your assistant always works against current SDKs and APIs.
+:::
+
+## Links
+
+- Source and installation details: [software-mansion-labs/skills](https://github.com/software-mansion-labs/skills) (MIT).

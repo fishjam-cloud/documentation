@@ -1,0 +1,60 @@
+---
+title: "Camera effects"
+description: Change or read the camera video you publish to Fishjam, from ready-made background blur to your own WebGPU shaders and frame worklets.
+---
+
+import DocCardList from "@theme/DocCardList";
+
+# Camera effects
+
+Camera effects change the camera video before it leaves the device: blur the background, replace it with an image, or draw your own shaders into every frame. You can also read camera frames without changing the video, for example to run on-device ML.
+
+All of this works on the camera Fishjam already manages. You keep using [`useCamera`](../../../api/mobile/functions/useCamera) to start, stop and switch the camera, and set the effect with `setCameraTrackMiddleware`. Other peers receive the result as your regular `cameraTrack`, so nothing changes on the receiving side.
+
+```tsx
+import type { TrackMiddleware } from "@fishjam-cloud/react-native-client";
+declare const backgroundBlur: NonNullable<TrackMiddleware>;
+// ---cut---
+import { useCamera } from "@fishjam-cloud/react-native-client";
+
+const { setCameraTrackMiddleware } = useCamera();
+
+await setCameraTrackMiddleware(backgroundBlur); // null turns the effect off
+```
+
+:::important
+
+If you want to publish something that isn't your camera, such as a game render loop or a video file, see [Custom sources](../custom-sources/index.mdx) instead.
+
+:::
+
+## Choose a guide
+
+| Guide                                          | Platform           | Use it when                                                                       |
+| ---------------------------------------------- | ------------------ | --------------------------------------------------------------------------------- |
+| [Background effects](./background-effects.mdx) | 📱 Mobile          | You want background blur or a background image, without writing shaders           |
+| [WebGPU effects](./webgpu-effects.mdx)         | 📱 Mobile · 🌐 Web | You want to draw your own shaders, overlays or effects into the published video   |
+| [Frame processing](./frame-processing.mdx)     | 📱 Mobile          | You want to read camera frames, e.g. for on-device ML, without changing the video |
+| [Stream middleware](./stream-middleware.mdx)   | 📱 Mobile · 🌐 Web | You want to understand or write the middleware that the other guides are built on |
+
+:::info[How it runs in React Native]
+
+Effects run off the JS thread. `@fishjam-cloud/react-native-worklets` hands every camera frame to a worklet on a dedicated camera thread, and `@fishjam-cloud/video-effects` renders the result with WebGPU. See [How camera effects work](../../../explanation/camera-effects.mdx) for the full picture.
+
+:::
+
+:::tip[Using VisionCamera?]
+
+If your app already captures the camera with [VisionCamera](https://react-native-vision-camera.com), you can publish that feed instead. See the [VisionCamera integration](../../../integrations/vision-camera/vision-camera-source.mdx).
+
+:::
+
+## Guides in this section
+
+<DocCardList />
+
+## Further reading
+
+- [Background blur tutorial](../../../tutorials/background-blur.mdx) and [WebGPU effects tutorial](../../../tutorials/webgpu-effects.mdx): build a working app step by step
+- [How camera effects work](../../../explanation/camera-effects.mdx): concepts behind the pipeline
+- API reference: [Video Effects package](../../../api/video-effects/index.md), [React Native Worklets package](../../../api/react-native-worklets/index.md)

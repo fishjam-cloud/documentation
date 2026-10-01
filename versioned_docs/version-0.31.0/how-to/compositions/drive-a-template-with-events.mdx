@@ -1,0 +1,227 @@
+---
+type: how-to
+sidebar_position: 4
+description: Send custom events to a running composition to update a template's on-screen state at runtime.
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import IdleCleanup from "../../_common/compositions/idle-cleanup.mdx";
+
+# Drive a template with events
+
+Once a [template](./write-and-deploy-a-template) is running, you can push **custom events** to it from your backend to change what it shows, such as toggling a live badge or updating a caption, without re-uploading the template.
+
+## Handle events in the template
+
+Inside a template, subscribe to events with the `eventBus`. Each `on` call returns an unsubscribe function. Event names and payloads are entirely defined by your application.
+
+```tsx
+// @jsx: react-jsx
+// ---cut-before---
+import { useEffect, useState } from "react";
+import { Text, View } from "@swmansion/smelter";
+import { eventBus } from "@fishjam-cloud/composition";
+
+export default function App() {
+  const [caption, setCaption] = useState<string | null>(null);
+  const [live, setLive] = useState(false);
+
+  useEffect(() => {
+    const unsubs = [
+      eventBus.on<{ text: string }>("SET_CAPTION", ({ text }) =>
+        setCaption(text),
+      ),
+      eventBus.on("CLEAR_CAPTION", () => setCaption(null)),
+      eventBus.on<{ live: boolean }>("SET_LIVE", ({ live }) => setLive(live)),
+    ];
+    return () => unsubs.forEach((off) => off());
+  }, []);
+
+  return (
+    <View>
+      {live && <Text>● LIVE</Text>}
+      {caption && <Text>{caption}</Text>}
+    </View>
+  );
+}
+```
+
+## Deploy it
+
+Now create the composition. A caption-only template registers no inputs, and a composition with no input media cleans itself up after five minutes, so create this one with `cleanup_without_inputs` set to `false`:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+const managementToken = "";
+
+// ---cut---
+import { CompositionClient } from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken });
+
+const { compositionId } = await compositionClient.createComposition({
+  cleanupWithoutInputs: false,
+});
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+from fishjam import CompositionClient
+from fishjam.composition import CreateCompositionRequest
+
+composition_client = CompositionClient(management_token=management_token)
+
+composition = composition_client.create_composition(
+    CreateCompositionRequest(cleanup_without_inputs=False),
+)
+composition_id = composition.composition_id
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
+```bash
+export TOKEN="<YOUR_MANAGEMENT_TOKEN>"
+
+curl -X POST "https://rtc.fishjam.io/api/composition" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "cleanup_without_inputs": false }'
+```
+
+Save the id from the response:
+
+```bash
+export COMPOSITION="<COMPOSITION_ID>"
+```
+
+  </TabItem>
+</Tabs>
+
+<IdleCleanup />
+
+Build the bundle and register it as a templated output with `registerTemplateOutput`, as in [Write and deploy a template](./write-and-deploy-a-template).
+
+That output has to publish somewhere, so create a livestream and take its streamer token first, as in [Step 3 of the compositions tutorial](./../../tutorials/compositions#step-3-create-a-livestream-to-publish-to). Watching it works the same way as there.
+
+## Send events from your backend
+
+Send an event with `sendEvent`. The event name is matched against your `eventBus.on(...)` subscriptions, and `data` is delivered as the handler's argument.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { CompositionClient, CompositionId } from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken: "" });
+const compositionId = "" as CompositionId;
+
+// ---cut---
+await compositionClient.sendEvent(compositionId, {
+  eventName: "SET_CAPTION",
+  data: { text: "Welcome to the stream" },
+});
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+composition_client.send_event(composition_id, "SET_CAPTION", {"text": "Welcome to the stream"})
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
+```bash
+curl -X POST "https://rtc.fishjam.io/api/composition/$COMPOSITION/event" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "event_name": "SET_CAPTION", "data": { "text": "Welcome to the stream" } }'
+```
+
+  </TabItem>
+</Tabs>
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { CompositionClient, CompositionId } from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken: "" });
+const compositionId = "" as CompositionId;
+
+// ---cut---
+await compositionClient.sendEvent(compositionId, {
+  eventName: "SET_LIVE",
+  data: { live: true },
+});
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+composition_client.send_event(composition_id, "SET_LIVE", {"live": True})
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
+```bash
+curl -X POST "https://rtc.fishjam.io/api/composition/$COMPOSITION/event" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "event_name": "SET_LIVE", "data": { "live": true } }'
+```
+
+  </TabItem>
+</Tabs>
+
+The template re-renders as soon as the event arrives.
+
+:::note
+Event names and payloads are an application-defined contract between your backend and your template. There is no canonical set of events; `SET_LIVE` and `SET_CAPTION` above are just examples. Pick names and payload shapes that fit your app, and keep them in sync on both sides.
+:::
+
+## Clean up
+
+Delete the composition when you have finished testing, so it stops billing:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { CompositionClient, CompositionId } from "@fishjam-cloud/js-server-sdk";
+
+const compositionClient = new CompositionClient({ managementToken: "" });
+const compositionId = "" as CompositionId;
+
+// ---cut---
+await compositionClient.deleteComposition(compositionId);
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+composition_client.delete_composition(composition_id)
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
+```bash
+curl -X DELETE "https://rtc.fishjam.io/api/composition/$COMPOSITION" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+  </TabItem>
+</Tabs>

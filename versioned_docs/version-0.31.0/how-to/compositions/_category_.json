@@ -1,0 +1,8 @@
+{
+  "label": "Compositions",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "description": "Compose rooms and live streams into new outputs with templates, events, and multiple transports."
+  }
+}
