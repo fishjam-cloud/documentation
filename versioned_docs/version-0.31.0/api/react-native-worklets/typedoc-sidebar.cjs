@@ -1,0 +1,4 @@
+// @ts-check
+/** @type {import("@docusaurus/plugin-content-docs").SidebarsConfig} */
+const typedocSidebar = {items:[{type:"category",label:"Interfaces",items:[{type:"doc",id:"api/react-native-worklets/interfaces/CameraFrame",label:"CameraFrame"},{type:"doc",id:"api/react-native-worklets/interfaces/CameraFrameSubscription",label:"CameraFrameSubscription"}]},{type:"category",label:"Type Aliases",items:[{type:"doc",id:"api/react-native-worklets/type-aliases/CameraFrameCallback",label:"CameraFrameCallback"},{type:"doc",id:"api/react-native-worklets/type-aliases/CameraFramePixelFormat",label:"CameraFramePixelFormat"}]},{type:"category",label:"Functions",items:[{type:"doc",id:"api/react-native-worklets/functions/attachCameraFrameCallback",label:"attachCameraFrameCallback"}]}]};
+module.exports = typedocSidebar.items;

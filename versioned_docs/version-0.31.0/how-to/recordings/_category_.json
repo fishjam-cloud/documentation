@@ -1,0 +1,8 @@
+{
+  "label": "Recordings",
+  "position": 6,
+  "link": {
+    "type": "generated-index",
+    "description": "Record a template or a composition output into an MP4, then download and manage the files."
+  }
+}
