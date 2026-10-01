@@ -9,6 +9,29 @@ interface RedirectGroup {
 
 const redirectGroups: RedirectGroup[] = [
   {
+    since: "0.30.1",
+    description:
+      "Camera effects category added; VisionCamera pages moved to Integrations",
+    rules: [
+      {
+        from: "/how-to/client/stream-middleware",
+        to: "/how-to/client/camera-effects/stream-middleware",
+      },
+      {
+        from: "/how-to/client/custom-sources/webgpu-effects",
+        to: "/how-to/client/camera-effects/webgpu-effects",
+      },
+      {
+        from: "/how-to/client/custom-sources/vision-camera",
+        to: "/integrations/vision-camera/vision-camera-source",
+      },
+      {
+        from: "/tutorials/vision-camera",
+        to: "/integrations/vision-camera/stream-vision-camera",
+      },
+    ],
+  },
+  {
     since: "0.28.0",
     description:
       "MoQ tutorials nested under Tutorials; MoQ concept moved into Concepts",

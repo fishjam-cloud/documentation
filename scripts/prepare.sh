@@ -59,6 +59,14 @@ cd packages/web-client-sdk/packages/react-native-vision-camera-source/
 yarn && yarn build
 
 cd $ROOTDIR
+cd packages/react-native-worklets/
+yarn && yarn build
+
+cd $ROOTDIR
+cd packages/video-effects/
+yarn && yarn build
+
+cd $ROOTDIR
 cd packages/js-server-sdk/
 yarn && yarn build
 

@@ -140,5 +140,7 @@ docs/api/server/**
 docs/api/server-python/**
 docs/api/custom-video-source/**
 docs/api/vision-camera-source/**
+docs/api/video-effects/**
+docs/api/react-native-worklets/**
 
 .cursor/

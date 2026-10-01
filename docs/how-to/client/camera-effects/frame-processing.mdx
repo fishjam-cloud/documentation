@@ -1,0 +1,128 @@
+---
+title: "Process camera frames in a worklet"
+sidebar_position: 3
+sidebar_label: "Frame processing 📱"
+description: Run a worklet on every frame of the Fishjam camera track, for example to feed on-device ML, without changing the video you publish.
+---
+
+# Process camera frames in a worklet <span className="badge badge--mobile">Mobile</span>
+
+:::note
+This guide is exclusively for **Mobile** (React Native) applications.
+:::
+
+`@fishjam-cloud/react-native-worklets` runs a worklet on every frame the Fishjam camera captures. The worklet gets the frame's native buffer, so you can hand it to on-device inference or other native frame-processing code, while the camera keeps publishing as usual.
+
+Use this guide when you want to **read** frames. To **change** the published video, use [background effects](./background-effects.mdx) or [your own WebGPU effects](./webgpu-effects.mdx), which are built on the same mechanism.
+
+## Prerequisites
+
+- `@fishjam-cloud/react-native-client` **0.30.2** or newer, with your app wrapped in `FishjamProvider` (see [Installation](../installation.mdx))
+- React Native 0.86 with the New Architecture enabled
+- Android 8.0 (API 26) or newer on Android devices
+
+```bash npm2yarn
+npm install @fishjam-cloud/react-native-worklets react-native-worklets
+```
+
+The minor version of `@fishjam-cloud/react-native-worklets` follows `react-native-worklets`: `0.12.x` works with `react-native-worklets` `0.12.x`. Add the worklets Babel plugin as the last entry in your Babel plugins, then rebuild the native app:
+
+```js title='babel.config.js'
+module.exports = {
+  presets: ["babel-preset-expo"],
+  plugins: ["react-native-worklets/plugin"],
+};
+```
+
+## Attach a frame callback
+
+A frame callback attaches to a camera track through its frame processor: `getCameraFrameProcessor` from `@fishjam-cloud/react-native-webrtc` returns the processor, and `attachCameraFrameCallback` starts calling your worklet.
+
+The easiest place to do this is a [camera track middleware](./stream-middleware.mdx) that returns the camera track unchanged. The middleware receives the raw camera track, and Fishjam runs it again whenever the camera restarts or you switch cameras, so the callback always follows the current camera:
+
+```ts title='frameRateMonitor.ts'
+import type { TrackMiddleware } from "@fishjam-cloud/react-native-client";
+import { getCameraFrameProcessor } from "@fishjam-cloud/react-native-webrtc";
+import { attachCameraFrameCallback } from "@fishjam-cloud/react-native-worklets";
+import { scheduleOnRN } from "react-native-worklets";
+
+function reportFrameRate(framesPerSecond: number) {
+  console.log(`Camera: ${framesPerSecond} fps`);
+}
+
+export const frameRateMonitor: TrackMiddleware = async (track) => {
+  const processor = await getCameraFrameProcessor(track);
+
+  const stats = { windowStartNs: 0, frames: 0 };
+  const subscription = await attachCameraFrameCallback(processor, (frame) => {
+    "worklet";
+    stats.frames += 1;
+    const elapsedNs = frame.timestampNanoseconds - stats.windowStartNs;
+    if (elapsedNs >= 1_000_000_000) {
+      scheduleOnRN(
+        reportFrameRate,
+        Math.round((stats.frames * 1e9) / elapsedNs),
+      );
+      stats.windowStartNs = frame.timestampNanoseconds;
+      stats.frames = 0;
+    }
+  });
+
+  // Publish the camera unchanged; stop the callback when the middleware is removed.
+  return { track, onClear: () => subscription.remove() };
+};
+```
+
+Switch it on with `setCameraTrackMiddleware`:
+
+```tsx
+import type { TrackMiddleware } from "@fishjam-cloud/react-native-client";
+declare const frameRateMonitor: NonNullable<TrackMiddleware>;
+// ---cut---
+import { useCamera } from "@fishjam-cloud/react-native-client";
+
+const { setCameraTrackMiddleware } = useCamera();
+
+await setCameraTrackMiddleware(frameRateMonitor);
+```
+
+The callback runs on a dedicated camera frame thread, never on the JS thread. Use `scheduleOnRN` from `react-native-worklets` to send results back to the JS thread, as in the example.
+
+## What a frame carries
+
+| Field                  | Description                                                                                    |
+| ---------------------- | ---------------------------------------------------------------------------------------------- |
+| `nativeBuffer`         | `CVPixelBufferRef` on iOS, `AHardwareBuffer*` on Android, as a `bigint` pointer                |
+| `width`, `height`      | Size of the buffer, in pixels, before rotation                                                 |
+| `rotationDegrees`      | Clockwise rotation (`0`, `90`, `180` or `270`) that brings the frame upright                   |
+| `isFrontCamera`        | Whether the frame comes from the front camera                                                  |
+| `timestampNanoseconds` | Presentation timestamp of the frame                                                            |
+| `pixelFormat`          | `"nv12"` or `"bgra8"` on iOS, depending on the camera; `"rgba8"` on Android                    |
+| `release()`            | Hands the buffer back to the camera before the callback returns. `isReleased` tells if it was. |
+
+On Android, the camera tap converts each camera image to RGBA before your callback runs, so the buffer is always `rgba8`.
+
+:::danger[Frame lifetime]
+`nativeBuffer` is valid only until your callback returns or you call `release()`. Don't store the pointer for later use; copy what you need inside the callback.
+:::
+
+## How frames are delivered
+
+- **Frames are dropped, never queued.** While your callback holds a frame, newer frames are dropped. A slow callback lowers the rate at which you see frames, not the rate at which the camera publishes.
+- **One callback per camera track.** Remove the subscription before you attach another callback to the same track. The frame processor is also what [background effects](./background-effects.mdx) and [WebGPU effects](./webgpu-effects.mdx) use, so don't attach your own callback to a camera that already runs an effect.
+- **One worklet runtime for the app.** All frame callbacks share one camera frame runtime, created the first time you attach a callback. Its closure copies follow the usual [worklet rules](https://docs.swmansion.com/react-native-worklets/docs/fundamentals/getting-started): capture plain values and other worklets, and mutate objects captured by the worklet, not variables from the JS thread.
+
+## Troubleshooting
+
+- **`Camera frame worklets require the New Architecture.`** Turn on the New Architecture and rebuild the native app.
+- **`Camera frame worklets require Android 8.0 (API 26).`** The device is too old for hardware buffers. Skip frame processing on such devices.
+- **`@fishjam-cloud/react-native-worklets is not linked.`** Rebuild the native app after installing the package; a JS reload is not enough. On Android, if an older version was installed before, also delete `android/build/generated/autolinking` in your app.
+- **`A camera frame callback is already attached.`** Remove the previous subscription first, or check that no effect middleware is running on the camera.
+
+## Related guides
+
+- [Background effects](./background-effects.mdx): blur or replace the background
+- [Render WebGPU effects into the camera](./webgpu-effects.mdx): draw into the published frames
+- [Stream middleware](./stream-middleware.mdx): how camera track middleware works
+- [How camera effects work](../../../explanation/camera-effects.mdx)
+- API reference: [`attachCameraFrameCallback`](../../../api/react-native-worklets/functions/attachCameraFrameCallback.md), [`CameraFrame`](../../../api/react-native-worklets/interfaces/CameraFrame.md), [React Native Worklets package](../../../api/react-native-worklets/index.md)

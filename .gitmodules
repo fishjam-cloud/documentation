@@ -19,3 +19,9 @@
 [submodule "api/composition"]
 	path = api/composition
 	url = git@github.com:fishjam-cloud/foundry.git
+[submodule "packages/video-effects"]
+	path = packages/video-effects
+	url = https://github.com/fishjam-cloud/video-effects.git
+[submodule "packages/react-native-worklets"]
+	path = packages/react-native-worklets
+	url = https://github.com/fishjam-cloud/fishjam-react-native-worklets.git

@@ -117,6 +117,8 @@ function buildInjectedApiItems(version: SidebarItemsGeneratorVersion) {
     | NormalizedSidebarItem
   )[] = [];
   for (const { label, dir } of [
+    { label: "Video Effects", dir: "video-effects" },
+    { label: "React Native Worklets", dir: "react-native-worklets" },
     { label: "Vision Camera Source", dir: "vision-camera-source" },
     { label: "Custom Video Source", dir: "custom-video-source" },
   ]) {
@@ -487,6 +489,32 @@ const config: Config = {
         ],
         tsconfig:
           "./packages/web-client-sdk/packages/react-native-custom-video-source/tsconfig.json",
+        ...typedocConfig,
+      },
+    ],
+    [
+      "docusaurus-plugin-typedoc",
+      {
+        id: "video-effects-api",
+        out: "docs/api/video-effects",
+        entryPoints: [
+          "./packages/video-effects/src/index.ts",
+          "./packages/video-effects/src/background-blur.ts",
+          "./packages/video-effects/src/background-image.ts",
+          "./packages/video-effects/src/segmentation/typegpu/index.ts",
+          "./packages/video-effects/src/fishjam-react-native.ts",
+        ],
+        tsconfig: "./packages/video-effects/tsconfig.json",
+        ...typedocConfig,
+      },
+    ],
+    [
+      "docusaurus-plugin-typedoc",
+      {
+        id: "react-native-worklets-api",
+        out: "docs/api/react-native-worklets",
+        entryPoints: ["./packages/react-native-worklets/src/index.ts"],
+        tsconfig: "./packages/react-native-worklets/tsconfig.json",
         ...typedocConfig,
       },
     ],

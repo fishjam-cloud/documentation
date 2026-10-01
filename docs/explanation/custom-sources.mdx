@@ -12,11 +12,11 @@ description: Concepts behind Fishjam custom sources, including track metadata ro
 
 Fishjam clients offer three ways to influence what a peer publishes:
 
-| Approach                                                          | What it does                                                         | When to use it                                                            |
-| ----------------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Built-in sources (`useCamera`, `useMicrophone`, `useScreenShare`) | Capture and publish a device the SDK manages end-to-end              | Plain camera, microphone or screen sharing                                |
-| [Track middleware](../how-to/client/stream-middleware)            | Transforms a built-in track before it is sent (e.g. background blur) | You want the SDK's device handling, but with a processing step in between |
-| [Custom sources](../how-to/client/custom-sources/index.mdx)       | Publishes a `MediaStream` your app produced entirely on its own      | Content that isn't a managed device: renderers, compositors, ML pipelines |
+| Approach                                                              | What it does                                                         | When to use it                                                            |
+| --------------------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Built-in sources (`useCamera`, `useMicrophone`, `useScreenShare`)     | Capture and publish a device the SDK manages end-to-end              | Plain camera, microphone or screen sharing                                |
+| [Track middleware](../how-to/client/camera-effects/stream-middleware) | Transforms a built-in track before it is sent (e.g. background blur) | You want the SDK's device handling, but with a processing step in between |
+| [Custom sources](../how-to/client/custom-sources/index.mdx)           | Publishes a `MediaStream` your app produced entirely on its own      | Content that isn't a managed device: renderers, compositors, ML pipelines |
 
 Capabilities differ slightly per platform:
 
@@ -26,6 +26,8 @@ Capabilities differ slightly per platform:
 | Frame-level video injection            | via `canvas.captureStream()`       | ✅ native buffer forwarding / pooled render targets |
 | Custom audio                           | ✅ any audio track                 | ✅ PCM pushed through `useCustomAudioSource`        |
 | GPU rendering into the published video | ✅ WebGPU/WebGL via canvas capture | ✅ WebGPU toolkit with zero-copy camera import      |
+
+In React Native, effects on the camera, such as background blur or your own WebGPU shaders, run as track middleware on Fishjam's own camera; see [How camera effects work](./camera-effects.mdx). The custom video track pipeline described below is what those effects publish through.
 
 ## Streams and source IDs
 
@@ -86,5 +88,7 @@ The native layer re-paces pushes into the continuous real-time frame stream the 
 
 ## Where to go next
 
-- [Custom sources how-to guides](../how-to/client/custom-sources/index.mdx): publish from the web, React Native, Vision Camera, WebGPU, or your own pipeline
+- [Custom sources how-to guides](../how-to/client/custom-sources/index.mdx): publish from the web, React Native, or your own pipeline
+- [How camera effects work](./camera-effects.mdx): effects on Fishjam's own camera
+- [VisionCamera integration](../integrations/vision-camera/vision-camera-source.mdx): publish a VisionCamera feed
 - API reference: [`useCustomSource` (Web)](../api/web/functions/useCustomSource), [`useCustomSource` (React Native)](../api/mobile/functions/useCustomSource), [`useCustomAudioSource` (React Native)](../api/mobile/functions/useCustomAudioSource), [Vision Camera Source package](../api/vision-camera-source/index), [Custom Video Source package](../api/custom-video-source/index)
