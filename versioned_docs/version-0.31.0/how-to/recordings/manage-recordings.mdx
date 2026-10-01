@@ -1,0 +1,206 @@
+---
+type: how-to
+sidebar_position: 3
+description: Check a recording's status, stop it, download the MP4, list recordings by metadata, and delete them.
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Manage recordings
+
+Once a recording exists, you manage it through the [Fishjam Server API](./../../api/reference#server) the same way, whether it was created [with a template](./record-with-a-template) or [from a composition output](./record-a-composition-output). Every call below is a method on the `FishjamClient` of the [JS and Python server SDKs](./../backend/server-setup).
+
+```bash
+export FISHJAM_URL="https://fishjam.io/api/v1/connect/<YOUR_FISHJAM_ID>"
+export TOKEN="<YOUR_MANAGEMENT_TOKEN>"
+export RECORDING="<RECORDING_ID>"
+```
+
+## Check the status
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { FishjamClient, type Recording } from "@fishjam-cloud/js-server-sdk";
+
+const fishjamClient = new FishjamClient({
+  fishjamId: process.env.FISHJAM_ID!,
+  managementToken: process.env.MANAGEMENT_TOKEN!,
+});
+declare const recording: Recording;
+// ---cut---
+const { status } = await fishjamClient.getRecording(recording.id);
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+status = fishjam_client.get_recording(recording.id).status
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
+```bash
+curl "$FISHJAM_URL/recordings/$RECORDING" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+  </TabItem>
+</Tabs>
+
+A recording has four statuses:
+
+| Status      | Meaning                                                 |
+| ----------- | ------------------------------------------------------- |
+| `active`    | Media is being captured.                                |
+| `finished`  | Capture has ended and the file is being prepared.       |
+| `available` | The MP4 is ready and `files` contains the download URL. |
+| `failed`    | An error occurred and no file will be produced.         |
+
+Instead of polling, you can subscribe to [server notifications](./../../api/reference#protobufs): every status change emits a `RecordingStatusChanged` message containing the recording's id, its new status, and its metadata, delivered over your configured webhook or a websocket.
+
+## Stop the recording
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { FishjamClient, type Recording } from "@fishjam-cloud/js-server-sdk";
+
+const fishjamClient = new FishjamClient({
+  fishjamId: process.env.FISHJAM_ID!,
+  managementToken: process.env.MANAGEMENT_TOKEN!,
+});
+declare const recording: Recording;
+// ---cut---
+await fishjamClient.stopRecording(recording.id);
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+fishjam_client.stop_recording(recording.id)
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
+```bash
+curl -X POST "$FISHJAM_URL/recordings/$RECORDING/stop" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+  </TabItem>
+</Tabs>
+
+Finalization is asynchronous: the recording remains `active` until capture has ended, then transitions to `finished`. Stopping a recording that is no longer active has no effect.
+
+Stopping a recording explicitly is optional. Capture also ends when the composition ends, so [deleting the composition](./../../explanation/compositions#cost-and-lifecycle) finalizes its recordings. A recording of a composition output also ends when that output ends.
+
+## Download the MP4
+
+Once the status is `available`, the recording's `files` field lists its media files in playback order as direct HTTPS URLs:
+
+```json
+{
+  "data": {
+    "id": "<RECORDING_ID>",
+    "status": "available",
+    "files": [{ "url": "https://media.fishjam.io/.../index.mp4" }],
+    "source": { "...": "..." },
+    "metadata": { "show": "weekly-standup" }
+  }
+}
+```
+
+You can download the file or serve the URL to your users directly. Until the recording is `available`, `files` is empty.
+
+Fishjam keeps recordings for 3 months after they are created, so download any file you need for longer. See [Retention](./../../explanation/recordings#retention).
+
+## List your recordings
+
+`GET /recordings` lists every recording in your app and accepts filters on status and metadata. A metadata filter matches recordings whose metadata contains all of the given pairs. Values are compared as strings, so numeric and boolean metadata values cannot be matched this way.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/js-server-sdk";
+
+const fishjamClient = new FishjamClient({
+  fishjamId: process.env.FISHJAM_ID!,
+  managementToken: process.env.MANAGEMENT_TOKEN!,
+});
+// ---cut---
+const recordings = await fishjamClient.getAllRecordings({
+  show: "weekly-standup",
+});
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+recordings = fishjam_client.get_all_recordings({"show": "weekly-standup"})
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
+```bash
+curl -g "$FISHJAM_URL/recordings?status=available&metadata[show]=weekly-standup" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+The `-g` flag prevents curl from interpreting the square brackets.
+
+  </TabItem>
+</Tabs>
+
+The SDK methods filter by metadata only. To filter by status as well, call the REST endpoint directly.
+
+## Delete a recording
+
+Recordings persist independently of the composition for 3 months. To remove one sooner, delete it. Deleting a recording also removes its files:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="Typescript">
+
+```ts
+import { FishjamClient, type Recording } from "@fishjam-cloud/js-server-sdk";
+
+const fishjamClient = new FishjamClient({
+  fishjamId: process.env.FISHJAM_ID!,
+  managementToken: process.env.MANAGEMENT_TOKEN!,
+});
+declare const recording: Recording;
+// ---cut---
+await fishjamClient.deleteRecording(recording.id);
+```
+
+  </TabItem>
+  <TabItem value="python" label="Python">
+
+```python
+fishjam_client.delete_recording(recording.id)
+```
+
+  </TabItem>
+  <TabItem value="curl" label="curl">
+
+```bash
+curl -X DELETE "$FISHJAM_URL/recordings/$RECORDING" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+  </TabItem>
+</Tabs>
+
+An `active` recording cannot be deleted. Stop it first and delete it once its status is no longer `active`.
+
+See the [Server REST API](/api/rest) reference for the complete request and response schemas.
