@@ -78,6 +78,11 @@ You need both values for React/React Native apps:
 ### Optional parameters
 
 - `roomType` - Type of room to create (defaults to `conference`)
+- `videoCodec` - Video codec of the room: `vp8` (default) or `h264`. Accepted by both the peer and the livestream endpoints. Joining an existing room with a different codec returns `409 Conflict`; omit it to join a room regardless of its codec.
+
+```bash
+curl "$SANDBOX_API_URL?roomName=testRoom&peerName=testUser&videoCodec=h264"
+```
 
 ### Room types available
 
