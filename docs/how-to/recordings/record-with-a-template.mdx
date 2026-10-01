@@ -11,15 +11,19 @@ import TabItem from "@theme/TabItem";
 
 A **template recording** renders a React [template](./../compositions/write-and-deploy-a-template) directly into an MP4 file. The template describes what the recording shows, and the recording is the only thing it produces: there is no output to register and no live stream to publish to.
 
-```text
-inputs ──▶ composition ──template──▶ recording ──▶ MP4 ──▶ [download]
+```mermaid
+flowchart LR
+    Inputs[inputs] --> Composition[composition]
+    Composition -- template --> Recording[recording]
+    Recording --> MP4[MP4]
+    MP4 --> Download[download]
 ```
 
 The template runs inside a composition, which holds the inputs it renders. The [Recordings](./../../explanation/recordings) article explains how template recordings relate to compositions and to recordings of an existing output.
 
 ## Prerequisites
 
-- A running composition with inputs. Either register inputs yourself, as in [Steps 1 and 2 of the compositions tutorial](./../../tutorials/compositions#step-1-create-a-composition), or forward a Fishjam room into it, as in [Compose a Fishjam room](./../compositions/compose-a-fishjam-room#step-4-forward-the-room-into-the-composition). You do not need a livestream or any other output.
+- A running composition with inputs. Either register inputs yourself, as in [Steps 1 and 2 of the compositions tutorial](./../../tutorials/compositions#step-1-create-a-composition), or forward a Fishjam room into it and start the composition, as in [Steps 4 and 5 of Compose a Fishjam room](./../compositions/compose-a-fishjam-room#step-4-forward-the-room-into-the-composition). A composition created with `autostart: false` renders nothing until it is started. You do not need a livestream or any other output.
 - A template project scaffolded with the composition CLI (see [Write and deploy a template](./../compositions/write-and-deploy-a-template#scaffold-a-project)).
 
 ```bash

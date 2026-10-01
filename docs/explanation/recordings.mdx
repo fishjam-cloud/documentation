@@ -9,7 +9,7 @@ description: Understand recordings, the Fishjam resource that captures media ren
 
 _Understanding how Fishjam captures composed media as files_
 
-A **recording** captures media rendered inside a [composition](./compositions) and stores it as an MP4 file. A composition is a live process: it produces media while it runs and leaves nothing behind once it is deleted. A recording is the persistent artifact of that process. It remains available after the composition and the room it was created from are gone, and Fishjam keeps it for [3 months](#retention).
+A **recording** captures media rendered inside a [composition](./compositions) and stores it as an MP4 file. A composition is a live process: it produces media while it runs and leaves nothing behind once it is deleted. A recording is the persistent artifact of that process. It remains available after the composition, and any room forwarded into it, are gone, and Fishjam keeps it for [3 months](#retention).
 
 What a recording captures is set by its **source**. There are two kinds:
 
@@ -18,25 +18,32 @@ What a recording captures is set by its **source**. There are two kinds:
 
 ## Template recordings
 
-```text
-inputs ──▶ composition ──template──▶ recording ──▶ MP4 ──▶ [download]
+```mermaid
+flowchart LR
+    Inputs[inputs] --> Composition[composition]
+    Composition -- template --> Recording[recording]
+    Recording --> MP4[MP4]
+    MP4 --> Download[download]
 ```
 
 A template recording still runs inside a composition. The composition is the workspace that holds your inputs, whether you register them yourself or forward a Fishjam room into it. The template decides how those inputs are rendered into the file, and nothing is published live: no output is registered and no livestream is needed.
 
-The template is a React component, written and bundled exactly like the [template of an output](./../how-to/compositions/write-and-deploy-a-template). It drives the scene on its own: the hooks from `@fishjam-cloud/composition` give it the live state of a forwarded room, and the `eventBus` delivers any payloads your backend [sends to the composition](./../how-to/compositions/drive-a-template-with-events). You upload the bundle, at most 1 MiB, together with the request that creates the recording.
+The template is the same kind of React component as the [template of an output](./../how-to/compositions/write-and-deploy-a-template). You upload its bundle, at most 1 MiB, together with the request that creates the recording.
 
 Besides the composition URL, a template recording accepts two options: `resolution`, the size the template is rendered at (1280x720 by default), and `audio`, which can be set to `false` for a video-only file. A composition can run several template recordings at once, each with its own template.
 
 ## Composition recordings
 
-```text
-composition ──output──▶ livestream / RTMP ──▶ [viewers]
-                │
-                └──recording──▶ MP4 ──▶ [download]
+```mermaid
+flowchart LR
+    Composition[composition] --> Output[output]
+    Output --> Livestream[livestream / RTMP]
+    Livestream --> Viewers[viewers]
+    Output -- recording --> MP4[MP4]
+    MP4 --> Download[download]
 ```
 
-A composition produces media through its outputs, and a composition recording captures one of them. To create one, you specify a composition and one of its registered outputs, and Fishjam attaches a recorder to that output. The recorder captures the output as it is published: the same layout and resolution, including every scene update, encoded separately from the live stream. If the recorded file should differ from the live stream, use a template recording instead.
+A composition produces media through its outputs, and a composition recording captures one of them. To create one, you specify a composition and one of its registered outputs, and Fishjam attaches a recorder to that output. The recorder captures the output as it is published: the same layout, including every scene update, at the output's resolution unless `scaleRatio` changes it, encoded separately from the live stream. If the recorded file should differ from the live stream, use a template recording instead.
 
 Besides composition URL and output ID, a composition recording accepts a single option, `scaleRatio`, which sets the recording resolution as a fraction or multiple of the output's resolution. For example, `0.5` stores the recording at half the output resolution.
 

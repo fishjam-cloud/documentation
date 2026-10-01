@@ -13,10 +13,13 @@ A **composition recording** mirrors an output that a composition already publish
 
 Compositions are managed through the [Composition API](./../../api/reference#compositions), while recordings are managed through the [Fishjam Server API](./../../api/reference#server): a single call there starts the recording, and Fishjam controls the capture inside the composition on your behalf. The [Recordings](./../../explanation/recordings) article explains this model and the recording lifecycle in more detail.
 
-```text
-composition ──output──▶ livestream / RTMP ──▶ [viewers]
-                │
-                └──recording──▶ MP4 ──▶ [download]
+```mermaid
+flowchart LR
+    Composition[composition] --> Output[output]
+    Output --> Livestream[livestream / RTMP]
+    Livestream --> Viewers[viewers]
+    Output -- recording --> MP4[MP4]
+    MP4 --> Download[download]
 ```
 
 ## Prerequisites
