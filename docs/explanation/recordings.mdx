@@ -36,10 +36,12 @@ Besides the composition URL, a template recording accepts two options: `resoluti
 
 ```mermaid
 flowchart LR
-    Composition[composition] --> Output[output]
+    Inputs[inputs] --> Composition[composition]
+    Composition --> Output[output]
     Output --> Livestream[livestream / RTMP]
     Livestream --> Viewers[viewers]
-    Output -- recording --> MP4[MP4]
+    Output --> Recording[recording]
+    Recording --> MP4[MP4]
     MP4 --> Download[download]
 ```
 
