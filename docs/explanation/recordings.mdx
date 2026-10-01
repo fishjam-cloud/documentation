@@ -2,32 +2,58 @@
 type: explanation
 title: Recordings
 sidebar_position: 4.6
-description: Understand recordings, the Fishjam resource that captures a composition's output into an MP4 file that persists after the composition ends.
+description: Understand recordings, the Fishjam resource that captures media rendered in a composition into an MP4 file that persists after the composition ends.
 ---
 
 # Recordings
 
-_Understanding how Fishjam captures composed streams as files_
+_Understanding how Fishjam captures composed media as files_
 
-A **recording** captures the media published by one of a [composition](./compositions)'s outputs and stores it as an MP4 file. A composition is a live process: it produces media while it runs and leaves nothing behind once it is deleted. A recording is the persistent artifact of that process. It remains available after the composition, the room, and the livestream it was created from are gone, and it is stored in Fishjam until you delete it.
+A **recording** captures media rendered inside a [composition](./compositions) and stores it as an MP4 file. A composition is a live process: it produces media while it runs and leaves nothing behind once it is deleted. A recording is the persistent artifact of that process. It remains available after the composition, and any room forwarded into it, are gone, and Fishjam keeps it for [3 months](#retention).
 
-```text
-composition ──output──▶ livestream / RTMP ──▶ [viewers]
-                │
-                └──recording──▶ MP4 ──▶ [download]
+What a recording captures is set by its **source**. There are two kinds:
+
+- A **template recording** renders its own scene from a React template. It is not bound to any output or live stream, and the recording is the only thing it produces. This is the default way to record.
+- A **composition recording** mirrors an output that the composition already publishes, such as the one feeding a livestream. Use it to keep a copy of a live stream you are already running.
+
+## Template recordings
+
+```mermaid
+flowchart LR
+    Inputs[inputs] --> Composition[composition]
+    Composition -- template --> Recording[recording]
+    Recording --> MP4[MP4]
+    MP4 --> Download[download]
 ```
 
-## Recorders and outputs
+A template recording still runs inside a composition. The composition is the workspace that holds your inputs, whether you register them yourself or forward a Fishjam room into it. The template decides how those inputs are rendered into the file, and nothing is published live: no output is registered and no livestream is needed.
 
-A composition produces media through its outputs, and outputs are the unit that is recorded. To create a recording, you specify a composition and one of its registered outputs, and Fishjam attaches a recorder to that output. The recorder captures the output as it is published: the same layout and resolution, including every scene update, encoded separately from the live stream. There is no separate recording scene. If the recorded file should differ from the live stream, register a dedicated output with its own scene and record that output instead.
+The template is the same kind of React component as the [template of an output](./../how-to/compositions/write-and-deploy-a-template). You upload its bundle, at most 1 MiB, together with the request that creates the recording.
 
-Besides composition URL and output ID, the recording API accepts a single option, `scaleRatio`, which sets the recording resolution as a fraction or multiple of the output's resolution. For example, `0.5` stores the recording at half the output resolution.
+Besides the composition URL, a template recording accepts two options: `resolution`, the size the template is rendered at (1280x720 by default), and `audio`, which can be set to `false` for a video-only file. A composition can run several template recordings at once, each with its own template.
+
+## Composition recordings
+
+```mermaid
+flowchart LR
+    Inputs[inputs] --> Composition[composition]
+    Composition --> Output[output]
+    Output --> Livestream[livestream / RTMP]
+    Livestream --> Viewers[viewers]
+    Output --> Recording[recording]
+    Recording --> MP4[MP4]
+    MP4 --> Download[download]
+```
+
+A composition produces media through its outputs, and a composition recording captures one of them. To create one, you specify a composition and one of its registered outputs, and Fishjam attaches a recorder to that output. The recorder captures the output as it is published: the same layout, including every scene update, at the output's resolution unless `scaleRatio` changes it, encoded separately from the live stream. If the recorded file should differ from the live stream, use a template recording instead.
+
+Besides composition URL and output ID, a composition recording accepts a single option, `scaleRatio`, which sets the recording resolution as a fraction or multiple of the output's resolution. For example, `0.5` stores the recording at half the output resolution.
 
 An output can have at most one recording at a time. To record the same output again, wait until the current recording is no longer `active`.
 
 ## Composition API and Server API
 
-Compositions are managed through the [Composition API](./../api/reference#compositions), while recordings are created and managed through the [Fishjam Server API](./../api/reference#server), either directly or with the JS and Python server SDKs. This split reflects ownership: a composition is a running session that you configure, whereas a recording is a resource of your Fishjam app, stored alongside your rooms and livestreams and managed with the same management token. You do not interact with the composition to record it; the Server API controls the capture inside the composition on your behalf.
+Compositions are managed through the [Composition API](./../api/reference#compositions), while recordings are created and managed through the [Fishjam Server API](./../api/reference#server), either directly or with the JS and Python server SDKs. This split reflects ownership: a composition is a running session that you configure, whereas a recording is a resource of your Fishjam app, stored alongside your rooms and livestreams and managed with the same management token. You do not call the Composition API to record; the Server API controls the capture inside the composition on your behalf, including loading the template of a template recording.
 
 ## Lifecycle
 
@@ -35,16 +61,20 @@ A recording has four statuses:
 
 | Status      | Meaning                                                 |
 | ----------- | ------------------------------------------------------- |
-| `active`    | The output is being captured.                           |
+| `active`    | Media is being captured.                                |
 | `finished`  | Capture has ended and the file is being prepared.       |
 | `available` | The MP4 is ready and `files` contains the download URL. |
 | `failed`    | An error occurred and no file will be produced.         |
 
-Capture starts as soon as the recording is created. It ends when you stop the recording explicitly, or automatically when the recorded output ends or the composition is deleted, so deleting a composition also finalizes its recordings. Finalization is asynchronous: the recording remains `active` until capture has ended, then transitions through `finished` to `available` once the file is ready.
+Capture starts as soon as the recording is created. It ends when you stop the recording explicitly, or automatically when its composition ends: when you delete the composition, or when it [cleans itself up](./compositions#cost-and-lifecycle) after five minutes without input media. A composition recording also ends when the recorded output ends. Finalization is asynchronous: the recording remains `active` until capture has ended, then transitions through `finished` to `available` once the file is ready.
 
 Every status change emits a `RecordingStatusChanged` [server notification](./../api/reference#protobufs) over your configured webhook or a websocket, so you can react to a file becoming available without polling.
 
-Once a recording is `available`, its `files` field lists the media files in playback order as direct HTTPS URLs that you can download or serve to your users. The recording and its files persist until you delete the recording. Deleting the recording is the only way to remove them, and a recording cannot be deleted while it is `active`.
+Once a recording is `available`, its `files` field lists the media files in playback order as direct HTTPS URLs that you can download or serve to your users. To remove a recording and its files before they expire, delete the recording. A recording cannot be deleted while it is `active`.
+
+## Retention
+
+Fishjam keeps a recording and its files for 3 months after the recording is created. After that they are no longer available through the API, so download any file you need to keep for longer. For up to 6 months after creation, an expired recording can still be retrieved on request: contact us at `contact@fishjam.io`.
 
 ## Metadata
 
@@ -52,6 +82,8 @@ A recording carries optional free-form `metadata`, set at creation and returned 
 
 ## Where to go next
 
-- [Record a composition](./../how-to/compositions/record-a-composition): start, stop, and download a recording step by step.
-- [Compositions](./compositions): the sessions that recordings capture.
+- [Record with a template](./../how-to/recordings/record-with-a-template): render a template straight into an MP4.
+- [Record a composition output](./../how-to/recordings/record-a-composition-output): mirror an output you already publish.
+- [Manage recordings](./../how-to/recordings/manage-recordings): stop, download, list, and delete recordings.
+- [Compositions](./compositions): the sessions recordings run in.
 - [Server REST API](/api/rest): the complete request and response schemas.

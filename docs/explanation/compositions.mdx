@@ -21,7 +21,7 @@ Compositions are built on [Smelter](https://smelter.dev), the source-available r
 - **Multi-party layouts**: arrange the cameras of a conference room, or several independent streams, into grids, side-by-sides, or picture-in-picture.
 - **Branded streams**: overlay logos, captions, lower-thirds, and backgrounds on top of live video.
 - **Cross-protocol bridging**: take WebRTC inputs and republish the composed result over RTMP, for example broadcasting a conference to YouTube or Twitch, or the other way round.
-- **Recordings**: capture the composed stream as an MP4 file to store, replay, or serve on demand.
+- **Recordings**: render a template, or capture a composed stream you already publish, into an MP4 file to store, replay, or serve on demand.
 
 ## Core concepts
 
@@ -85,7 +85,7 @@ curl -X DELETE "https://rtc.fishjam.io/api/composition/$COMPOSITION" \
 
 ## Recordings
 
-A **recording** saves what one of a composition's outputs publishes into an MP4 file that stays around after the composition is gone. Recordings are a resource of their own, managed through the [Fishjam Server API](./../api/reference#server) rather than the Composition API: [Recordings](./recordings) explains how they work, and [Record a composition](./../how-to/compositions/record-a-composition) walks through making one.
+A **recording** saves media rendered in a composition into an MP4 file that stays around after the composition is gone. A template recording renders its own scene from a React template, with no output or live stream involved; a composition recording mirrors an output the composition already publishes. Recordings are a resource of their own, managed through the [Fishjam Server API](./../api/reference#server) rather than the Composition API: [Recordings](./recordings) explains how they work, and [Record with a template](./../how-to/recordings/record-with-a-template) and [Record a composition output](./../how-to/recordings/record-a-composition-output) walk through making one.
 
 ## Scenes
 
@@ -150,5 +150,6 @@ Either you push those updates yourself, or you hand the job to a **template**: a
 - [Compositions tutorial](./../tutorials/compositions): create your first composition end to end.
 - [Write and deploy a template](./../how-to/compositions/write-and-deploy-a-template): build a React layout with the composition SDK.
 - [Compose a Fishjam room](./../how-to/compositions/compose-a-fishjam-room): turn a room's peers into one composed stream.
-- [Record a composition](./../how-to/compositions/record-a-composition): save an output as an MP4.
+- [Record with a template](./../how-to/recordings/record-with-a-template): render a template straight into an MP4.
+- [Record a composition output](./../how-to/recordings/record-a-composition-output): save an output you already publish as an MP4.
 - [Composition API](./../api/reference#compositions): the full REST surface.

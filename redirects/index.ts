@@ -32,6 +32,17 @@ const redirectGroups: RedirectGroup[] = [
     ],
   },
   {
+    since: "0.31.0",
+    description:
+      "Recording how-tos moved from Compositions into their own section",
+    rules: [
+      {
+        from: "/how-to/compositions/record-a-composition",
+        to: "/how-to/recordings/record-a-composition-output",
+      },
+    ],
+  },
+  {
     since: "0.28.0",
     description:
       "MoQ tutorials nested under Tutorials; MoQ concept moved into Concepts",
