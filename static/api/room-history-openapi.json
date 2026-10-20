@@ -402,7 +402,12 @@
           "end_reason": {
             "enum": ["deleted", "purged", "crashed"],
             "title": "End Reason",
-            "type": "string"
+            "type": "string",
+            "x-enumDescriptions": {
+              "crashed": "Room crashed on our side.",
+              "deleted": "Room closed normally.",
+              "purged": "Room closed after everyone left."
+            }
           },
           "peer_count": {
             "title": "Peer Count",
@@ -496,6 +501,7 @@
                 "type": "null"
               }
             ],
+            "description": "When the peer joined. `null` if the peer never connected.",
             "title": "Joined At"
           },
           "left_at": {
@@ -514,12 +520,19 @@
             "anyOf": [
               {
                 "enum": ["left", "removed", "finished", "crashed"],
-                "type": "string"
+                "type": "string",
+                "x-enumDescriptions": {
+                  "crashed": "Connection crashed.",
+                  "finished": "Finished its job, e.g. a VAPI peer whose call ended.",
+                  "left": "Left on their own.",
+                  "removed": "Removed by your app."
+                }
               },
               {
                 "type": "null"
               }
             ],
+            "description": "Leave reason. `null` if no reason was recorded.",
             "title": "End Reason"
           },
           "metadata": {
@@ -572,10 +585,12 @@
       "ThresholdsOut": {
         "properties": {
           "packet_loss_pct": {
+            "description": "Packet loss limit, in %. At or above it a peer has the `high_packet_loss` issue.",
             "title": "Packet Loss Pct",
             "type": "number"
           },
           "rtt_ms": {
+            "description": "Round trip time limit, in ms. At or above it a peer has the `high_rtt` issue.",
             "title": "Rtt Ms",
             "type": "number"
           }
@@ -593,6 +608,7 @@
             "$ref": "#/components/schemas/ThresholdsOut"
           },
           "series": {
+            "description": "Bitrate and packet loss per report, track kind and direction.",
             "items": {
               "$ref": "#/components/schemas/PeerSeriesPointOut"
             },
@@ -627,6 +643,7 @@
                 "type": "null"
               }
             ],
+            "description": "Round trip time, in ms. `null` if the peer's app never reported back.",
             "title": "Rtt Ms"
           }
         },
@@ -644,13 +661,28 @@
           "direction": {
             "enum": ["inbound", "outbound"],
             "title": "Direction",
-            "type": "string"
+            "type": "string",
+            "x-enumDescriptions": {
+              "inbound": "Sent. Media the peer sent to Fishjam.",
+              "outbound": "Received. Media the peer received from Fishjam."
+            }
           },
           "kind": {
+            "enum": [
+              "microphone",
+              "camera",
+              "screenShareVideo",
+              "screenShareAudio",
+              "customVideo",
+              "customAudio",
+              "audio",
+              "video"
+            ],
             "title": "Kind",
             "type": "string"
           },
           "bitrate_bps": {
+            "description": "Bitrate, in bits per second, since the previous report.",
             "title": "Bitrate Bps",
             "type": "number"
           },
@@ -663,6 +695,7 @@
                 "type": "null"
               }
             ],
+            "description": "Packet loss, in %. `null` if no packets were expected.",
             "title": "Packet Loss Pct"
           }
         },
