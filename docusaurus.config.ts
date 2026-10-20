@@ -284,6 +284,7 @@ const config: Config = {
           items: [
             { to: "/api/rest", label: "Server API" },
             { to: "/api/compositions", label: "Composition API" },
+            { to: "/api/room-history", label: "Room History API" },
           ],
         },
         {
@@ -410,6 +411,11 @@ const config: Config = {
               slug: "composition",
               url: "/docs/api/composition-openapi.json",
             },
+            {
+              title: "Room History API",
+              slug: "room-history",
+              url: "/docs/api/room-history-openapi.json",
+            },
           ],
           hideSearch: true,
           persistAuth: true,
@@ -434,6 +440,24 @@ const config: Config = {
           defaultOpenFirstTag: false,
           authentication: {
             preferredSecurityScheme: "BearerAuth",
+          },
+        },
+      } as ScalarOptions,
+    ],
+    [
+      "@scalar/docusaurus",
+      {
+        id: "room-history-api",
+        label: "Room History API",
+        route: "/api/room-history",
+        showNavLink: false,
+        configuration: {
+          url: "/docs/api/room-history-openapi.json",
+          hideSearch: true,
+          persistAuth: true,
+          defaultOpenFirstTag: false,
+          authentication: {
+            preferredSecurityScheme: "ManagementTokenAuth",
           },
         },
       } as ScalarOptions,
