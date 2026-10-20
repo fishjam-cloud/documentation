@@ -3,7 +3,7 @@
   "info": {
     "title": "Fishjam Room History API",
     "version": "1.0.0",
-    "description": "Call quality history of the ended rooms of your Fishjam apps: which rooms had issues, which peers caused them, and each peer's bitrate, packet loss and round trip time over time. Authenticate with your management token. Data is kept for 60 days."
+    "description": "Browse your Fishjam rooms that ended in the last 60 days. For each room, see which peers had issues such as high round trip time or packet loss, and how their bitrate changed over time. Authenticate with your management token."
   },
   "paths": {
     "/room-history": {
