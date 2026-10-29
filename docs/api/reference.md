@@ -6,7 +6,7 @@ type: reference
 
 Describes APIs for direct interaction with Fishjam.
 
-Fishjam publishes documentation for the Sandbox API, Fishjam Server APIs, and the Composition API.
+Fishjam publishes documentation for the Sandbox API, Fishjam Server APIs, the Composition API, and the Room History API.
 
 ## Sandbox API
 
@@ -63,3 +63,13 @@ Next, you can should subscribe to notifications by sending `SubscribeRequest` ev
 Calls authenticate with your Management Token, from the [**Fishjam developer panel**](https://fishjam.io/app).
 
 Request bodies are snake_case and closed: a field the endpoint does not define is rejected with `422` rather than ignored, so a misspelling fails loudly instead of silently doing nothing.
+
+## Room History
+
+The Room History API lets you browse your rooms that ended in the last 60 days. For each room, you can see which peers had issues, such as high round trip time or packet loss, and how their bitrate, packet loss, and round trip time changed over time. All requests go to `https://fishjam.io/api/v1/public`.
+
+### REST API
+
+[Room History REST API Reference](/api/room-history)
+
+Calls authenticate with your Management Token, from the [**Fishjam developer panel**](https://fishjam.io/app).
