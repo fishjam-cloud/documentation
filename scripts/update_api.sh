@@ -55,6 +55,11 @@ copy_composition_openapi() {
     echo "Copied openapi.json of composition to the assets directory."
 }
 
+copy_insights_openapi() {
+    cp backend/openapi/insights.json "$ASSETS_DIRECTORY/insights-openapi.json"
+    echo "Copied insights.json of cloud to the assets directory."
+}
+
 PROTO_FILES="server_notifications agent_notifications notifications/shared"
 copy_protos() {
     for file in $PROTO_FILES; do
@@ -73,5 +78,8 @@ copy_protos
 
 checkout_submodule_branch composition $COMPOSITION_BRANCH
 copy_composition_openapi
+
+checkout_submodule cloud
+copy_insights_openapi
 
 echo $'\nSubmodule update and copy complete.'

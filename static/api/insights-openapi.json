@@ -1,0 +1,725 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Fishjam Insights API",
+    "version": "1.0.0",
+    "description": "Browse your Fishjam rooms that ended in the last 60 days. For each room, see which peers had issues such as high round trip time or packet loss, and how their bitrate changed over time. Authenticate with your management token."
+  },
+  "paths": {
+    "/insights/rooms": {
+      "get": {
+        "operationId": "list_insights_rooms",
+        "summary": "List rooms with their issue counts",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "start",
+            "schema": {
+              "format": "date-time",
+              "title": "Start",
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "end",
+            "schema": {
+              "format": "date-time",
+              "title": "End",
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "default": 20,
+              "maximum": 1000,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "default": 0,
+              "maximum": 4294967295,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomsPageOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "Rooms that were both created and ended inside the window, newest first.",
+        "tags": ["Rooms"],
+        "security": [
+          {
+            "ManagementTokenAuth": []
+          }
+        ]
+      }
+    },
+    "/insights/rooms/{room_id}": {
+      "get": {
+        "operationId": "get_insights_room",
+        "summary": "Get a room with its peers and their issues",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "room_id",
+            "schema": {
+              "title": "Room Id",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomDetailOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "An ended room with its peers and their issues.",
+        "tags": ["Rooms"],
+        "security": [
+          {
+            "ManagementTokenAuth": []
+          }
+        ]
+      }
+    },
+    "/insights/rooms/{room_id}/peers/{peer_id}": {
+      "get": {
+        "operationId": "get_insights_room_peer",
+        "summary": "Get a peer's bitrate, packet loss and RTT over time",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "room_id",
+            "schema": {
+              "title": "Room Id",
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "peer_id",
+            "schema": {
+              "title": "Peer Id",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeerDetailOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "A peer of an ended room with its bitrate, packet loss and RTT over time.",
+        "tags": ["Rooms"],
+        "security": [
+          {
+            "ManagementTokenAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PublicRoomsQueryIn": {
+        "properties": {
+          "start": {
+            "format": "date-time",
+            "title": "Start",
+            "type": "string"
+          },
+          "end": {
+            "format": "date-time",
+            "title": "End",
+            "type": "string"
+          },
+          "limit": {
+            "default": 20,
+            "maximum": 1000,
+            "minimum": 1,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "maximum": 4294967295,
+            "minimum": 0,
+            "title": "Offset",
+            "type": "integer"
+          }
+        },
+        "required": ["start", "end"],
+        "title": "PublicRoomsQueryIn",
+        "type": "object"
+      },
+      "Message": {
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          }
+        },
+        "required": ["detail"],
+        "title": "Message",
+        "type": "object"
+      },
+      "RoomOut": {
+        "properties": {
+          "room_id": {
+            "title": "Room Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "ended_at": {
+            "format": "date-time",
+            "title": "Ended At",
+            "type": "string"
+          },
+          "end_reason": {
+            "enum": ["deleted", "purged", "crashed"],
+            "title": "End Reason",
+            "type": "string",
+            "x-enumDescriptions": {
+              "crashed": "Room crashed on our side.",
+              "deleted": "Room closed normally.",
+              "purged": "Room closed after everyone left."
+            }
+          },
+          "peer_count": {
+            "title": "Peer Count",
+            "type": "integer"
+          },
+          "issues_count": {
+            "title": "Issues Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "room_id",
+          "created_at",
+          "ended_at",
+          "end_reason",
+          "peer_count",
+          "issues_count"
+        ],
+        "title": "RoomOut",
+        "type": "object"
+      },
+      "RoomsPageOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RoomOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "required": ["items", "count"],
+        "title": "RoomsPageOut",
+        "type": "object"
+      },
+      "IssueOut": {
+        "properties": {
+          "code": {
+            "enum": ["high_packet_loss", "high_rtt"],
+            "title": "Code",
+            "type": "string"
+          }
+        },
+        "required": ["code"],
+        "title": "IssueOut",
+        "type": "object"
+      },
+      "MetadataEntryOut": {
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": ["key", "value"],
+        "title": "MetadataEntryOut",
+        "type": "object"
+      },
+      "PeerOut": {
+        "properties": {
+          "peer_id": {
+            "title": "Peer Id",
+            "type": "string"
+          },
+          "sdk": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sdk"
+          },
+          "joined_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When the peer joined. `null` if the peer never connected.",
+            "title": "Joined At"
+          },
+          "left_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Left At"
+          },
+          "end_reason": {
+            "anyOf": [
+              {
+                "enum": ["left", "removed", "finished", "crashed"],
+                "type": "string",
+                "x-enumDescriptions": {
+                  "crashed": "Connection crashed.",
+                  "finished": "Finished its job, e.g. a VAPI peer whose call ended.",
+                  "left": "Left on their own.",
+                  "removed": "Removed by your app."
+                }
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Leave reason. `null` if no reason was recorded.",
+            "title": "End Reason"
+          },
+          "metadata": {
+            "items": {
+              "$ref": "#/components/schemas/MetadataEntryOut"
+            },
+            "title": "Metadata",
+            "type": "array"
+          },
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/IssueOut"
+            },
+            "title": "Issues",
+            "type": "array"
+          }
+        },
+        "required": [
+          "peer_id",
+          "sdk",
+          "joined_at",
+          "left_at",
+          "end_reason",
+          "metadata",
+          "issues"
+        ],
+        "title": "PeerOut",
+        "type": "object"
+      },
+      "RoomDetailOut": {
+        "properties": {
+          "room": {
+            "$ref": "#/components/schemas/RoomOut"
+          },
+          "peers": {
+            "items": {
+              "$ref": "#/components/schemas/PeerOut"
+            },
+            "title": "Peers",
+            "type": "array"
+          },
+          "thresholds": {
+            "$ref": "#/components/schemas/ThresholdsOut"
+          }
+        },
+        "required": ["room", "peers", "thresholds"],
+        "title": "RoomDetailOut",
+        "type": "object"
+      },
+      "ThresholdsOut": {
+        "properties": {
+          "packet_loss_pct": {
+            "description": "Packet loss limit, in %. At or above it a peer has the `high_packet_loss` issue.",
+            "title": "Packet Loss Pct",
+            "type": "number"
+          },
+          "rtt_ms": {
+            "description": "Round trip time limit, in ms. At or above it a peer has the `high_rtt` issue.",
+            "title": "Rtt Ms",
+            "type": "number"
+          }
+        },
+        "required": ["packet_loss_pct", "rtt_ms"],
+        "title": "ThresholdsOut",
+        "type": "object"
+      },
+      "PeerDetailOut": {
+        "properties": {
+          "peer": {
+            "$ref": "#/components/schemas/PeerOut"
+          },
+          "thresholds": {
+            "$ref": "#/components/schemas/ThresholdsOut"
+          },
+          "series": {
+            "description": "Bitrate and packet loss per report, track kind and direction.",
+            "items": {
+              "$ref": "#/components/schemas/PeerSeriesPointOut"
+            },
+            "title": "Series",
+            "type": "array"
+          },
+          "rtt": {
+            "items": {
+              "$ref": "#/components/schemas/PeerRttPointOut"
+            },
+            "title": "Rtt",
+            "type": "array"
+          }
+        },
+        "required": ["peer", "thresholds", "series", "rtt"],
+        "title": "PeerDetailOut",
+        "type": "object"
+      },
+      "PeerRttPointOut": {
+        "properties": {
+          "timestamp": {
+            "format": "date-time",
+            "title": "Timestamp",
+            "type": "string"
+          },
+          "rtt_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Round trip time, in ms. `null` if the peer's app never reported back.",
+            "title": "Rtt Ms"
+          }
+        },
+        "required": ["timestamp", "rtt_ms"],
+        "title": "PeerRttPointOut",
+        "type": "object"
+      },
+      "PeerSeriesPointOut": {
+        "properties": {
+          "timestamp": {
+            "format": "date-time",
+            "title": "Timestamp",
+            "type": "string"
+          },
+          "direction": {
+            "enum": ["inbound", "outbound"],
+            "title": "Direction",
+            "type": "string",
+            "x-enumDescriptions": {
+              "inbound": "Sent. Media the peer sent to Fishjam.",
+              "outbound": "Received. Media the peer received from Fishjam."
+            }
+          },
+          "kind": {
+            "enum": [
+              "microphone",
+              "camera",
+              "screenShareVideo",
+              "screenShareAudio",
+              "customVideo",
+              "customAudio",
+              "audio",
+              "video"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "bitrate_bps": {
+            "description": "Bitrate, in bits per second, since the previous report.",
+            "title": "Bitrate Bps",
+            "type": "number"
+          },
+          "packet_loss_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Packet loss, in %. `null` if no packets were expected.",
+            "title": "Packet Loss Pct"
+          }
+        },
+        "required": [
+          "timestamp",
+          "direction",
+          "kind",
+          "bitrate_bps",
+          "packet_loss_pct"
+        ],
+        "title": "PeerSeriesPointOut",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "ManagementTokenAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://fishjam.io/api/v1"
+    }
+  ]
+}
