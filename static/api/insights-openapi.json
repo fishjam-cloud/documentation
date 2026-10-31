@@ -1,14 +1,14 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Fishjam Room History API",
+    "title": "Fishjam Insights API",
     "version": "1.0.0",
     "description": "Browse your Fishjam rooms that ended in the last 60 days. For each room, see which peers had issues such as high round trip time or packet loss, and how their bitrate changed over time. Authenticate with your management token."
   },
   "paths": {
-    "/room-history": {
+    "/insights/rooms": {
       "get": {
-        "operationId": "list_room_history",
+        "operationId": "list_insights_rooms",
         "summary": "List rooms with their issue counts",
         "parameters": [
           {
@@ -137,9 +137,9 @@
         ]
       }
     },
-    "/room-history/{room_id}": {
+    "/insights/rooms/{room_id}": {
       "get": {
-        "operationId": "get_room_history",
+        "operationId": "get_insights_room",
         "summary": "Get a room with its peers and their issues",
         "parameters": [
           {
@@ -233,9 +233,9 @@
         ]
       }
     },
-    "/room-history/{room_id}/peers/{peer_id}": {
+    "/insights/rooms/{room_id}/peers/{peer_id}": {
       "get": {
-        "operationId": "get_room_history_peer",
+        "operationId": "get_insights_room_peer",
         "summary": "Get a peer's bitrate, packet loss and RTT over time",
         "parameters": [
           {
@@ -719,7 +719,7 @@
   },
   "servers": [
     {
-      "url": "https://fishjam.io/api/v1/public"
+      "url": "https://fishjam.io/api/v1"
     }
   ]
 }

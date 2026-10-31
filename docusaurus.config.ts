@@ -284,7 +284,7 @@ const config: Config = {
           items: [
             { to: "/api/rest", label: "Server API" },
             { to: "/api/compositions", label: "Composition API" },
-            { to: "/api/room-history", label: "Room History API" },
+            { to: "/api/insights", label: "Insights API" },
           ],
         },
         {
@@ -412,9 +412,9 @@ const config: Config = {
               url: "/docs/api/composition-openapi.json",
             },
             {
-              title: "Room History API",
-              slug: "room-history",
-              url: "/docs/api/room-history-openapi.json",
+              title: "Insights API",
+              slug: "insights",
+              url: "/docs/api/insights-openapi.json",
             },
           ],
           hideSearch: true,
@@ -447,12 +447,12 @@ const config: Config = {
     [
       "@scalar/docusaurus",
       {
-        id: "room-history-api",
-        label: "Room History API",
-        route: "/api/room-history",
+        id: "insights-api",
+        label: "Insights API",
+        route: "/api/insights",
         showNavLink: false,
         configuration: {
-          url: "/docs/api/room-history-openapi.json",
+          url: "/docs/api/insights-openapi.json",
           hideSearch: true,
           persistAuth: true,
           defaultOpenFirstTag: false,
