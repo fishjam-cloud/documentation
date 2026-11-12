@@ -78,7 +78,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -174,7 +174,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -236,7 +236,7 @@
     "/insights/rooms/{room_id}/peers/{peer_id}": {
       "get": {
         "operationId": "get_insights_room_peer",
-        "summary": "Get a peer's bitrate, packet loss and RTT over time",
+        "summary": "Get a peer and its issues",
         "parameters": [
           {
             "in": "path",
@@ -279,7 +279,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -323,13 +323,223 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PeerDetailOut"
+                  "$ref": "#/components/schemas/PeerOut"
                 }
               }
             }
           }
         },
-        "description": "A peer of an ended room with its bitrate, packet loss and RTT over time.",
+        "description": "A peer of an ended room with its issues and time in the room.",
+        "tags": ["Rooms"],
+        "security": [
+          {
+            "ManagementTokenAuth": []
+          }
+        ]
+      }
+    },
+    "/insights/rooms/{room_id}/peers/{peer_id}/series": {
+      "get": {
+        "operationId": "get_insights_room_peer_series",
+        "summary": "Get a peer's bitrate, packet loss and RTT over time",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "room_id",
+            "schema": {
+              "title": "Room Id",
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "peer_id",
+            "schema": {
+              "title": "Peer Id",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeerSeriesOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "A peer's bitrate, packet loss and RTT over time.",
+        "tags": ["Rooms"],
+        "security": [
+          {
+            "ManagementTokenAuth": []
+          }
+        ]
+      }
+    },
+    "/insights/rooms/{room_id}/peers/{peer_id}/events": {
+      "get": {
+        "operationId": "get_insights_room_peer_events",
+        "summary": "Get a peer's timeline",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "room_id",
+            "schema": {
+              "title": "Room Id",
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "peer_id",
+            "schema": {
+              "title": "Peer Id",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeerEventsOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "What happened to a peer during the call, oldest first.",
         "tags": ["Rooms"],
         "security": [
           {
@@ -450,9 +660,22 @@
       "IssueOut": {
         "properties": {
           "code": {
-            "enum": ["high_packet_loss", "high_rtt"],
+            "enum": [
+              "high_packet_loss",
+              "high_rtt",
+              "crashed",
+              "connect_failed",
+              "dropped"
+            ],
             "title": "Code",
-            "type": "string"
+            "type": "string",
+            "x-enumDescriptions": {
+              "connect_failed": "The peer's media connection couldn't be set up.",
+              "crashed": "The peer crashed on our side.",
+              "dropped": "The peer's media connection broke during the call.",
+              "high_packet_loss": "Packet loss at or above the limit.",
+              "high_rtt": "Round trip time at or above the limit."
+            }
           }
         },
         "required": ["code"],
@@ -491,7 +714,7 @@
             ],
             "title": "Sdk"
           },
-          "joined_at": {
+          "first_joined_at": {
             "anyOf": [
               {
                 "format": "date-time",
@@ -501,10 +724,10 @@
                 "type": "null"
               }
             ],
-            "description": "When the peer joined. `null` if the peer never connected.",
-            "title": "Joined At"
+            "description": "When the peer first joined. `null` if the peer never connected.",
+            "title": "First Joined At"
           },
-          "left_at": {
+          "last_left_at": {
             "anyOf": [
               {
                 "format": "date-time",
@@ -514,26 +737,8 @@
                 "type": "null"
               }
             ],
-            "title": "Left At"
-          },
-          "end_reason": {
-            "anyOf": [
-              {
-                "enum": ["left", "removed", "finished", "crashed"],
-                "type": "string",
-                "x-enumDescriptions": {
-                  "crashed": "Connection crashed.",
-                  "finished": "Finished its job, e.g. a VAPI peer whose call ended.",
-                  "left": "Left on their own.",
-                  "removed": "Removed by your app."
-                }
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Leave reason. `null` if no reason was recorded.",
-            "title": "End Reason"
+            "description": "When the peer last left or crashed. `null` if the peer never joined or we don't know when it last left, e.g. the room crashed.",
+            "title": "Last Left At"
           },
           "metadata": {
             "items": {
@@ -548,16 +753,53 @@
             },
             "title": "Issues",
             "type": "array"
+          },
+          "peer_type": {
+            "enum": ["webrtc", "agent", "vapi"],
+            "title": "Peer Type",
+            "type": "string"
+          },
+          "time_in_room_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Time spent in the room. `null` if the peer never joined or we don't know when it last left, e.g. the room crashed.",
+            "title": "Time In Room Ms"
+          },
+          "time_outside_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Time away between leaving and rejoining. `null` if the peer never joined or we don't know when it last left, e.g. the room crashed.",
+            "title": "Time Outside Ms"
+          },
+          "reconnects": {
+            "description": "How many times the peer joined again.",
+            "title": "Reconnects",
+            "type": "integer"
           }
         },
         "required": [
           "peer_id",
           "sdk",
-          "joined_at",
-          "left_at",
-          "end_reason",
+          "first_joined_at",
+          "last_left_at",
           "metadata",
-          "issues"
+          "issues",
+          "peer_type",
+          "time_in_room_ms",
+          "time_outside_ms",
+          "reconnects"
         ],
         "title": "PeerOut",
         "type": "object"
@@ -574,11 +816,16 @@
             "title": "Peers",
             "type": "array"
           },
+          "participant_time_ms": {
+            "description": "WebRTC participant time of the room, summed over its peers.",
+            "title": "Participant Time Ms",
+            "type": "integer"
+          },
           "thresholds": {
             "$ref": "#/components/schemas/ThresholdsOut"
           }
         },
-        "required": ["room", "peers", "thresholds"],
+        "required": ["room", "peers", "participant_time_ms", "thresholds"],
         "title": "RoomDetailOut",
         "type": "object"
       },
@@ -597,34 +844,6 @@
         },
         "required": ["packet_loss_pct", "rtt_ms"],
         "title": "ThresholdsOut",
-        "type": "object"
-      },
-      "PeerDetailOut": {
-        "properties": {
-          "peer": {
-            "$ref": "#/components/schemas/PeerOut"
-          },
-          "thresholds": {
-            "$ref": "#/components/schemas/ThresholdsOut"
-          },
-          "series": {
-            "description": "Bitrate and packet loss per report, track kind and direction.",
-            "items": {
-              "$ref": "#/components/schemas/PeerSeriesPointOut"
-            },
-            "title": "Series",
-            "type": "array"
-          },
-          "rtt": {
-            "items": {
-              "$ref": "#/components/schemas/PeerRttPointOut"
-            },
-            "title": "Rtt",
-            "type": "array"
-          }
-        },
-        "required": ["peer", "thresholds", "series", "rtt"],
-        "title": "PeerDetailOut",
         "type": "object"
       },
       "PeerRttPointOut": {
@@ -649,6 +868,31 @@
         },
         "required": ["timestamp", "rtt_ms"],
         "title": "PeerRttPointOut",
+        "type": "object"
+      },
+      "PeerSeriesOut": {
+        "properties": {
+          "series": {
+            "description": "Bitrate and packet loss per report, track kind and direction.",
+            "items": {
+              "$ref": "#/components/schemas/PeerSeriesPointOut"
+            },
+            "title": "Series",
+            "type": "array"
+          },
+          "rtt": {
+            "items": {
+              "$ref": "#/components/schemas/PeerRttPointOut"
+            },
+            "title": "Rtt",
+            "type": "array"
+          },
+          "thresholds": {
+            "$ref": "#/components/schemas/ThresholdsOut"
+          }
+        },
+        "required": ["series", "rtt", "thresholds"],
+        "title": "PeerSeriesOut",
         "type": "object"
       },
       "PeerSeriesPointOut": {
@@ -707,6 +951,135 @@
           "packet_loss_pct"
         ],
         "title": "PeerSeriesPointOut",
+        "type": "object"
+      },
+      "PeerConnectionEventOut": {
+        "properties": {
+          "timestamp": {
+            "format": "date-time",
+            "title": "Timestamp",
+            "type": "string"
+          },
+          "type": {
+            "enum": ["connected", "connect_failed", "dropped"],
+            "title": "Type",
+            "type": "string",
+            "x-enumDescriptions": {
+              "connect_failed": "Media connection couldn't be set up.",
+              "connected": "Media connection established.",
+              "dropped": "Media connection broke during the call."
+            }
+          }
+        },
+        "required": ["timestamp", "type"],
+        "title": "PeerConnectionEventOut",
+        "type": "object"
+      },
+      "PeerEventsOut": {
+        "properties": {
+          "events": {
+            "description": "Sorted by time.",
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "connect_failed": "#/components/schemas/PeerConnectionEventOut",
+                  "connected": "#/components/schemas/PeerConnectionEventOut",
+                  "crashed": "#/components/schemas/PeerPresenceEventOut",
+                  "dropped": "#/components/schemas/PeerConnectionEventOut",
+                  "joined": "#/components/schemas/PeerPresenceEventOut",
+                  "left": "#/components/schemas/PeerPresenceEventOut",
+                  "track_added": "#/components/schemas/PeerTrackEventOut",
+                  "track_paused": "#/components/schemas/PeerTrackEventOut",
+                  "track_removed": "#/components/schemas/PeerTrackEventOut",
+                  "track_resumed": "#/components/schemas/PeerTrackEventOut"
+                },
+                "propertyName": "type"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/PeerPresenceEventOut"
+                },
+                {
+                  "$ref": "#/components/schemas/PeerConnectionEventOut"
+                },
+                {
+                  "$ref": "#/components/schemas/PeerTrackEventOut"
+                }
+              ]
+            },
+            "title": "Events",
+            "type": "array"
+          }
+        },
+        "required": ["events"],
+        "title": "PeerEventsOut",
+        "type": "object"
+      },
+      "PeerPresenceEventOut": {
+        "properties": {
+          "timestamp": {
+            "format": "date-time",
+            "title": "Timestamp",
+            "type": "string"
+          },
+          "type": {
+            "enum": ["joined", "left", "crashed"],
+            "title": "Type",
+            "type": "string",
+            "x-enumDescriptions": {
+              "crashed": "The peer crashed on our side.",
+              "joined": "Joined the room.",
+              "left": "Left the room."
+            }
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why the peer left or crashed, if known. Never set on `joined`.",
+            "title": "Reason"
+          }
+        },
+        "required": ["timestamp", "type"],
+        "title": "PeerPresenceEventOut",
+        "type": "object"
+      },
+      "PeerTrackEventOut": {
+        "properties": {
+          "timestamp": {
+            "format": "date-time",
+            "title": "Timestamp",
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "track_paused",
+              "track_resumed",
+              "track_added",
+              "track_removed"
+            ],
+            "title": "Type",
+            "type": "string",
+            "x-enumDescriptions": {
+              "track_added": "A track was added.",
+              "track_paused": "A track was paused, e.g. a muted microphone.",
+              "track_removed": "A track was removed.",
+              "track_resumed": "A paused track was resumed."
+            }
+          },
+          "track_type": {
+            "description": "The track's type, e.g. `microphone`.",
+            "title": "Track Type",
+            "type": "string"
+          }
+        },
+        "required": ["timestamp", "type", "track_type"],
+        "title": "PeerTrackEventOut",
         "type": "object"
       }
     },

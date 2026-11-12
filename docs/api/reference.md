@@ -66,7 +66,7 @@ Request bodies are snake_case and closed: a field the endpoint does not define i
 
 ## Insights
 
-The Insights API lets you browse your rooms that ended in the last 60 days. For each room, you can see which peers had issues, such as high round trip time or packet loss, and how their bitrate, packet loss, and round trip time changed over time. All requests go to `https://fishjam.io/api/v1`.
+The Insights API lets you browse your rooms that ended in the last 60 days. For each room, you can see which peers had issues, such as high round trip time or packet loss, how their bitrate, packet loss, and round trip time changed over time, and a timeline of when they joined or left, lost their connection, and added, removed, paused, or resumed tracks. All requests go to `https://fishjam.io/api/v1`.
 
 ### REST API
 
