@@ -1,0 +1,263 @@
+---
+type: tutorial
+sidebar_position: 1.5
+description: Short guide to joining a Fishjam room from plain TypeScript with the framework-agnostic ts-client, without React.
+---
+
+# TypeScript Quick Start
+
+This tutorial shows how to use Fishjam from plain TypeScript, without any UI framework.  
+It uses `@fishjam-cloud/ts-client`, the same client that powers the React SDK. There are no hooks or providers: you call methods and listen to events.
+
+:::info
+
+This is a short introduction. A more complete TypeScript tutorial is coming soon.  
+If you are building a React app, follow the [React Quick Start](./react-quick-start) instead.
+
+:::
+
+## What you'll build
+
+A single web page that joins a room, publishes your camera and microphone, and shows everyone else in the room.
+
+## What you'll learn
+
+- How to connect to a room with `FishjamClient`
+- How to publish your camera and microphone
+- How to display tracks from other participants
+- How to leave the room
+
+## Prerequisites
+
+- A TypeScript web project with a bundler, for example `npm create vite@latest my-app -- --template vanilla-ts`
+- Access to [Fishjam Dashboard](https://fishjam.io/app)
+
+## Step 1: Install and set up
+
+### Install the package
+
+```bash npm2yarn
+npm install @fishjam-cloud/ts-client
+```
+
+### Get your Fishjam ID and Sandbox API URL
+
+1. Log in to [Fishjam Dashboard](https://fishjam.io/app)
+2. Navigate to the [Sandbox tab](https://fishjam.io/app/sandbox)
+3. Copy your Fishjam ID
+4. Copy your Sandbox API URL from the **Sandbox API** section
+
+## Step 2: Get a peer token
+
+Every peer needs a peer token to join a room. For testing, request one from the Sandbox API:
+
+```ts
+// Check https://fishjam.io/app/sandbox for your Sandbox API URL
+const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+
+async function getPeerToken(roomName: string, peerName: string) {
+  const url = new URL(SANDBOX_API_URL);
+  url.searchParams.set("roomName", roomName);
+  url.searchParams.set("peerName", peerName);
+
+  const response = await fetch(url);
+  const { peerToken } = await response.json();
+  return peerToken as string;
+}
+```
+
+:::warning
+
+The Sandbox API is for prototyping only. In production, get the peer token from [your own backend](./backend-quick-start).
+
+:::
+
+## Step 3: Connect to a room
+
+Create a `FishjamClient` and call `connect`. The returned promise resolves once you have joined the room:
+
+```ts
+const getPeerToken = async (roomName: string, peerName: string) => "";
+// ---cut---
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+
+// Check https://fishjam.io/app/ for your Fishjam ID
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+
+const client = new FishjamClient();
+
+const peerToken = await getPeerToken("testRoom", `user_${Date.now()}`);
+
+await client.connect({
+  url: `wss://fishjam.io/api/v1/connect/${FISHJAM_ID}`,
+  token: peerToken,
+  peerMetadata: {},
+});
+```
+
+## Step 4: Publish your camera and microphone
+
+Get a `MediaStream` from the browser and add each of its tracks to the client:
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+// ---cut---
+const localStream = await navigator.mediaDevices.getUserMedia({
+  video: true,
+  audio: true,
+});
+
+for (const track of localStream.getTracks()) {
+  await client.addTrack(track, {
+    type: track.kind === "video" ? "camera" : "microphone",
+    paused: false,
+  });
+}
+
+// Show your own video (muted, so you don't hear yourself)
+const myVideo = document.createElement("video");
+myVideo.autoplay = true;
+myVideo.muted = true;
+myVideo.srcObject = localStream;
+document.body.appendChild(myVideo);
+```
+
+## Step 5: Display other participants
+
+The client emits `trackReady` when media from another peer starts arriving, and `trackRemoved` when it stops.
+Register these listeners **before** calling `connect`, so you also receive the tracks of peers who are already in the room:
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+// ---cut---
+client.on("trackReady", (ctx) => {
+  if (!ctx.track) return;
+
+  const element = document.createElement(
+    ctx.track.kind === "video" ? "video" : "audio",
+  );
+  element.id = ctx.trackId;
+  element.autoplay = true;
+  element.srcObject = new MediaStream([ctx.track]);
+  document.body.appendChild(element);
+});
+
+client.on("trackRemoved", (ctx) => {
+  document.getElementById(ctx.trackId)?.remove();
+});
+```
+
+## Step 6: Leave the room
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+// ---cut---
+client.disconnect();
+```
+
+## Complete example
+
+`index.html`:
+
+```html
+<!doctype html>
+<html>
+  <body>
+    <button id="join">Join</button>
+    <button id="leave">Leave</button>
+    <div id="videos"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
+```
+
+`src/main.ts`:
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+
+// Check https://fishjam.io/app/ for your Fishjam ID
+// Check https://fishjam.io/app/sandbox for your Sandbox API URL
+const FISHJAM_ID = "YOUR_FISHJAM_ID";
+const SANDBOX_API_URL = "YOUR_SANDBOX_API_URL";
+
+const videos = document.getElementById("videos")!;
+const client = new FishjamClient();
+let localStream: MediaStream | undefined;
+
+async function getPeerToken(roomName: string, peerName: string) {
+  const url = new URL(SANDBOX_API_URL);
+  url.searchParams.set("roomName", roomName);
+  url.searchParams.set("peerName", peerName);
+
+  // For production apps, get the peerToken from your own backend instead
+  const response = await fetch(url);
+  const { peerToken } = await response.json();
+  return peerToken as string;
+}
+
+function addMediaElement(id: string, track: MediaStreamTrack, muted = false) {
+  const element = document.createElement(
+    track.kind === "video" ? "video" : "audio",
+  );
+  element.id = id;
+  element.autoplay = true;
+  element.muted = muted;
+  element.srcObject = new MediaStream([track]);
+  videos.appendChild(element);
+}
+
+client.on("trackReady", (ctx) => {
+  if (ctx.track) addMediaElement(ctx.trackId, ctx.track);
+});
+
+client.on("trackRemoved", (ctx) => {
+  document.getElementById(ctx.trackId)?.remove();
+});
+
+async function join() {
+  const peerToken = await getPeerToken("testRoom", `user_${Date.now()}`);
+
+  await client.connect({
+    url: `wss://fishjam.io/api/v1/connect/${FISHJAM_ID}`,
+    token: peerToken,
+    peerMetadata: {},
+  });
+
+  localStream = await navigator.mediaDevices.getUserMedia({
+    video: true,
+    audio: true,
+  });
+
+  for (const track of localStream.getTracks()) {
+    await client.addTrack(track, {
+      type: track.kind === "video" ? "camera" : "microphone",
+      paused: false,
+    });
+  }
+
+  const myVideo = localStream.getVideoTracks()[0];
+  if (myVideo) addMediaElement("my-video", myVideo, true);
+}
+
+function leave() {
+  client.disconnect();
+  localStream?.getTracks().forEach((track) => track.stop());
+  videos.replaceChildren();
+}
+
+document.getElementById("join")!.addEventListener("click", join);
+document.getElementById("leave")!.addEventListener("click", leave);
+```
+
+Run `npm run dev`, open the page in two browser tabs and click **Join** in both.
+
+## Next steps
+
+- [Everything the TypeScript client can do](../how-to/typescript-client): simulcast, data channels, livestreaming and more
+- [Set up your own backend](./backend-quick-start) to create peer tokens in production
+- [Understanding Fishjam architecture](../explanation/architecture)
+- [Rooms](../explanation/rooms)

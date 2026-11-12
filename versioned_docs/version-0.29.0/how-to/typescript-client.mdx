@@ -1,0 +1,549 @@
+---
+title: "TypeScript client"
+sidebar_position: 2
+description: Reference of everything the framework-agnostic @fishjam-cloud/ts-client can do, with a short example for each feature.
+---
+
+# TypeScript client
+
+This guide lists everything `@fishjam-cloud/ts-client` can do, with a short example for each feature.
+The TypeScript client has no UI bindings: you call methods on a `FishjamClient` and listen to its events.
+
+If you have not used it before, start with the [TypeScript Quick Start](../tutorials/typescript-quick-start).
+
+:::tip
+
+Unless stated otherwise, the examples assume you have already created a client:
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+
+const client = new FishjamClient();
+```
+
+:::
+
+## Connect to a room
+
+### Create the client
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+// ---cut---
+const client = new FishjamClient({
+  debug: true, // log SDK internals to the console
+  reconnect: true, // the default, see "Reconnect" below
+});
+```
+
+### Join
+
+`connect` resolves once you have joined the room and rejects if the token is rejected or the room can't be joined:
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+const FISHJAM_ID = "";
+const peerToken = "";
+// ---cut---
+await client.connect({
+  url: `wss://fishjam.io/api/v1/connect/${FISHJAM_ID}`,
+  token: peerToken,
+  peerMetadata: {},
+});
+```
+
+### Handle connection errors
+
+Fishjam closes the connection with a reason you can check with `isAuthError` and `isJoinError`:
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+// ---cut---
+client.on("authError", (reason) => {
+  // "missing token" | "invalid token" | "expired token" | "room not found" | "peer not found"
+  console.error("Token rejected:", reason);
+});
+
+client.on("joinError", (reason) => {
+  // e.g. "reached peers limit" | "room not found"
+  console.error("Could not join:", reason);
+});
+
+client.on("connectionError", ({ message }) => {
+  console.error("Media connection failed:", message);
+});
+```
+
+Other connection events: `connectionStarted`, `socketOpen`, `socketClose`, `socketError`, `authSuccess`, `joined` and `disconnected`.
+
+### Leave
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+// ---cut---
+// Leave the room and close the connection
+client.disconnect();
+```
+
+`client.leave()` only leaves the room and keeps the connection open. In most apps you want `disconnect()`.
+
+## Reconnect
+
+The client reconnects automatically when the connection drops. By default it makes up to 3 attempts, waiting 500 ms, 1000 ms and 1500 ms.
+It does not retry after an authentication or join error.
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+// ---cut---
+const client = new FishjamClient({
+  reconnect: {
+    maxAttempts: 5,
+    initialDelay: 1000, // ms to wait before the first attempt
+    delay: 1000, // ms added to the wait for each next attempt
+    addTracksOnReconnect: true, // publish your tracks again after reconnecting
+  },
+});
+
+client.on("reconnectionStarted", () => console.log("Reconnecting..."));
+client.on("reconnected", () => console.log("Reconnected"));
+client.on("reconnectionRetriesLimitReached", () => console.log("Gave up"));
+```
+
+Pass `reconnect: false` to turn it off. `client.isReconnecting()` tells you if a reconnection is in progress.
+
+## Publish media
+
+### Camera and microphone
+
+`addTrack` takes a `MediaStreamTrack` and its metadata, and returns the track ID:
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+// ---cut---
+const stream = await navigator.mediaDevices.getUserMedia({
+  video: true,
+  audio: true,
+});
+
+const cameraTrackId = await client.addTrack(stream.getVideoTracks()[0], {
+  type: "camera",
+  paused: false,
+});
+
+const micTrackId = await client.addTrack(stream.getAudioTracks()[0], {
+  type: "microphone",
+  paused: false,
+});
+```
+
+Available track types: `camera`, `microphone`, `screenShareVideo`, `screenShareAudio`, `customVideo` and `customAudio`.
+Other peers see the type in the track's metadata.
+
+:::note
+
+In an [audio-only room](./backend/audio-only-calls), adding a video track throws `TrackTypeError`.
+
+:::
+
+### Switch device
+
+`replaceTrack` swaps the source of a published track without creating a new one:
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+const cameraTrackId = "";
+const deviceId = "";
+// ---cut---
+const newStream = await navigator.mediaDevices.getUserMedia({
+  video: { deviceId: { exact: deviceId } },
+});
+
+await client.replaceTrack(cameraTrackId, newStream.getVideoTracks()[0]);
+```
+
+### Mute and unmute
+
+Replace the track with `null` and mark it as paused, so other peers know it is muted:
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+const cameraTrackId = "";
+const cameraTrack = {} as MediaStreamTrack;
+// ---cut---
+// Mute
+await client.replaceTrack(cameraTrackId, null);
+client.updateTrackMetadata(cameraTrackId, { type: "camera", paused: true });
+
+// Unmute
+await client.replaceTrack(cameraTrackId, cameraTrack);
+client.updateTrackMetadata(cameraTrackId, { type: "camera", paused: false });
+```
+
+### Share your screen
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+// ---cut---
+const screen = await navigator.mediaDevices.getDisplayMedia({ video: true });
+
+const screenTrackId = await client.addTrack(screen.getVideoTracks()[0], {
+  type: "screenShareVideo",
+  paused: false,
+});
+```
+
+### Stop publishing
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+const screenTrackId = "";
+// ---cut---
+await client.removeTrack(screenTrackId);
+```
+
+The client also emits events about your own tracks: `localTrackAdded`, `localTrackRemoved`, `localTrackReplaced`, `localTrackMuted`, `localTrackUnmuted` and `localTrackMetadataChanged`.
+
+## Receive media
+
+### Peers
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+// ---cut---
+client.on("joined", (myPeerId, peersInRoom) => {
+  console.log(
+    `Joined as ${myPeerId}, ${peersInRoom.length} peers already here`,
+  );
+});
+
+client.on("peerJoined", (peer) => console.log("Joined:", peer.id));
+client.on("peerUpdated", (peer) => console.log("Updated:", peer.id));
+client.on("peerLeft", (peer) => console.log("Left:", peer.id));
+```
+
+### Tracks
+
+A remote track goes through these events:
+
+1. `trackAdded`: the track exists, but no media has arrived yet
+2. `trackReady`: media is arriving, `ctx.track` and `ctx.stream` are set
+3. `trackUpdated`: its metadata changed, for example it was paused
+4. `trackRemoved`: the peer stopped publishing it, or left
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+// ---cut---
+client.on("trackReady", (ctx) => {
+  if (!ctx.track) return;
+
+  const element = document.createElement(
+    ctx.track.kind === "video" ? "video" : "audio",
+  );
+  element.id = ctx.trackId;
+  element.autoplay = true;
+  element.srcObject = new MediaStream([ctx.track]);
+  document.body.appendChild(element);
+
+  console.log(`${ctx.endpoint.id} sent a ${ctx.metadata?.type} track`);
+});
+
+client.on("trackUpdated", (ctx) => {
+  console.log(`Track ${ctx.trackId} paused:`, ctx.metadata?.paused);
+});
+
+client.on("trackRemoved", (ctx) => {
+  document.getElementById(ctx.trackId)?.remove();
+});
+```
+
+:::tip
+
+Register these listeners before calling `connect`, so you don't miss the tracks of peers who are already in the room.
+
+:::
+
+### Read the current state
+
+Besides events, you can read a snapshot of the room at any time:
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+// ---cut---
+const me = client.getLocalPeer();
+const peers = client.getRemotePeers(); // keyed by peer ID
+const tracks = client.getRemoteTracks(); // keyed by track ID
+```
+
+### Voice activity
+
+Each remote audio track reports whether its peer is speaking:
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+// ---cut---
+client.on("trackAdded", (ctx) => {
+  if (ctx.metadata?.type !== "microphone") return;
+
+  ctx.on("voiceActivityChanged", () => {
+    console.log(`${ctx.endpoint.id} is ${ctx.vadStatus}`); // "speech" | "silence"
+  });
+});
+```
+
+### Components
+
+Server-side components, such as recordings, are reported separately from peers:
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+// ---cut---
+client.on("componentAdded", (component) => {
+  console.log("Component added:", component.type); // e.g. "recording"
+});
+
+const components = client.getRemoteComponents();
+```
+
+Also available: `componentUpdated` and `componentRemoved`.
+
+## Metadata
+
+Pass a type to `FishjamClient` to get typed peer metadata:
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const FISHJAM_ID = "";
+const peerToken = "";
+// ---cut---
+type PeerMetadata = { name: string };
+
+const client = new FishjamClient<PeerMetadata>();
+
+await client.connect({
+  url: `wss://fishjam.io/api/v1/connect/${FISHJAM_ID}`,
+  token: peerToken,
+  peerMetadata: { name: "Alice" },
+});
+
+// Change it later; other peers get a "peerUpdated" event
+client.updatePeerMetadata({ name: "Alice (away)" });
+
+client.on("peerUpdated", (peer) => {
+  console.log(peer.metadata?.peer?.name); // set by the peer
+  console.log(peer.metadata?.server); // set by your backend when creating the peer
+});
+```
+
+See [Metadata](./client/metadata) for how peer and server metadata differ.
+
+## Simulcast
+
+With [simulcast](../explanation/simulcast), you publish your video in several qualities and each receiver picks one.
+
+### Publish several qualities
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+const cameraTrack = {} as MediaStreamTrack;
+// ---cut---
+import { Variant } from "@fishjam-cloud/ts-client";
+
+const cameraTrackId = await client.addTrack(
+  cameraTrack,
+  { type: "camera", paused: false },
+  {
+    enabled: true,
+    enabledVariants: [
+      Variant.VARIANT_LOW,
+      Variant.VARIANT_MEDIUM,
+      Variant.VARIANT_HIGH,
+    ],
+    disabledVariants: [],
+  },
+);
+
+// Temporarily stop sending one of the qualities
+await client.disableTrackEncoding(cameraTrackId, Variant.VARIANT_HIGH);
+await client.enableTrackEncoding(cameraTrackId, Variant.VARIANT_HIGH);
+```
+
+### Choose the received quality
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+const remoteTrackId = "";
+// ---cut---
+import { Variant } from "@fishjam-cloud/ts-client";
+
+// For example: low quality for thumbnails, high for the active speaker
+client.setTargetTrackEncoding(remoteTrackId, Variant.VARIANT_LOW);
+
+client.on("encodingChanged", (ctx) => {
+  // reason: "other" | "encodingInactive" | "lowBandwidth"
+  console.log(`Now receiving ${ctx.encoding}, reason: ${ctx.encodingReason}`);
+});
+```
+
+If the chosen quality is not available, for example because the sender disabled it or your bandwidth is too low, Fishjam sends another one until it is.
+
+## Limit bandwidth
+
+All limits are in kilobits per second.
+
+```ts
+import { FishjamClient, Variant } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+const cameraTrack = {} as MediaStreamTrack;
+const cameraTrackId = "";
+const simulcastConfig = {
+  enabled: false,
+  enabledVariants: [],
+  disabledVariants: [],
+};
+// ---cut---
+// Cap a track when publishing it
+await client.addTrack(
+  cameraTrack,
+  { type: "camera", paused: false },
+  simulcastConfig,
+  1500,
+);
+
+// Change the cap later
+await client.setTrackBandwidth(cameraTrackId, 800);
+
+// For simulcast tracks, cap a single quality
+await client.setEncodingBandwidth(cameraTrackId, Variant.VARIANT_HIGH, 1200);
+```
+
+To see how much bandwidth Fishjam estimates you can receive (in bits per second):
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+// ---cut---
+console.log(client.getBandwidthEstimation());
+
+client.on("bandwidthEstimationChanged", (estimation) => {
+  console.log(`Estimated incoming bandwidth: ${estimation} bps`);
+});
+```
+
+## Data channels
+
+Send binary data to everyone in the room. Use the reliable channel for chat messages and the lossy channel for frequent updates where only the latest value matters.
+See [Data channels](../explanation/data-channels) for details.
+
+Call these after joining the room:
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+// ---cut---
+const unsubscribe = client.subscribeData(
+  (data) => console.log("Received:", new TextDecoder().decode(data)),
+  { reliable: true },
+);
+
+client.on("dataChannelsReady", () => {
+  client.publishData(new TextEncoder().encode("Hello!"), { reliable: true });
+});
+
+client.on("dataChannelsError", (error) => console.error(error));
+
+await client.createDataChannels();
+```
+
+`client.getDataChannelsReadiness()` tells you if the channels are ready.
+
+## Livestreaming
+
+For [livestreams](../explanation/livestreams), the package exports two standalone functions. They don't need a `FishjamClient`.
+
+### Publish a livestream
+
+Get a streamer token from [your backend](./backend/whip-whep):
+
+```ts
+const streamerToken = "";
+// ---cut---
+import { publishLivestream } from "@fishjam-cloud/ts-client";
+
+const stream = await navigator.mediaDevices.getUserMedia({
+  video: true,
+  audio: true,
+});
+
+const { stopPublishing } = await publishLivestream(
+  stream,
+  "https://fishjam.io/api/v1/live/api/whip",
+  streamerToken,
+);
+
+// Later
+await stopPublishing();
+```
+
+### Watch a livestream
+
+For a private livestream, pass a viewer token. For a public one, add the room ID to the URL and skip the token:
+
+```ts
+const viewerToken = "";
+const video = document.createElement("video");
+// ---cut---
+import { LivestreamError, receiveLivestream } from "@fishjam-cloud/ts-client";
+
+try {
+  const { stream, stop } = await receiveLivestream(
+    "https://fishjam.io/api/v1/live/api/whep",
+    viewerToken,
+  );
+  video.srcObject = stream;
+} catch (error) {
+  if (error === LivestreamError.STREAM_NOT_FOUND) {
+    console.log("The stream has not started yet");
+  }
+}
+```
+
+Possible errors: `UNAUTHORIZED`, `STREAM_NOT_FOUND`, `STREAMER_ALREADY_CONNECTED` and `UNKNOWN_ERROR`.
+
+## Statistics
+
+```ts
+import { FishjamClient } from "@fishjam-cloud/ts-client";
+const client = new FishjamClient();
+const micTrackId = "";
+// ---cut---
+// Standard WebRTC statistics for the whole connection
+const stats = await client.getStatistics();
+
+// Volume of your microphone, from 0 to 1, e.g. for a level meter
+const audioLevel = await client.getLocalTrackAudioLevel(micTrackId);
+console.log(audioLevel?.level);
+```
+
+## Not included
+
+The React and React Native SDKs add features on top of the TypeScript client. With the TypeScript client, use browser APIs directly instead:
+
+- Listing and selecting cameras and microphones: use `navigator.mediaDevices`
+- [Camera effects](./client/stream-middleware) and [custom sources](../explanation/custom-sources): process or create the `MediaStreamTrack` yourself before `addTrack`
+- Picture in Picture: use the browser's Picture-in-Picture API
+- Sandbox API helpers: call the Sandbox API with `fetch`, as in the [quick start](../tutorials/typescript-quick-start#step-2-get-a-peer-token)

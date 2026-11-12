@@ -4150,6 +4150,12 @@ __metadata:
   languageName: node
   linkType: soft
 
+"@fishjam-cloud/ts-client@link:./packages/web-client-sdk/packages/ts-client::locator=fishjam-docs%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@fishjam-cloud/ts-client@link:./packages/web-client-sdk/packages/ts-client::locator=fishjam-docs%40workspace%3A."
+  languageName: node
+  linkType: soft
+
 "@fishjam-cloud/video-effects@link:./packages/video-effects::locator=fishjam-docs%40workspace%3A.":
   version: 0.0.0-use.local
   resolution: "@fishjam-cloud/video-effects@link:./packages/video-effects::locator=fishjam-docs%40workspace%3A."
@@ -12376,6 +12382,7 @@ __metadata:
     "@fishjam-cloud/react-native-vision-camera-source": "link:./packages/web-client-sdk/packages/react-native-vision-camera-source"
     "@fishjam-cloud/react-native-webrtc": "link:./packages/web-client-sdk/packages/react-native-webrtc"
     "@fishjam-cloud/react-native-worklets": "link:./packages/react-native-worklets"
+    "@fishjam-cloud/ts-client": "link:./packages/web-client-sdk/packages/ts-client"
     "@fishjam-cloud/video-effects": "link:./packages/video-effects"
     "@google/genai": "npm:^1.35.0"
     "@mdx-js/react": "npm:^3.1.0"
