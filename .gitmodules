@@ -25,3 +25,6 @@
 [submodule "packages/react-native-worklets"]
 	path = packages/react-native-worklets
 	url = https://github.com/fishjam-cloud/fishjam-react-native-worklets.git
+[submodule "api/cloud"]
+	path = api/cloud
+	url = git@github.com:fishjam-cloud/cloud.git

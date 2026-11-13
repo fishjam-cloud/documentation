@@ -284,6 +284,7 @@ const config: Config = {
           items: [
             { to: "/api/rest", label: "Server API" },
             { to: "/api/compositions", label: "Composition API" },
+            { to: "/api/insights", label: "Insights API" },
           ],
         },
         {
@@ -410,6 +411,11 @@ const config: Config = {
               slug: "composition",
               url: "/docs/api/composition-openapi.json",
             },
+            {
+              title: "Insights API",
+              slug: "insights",
+              url: "/docs/api/insights-openapi.json",
+            },
           ],
           hideSearch: true,
           persistAuth: true,
@@ -434,6 +440,24 @@ const config: Config = {
           defaultOpenFirstTag: false,
           authentication: {
             preferredSecurityScheme: "BearerAuth",
+          },
+        },
+      } as ScalarOptions,
+    ],
+    [
+      "@scalar/docusaurus",
+      {
+        id: "insights-api",
+        label: "Insights API",
+        route: "/api/insights",
+        showNavLink: false,
+        configuration: {
+          url: "/docs/api/insights-openapi.json",
+          hideSearch: true,
+          persistAuth: true,
+          defaultOpenFirstTag: false,
+          authentication: {
+            preferredSecurityScheme: "ManagementTokenAuth",
           },
         },
       } as ScalarOptions,
