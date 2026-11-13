@@ -539,6 +539,15 @@ const audioLevel = await client.getLocalTrackAudioLevel(micTrackId);
 console.log(audioLevel?.level);
 ```
 
+`getStatistics` returns the browser's [`RTCStatsReport`](https://developer.mozilla.org/en-US/docs/Web/API/RTCStatsReport), the same data as [`RTCPeerConnection.getStats()`](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/getStats).
+It is a map of reports, each with a `type`. The most useful ones:
+
+- `outbound-rtp`: media you send, for example `bytesSent`, `framesPerSecond` and `qualityLimitationReason`
+- `inbound-rtp`: media you receive, for example `bytesReceived`, `packetsLost`, `jitter` and `framesDropped`
+- `candidate-pair`: the connection itself, for example `currentRoundTripTime` and `availableOutgoingBitrate`
+
+Pass a `MediaStreamTrack` to get the statistics of that track only.
+
 ## Not included
 
 The React and React Native SDKs add features on top of the TypeScript client. With the TypeScript client, use browser APIs directly instead:
