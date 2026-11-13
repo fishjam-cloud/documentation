@@ -41,6 +41,7 @@
     "@fishjam-cloud/react-native-vision-camera-source": "link:./packages/web-client-sdk/packages/react-native-vision-camera-source",
     "@fishjam-cloud/react-native-webrtc": "link:./packages/web-client-sdk/packages/react-native-webrtc",
     "@fishjam-cloud/react-native-worklets": "link:./packages/react-native-worklets",
+    "@fishjam-cloud/ts-client": "link:./packages/web-client-sdk/packages/ts-client",
     "@fishjam-cloud/video-effects": "link:./packages/video-effects",
     "@mdx-js/react": "^3.1.0",
     "@scalar/docusaurus": "^0.8.5",

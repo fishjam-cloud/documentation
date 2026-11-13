@@ -9,6 +9,16 @@ interface RedirectGroup {
 
 const redirectGroups: RedirectGroup[] = [
   {
+    since: "0.28.0",
+    description: "Web & Mobile how-to category renamed to React & React Native",
+    rules: [
+      {
+        from: "/category/web--mobile",
+        to: "/category/react--react-native",
+      },
+    ],
+  },
+  {
     since: "0.30.1",
     description:
       "Camera effects category added; VisionCamera pages moved to Integrations",
